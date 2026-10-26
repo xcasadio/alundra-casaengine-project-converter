@@ -8675,6 +8675,183 @@ tests déplacés ; un besoin de toucher au moteur ; un test qui boucle.
 **Retour arrière.** La phase C se retire seule (393 hors de l'ensemble câblé : la torche ne se soulève plus) ; puis la phase B (les clés
 retirées : les ronces redeviennent indestructibles, une torche posée par un script reste inerte) ; la phase A est inerte.
 
+##### E20.g2c3 — Les gouttes d'eau (A19, C71) ⏳ (détaillée le 2026-10-26 ; thème 2, après g2c2 (D-G2C2-6) ; ferme O-G2C3-1 ; défauts de Q-G2C3-1 à Q-G2C3-7 pris par la règle de l'auteur du 2026-10-25, D-E20-83 ; à relire)
+
+**Provenance.** Lecture seule du 2026-10-26 (HEAD `22ddf0be` puis `0d3e7e14`, `Alundra/` et `Alundra.Tests/` inchangés entre les deux) :
+rapport et critique frais (`scratchpad/t2-next/g2c3/`, `scratchpad/t2-next/g2c3-critic/`, scripts, rejeux et sorties ; les deux rapports
+entiers en `scratchpad/t2-next/g2c3-report-main.md` et `g2c3-critic-main.md`), à verser par T0 à `docs/plan-e20-annexe/e20-g2c3-disc/`, sur la
+lecture de g2c2 (F12 de `e20-g2c2-disc/`). Le critique confirme les faits porteurs et en corrige cinq : la durée de B[1] à la 92 (603 ticks, pas
+606), son déclenchement par zone et sa remise à zéro, la seule arrivée qui fait naître les torches visées, la fin `Hold` et les 21 ticks de
+l'animation 2, la période des programmes à drapeau et de la 158 ; il ajoute le cas oublié de la torche lancée qui bute sur une goutte (le
+second site du type 391 du binaire) et le cumul des gouttes de B[1]. Ce sont ses valeurs qui sont écrites ici.
+
+**Prérequis.** E20.g2c2 faite : la torche (`TorchAi`, le type 393), `(E, 20)` inscrit en production pour {393} (sans lui, une torche forcée en
+statut 3 par une goutte resterait figée : une vraie dépendance de code), la marque « sans flamme » d'E20 (`+0x274`, `Bytes[0]`), 393 dans
+l'ensemble câblé, le préréglage `torche-m92` et la garde des données de D-G2C2-8 (A19 et C71 pour exactement {391}). Aucun lien avec c2b : la
+goutte ne blesse pas. La tranche peut toucher `Alundra/SaveGames/TestSaves.cs` (D-G2C3-6) : jamais en même temps qu'une autre tranche qui le
+touche.
+
+**But.** Comme l'original : les 56 gouttes des cartes 87, 88, 90, 92, 94 et 158 tombent du plafond en cycle (l'attente de leur script, puis
+40 ticks, la chute, l'éclaboussure et son son 145, puis la remontée de 160 px) ; une goutte qui tombe sur une torche posée, ou sur Alundra qui
+porte une torche, l'éteint sans flamme (son 142, effet de bris 10) et Alundra reste debout, les mains vides, sans dégât ; sans torche, seul le
+bruit de l'éclaboussure ; à la 92, quatre gouttes naissent au-dessus des quatre torches de la rangée du haut quand Alundra reste au fond de la
+salle ; à la 158, les 14 gouttes ne tombent que quand Alundra est dans leur zone. Aujourd'hui elles pendent immobiles.
+
+**Faits** (FAIT, MESURÉ ; rapport F1 à F28, critique §1 et §2).
+- **A19** (`0x800619D0`, 3 mots ; entrée `0x800C4B80` de la table A `0x800C4B34`) : `Bytes[1] = ` l'octet bas de `ProgramIndexes[2]`
+  (`+0x54` vers `+0x275`), l'index du programme C scripté. Seul gestionnaire à cette entrée ; aucun autre code A ou C ne pointe vers A19 ou C71.
+- **C71** (`0x8007B834`, 89 mots ; entrée `0x800C5050` de la table C `0x800C4F34` ; table de sauts `0x800281EC`, un état ≥ 5 ne fait rien),
+  sur `Bytes[0]` (`+0x274`) : état 0 : `Bytes[0] = 1`, `AIValues[1]` (`+0x282`) `= 40` ; état 1 : `AIValues[1] -= 1`, à 0 : animation 1,
+  `Bytes[0] = 2`, `Flags |= 0x100` (Gravity) ; état 2 : si `CollidedWithEntityZ` (`+0x140`) ou `IsOnGround` (`+0x144`) : animation 2,
+  `Bytes[0] = 3` ; état 3 : `Bytes[0] = 4` et `Flags &= ~0x80` (Collidable) **d'abord**, puis le test de la torche : l'appui `+0x12C`
+  (`RidingEntity`) ; si c'est le héros, son objet porté `+0x2C` ; si le résultat n'est pas nul et que son type (`+0x68`) vaut `0x189` (393) :
+  son statut à 3 et son `+0x274` à 1, **sans condition sur son statut** (une torche déjà en statut 4 est écrite aussi) ; la goutte ne lit ni
+  `HitCounter` ni `TouchingEntity` ; état 4 : si `+0xAC` (`ForceResetAnimationFlag`) est non nul (« ≠ 0 », E20 teste « == 1 ») : `Bytes[0] = 0`,
+  animation 0, `ForceZ = 0`, `Flags = (Flags & ~0x100) | 0x80`, `ProgramIndexes[2] = Bytes[1]`, `PosZ += 0xA00000` (160 px), et un store
+  `[0x8013DA20] = 1` (`g_clearProgramState`) **mort** : C71 tourne hors de `RunScript`, qui remet ce mot à zéro à son entrée
+  (`0x8004226C`) avant toute lecture (`0x800422FC`).
+- **L'oracle** (`replay/c71_full.py`, le vrai code d'A19 et de C71 dans la machine MIPS contre un modèle écrit d'après le désassemblage) :
+  6 000 vecteurs, 0 écart, 89/89 instructions de C71 et 3/3 d'A19 ; 90 mutants d'un mot de C71, 89 tués et 1 équivalent (`move a1,a0` en
+  `subu a1,a0,zero`), 2 sur 2 pour A19 ; 22 vecteurs dorés sur 11 classes (`replay/c71_goldens.json`, SHA-256 `40071ab5…6214b`), en mots bruts.
+- **Le cycle natif** (rejoué, sol plat, la goutte posée à + 160 px ; R est le tick de la restauration) : R+1 état 0 vers 1 (compteur 40) ;
+  R+41 état 2 (animation 1, Gravity) ; R+65 l'atterrissage ; R+66 le gestionnaire de l'état 2 voit l'atterrissage : animation 2, son 145,
+  état 3 ; R+67 le gestionnaire de l'état 3 : état 4, `Collidable` retiré, le test de la torche (le journal de ce tick montre déjà l'état 4) ;
+  R+87 `+0xAC` ; R+88 la restauration : **période 88**. La chute de 160 px dure 24 ticks (22 sur la tête du héros, 23 sur une torche posée) ;
+  l'animation 2 est un `Hold` de 7 images de 3 ticks (21 ticks, 0,42 s à 50 Hz) ; gravité 128 et viscosité 4096 sur les 7 cartes. Après
+  l'état 3 la goutte garde Gravity sans `Collidable` : elle traverse le héros, finit sa chute au sol, et la remontée part **de ce Z**.
+- **Les scripts** : 55 programmes C scriptés plus 1 gabarit natif (la 92, enregistrement 15) = 56 : 33 attentes simples `37 [N] ; 40 [2,0]`
+  (N de 5 à 240), période N + 90 ; 8 conditionnées par un drapeau temporaire (cartes 87, 88, 92), dont deux (87 enregistrement 53, C[54] ; 92
+  enregistrement 25, C[26]) sautent leurs attentes une fois le drapeau posé (période 1 + 88 après le premier cycle) ; 14 à la 158,
+  `00 ; 3B [x1,x2,y1,y2,z1,z2] ; 04 -8 ; 37 [N] ; 40 [2,0]`, qui bouclent tant qu'Alundra est hors de leur boîte (période N + 91 quand il y
+  reste). La restauration de `ProgramIndexes[2]` réarme le script, qui repart de son premier opcode (le `40` a terminé l'appel et effacé
+  l'état du programme C) ; sans elle la goutte cyclerait à 88 ticks en natif. Le `Wait` (`0x37`) et le `0x40` de la DLL sont ceux du binaire
+  (`EventProgramRunner.cs`, F5).
+- **Les contacts** (rejoués, vrais `MovePlayer`, C70, E20, E0, A19 et C71 ; d le tick de l'état 2 de la goutte) : Alundra qui porte une torche :
+  atterrissage sur sa tête d+22, d+24 la torche en statut 3 et `+0x274 = 1`, d+25 animation 2 et son 142, d+28 la torche détruite (effet 10, le
+  pointeur porté du héros à 0, `ClearCarrierOf` dans la DLL), d+29 le héros en état 0 (debout), PV inchangés, aucune flamme ; sans torche :
+  seul le son 145 ; une torche posée : la goutte se pose sur son dessus, statut 3 à d+25, son 142 à d+26, détruite à d+29 avec l'effet 10,
+  sans flamme ; la fenêtre : la goutte éteint la torche portée si son centre tombe à dx de −11 à +12 px et dy de −8 à +8 px du centre du héros.
+  Une torche lancée n'a pas `Collidable` (`0x332376` en vol, `0x332346` en statut 3) : elle ne sert jamais d'appui ; mais E20 lit son contact
+  `+0x130` et, si c'est une goutte (type 391), pose `+0x274 = 1` (pas de flamme) : la torche lancée qui bute sur une goutte s'éteint (le
+  vecteur synthétique de (a2) de g2c2 ; rare en jeu : la torche lancée monte à environ 67 px, les gouttes sont posées de 136 à 224 px). Le
+  Carré au tick du contact sauve la torche selon l'ordre des emplacements (F16) : non épinglé.
+- **La carte 92** : le programme B[1] (l'événement de carte 0, `EventCodesBIndex` 129, zone en tuiles x 26 à 42, y 8 à 28) tourne à chaque tick
+  où Alundra est dans la zone (hors de la zone, `RunMapEventsPass` le remet à zéro à chaque tick ; suspendu quand le jeu est bloqué) : attendre
+  240, 240 puis 120 (**603 ticks**), puis quatre `0x8A [138, 15, x, y, 240 px]` aux points (756, 168), (804, 168), (852, 168) et (900, 168), ceux
+  des torches 43 à 46 (Z 80) : les seules gouttes du jeu qui tombent sur une torche à sa place d'origine ; elles partent en natif (le gabarit 15
+  n'a pas de programme C) ; l'extinction vers 670 ticks (environ 13 s). Les torches 43 à 46 ne naissent que si l'arrivée est dans leur boîte
+  (x 26 à 42, y 0 à 28) : seule l'arrivée en tuile (38, 10), depuis la 91. Chaque retour dans la zone fait naître quatre gouttes de plus aux
+  mêmes points (aucune garde par drapeau ; les gouttes natives ne sont jamais détruites) : un cumul **déjà présent au HEAD** (le `0x8A` est
+  porté), indépendant de g2c3 (Q-G2C3-6).
+- **Les données** : le sprite de carte 135 est le type 391 (`0x187`) : drapeaux `0x032080` (Collidable, non soulevable), corps 4×3×8,
+  `BreakEffect` 0 ; fiche : PV 0, onze réponses à 128, aucune attaque, aucun bit de classe de coup ; animations 0 et 1 d'une image, la 2 en
+  `Hold` avec le son 145 ; le préfab `Goutte d’eau.entity` n'a pas de contrôleur (la chute passe par `StepVerticalWithoutController`, les
+  règles du binaire, l'atterrissage strict).
+- **Le recensement** : gouttes 87 : 6, 88 : 13, 90 : 7, 92 : 9 (8 et le gabarit), 94 : 7, 158 : 14 ; torches des mêmes cartes 8, 3, 4, 16, 8,
+  0 ; aucune sauvegarde de `tools/Saves/` ni aucun préréglage n'arrive dans une carte de gouttes ; en jeu, elles naissent aux entrées
+  normales (86 vers 87 en tuile (41, 47), 91 vers 92, et les cartes 159 à 161 vers la 158).
+- **La DLL au HEAD** : ni `(A, 19)` ni `(C, 71)` au registre (`RunSpriteEvent` ne trouve rien : une non-opération comptée) ; les drapeaux
+  d'en-tête n'ont pas Gravity : la goutte garde son Z de placement, `Bytes[1]` n'est jamais écrit. Les briques existent : le registre
+  (`NativeSpriteRegistry.Register`, `CreateForProduction`), le modèle `PillarAi` (une fonction pure, `Tick`, `Keys`, `Register`), un A natif
+  joué au premier passage (`PickupAi`), `AIValues[1]` et `Bytes[0..1]`, `RidingEntity` recalculé par `UpdateRidingEntities` sur la liste des
+  collidables, le héros reconnu par `LogicContextEntity` (`PlayerManager`) ; l'ordre d'un tick de la DLL (`MovePlayer`, les programmes, les
+  compteurs, les listes qui recalculent `RidingEntity`, l'horloge d'animation, la physique, la passe de coups) donne l'appui au tick de
+  l'atterrissage + 1, lu par C71 au tick suivant, comme l'oracle.
+
+**Décisions de la session** (défauts, comme l'original ; §2, Q-G2C3-*).
+- **D-G2C3-1** — Un `Alundra/Ai/Objects/WaterDropAi.cs` neuf, sur le modèle de `PillarAi` : `(A, 19)` et `(C, 71)` pour {391} ; une fonction
+  pure de l'état (le compteur, les deux contacts, l'animation finie, les drapeaux, le Z, l'index mémorisé, et la décision « éteindre la
+  cible ») ; un `Tick` qui lit et écrit la proxy, prend l'appui par `RidingEntity`, reconnaît le héros comme `PlayerManager`, lit son objet
+  porté et compare son type à celui de la torche de g2c2 (le membre que `TorchAi` expose, relu au HEAD par T0 ; à défaut, une constante 393
+  nommée dans `WaterDropAi` et vérifiée par la garde des données) ; l'extinction : statut 3 et `Bytes[0] = 1` (la marque qu'E20 lit), sans
+  condition sur le statut de la cible, comme le binaire.
+- **D-G2C3-2** — Le store `[0x8013DA20] = 1` de l'état 4 n'est pas porté (mort au binaire) ; un commentaire au site le dit.
+- **D-G2C3-3** — À l'état 3, l'avance et le retrait de `Collidable` précèdent le test de la torche et ne dépendent pas de lui.
+- **D-G2C3-4** (Q-G2C3-1, Q-G2C3-4, défauts A) — Toutes les gouttes : les quatre de B[1] à la 92 et les 14 de la 158 comprises.
+- **D-G2C3-5** (Q-G2C3-2, Q-G2C3-3, Q-G2C3-7, défauts comme l'original) — La torche portée s'éteint dans les mains d'Alundra, qui reste
+  debout sans dégât (la posture que donne `CarryRules` sans objet, sondée par T0) ; sans torche, l'éclaboussure seule ; la torche lancée qui
+  bute sur une goutte s'éteint sans flamme (la branche d'E20 de g2c2 ; g2c3 lui ajoute un test de monde).
+- **D-G2C3-6** (Q-G2C3-5, défaut A) — Un préréglage `gouttes-m92` à l'arrivée depuis la 91 (la tuile (38, 10) ; le pixel, le niveau et le regard
+  lus par T0 dans l'entrée de la carte), sauf si `torche-m92` de g2c2 arrive déjà là (alors pas de préréglage neuf) ; le test de liste des
+  préréglages change alors mécaniquement (D-E0D-12).
+- **D-G2C3-7** (Q-G2C3-6, défaut A) — Le cumul des gouttes de B[1] reste celui de l'original et sort de la tranche (O-G2C3-2 : la saturation
+  de la table d'entités, une inférence, à mesurer avant toute décision).
+- **D-G2C3-8** — Un écart de la DLL au binaire mesuré par une sonde de T0 (un tick de l'appui, de la chute ou de l'animation) s'écrit avec
+  sa cause lue au code et un test nommé qui l'épingle ; sans cause lue, c'est un arrêt.
+
+**Périmètre.** `Alundra/Ai/Objects/WaterDropAi.cs` (neuf) ; `Alundra/Ai/NativeSpriteRegistry.cs` (un appel d'inscription et la doc) ;
+`Alundra/SaveGames/TestSaves.cs`, `docs/test-saves.md` et `Alundra.Tests/SaveGames/TestSavesTests.cs` (seulement si D-G2C3-6 crée le
+préréglage) ; les tests ; les annexes `docs/plan-e20-annexe/e20-g2c3-disc/` et `docs/plan-e20-annexe/e20-g2c3/` ; un ADR neuf ; ce plan
+(O-G2C3-1 fermé, l'écart de D-G2C2-6 refermé). Aucun changement attendu dans `EventProgramRunner.cs`, `LiftableAi.cs`, `PlayerManager.cs` ni
+`TorchAi.cs`.
+
+**Hors périmètre.** Le cumul des gouttes de B[1] (O-G2C3-2) ; la course du Carré au tick du contact (non épinglée) ; la blessure (la goutte
+ne blesse pas) ; le moteur, le convertisseur et les données.
+
+**Tâches.**
+- ⏳ **T0 — Versement, oracle, sondes, liste prédite** (commit de docs). (a) Les prérequis relus au HEAD (g2c2 faite ; le nom du type de la
+  torche dans `TorchAi`, la marque d'E20, la garde de D-G2C2-8) ; (b) verser les deux dossiers de la lecture et les deux rapports entiers à
+  `docs/plan-e20-annexe/e20-g2c3-disc/` (README, `SHA1SUMS.txt`, sans `__pycache__`) ; (c) rejouer depuis une copie `replay/c71_full.py` (6 000
+  vecteurs, 0 écart, le SHA-256 des dorés identique), `s1_drop_cycle.py` (natif et N = 30), `s2_drop_on_torch.py` (`carry`, `nocarry`,
+  `posed`) et `s3_hit_window.py`, sorties identiques ; (d) la table des ticks attendus du binaire, écrite avant toute exécution dans la DLL :
+  le cycle natif sur trois cycles, la période de chaque famille de programmes (N + 90, 1 + 88, N + 91), les trois contacts, les 603 ticks de
+  B[1] ; (e) les sondes jetables de la DLL (versées en `.txt`), chacune avec sa prédiction écrite avant : S-D1, A19 au premier passage d'une
+  goutte née par `0x8A` (`Bytes[1] = 0`) et d'une goutte posée scriptée (`Bytes[1]` = son index) ; S-D2, le cycle natif dans la DLL (le tick de
+  chaque état, les 21 ticks de l'animation 2, le son 145) ; S-D3, `IsOnGround` et `CollidedWithEntityZ` à la chute et à l'atterrissage, et
+  le tick où le `RidingEntity` **de la goutte** devient le héros (dans la pose qui porte une torche, dont l'animation peut porter
+  `NoEntityCollision`) ou la torche posée ; S-D4, l'état et les PV du héros un tick après la destruction de sa torche portée ; S-D5, une torche
+  posée touchée (les ticks de F12, sans flamme) ; S-D6, `PosZ += 160 px` sur la goutte sans contrôleur (la racine suit au même tick) ;
+  S-D7, le script repart de son premier opcode après la restauration ; S-D8, la goutte traverse le héros après l'état 3 ; une sonde qui
+  contredit un fait est un arrêt, un écart d'un tick suit D-G2C3-8 ; (f) la case du préréglage (D-G2C3-6) ; (g) la liste prédite, mesurée par un
+  câblage temporaire annulé ensuite : les sommes de clés du registre de production (au HEAD de 2026-10-26 : `NativeSpriteRegistryTests`,
+  `LiftableAiRegistrationTests`, `ChargedArrowAiTests`, `WaveSwordLifeTests`, `BallFlamesTests`, recomptées après g2c2), les tests de g2c2
+  qui gardent Alundra plus de 603 ticks dans la zone de B[1], `C4WorldTests` (la carte 87 et ses six gouttes), le test de liste des préréglages
+  et les lignes de `EveryPresetName` si un préréglage s'ajoute ; plus de 10 tests est un arrêt.
+- ⏳ **T1 — Phase A, tests d'abord** (rouges avant ; rien d'inscrit en production) : (a1) la fonction pure contre les 22 vecteurs dorés convertis
+  en champs de la proxy (chaque mot lu et écrit), les cinq états et l'état ≥ 5 ; (a2) A19 : `Bytes[1]` = l'octet bas de `ProgramIndexes[2]` ;
+  (a3) l'état 3 : l'avance et le retrait de `Collidable` avec et sans torche (D-G2C3-3) ; le héros porteur d'une torche : statut 3 et
+  `Bytes[0] = 1` sur la torche ; un objet porté qui n'est pas une torche : rien ; le héros sans objet : rien ; une torche posée en appui :
+  éteinte ; une torche déjà en statut 4 : écrite quand même ; (a4) l'état 4 avec `+0xAC` nul : rien ; (a5) la garde des données de
+  D-G2C2-8 relue (absente au HEAD, elle s'écrit ici) ; puis le code de la phase A. (r1) (phase B, rouge avant l'inscription) : le registre de
+  production porte `(A, 19)` et `(C, 71)` pour exactement {391}, et `(E, 20)` pour {393}.
+- ⏳ **T2 — Phase B, tests de monde rouges avant** (le vrai contrôleur ; aux trois cadences pour ce qui ne dépend pas des tirages ; chaque tick
+  attendu repris de la table de T0 (d) et des écarts écrits par D-G2C3-8) : (w1) une goutte native de la 92 (née par le `0x8A` de B[1] ou, par la
+  couture de naissance des tests, depuis l'enregistrement 15) : trois cycles (période, son 145, animation 2) ; (w2) une goutte scriptée à
+  attente simple : la période N + 90, `ProgramIndexes[2]` restauré, le script repris à son premier opcode ; (w3) Alundra porte une torche sous
+  une goutte : la torche éteinte (statut 3, son 142, effet 10, détruite), aucune entité de type 12, Alundra debout les mains vides, PV
+  inchangés ; (w4) Alundra sans torche : le son 145 seul, ni état ni PV changés ; (w5) une torche posée sous une goutte : éteinte sans flamme ;
+  (w6) la fenêtre : une goutte juste dedans et une juste dehors, en x et en y ; (w7) une goutte de la 158 : immobile tant qu'Alundra est hors de
+  sa boîte, qui tombe quand il y entre ; (w8) l'arc de la 92 : l'arrivée en (38, 10) depuis la 91 (ou le préréglage), Alundra reste dans la
+  zone : quatre gouttes naissent au tick de T0 (d) au-dessus des torches 43 à 46, qui s'éteignent sans flamme ; Alundra qui sort de la zone avant
+  : aucune goutte ; (w9) un témoin de monde, vert avant et après (la branche d'E20 est celle de g2c2) : une torche lancée qui bute sur une goutte posée à portée
+  de son vol (montage synthétique) ne laisse pas de flamme (D-G2C3-5) ;
+  (w10) après l'état 3, la goutte traverse le héros, finit sa chute au sol et remonte de 160 px depuis ce Z ; puis l'inscription (phase B) ; le
+  préréglage si D-G2C3-6 le crée.
+- ⏳ **T3 — Suites, mutants, ADR.** La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ;
+  `cmp` ; `check_names.py --rules` ; au moins 19 mutants réels, chacun tué par le test qu'il nomme : l'attente 40 en 39 et en 41 ((a1), (w1)) ;
+  l'état 2 qui ignore `CollidedWithEntityZ` ((a1), (w3)) ; l'état 3 qui garde `Collidable` ((a3), (w10)) ; l'avance de l'état 3 posée seulement
+  avec une torche ((a3), (w4)) ; le type de la torche changé ((a3), (w3)) ; l'appui du héros pris sans lire son objet porté ((a3), (w3)) ; le
+  test « objet porté nul » retiré ((a3), (w4)) ; l'extinction sans `Bytes[0] = 1` ((a3), (w3) : une flamme naît) ; l'extinction sans le
+  statut 3 ((a3), (w3)) ; la remontée de 160 px en 128 et en 161 ((a1), (w1)) ; `ForceZ` non remis à zéro ((a1)) ; Gravity non retiré à la
+  restauration ((a1), (w1)) ; `Collidable` non remis ((a1), (w1) au troisième cycle) ; `ProgramIndexes[2]` non restauré ((a1), (w2)) ; la
+  restauration depuis `Bytes[0]` ((a1), (w2)) ; A19 absent ((a2), (w2)) ; l'état ≥ 5 traité comme l'état 0 ((a1)) ; un ADR neuf (numéro
+  libre recompté sur toutes les branches).
+- ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+
+**Acceptation.** Les sorties de T0 (c) identiques ; la table de T0 (d) commitée avant toute sonde ; (a1) à (a4) rouges avant la phase A et
+verts après, (a5) vert (ou écrit ici, rouge avant, si g2c2 ne l'a pas) ; (r1) rouge avant l'inscription et vert après ; (w1) à (w8) et (w10) rouges avant la phase B (les gouttes pendent) et verts après ; le témoin (w9) vert avant et après ; les
+mutants de T3 tous tués par le test qu'ils nomment ; la suite en Release et en Debug, zéro échec ; les tests déplacés ⊂ la liste de T0 (g),
+chacun réécrit par dérivation ; le moteur, le convertisseur et les données sans diff. **Recette de l'auteur** (non bloquante) : le
+préréglage de D-G2C3-6 : rester au fond de la salle 92 une douzaine de secondes, voir quatre gouttes éteindre les quatre torches de la rangée du
+haut ; porter une torche sous une goutte : elle s'éteint dans les mains d'Alundra.
+
+**Arrêts.** Un prérequis non rempli (g2c2 non faite, `(E, 20)` absent) ; une sonde qui contredit un fait ; un écart de la DLL sans cause lue
+au code (D-G2C3-8) ; un test hors de la liste prédite qui bouge ; plus de 10 tests déplacés ; un besoin de toucher au moteur ; un test qui boucle.
+
+**Budget.** Un `executor` par tâche (T0 à T3) ; deux tentatives chacun. Un `plan-verifier` avant ; deux verifiers frais après.
+
+**Retour arrière.** Retirer l'inscription (phase B) : les gouttes pendent de nouveau ; la phase A est inerte.
+
 #### 1.24.6 E20.g5 — Les vrais objets à pousser : g5a (piliers), g5b (les opcodes des boutons), g5c (l'arrêt du son), g5d (les objets scriptés) ✅ (2026-10-23, D-E20-63 ; g5a **faite et CONFIRMED le 2026-10-23** (ADR-0086) ; g5b, g5c, g5d **faites et CONFIRMED le 2026-10-24** (g5c : ADR-0090))
 
 **Lecture seule du 2026-10-23** (HEAD `46589b86`, annexe `docs/plan-e20-annexe/e20-g5/disc/`, `report.md`). Les étiquettes sont celles
@@ -13058,7 +13235,15 @@ les trois entrées `0x31`.
 | Q-G2C2-4 | (2026-10-25, E20.g2c2) Pour essayer : la sauvegarde 160 (carte 86, des ronces) et une sauvegarde de test `torche-m92` (la carte 92 : 16 interrupteurs d'allumage, 16 torches, un levier). (A, défaut) les deux ; (B) la 160 seule. **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-G2C2-7) |
 | Q-G2C2-5 | (2026-10-25, E20.g2c2) Le levier de la salle 92 lâche quatre torches qui s'enflamment en touchant le sol (un piège de flammes). (A, défaut, comme l'original) garder ; (B) qu'elles restent posées. **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-G2C2-4) |
 | Q-G2C2-6 | (2026-10-25, E20.g2c2) Une torche lancée s'allume dès qu'elle touche quelque chose (interrupteur, ronce, ennemi), même sans dégât, et sa flamme naît sur place. (A, défaut, comme l'original) garder ; (B) qu'elle roule jusqu'au sol (les énigmes changent). **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-G2C2-4) |
-| O-G2C3-1 | (2026-10-25, E20.g2c2, D-G2C2-6) E20.g2c3 — les gouttes d'eau (type 391, A19 `0x800619D0`, C71 `0x8007B834`, 89 mots, la restauration de `+0x54` = l'index du programme C scripté, `+0x275`, `+0x282`, `+0x11C` + 160 px) : 56 gouttes sur 6 cartes (dont la 158, sans torche) ; une goutte éteint la torche portée ou posée (E20 sans flamme) ; sondes de la posture du héros quand sa torche est détruite. Lecture faite (`docs/plan-e20-annexe/e20-g2c2-disc/` après le T0 de g2c2) ; à détailler après g2c2 | à détailler (thème 2, après g2c2) |
+| O-G2C3-1 | (2026-10-25, E20.g2c2, D-G2C2-6) E20.g2c3 — les gouttes d'eau (type 391, A19 `0x800619D0`, C71 `0x8007B834`, 89 mots, la restauration de `+0x54` = l'index du programme C scripté, `+0x275`, `+0x282`, `+0x11C` + 160 px) : 56 gouttes sur 6 cartes (dont la 158, sans torche) ; une goutte éteint la torche portée ou posée (E20 sans flamme) ; sondes de la posture du héros quand sa torche est détruite. Lecture faite (`docs/plan-e20-annexe/e20-g2c2-disc/` après le T0 de g2c2) ; à détailler après g2c2 | détaillée le 2026-10-26 (§1.24.5, E20.g2c3) |
+| O-G2C3-2 | (2026-10-26, E20.g2c3, D-G2C3-7) Le cumul des gouttes de la 92 : chaque retour d'Alundra dans la zone du fond fait naître quatre gouttes de plus aux mêmes points (B[1] n'a pas de garde ; les gouttes natives ne sont jamais détruites), déjà au HEAD ; la critique en infère qu'après une dizaine de passages la table de 64 entités est pleine et que les flammes ne naissent plus. À mesurer (une sonde) avant toute décision ; un défaut avéré de l'original se corrige, mais le correctif change ce que voit le joueur : une question à l'auteur après la mesure | à mesurer (hors de g2c3) |
+| Q-G2C3-1 | (2026-10-26, E20.g2c3) Dans l'original, si Alundra reste une douzaine de secondes au fond de la salle 92 (la zone des quatre torches de la rangée du haut), quatre gouttes naissent au-dessus de ces torches et les éteignent si le joueur ne les a pas prises. (A, défaut) comme l'original ; (B) ne pas faire naître ces gouttes (le piège disparaît, un écart documenté). **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-G2C3-4) |
+| Q-G2C3-2 | (2026-10-26, E20.g2c3) Une goutte tombe sur Alundra qui porte une torche : la torche s'éteint dans ses mains en une fraction de seconde (son d'extinction, petit effet de bris) et disparaît ; Alundra reste debout, les mains vides, sans dégât ni étourdissement. (A, défaut) comme l'original. **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-G2C3-5) |
+| Q-G2C3-3 | (2026-10-26, E20.g2c3) Une goutte tombe sur Alundra sans torche : seul le bruit de l'éclaboussure, ni dégât ni recul. (A, défaut) comme l'original. **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-G2C3-5) |
+| Q-G2C3-4 | (2026-10-26, E20.g2c3) La grotte de la carte 158 (14 gouttes, aucune torche) : elles tombent dès qu'Alundra est dans leur zone (l'ambiance). (A, défaut) les porter ; (B) les laisser pendues et silencieuses (la grotte reste figée, l'écart ressemble à un défaut). **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-G2C3-4) |
+| Q-G2C3-5 | (2026-10-26, E20.g2c3) Aucune sauvegarde n'arrive dans une carte de gouttes. (A, défaut) un préréglage `gouttes-m92` à l'arrivée depuis la 91 (la seule qui fait naître les torches visées), sauf si `torche-m92` de g2c2 arrive déjà là ; (B) aucune recette dédiée (la nouvelle partie seulement). **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-G2C3-6) |
+| Q-G2C3-6 | (2026-10-26, E20.g2c3) Chaque fois qu'Alundra sort puis revient au fond de la salle 92, quatre gouttes de plus naissent aux mêmes points (c'est déjà le cas aujourd'hui, elles pendent) ; après une dizaine d'allers-retours, la salle pourrait n'avoir plus de place pour les flammes (à mesurer). (A, défaut) comme l'original, hors de g2c3, mesuré d'abord (O-G2C3-2) ; (B) le corriger maintenant (les quatre gouttes une seule fois par visite : un changement visible). **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-G2C3-7, O-G2C3-2) |
+| Q-G2C3-7 | (2026-10-26, E20.g2c3) Une torche lancée qui heurte une goutte s'éteint sans laisser de flamme (cas rare : la torche vole bas, les gouttes sont hautes). (A, défaut) comme l'original. **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (D-G2C3-5) |
 | Q-H4C2-5 | (2026-10-25, E20.h4c2 révision 3, en termes de jeu) Après D-E20-56, quand un rocher de la terre 2 touche un mur ou le bord de la carte pendant sa chute, il ne joue plus bruit et secousse en l'air. Que fait-il d'ici le sol ? (A, défaut) il continue de pousser contre le mur et glisse le long du bord, puis s'écrase au sol : dans la scène témoin du bord il se pose 39 px plus loin, en oblique contre un mur l'écart avec l'original peut aller de quelques pixels à plusieurs dizaines ; ce n'est pas la position de l'original (qui s'arrête net), mais c'est la seule qu'une clé mesurée appuie ; (B) il s'arrête là où il a touché et tombe droit, comme l'original (une règle de plus propre au rocher, un test et une clé en plus, sans oracle mesuré). **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A |
 | Q-H4C2-6 | (2026-10-25, E20.h4c2 révision 3) Même règle pour les rochers de la terre 1 et les boules du feu 1, qui éclatent aussi en l'air contre un mur dans l'original (même code E3) ? (A, défaut, comme l'original et comme la réponse à Q-H4C2-3) seule la terre 2 change ; (B) la terre 1 aussi (h4c1, prête, rouverte ; E3 sert 22 sprites, la règle serait par type) ; (C) les boules aussi (elles n'éclateraient plus au mur). **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A |
 | Q-I2-1 | (2026-10-25, E20.i2, en termes de jeu) Faire E20.i2 en trois morceaux ? Après le 1er : sans bottes de nage, Alundra s'arrête au bord de l'eau profonde, y compris la mer de la 416 dès la nouvelle partie. Après le 2e : rien ne change à l'écran, sauf sur les cartes 159 et 160 où Alundra, les ennemis, les objets lancés et les projectiles avancent deux fois moins vite à l'horizontale. Après le 3e : les rivières et tapis roulants déplacent Alundra, et les cases verrouillées lui retirent la main. (A, défaut) mur, forces, puis courants et case verrouillée après la blessure ; (B) un seul bloc après c2b. **Défaut pris** par la règle de l'auteur du 2026-10-25 (« Pour les questions prend les choix par défaut », D-E20-83) | défaut A (§1.14.1) |
