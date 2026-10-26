@@ -1,0 +1,192 @@
+TOTAL enabled placements: {'torch': 57, 'drop': 56}
+
+header of the drop sprite identical on all 6 maps: False
+   header (map 87): {"AnimationOffsetsPointer": 12188, "AnimationsPointer": 12232, "BinOffset": 21927648, "BreakEffect": 0, "CanPickup": 32, "Contents": 0, "FlagsPortraitShadowType": 3, "FrameCollisionPointer": 12428, "FramesPointer": 12428, "MemoryAddress": 1555132, "MoreFlags": 128, "OffsetX": -2, "OffsetY": -1, "OffsetZ": 0, "ProgramDeactivate": 0, "ProgramInteract": 0, "ProgramLoad": 19, "ProgramTick": 71, "ProgramTouch": 0, "Sector5Id": 135, "SizeX": 4, "SizeY": 3, "SizeZ": 8, "SpriteInfoMemoryAddress": 1542976, "Ubuff": [128, 32, 3, 19, 71, 0, 0, 0, 254, 255, 0, 4, 3, 8, 0, 0]}
+   DIFF map 88: {'BinOffset': (22162640, 21927648), 'MemoryAddress': (1550060, 1555132), 'SpriteInfoMemoryAddress': (1542448, 1542976), 'AnimationOffsetsPointer': (7644, 12188), 'AnimationsPointer': (7688, 12232), 'FrameCollisionPointer': (7884, 12428), 'FramesPointer': (7884, 12428)}
+   DIFF map 90: {'BinOffset': (22635228, 21927648), 'MemoryAddress': (1547624, 1555132), 'SpriteInfoMemoryAddress': (1541948, 1542976), 'AnimationOffsetsPointer': (5708, 12188), 'AnimationsPointer': (5752, 12232), 'FrameCollisionPointer': (5948, 12428), 'FramesPointer': (5948, 12428)}
+   DIFF map 92: {'BinOffset': (23026288, 21927648), 'MemoryAddress': (1550356, 1555132), 'SpriteInfoMemoryAddress': (1541840, 1542976), 'AnimationOffsetsPointer': (8548, 12188), 'AnimationsPointer': (8592, 12232), 'FrameCollisionPointer': (8788, 12428), 'FramesPointer': (8788, 12428)}
+   DIFF map 94: {'BinOffset': (23476636, 21927648), 'MemoryAddress': (1553776, 1555132), 'SpriteInfoMemoryAddress': (1541628, 1542976), 'AnimationOffsetsPointer': (12180, 12188), 'AnimationsPointer': (12224, 12232), 'FrameCollisionPointer': (12420, 12428), 'FramesPointer': (12420, 12428)}
+   DIFF map 158: {'BinOffset': (37768844, 21927648), 'MemoryAddress': (1561512, 1555132), 'SpriteInfoMemoryAddress': (1549036, 1542976), 'AnimationOffsetsPointer': (12508, 12188), 'AnimationsPointer': (12552, 12232), 'FrameCollisionPointer': (12748, 12428), 'FramesPointer': (12748, 12428)}
+header of the torch sprite identical on all 10 maps: False
+   header (map 86): {"AnimationOffsetsPointer": 7372, "AnimationsPointer": 7444, "BinOffset": 21715440, "BreakEffect": 10, "CanPickup": 35, "Contents": 0, "FlagsPortraitShadowType": 51, "FrameCollisionPointer": 8128, "FramesPointer": 8140, "MemoryAddress": 1551100, "MoreFlags": 226, "OffsetX": -10, "OffsetY": -7, "OffsetZ": 0, "ProgramDeactivate": 20, "ProgramInteract": 0, "ProgramLoad": 0, "ProgramTick": 70, "ProgramTouch": 0, "Sector5Id": 137, "SizeX": 21, "SizeY": 15, "SizeZ": 15, "SpriteInfoMemoryAddress": 1543760, "Ubuff": [226, 35, 51, 0, 70, 0, 20, 0, 246, 249, 0, 21, 15, 15, 10, 0]}
+   DIFF map 87: {'BinOffset': (21927648, 21715440), 'MemoryAddress': (1555788, 1551100), 'SpriteInfoMemoryAddress': (1542976, 1543760), 'AnimationOffsetsPointer': (12844, 7372), 'AnimationsPointer': (12916, 7444), 'FrameCollisionPointer': (13600, 8128), 'FramesPointer': (13612, 8140)}
+   DIFF map 88: {'BinOffset': (22162640, 21715440), 'MemoryAddress': (1550716, 1551100), 'SpriteInfoMemoryAddress': (1542448, 1543760), 'AnimationOffsetsPointer': (8300, 7372), 'AnimationsPointer': (8372, 7444), 'FrameCollisionPointer': (9056, 8128), 'FramesPointer': (9068, 8140)}
+   DIFF map 89: {'BinOffset': (22397764, 21715440), 'MemoryAddress': (1549660, 1551100), 'SpriteInfoMemoryAddress': (1542052, 1543760), 'AnimationOffsetsPointer': (7640, 7372), 'AnimationsPointer': (7712, 7444), 'FrameCollisionPointer': (8396, 8128), 'FramesPointer': (8408, 8140)}
+   DIFF map 90: {'BinOffset': (22635228, 21715440), 'MemoryAddress': (1548280, 1551100), 'SpriteInfoMemoryAddress': (1541948, 1543760), 'AnimationOffsetsPointer': (6364, 7372), 'AnimationsPointer': (6436, 7444), 'FrameCollisionPointer': (7120, 8128), 'FramesPointer': (7132, 8140)}
+   DIFF map 92: {'BinOffset': (23026288, 21715440), 'MemoryAddress': (1551012, 1551100), 'SpriteInfoMemoryAddress': (1541840, 1543760), 'AnimationOffsetsPointer': (9204, 7372), 'AnimationsPointer': (9276, 7444), 'FrameCollisionPointer': (9960, 8128), 'FramesPointer': (9972, 8140)}
+   DIFF map 93: {'BinOffset': (23261304, 21715440), 'MemoryAddress': (1545696, 1551100), 'SpriteInfoMemoryAddress': (1541336, 1543760), 'AnimationOffsetsPointer': (4392, 7372), 'AnimationsPointer': (4464, 7444), 'FrameCollisionPointer': (5148, 8128), 'FramesPointer': (5160, 8140)}
+   DIFF map 94: {'BinOffset': (23476636, 21715440), 'MemoryAddress': (1554432, 1551100), 'SpriteInfoMemoryAddress': (1541628, 1543760), 'AnimationOffsetsPointer': (12836, 7372), 'AnimationsPointer': (12908, 7444), 'FrameCollisionPointer': (13592, 8128), 'FramesPointer': (13604, 8140)}
+   DIFF map 441: {'BinOffset': (100503900, 21715440), 'MemoryAddress': (1555700, 1551100), 'SpriteInfoMemoryAddress': (1545660, 1543760), 'AnimationOffsetsPointer': (10072, 7372), 'AnimationsPointer': (10144, 7444), 'FrameCollisionPointer': (10828, 8128), 'FramesPointer': (10840, 8140)}
+   DIFF map 442: {'BinOffset': (100756440, 21715440), 'MemoryAddress': (1557164, 1551100), 'SpriteInfoMemoryAddress': (1546296, 1543760), 'AnimationOffsetsPointer': (10900, 7372), 'AnimationsPointer': (10972, 7444), 'FrameCollisionPointer': (11656, 8128), 'FramesPointer': (11668, 8140)}
+
+--- per map: counts
+map  86: drops 0 (enabled 0), torches 6 (enabled 6)
+map  87: drops 6 (enabled 6), torches 8 (enabled 8)
+map  88: drops 13 (enabled 13), torches 3 (enabled 3)
+map  89: drops 0 (enabled 0), torches 4 (enabled 4)
+map  90: drops 7 (enabled 7), torches 4 (enabled 4)
+map  92: drops 9 (enabled 9), torches 16 (enabled 16)
+map  93: drops 0 (enabled 0), torches 4 (enabled 4)
+map  94: drops 7 (enabled 7), torches 8 (enabled 8)
+map 158: drops 14 (enabled 14), torches 0 (enabled 0)
+map 441: drops 0 (enabled 0), torches 3 (enabled 3)
+map 442: drops 0 (enabled 0), torches 1 (enabled 1)
+
+--- drops (map rec en pos(x,y,h) dir idx contents zone)
+map  87 rec  48 en=1 pos( 80, 94,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 177, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[35..51] y[43..59]
+map  87 rec  49 en=1 pos( 76,102,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 178, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[35..51] y[43..59]
+map  87 rec  50 en=1 pos( 90,100,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 179, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[35..51] y[43..59]
+map  87 rec  51 en=1 pos( 84,104,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 180, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[35..51] y[43..59]
+map  87 rec  52 en=1 pos( 80,110,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 181, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[35..51] y[43..59]
+map  87 rec  53 en=1 pos( 94,110,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 182, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[35..51] y[43..59]
+map  88 rec  18 en=1 pos( 92, 26,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 147, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[30..51] y[0..26]
+map  88 rec  22 en=1 pos( 76, 22,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 151, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[30..51] y[0..26]
+map  88 rec  23 en=1 pos( 94, 34,h 22) dir=192 idx={'A': 0, 'B': 0, 'C': 152, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[30..51] y[0..26]
+map  88 rec  24 en=1 pos( 84, 32,h 22) dir=192 idx={'A': 0, 'B': 0, 'C': 153, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[30..51] y[0..26]
+map  88 rec  25 en=1 pos( 64, 32,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 154, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[30..51] y[0..26]
+map  88 rec  26 en=1 pos( 68, 40,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 155, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[30..51] y[0..26]
+map  88 rec  27 en=1 pos( 74, 42,h 22) dir=192 idx={'A': 0, 'B': 0, 'C': 156, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[30..51] y[0..26]
+map  88 rec  39 en=1 pos( 12, 16,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 168, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..23] y[5..36]
+map  88 rec  40 en=1 pos( 26, 16,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 169, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..23] y[5..36]
+map  88 rec  41 en=1 pos( 34, 24,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 170, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..23] y[5..36]
+map  88 rec  42 en=1 pos( 26, 32,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 171, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..23] y[5..36]
+map  88 rec  43 en=1 pos( 26, 54,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 172, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..23] y[5..36]
+map  88 rec  44 en=1 pos( 20, 36,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 173, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..23] y[5..36]
+map  90 rec  27 en=1 pos( 16, 30,h 36) dir=192 idx={'A': 0, 'B': 0, 'C': 156, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..15] y[0..59]
+map  90 rec  28 en=1 pos(  6, 34,h 34) dir=192 idx={'A': 0, 'B': 0, 'C': 157, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..15] y[0..59]
+map  90 rec  29 en=1 pos( 10, 42,h 32) dir=192 idx={'A': 0, 'B': 0, 'C': 158, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..15] y[0..59]
+map  90 rec  30 en=1 pos(  6, 54,h 30) dir=192 idx={'A': 0, 'B': 0, 'C': 159, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..15] y[0..59]
+map  90 rec  31 en=1 pos(  8, 56,h 30) dir=192 idx={'A': 0, 'B': 0, 'C': 160, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..15] y[0..59]
+map  90 rec  32 en=1 pos(  8, 66,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 161, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..15] y[0..59]
+map  90 rec  33 en=1 pos( 12, 74,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 162, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..15] y[0..59]
+map  92 rec  15 en=1 pos( 60, 16,h 10) dir=128 idx={'A': 0, 'B': 0, 'C': 0, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..51] y[0..59]
+map  92 rec  25 en=1 pos( 46,104,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 154, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..27] y[44..59]
+map  92 rec  26 en=1 pos( 40,102,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 155, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..27] y[44..59]
+map  92 rec  27 en=1 pos( 40,112,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 156, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..27] y[44..59]
+map  92 rec  28 en=1 pos( 26, 98,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 157, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..27] y[44..59]
+map  92 rec  29 en=1 pos( 22,100,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 158, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..27] y[44..59]
+map  92 rec  30 en=1 pos( 20,108,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 159, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..27] y[44..59]
+map  92 rec  31 en=1 pos( 16,110,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 160, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..27] y[44..59]
+map  92 rec  32 en=1 pos( 12,100,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 161, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..27] y[44..59]
+map  94 rec  25 en=1 pos( 40, 26,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 154, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[14..33] y[0..30]
+map  94 rec  26 en=1 pos( 32, 28,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 155, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[14..33] y[0..30]
+map  94 rec  27 en=1 pos( 44, 34,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 156, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[14..33] y[0..30]
+map  94 rec  28 en=1 pos( 34, 38,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 157, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[14..33] y[0..30]
+map  94 rec  29 en=1 pos( 50, 40,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 158, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[14..33] y[0..30]
+map  94 rec  30 en=1 pos( 32, 44,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 159, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[14..33] y[0..30]
+map  94 rec  31 en=1 pos( 48, 46,h 26) dir=192 idx={'A': 0, 'B': 0, 'C': 160, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[14..33] y[0..30]
+map 158 rec  42 en=1 pos( 16,102,h 20) dir=192 idx={'A': 0, 'B': 0, 'C': 170, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..30] y[0..59]
+map 158 rec  43 en=1 pos( 18, 56,h 20) dir=192 idx={'A': 0, 'B': 0, 'C': 171, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..30] y[0..59]
+map 158 rec  44 en=1 pos( 30, 72,h 20) dir=192 idx={'A': 0, 'B': 0, 'C': 172, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..30] y[0..59]
+map 158 rec  45 en=1 pos(  8, 84,h 20) dir=192 idx={'A': 0, 'B': 0, 'C': 173, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..30] y[0..59]
+map 158 rec  46 en=1 pos( 42, 84,h 20) dir=192 idx={'A': 0, 'B': 0, 'C': 174, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[0..30] y[0..59]
+map 158 rec  47 en=1 pos( 64, 66,h 34) dir=192 idx={'A': 0, 'B': 0, 'C': 175, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[31..51] y[31..59]
+map 158 rec  48 en=1 pos( 78, 78,h 34) dir=192 idx={'A': 0, 'B': 0, 'C': 176, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[31..51] y[31..59]
+map 158 rec  49 en=1 pos( 73, 96,h 24) dir=192 idx={'A': 0, 'B': 0, 'C': 177, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[31..51] y[31..59]
+map 158 rec  50 en=1 pos( 91,108,h 24) dir=192 idx={'A': 0, 'B': 0, 'C': 178, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[31..51] y[31..59]
+map 158 rec  51 en=1 pos( 89, 84,h 24) dir=192 idx={'A': 0, 'B': 0, 'C': 179, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[31..51] y[31..59]
+map 158 rec  52 en=1 pos( 93, 46,h 22) dir=192 idx={'A': 0, 'B': 0, 'C': 180, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[43..48] y[4..35]
+map 158 rec  53 en=1 pos( 89, 34,h 22) dir=192 idx={'A': 0, 'B': 0, 'C': 181, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[43..48] y[4..35]
+map 158 rec  54 en=1 pos( 91, 28,h 22) dir=192 idx={'A': 0, 'B': 0, 'C': 182, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[43..48] y[4..35]
+map 158 rec  55 en=1 pos( 94, 20,h 22) dir=192 idx={'A': 0, 'B': 0, 'C': 183, 'D': 0, 'E': 0, 'F': 0} contents=0 zone x[43..48] y[4..35]
+
+--- C programs of the drops (decoded)
+map 87 C[177] @1312..1320: 0x37[55, 120] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 87 C[178] @1320..1340: 0x30[48, 244, 129, 14, 0] 0x37[55, 60] 0x05[5, 244, 129] 0x40[64, 2, 0] 0x00[0] 0x37[55, 120] 0x40[64, 2, 0] 0xFF[255]
+map 87 C[179] @1340..1348: 0x37[55, 120] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 87 C[180] @1348..1368: 0x30[48, 8, 130, 14, 0] 0x37[55, 30] 0x05[5, 8, 130] 0x40[64, 2, 0] 0x00[0] 0x37[55, 180] 0x40[64, 2, 0] 0xFF[255]
+map 87 C[181] @1368..1376: 0x37[55, 180] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 87 C[182] @1376..1392: 0x30[48, 28, 130, 7, 0] 0x37[55, 30] 0x37[55, 180] 0x05[5, 28, 130] 0x40[64, 2, 0] 0xFF[255]
+map 88 C[147] @672..680: 0x37[55, 40] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 88 C[151] @680..688: 0x37[55, 30] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 88 C[152] @688..696: 0x37[55, 25] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 88 C[153] @696..704: 0x37[55, 20] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 88 C[154] @704..712: 0x37[55, 15] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 88 C[155] @712..720: 0x37[55, 10] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 88 C[156] @720..728: 0x37[55, 30] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 88 C[168] @728..748: 0x30[48, 144, 129, 14, 0] 0x37[55, 30] 0x05[5, 144, 129] 0x40[64, 2, 0] 0x00[0] 0x37[55, 120] 0x40[64, 2, 0] 0xFF[255]
+map 88 C[169] @748..768: 0x30[48, 154, 129, 14, 0] 0x37[55, 60] 0x05[5, 154, 129] 0x40[64, 2, 0] 0x00[0] 0x37[55, 180] 0x40[64, 2, 0] 0xFF[255]
+map 88 C[170] @768..788: 0x30[48, 164, 129, 14, 0] 0x37[55, 10] 0x05[5, 164, 129] 0x40[64, 2, 0] 0x00[0] 0x37[55, 180] 0x40[64, 2, 0] 0xFF[255]
+map 88 C[171] @788..796: 0x37[55, 240] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 88 C[172] @796..816: 0x30[48, 184, 129, 14, 0] 0x37[55, 100] 0x05[5, 184, 129] 0x40[64, 2, 0] 0x00[0] 0x37[55, 240] 0x40[64, 2, 0] 0xFF[255]
+map 88 C[173] @816..824: 0x37[55, 150] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 90 C[156] @636..644: 0x37[55, 15] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 90 C[157] @644..652: 0x37[55, 21] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 90 C[158] @652..660: 0x37[55, 31] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 90 C[159] @660..668: 0x37[55, 12] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 90 C[160] @668..676: 0x37[55, 6] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 90 C[161] @676..684: 0x37[55, 19] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 90 C[162] @684..692: 0x37[55, 17] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 92 C[154] @724..740: 0x30[48, 4, 129, 7, 0] 0x37[55, 60] 0x37[55, 25] 0x05[5, 4, 129] 0x40[64, 2, 0] 0xFF[255]
+map 92 C[155] @740..748: 0x37[55, 25] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 92 C[156] @748..756: 0x37[55, 5] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 92 C[157] @756..764: 0x37[55, 30] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 92 C[158] @764..772: 0x37[55, 35] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 92 C[159] @772..780: 0x37[55, 40] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 92 C[160] @780..788: 0x37[55, 35] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 92 C[161] @788..796: 0x37[55, 40] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 94 C[154] @716..724: 0x37[55, 35] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 94 C[155] @724..732: 0x37[55, 24] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 94 C[156] @732..740: 0x37[55, 6] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 94 C[157] @740..748: 0x37[55, 30] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 94 C[158] @748..756: 0x37[55, 8] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 94 C[159] @756..764: 0x37[55, 20] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 94 C[160] @764..772: 0x37[55, 15] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+map 158 C[170] @756..776: 0x00[0] 0x3B[59, 2, 10, 39, 59, 0, 59] 0x04[4, 248, 255] 0x37[55, 60] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+map 158 C[171] @776..796: 0x00[0] 0x3B[59, 4, 12, 17, 41, 0, 59] 0x04[4, 248, 255] 0x37[55, 70] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+map 158 C[172] @796..816: 0x00[0] 0x3B[59, 12, 22, 23, 48, 0, 59] 0x04[4, 248, 255] 0x37[55, 80] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+map 158 C[173] @816..836: 0x00[0] 0x3B[59, 0, 11, 30, 51, 0, 59] 0x04[4, 248, 255] 0x37[55, 90] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+map 158 C[174] @836..856: 0x00[0] 0x3B[59, 11, 31, 38, 47, 0, 59] 0x04[4, 248, 255] 0x37[55, 2] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+map 158 C[175] @856..876: 0x00[0] 0x3B[59, 28, 41, 28, 44, 0, 59] 0x04[4, 248, 255] 0x37[55, 60] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+map 158 C[176] @876..896: 0x00[0] 0x3B[59, 28, 41, 35, 48, 0, 59] 0x04[4, 248, 255] 0x37[55, 4] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+map 158 C[177] @896..916: 0x00[0] 0x3B[59, 30, 41, 40, 58, 0, 59] 0x04[4, 248, 255] 0x37[55, 60] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+map 158 C[178] @916..936: 0x00[0] 0x3B[59, 41, 50, 44, 57, 0, 0] 0x04[4, 248, 255] 0x37[55, 4] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+map 158 C[179] @936..956: 0x00[0] 0x3B[59, 41, 51, 37, 51, 0, 59] 0x04[4, 248, 255] 0x37[55, 100] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+map 158 C[180] @956..976: 0x00[0] 0x3B[59, 42, 49, 17, 34, 0, 59] 0x04[4, 248, 255] 0x37[55, 120] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+map 158 C[181] @976..996: 0x00[0] 0x3B[59, 42, 49, 10, 25, 0, 59] 0x04[4, 248, 255] 0x37[55, 30] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+map 158 C[182] @996..1016: 0x00[0] 0x3B[59, 42, 49, 9, 19, 0, 59] 0x04[4, 248, 255] 0x37[55, 1] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+map 158 C[183] @1016..1036: 0x00[0] 0x3B[59, 42, 49, 5, 14, 0, 59] 0x04[4, 248, 255] 0x37[55, 80] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+
+--- distinct C programs (count)
+  4 x 0x37[55, 30] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+  3 x 0x37[55, 40] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+  3 x 0x37[55, 15] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+  3 x 0x37[55, 35] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+  2 x 0x37[55, 120] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+  2 x 0x37[55, 25] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+  2 x 0x37[55, 20] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+  2 x 0x37[55, 6] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+  1 x 0x30[48, 244, 129, 14, 0] 0x37[55, 60] 0x05[5, 244, 129] 0x40[64, 2, 0] 0x00[0] 0x37[55, 120] 0x40[64, 2, 0] 0xFF[255]
+  1 x 0x30[48, 8, 130, 14, 0] 0x37[55, 30] 0x05[5, 8, 130] 0x40[64, 2, 0] 0x00[0] 0x37[55, 180] 0x40[64, 2, 0] 0xFF[255]
+  1 x 0x37[55, 180] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+  1 x 0x30[48, 28, 130, 7, 0] 0x37[55, 30] 0x37[55, 180] 0x05[5, 28, 130] 0x40[64, 2, 0] 0xFF[255]
+  1 x 0x37[55, 10] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+  1 x 0x30[48, 144, 129, 14, 0] 0x37[55, 30] 0x05[5, 144, 129] 0x40[64, 2, 0] 0x00[0] 0x37[55, 120] 0x40[64, 2, 0] 0xFF[255]
+  1 x 0x30[48, 154, 129, 14, 0] 0x37[55, 60] 0x05[5, 154, 129] 0x40[64, 2, 0] 0x00[0] 0x37[55, 180] 0x40[64, 2, 0] 0xFF[255]
+  1 x 0x30[48, 164, 129, 14, 0] 0x37[55, 10] 0x05[5, 164, 129] 0x40[64, 2, 0] 0x00[0] 0x37[55, 180] 0x40[64, 2, 0] 0xFF[255]
+  1 x 0x37[55, 240] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+  1 x 0x30[48, 184, 129, 14, 0] 0x37[55, 100] 0x05[5, 184, 129] 0x40[64, 2, 0] 0x00[0] 0x37[55, 240] 0x40[64, 2, 0] 0xFF[255]
+  1 x 0x37[55, 150] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+  1 x 0x37[55, 21] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+  1 x 0x37[55, 31] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+  1 x 0x37[55, 12] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+  1 x 0x37[55, 19] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+  1 x 0x37[55, 17] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+  1 x 0x30[48, 4, 129, 7, 0] 0x37[55, 60] 0x37[55, 25] 0x05[5, 4, 129] 0x40[64, 2, 0] 0xFF[255]
+  1 x 0x37[55, 5] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+  1 x 0x37[55, 24] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+  1 x 0x37[55, 8] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0]
+  1 x 0x00[0] 0x3B[59, 2, 10, 39, 59, 0, 59] 0x04[4, 248, 255] 0x37[55, 60] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+  1 x 0x00[0] 0x3B[59, 4, 12, 17, 41, 0, 59] 0x04[4, 248, 255] 0x37[55, 70] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+  1 x 0x00[0] 0x3B[59, 12, 22, 23, 48, 0, 59] 0x04[4, 248, 255] 0x37[55, 80] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+  1 x 0x00[0] 0x3B[59, 0, 11, 30, 51, 0, 59] 0x04[4, 248, 255] 0x37[55, 90] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+  1 x 0x00[0] 0x3B[59, 11, 31, 38, 47, 0, 59] 0x04[4, 248, 255] 0x37[55, 2] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+  1 x 0x00[0] 0x3B[59, 28, 41, 28, 44, 0, 59] 0x04[4, 248, 255] 0x37[55, 60] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+  1 x 0x00[0] 0x3B[59, 28, 41, 35, 48, 0, 59] 0x04[4, 248, 255] 0x37[55, 4] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+  1 x 0x00[0] 0x3B[59, 30, 41, 40, 58, 0, 59] 0x04[4, 248, 255] 0x37[55, 60] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+  1 x 0x00[0] 0x3B[59, 41, 50, 44, 57, 0, 0] 0x04[4, 248, 255] 0x37[55, 4] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+  1 x 0x00[0] 0x3B[59, 41, 51, 37, 51, 0, 59] 0x04[4, 248, 255] 0x37[55, 100] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+  1 x 0x00[0] 0x3B[59, 42, 49, 17, 34, 0, 59] 0x04[4, 248, 255] 0x37[55, 120] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+  1 x 0x00[0] 0x3B[59, 42, 49, 10, 25, 0, 59] 0x04[4, 248, 255] 0x37[55, 30] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+  1 x 0x00[0] 0x3B[59, 42, 49, 9, 19, 0, 59] 0x04[4, 248, 255] 0x37[55, 1] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]
+  1 x 0x00[0] 0x3B[59, 42, 49, 5, 14, 0, 59] 0x04[4, 248, 255] 0x37[55, 80] 0x40[64, 2, 0] 0xFF[255] 0x00[0] 0x00[0] 0x00[0]

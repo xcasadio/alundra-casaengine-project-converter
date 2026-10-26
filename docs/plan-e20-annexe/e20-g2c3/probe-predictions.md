@@ -1,0 +1,18 @@
+# E20.g2c3 - T0 (e): the predictions written BEFORE the probes S-D1 to S-D8
+
+Written 2026-10-26, committed with `expected-ticks.md` before any run of the DLL. Bench of the probes: the real world of the map 92 (`ArcRun`, real prefabs and controllers, the drop's prefab `Goutte d'eau.entity` with its `CharacterControllerComponent`, profile `Pawn`, `control_mode` `Script`)
+on the synthetic flat field, every entity but the hero removed, native handlers off but for the types under test (`NativeSpriteTypeFilterForTests`), a throwaway port of A19 and C71 (`probes/TempWaterDrop.cs.txt`, never committed as code) wired through a temporary diff (`temp-wiring.diff.txt`), both removed afterwards.
+Ticks are those of `expected-ticks.md` (`R`, `S`, `d`). "Tick" in the DLL = one `pad` pass of `TickTraceForTests` (as in the probes of g2c2); the state read is the one at the end of the tick.
+
+| Probe | What it measures | Prediction (the binary; the DLL must give the same, else D-G2C3-8) |
+|---|---|---|
+| S-D1 | A19 at the first pass of a drop born by the `0x8A` (template, record 15 of the map 92) and of a scripted drop placed by the map (a drop with a C program: the first of the map 88, or the record 48 of the map 87) | `Bytes[1]` = 0 for the born drop (no C program: `ProgramIndexes[2]` = 0); `Bytes[1]` = the low byte of its `ProgramIndexes[2]` for the placed drop (non-zero), at the first tick, before the first C71 pass. |
+| S-D2 | the native cycle in the DLL through the controller path, three cycles, flat floor, the drop 160 px above it | the table of section 1 of `expected-ticks.md`: state 1 R+1, state 2 R+41, landing R+65, state 3 R+66 with sound 145 once, state 4 R+67 (`Collidable` out), `+0xAC` R+87 (21 ticks of animation 2), restoration R+88; period 88 |
+| S-D3 | `IsOnGround` and `CollidedWithEntityZ` at the fall and the landing; the tick the drop's `RidingEntity` becomes the hero (carrying a torch: the animation may have `NoEntityCollision`) or the posed torch | both flags 0 during the fall and both 1 at R+65 (the same tick); the drop's `RidingEntity` = the hero at d+23 (carry) / the torch at d+24 (posed), i.e. one tick after the landing, read by C71 at the next tick |
+| S-D4 | the state and hp of the hero one tick after the destruction of the torch he carries | state 0 (standing: idle), hp unchanged, hands empty, `CarriedEntity` null, at d+29 (carry); no damage, no stun |
+| S-D5 | a posed torch touched | the torch status 3 and `Bytes[0] = 1` at d+25, animation 2 and sound 142 at d+26, status 4 + effect 10 at d+29, freed at d+30, no entity of type 12 |
+| S-D6 | the restoration `PosZ += 160 px` then `PushLogicalPositionToRoot()` | at R+88: `PosZ` = 160 px above the floor, `ForceZ` 0, `Flags` back to the template (Gravity out, `Collidable` in), the root's world position and the controller follow at the same tick, no snap to the floor |
+| S-D7 | the script restarts from its first opcode after the restoration | the next call of the `40 [2,0]` at the restoration + N + 2, the next state 1 at S + N + 90 (N = 30: S+120) |
+| S-D8 | after the state 3 (`Collidable` out, `ResyncControllerFromFlags()`), the drop falls through the hero | the drop is no longer a support or an obstacle: it reaches the floor Z at d+34 (carry and no torch) / d+32 (posed), its `RidingEntity` becomes null after state 3; the controller (profile `Pawn`) does not hold it on the hero |
+
+Rules: a probe that contradicts a fact of the reading = a stop; a one-tick difference with its cause read in the code = written in `results.md` and pinned by a named test in T2 (D-G2C3-8); no cause = a stop; a missing feature of the engine = a stop.

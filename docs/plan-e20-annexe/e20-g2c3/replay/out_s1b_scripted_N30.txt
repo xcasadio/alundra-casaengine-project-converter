@@ -1,0 +1,19 @@
+t001 status=2 b274=0 b275=0xB1 c282=0 anim=0 AC=0 flags=0x32080 ground=0 collz=0 support=0x0 p54=0xB1 fz=0 z=160.00  
+t032 status=2 b274=0 b275=0xB1 c282=0 anim=0 AC=0 flags=0x32080 ground=0 collz=0 support=0x0 p54=0xB1 fz=0 z=160.00  ['SCRIPT:40[2,0] (harness model)']
+t033 status=2 b274=1 b275=0xB1 c282=40 anim=0 AC=0 flags=0x32080 ground=0 collz=0 support=0x0 p54=0x0 fz=0 z=160.00  
+t073 status=2 b274=2 b275=0xB1 c282=0 anim=1 AC=0 flags=0x32180 ground=0 collz=0 support=0x0 p54=0x0 fz=-32768 z=159.50  ['snd(0)']
+t097 status=2 b274=2 b275=0xB1 c282=0 anim=1 AC=0 flags=0x32180 ground=1 collz=1 support=0x0 p54=0x0 fz=0 z=0.00  
+t098 status=2 b274=3 b275=0xB1 c282=0 anim=2 AC=0 flags=0x32180 ground=1 collz=1 support=0x0 p54=0x0 fz=0 z=0.00  ['snd(145)']
+t099 status=2 b274=4 b275=0xB1 c282=0 anim=2 AC=0 flags=0x32100 ground=1 collz=1 support=0x0 p54=0x0 fz=0 z=0.00  
+t119 status=2 b274=4 b275=0xB1 c282=0 anim=2 AC=1 flags=0x32100 ground=1 collz=1 support=0x0 p54=0x0 fz=0 z=0.00  
+t120 status=2 b274=0 b275=0xB1 c282=0 anim=0 AC=0 flags=0x32080 ground=0 collz=0 support=0x0 p54=0xB1 fz=0 z=160.00  ['snd(0)']
+t152 status=2 b274=0 b275=0xB1 c282=0 anim=0 AC=0 flags=0x32080 ground=0 collz=0 support=0x0 p54=0xB1 fz=0 z=160.00  ['SCRIPT:40[2,0] (harness model)']
+t153 status=2 b274=1 b275=0xB1 c282=40 anim=0 AC=0 flags=0x32080 ground=0 collz=0 support=0x0 p54=0x0 fz=0 z=160.00  
+t193 status=2 b274=2 b275=0xB1 c282=0 anim=1 AC=0 flags=0x32180 ground=0 collz=0 support=0x0 p54=0x0 fz=-32768 z=159.50  ['snd(0)']
+t217 status=2 b274=2 b275=0xB1 c282=0 anim=1 AC=0 flags=0x32180 ground=1 collz=1 support=0x0 p54=0x0 fz=0 z=0.00  
+t218 status=2 b274=3 b275=0xB1 c282=0 anim=2 AC=0 flags=0x32180 ground=1 collz=1 support=0x0 p54=0x0 fz=0 z=0.00  ['snd(145)']
+t219 status=2 b274=4 b275=0xB1 c282=0 anim=2 AC=0 flags=0x32100 ground=1 collz=1 support=0x0 p54=0x0 fz=0 z=0.00  
+t239 status=2 b274=4 b275=0xB1 c282=0 anim=2 AC=1 flags=0x32100 ground=1 collz=1 support=0x0 p54=0x0 fz=0 z=0.00  
+t240 status=2 b274=0 b275=0xB1 c282=0 anim=0 AC=0 flags=0x32080 ground=0 collz=0 support=0x0 p54=0xB1 fz=0 z=160.00  ['snd(0)']
+t272 status=2 b274=0 b275=0xB1 c282=0 anim=0 AC=0 flags=0x32080 ground=0 collz=0 support=0x0 p54=0xB1 fz=0 z=160.00  ['SCRIPT:40[2,0] (harness model)']
+t273 status=2 b274=1 b275=0xB1 c282=40 anim=0 AC=0 flags=0x32080 ground=0 collz=0 support=0x0 p54=0x0 fz=0 z=160.00  

@@ -1,0 +1,7 @@
+A19 (3 words): 6000 vectors, 0 mismatches, instruction coverage 3/3
+C71 whole function: 6000 vectors, 0 mismatches, instruction coverage 89/89, uncovered 
+vector classes: {'st0 arm': 854, 'st1 counter->0': 274, 'st1 counting': 667, 'st2 contact': 678, 'st2 falling': 247, 'st3 no object': 153, 'st3 other type': 575, 'st3 torch hit': 161, 'st4 restore': 767, 'st4 waiting': 187, 'state>=5': 1437}
+A19 mutants 2 killed 2 survivors 0
+C71 mutants 90 killed 89 survivors 1
+  SURVIVOR 8007b834 addu<->subu      move $a1, $a0                -> subu $a1, $a0, $zero
+goldens: 22 vectors over 11 classes, sha256 40071ab5e80cbf4dae6bf6d33bcf067958abb78cf918f0847f312c9ffac6214b

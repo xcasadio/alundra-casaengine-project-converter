@@ -1,0 +1,11 @@
+95ed3ec521538831112973a1b738c2ca7303ed29 *./expected-ticks.md
+4b78ae0fafa7969b532f88854dc34aebd11835cd *./probe-predictions.md
+143472ac1bed1619e1433d40a20169725e8e5ddb *./replay/out_c71_full.txt
+9ff83d38861260dc6e85b8fe3433bd01bcc38dcc *./replay/out_s1_native.txt
+35b5f45bac11c704dd1bc65ff9c55aa2bf442dce *./replay/out_s1b_scripted_N30.txt
+baddab8777851b07190c8a4de391611d45370b1d *./replay/out_s2_carry.txt
+502e43d041e4eb9c94d2a9c67c82d20dc4d4f146 *./replay/out_s2_nocarry.txt
+a09ff1a1d12294a17c640303f6d8c1aed2ebe74c *./replay/out_s2_posed.txt
+2e98ecd1df8ac57c27d3974ab87c3de3be3888e4 *./replay/out_s3_hit_window.txt
+58401466407010999a0e1db357361e144f83a15f *./vectors/a1_state2_flags.json
+fb0032e641078b63fc925447d05e6db4b2d29360 *./vectors/a1_state2_flags.py

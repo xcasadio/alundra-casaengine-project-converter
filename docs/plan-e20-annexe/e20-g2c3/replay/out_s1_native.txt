@@ -1,0 +1,25 @@
+t001 status=2 b274=0 b275=0x00 c282=0 anim=0 AC=0 flags=0x32080 ground=0 collz=0 support=0x0 p54=0x0 fz=0 z=160.00  
+t002 status=2 b274=1 b275=0x00 c282=40 anim=0 AC=0 flags=0x32080 ground=0 collz=0 support=0x0 p54=0x0 fz=0 z=160.00  
+t042 status=2 b274=2 b275=0x00 c282=0 anim=1 AC=0 flags=0x32180 ground=0 collz=0 support=0x0 p54=0x0 fz=-32768 z=159.50  ['snd(0)']
+t066 status=2 b274=2 b275=0x00 c282=0 anim=1 AC=0 flags=0x32180 ground=1 collz=1 support=0x0 p54=0x0 fz=0 z=0.00  
+t067 status=2 b274=3 b275=0x00 c282=0 anim=2 AC=0 flags=0x32180 ground=1 collz=1 support=0x0 p54=0x0 fz=0 z=0.00  ['snd(145)']
+t068 status=2 b274=4 b275=0x00 c282=0 anim=2 AC=0 flags=0x32100 ground=1 collz=1 support=0x0 p54=0x0 fz=0 z=0.00  
+t088 status=2 b274=4 b275=0x00 c282=0 anim=2 AC=1 flags=0x32100 ground=1 collz=1 support=0x0 p54=0x0 fz=0 z=0.00  
+t089 status=2 b274=0 b275=0x00 c282=0 anim=0 AC=0 flags=0x32080 ground=0 collz=0 support=0x0 p54=0x0 fz=0 z=160.00  ['snd(0)']
+t090 status=2 b274=1 b275=0x00 c282=40 anim=0 AC=0 flags=0x32080 ground=0 collz=0 support=0x0 p54=0x0 fz=0 z=160.00  
+t130 status=2 b274=2 b275=0x00 c282=0 anim=1 AC=0 flags=0x32180 ground=0 collz=0 support=0x0 p54=0x0 fz=-32768 z=159.50  ['snd(0)']
+t154 status=2 b274=2 b275=0x00 c282=0 anim=1 AC=0 flags=0x32180 ground=1 collz=1 support=0x0 p54=0x0 fz=0 z=0.00  
+t155 status=2 b274=3 b275=0x00 c282=0 anim=2 AC=0 flags=0x32180 ground=1 collz=1 support=0x0 p54=0x0 fz=0 z=0.00  ['snd(145)']
+t156 status=2 b274=4 b275=0x00 c282=0 anim=2 AC=0 flags=0x32100 ground=1 collz=1 support=0x0 p54=0x0 fz=0 z=0.00  
+t176 status=2 b274=4 b275=0x00 c282=0 anim=2 AC=1 flags=0x32100 ground=1 collz=1 support=0x0 p54=0x0 fz=0 z=0.00  
+t177 status=2 b274=0 b275=0x00 c282=0 anim=0 AC=0 flags=0x32080 ground=0 collz=0 support=0x0 p54=0x0 fz=0 z=160.00  ['snd(0)']
+t178 status=2 b274=1 b275=0x00 c282=40 anim=0 AC=0 flags=0x32080 ground=0 collz=0 support=0x0 p54=0x0 fz=0 z=160.00  
+t218 status=2 b274=2 b275=0x00 c282=0 anim=1 AC=0 flags=0x32180 ground=0 collz=0 support=0x0 p54=0x0 fz=-32768 z=159.50  ['snd(0)']
+t242 status=2 b274=2 b275=0x00 c282=0 anim=1 AC=0 flags=0x32180 ground=1 collz=1 support=0x0 p54=0x0 fz=0 z=0.00  
+t243 status=2 b274=3 b275=0x00 c282=0 anim=2 AC=0 flags=0x32180 ground=1 collz=1 support=0x0 p54=0x0 fz=0 z=0.00  ['snd(145)']
+t244 status=2 b274=4 b275=0x00 c282=0 anim=2 AC=0 flags=0x32100 ground=1 collz=1 support=0x0 p54=0x0 fz=0 z=0.00  
+t264 status=2 b274=4 b275=0x00 c282=0 anim=2 AC=1 flags=0x32100 ground=1 collz=1 support=0x0 p54=0x0 fz=0 z=0.00  
+t265 status=2 b274=0 b275=0x00 c282=0 anim=0 AC=0 flags=0x32080 ground=0 collz=0 support=0x0 p54=0x0 fz=0 z=160.00  ['snd(0)']
+t266 status=2 b274=1 b275=0x00 c282=40 anim=0 AC=0 flags=0x32080 ground=0 collz=0 support=0x0 p54=0x0 fz=0 z=160.00  
+t306 status=2 b274=2 b275=0x00 c282=0 anim=1 AC=0 flags=0x32180 ground=0 collz=0 support=0x0 p54=0x0 fz=-32768 z=159.50  ['snd(0)']
+t330 status=2 b274=2 b275=0x00 c282=0 anim=1 AC=0 flags=0x32180 ground=1 collz=1 support=0x0 p54=0x0 fz=0 z=0.00  

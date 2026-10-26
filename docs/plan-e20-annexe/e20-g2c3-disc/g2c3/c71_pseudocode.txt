@@ -1,0 +1,36 @@
+A19 (0x800619D0, slot A code 19, 3 words) and C71 (0x8007B834..0x8007B997, slot C code 71, 89 words) of ALUN_CD.EXE (France): the drop, type 0x187 = 391 = sprite of the map page 135.
+Written from dis_a19.txt / dis_c71.txt, verified against the REAL code by replay/c71_full.py (6000 vectors, 0 mismatch, 89/89 instructions, 90 one-word mutants: 89 killed, 1 equivalent).
+Offsets are those of the entity image (stride 0x294); the DLL names in brackets are EntityScriptProxy.HEAD.cs.
+
+A19(e):      e.byte[+0x275] = (byte) e.word[+0x54]                      ; [Bytes[1] = (byte) ProgramIndexes[2]]  (+0x54 = ProgramIndexes[2] = the index of the scripted C program, bit 0x80 set, 0 if none)
+
+C71(e):      switch (e.byte[+0x274])                                    ; [Bytes[0]]  jump table 0x800281EC, 5 entries; value >= 5: nothing
+  0  arm     e.byte[+0x274] = 1 ; e.half[+0x282] = 0x28 (40)            ; [AIValues[1]]
+  1  count   e.half[+0x282] -= 1 ; if (e.half[+0x282] != 0) end
+             e.word[+0x88] = 1 (animation 1, the fall)                  ; [TargetAnimationId]
+             e.byte[+0x274] = 2
+             e.word[+0x6C] |= 0x100 (Gravity)                           ; [Flags]
+  2  fall    if (e.word[+0x140] == 0 && e.word[+0x144] == 0) end        ; [CollidedWithEntityZ, IsOnGround]
+             e.word[+0x88] = 2 (animation 2, the splash, sound 145 = the Sfx of the animation)
+             e.byte[+0x274] = 3
+  3  contact e.byte[+0x274] = 4
+             e.word[+0x6C] &= ~0x80 (Collidable off)
+             a = e.word[+0x12C]                                         ; [RidingEntity] the support, set by CheckRidingEntities at the lists step of the PREVIOUS tick
+             if (a == 0x80127D30 /* slot 0 = the hero */) a = hero.word[+0x2C]   ; [CarriedEntity]
+             if (a == 0) end ; if (a.word[+0x68] != 0x189 /* 393, the torch */) end   ; [SpriteType]
+             a.word[+0x10] = 3 (status Deactivated)                    ; the torch runs E20 from its next pick
+             a.byte[+0x274] = 1                                         ; E20: "no flame"
+             (this test is made ONCE, in this tick only)
+  4  splash  if (e.word[+0xAC] == 0) end                               ; [ForceResetAnimationFlag] the animation 2 is finished
+             k = e.byte[+0x275]
+             e.byte[+0x274] = 0
+             [0x8013DA20] = 1                                           ; g_clearProgramState: DEAD STORE (RunScript clears it at its entry 0x8004226C and reads it only after an opcode of the same call, 0x800422FC)
+             e.word[+0x88] = 0 ; e.word[+0xB8] = 0 (ForceZ)
+             e.word[+0x6C] = (e.word[+0x6C] & ~0x100) | 0x80            ; Gravity off, Collidable on
+             e.word[+0x54] = k                                          ; the scripted C program is restored (it restarts at its first opcode, the state having been cleared by its own 0x40)
+             e.word[+0x11C] += 0xA00000                                 ; PosZ += 160 px (16.16)
+
+Script side (EventProgramRunner.HEAD.cs, binary 0x8003E3DC and 0x8003E7B8):
+  0x37 [55, N]   : first call suspends; then N more calls suspend; the (N+2)th call advances           (Script_55_037, identical in the binary)
+  0x40 [64, 2, 0]: g_clearProgramState = 1 ; ProgramIndexes[2] = 0 -> the native C71 takes over; the end of the call clears the state of the C program (it will restart from its first opcode)
+Period of a scripted drop = (N + 2) + 88 ticks (88 = the native cycle below, measured on flat ground with a fall of 160 px).

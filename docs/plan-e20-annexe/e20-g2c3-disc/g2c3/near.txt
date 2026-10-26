@@ -1,0 +1,107 @@
+map 87: 6 drops, 8 torches
+   drop  rec  48 px( 972, 760) z=208 dir=192
+   drop  rec  49 px( 924, 824) z=208 dir=192
+   drop  rec  50 px(1092, 808) z=208 dir=192
+   drop  rec  51 px(1020, 840) z=208 dir=192
+   drop  rec  52 px( 972, 888) z=208 dir=192
+   drop  rec  53 px(1140, 888) z=208 dir=192
+   torch rec   1 px( 396, 712) z= 64 dir=192
+   torch rec   2 px(  36, 824) z= 64 dir=192
+   torch rec   3 px( 300, 872) z= 64 dir=192
+   torch rec   9 px( 468, 216) z=112 dir=192
+   torch rec  10 px( 516, 216) z=112 dir=192
+   torch rec  54 px( 888, 184) z=240 dir=128
+   torch rec  55 px( 804, 184) z=240 dir=128
+   torch rec  56 px( 972, 184) z=240 dir=128
+   nearest drop-torch pairs (dist px, drop rec, torch rec): [(540, 49, 1), (576, 48, 56), (578, 48, 1), (582, 48, 54), (600, 48, 55), (602, 52, 1)]
+map 88: 13 drops, 3 torches
+   drop  rec  18 px(1116, 216) z=208 dir=192
+   drop  rec  22 px( 924, 184) z=208 dir=192
+   drop  rec  23 px(1140, 280) z=176 dir=192
+   drop  rec  24 px(1020, 264) z=176 dir=192
+   drop  rec  25 px( 780, 264) z=208 dir=192
+   drop  rec  26 px( 828, 328) z=208 dir=192
+   drop  rec  27 px( 900, 344) z=176 dir=192
+   drop  rec  39 px( 156, 136) z=208 dir=192
+   drop  rec  40 px( 324, 136) z=208 dir=192
+   drop  rec  41 px( 420, 200) z=208 dir=192
+   drop  rec  42 px( 324, 264) z=208 dir=192
+   drop  rec  43 px( 324, 440) z=208 dir=192
+   drop  rec  44 px( 252, 296) z=208 dir=192
+   torch rec  19 px( 996, 200) z= 48 dir=192
+   torch rec  20 px(1092, 200) z= 48 dir=192
+   torch rec  21 px(1164, 216) z= 48 dir=192
+   nearest drop-torch pairs (dist px, drop rec, torch rec): [(29, 18, 20), (48, 18, 21), (68, 23, 21), (68, 24, 19), (74, 22, 19), (93, 23, 20)]
+map 90: 7 drops, 4 torches
+   drop  rec  27 px( 204, 248) z=288 dir=192
+   drop  rec  28 px(  84, 280) z=272 dir=192
+   drop  rec  29 px( 132, 344) z=256 dir=192
+   drop  rec  30 px(  84, 440) z=240 dir=192
+   drop  rec  31 px( 108, 456) z=240 dir=192
+   drop  rec  32 px( 108, 536) z=208 dir=192
+   drop  rec  33 px( 156, 600) z=208 dir=192
+   torch rec   4 px(1116, 280) z=224 dir=128
+   torch rec  12 px( 180, 216) z=128 dir=192
+   torch rec  13 px(  60, 488) z= 64 dir=192
+   torch rec  14 px( 228, 760) z= 16 dir=192
+   nearest drop-torch pairs (dist px, drop rec, torch rec): [(40, 27, 12), (54, 30, 13), (58, 31, 13), (68, 32, 13), (115, 28, 12), (137, 29, 12)]
+map 92: 9 drops, 16 torches
+   drop  rec  15 px( 732, 136) z= 80 dir=128
+   drop  rec  25 px( 564, 840) z=208 dir=192
+   drop  rec  26 px( 492, 824) z=208 dir=192
+   drop  rec  27 px( 492, 904) z=208 dir=192
+   drop  rec  28 px( 324, 792) z=208 dir=192
+   drop  rec  29 px( 276, 808) z=208 dir=192
+   drop  rec  30 px( 252, 872) z=208 dir=192
+   drop  rec  31 px( 204, 888) z=208 dir=192
+   drop  rec  32 px( 156, 808) z=208 dir=192
+   torch rec   0 px( 324, 248) z=160 dir=192
+   torch rec   1 px( 324, 296) z= 80 dir=192
+   torch rec   2 px( 204, 296) z= 80 dir=192
+   torch rec  21 px( 372, 840) z= 48 dir=192
+   torch rec  22 px( 372, 872) z= 48 dir=192
+   torch rec  23 px( 324, 840) z= 48 dir=192
+   torch rec  24 px( 324, 872) z= 48 dir=192
+   torch rec  43 px( 900, 168) z= 80 dir=192
+   torch rec  44 px( 852, 168) z= 80 dir=192
+   torch rec  45 px( 804, 168) z= 80 dir=192
+   torch rec  46 px( 756, 168) z= 80 dir=192
+   torch rec  56 px(1116, 648) z= 64 dir=192
+   torch rec  57 px(1188, 760) z= 16 dir=192
+   torch rec  58 px( 876, 680) z= 16 dir=192
+   torch rec  59 px( 924, 680) z= 16 dir=192
+   torch rec  68 px( 468, 392) z=176 dir=128
+   nearest drop-torch pairs (dist px, drop rec, torch rec): [(40, 15, 46), (48, 28, 23), (58, 29, 23), (68, 28, 21), (72, 30, 24), (79, 15, 45)]
+map 94: 7 drops, 8 torches
+   drop  rec  25 px( 492, 216) z=208 dir=192
+   drop  rec  26 px( 396, 232) z=208 dir=192
+   drop  rec  27 px( 540, 280) z=208 dir=192
+   drop  rec  28 px( 420, 312) z=208 dir=192
+   drop  rec  29 px( 612, 328) z=208 dir=192
+   drop  rec  30 px( 396, 360) z=208 dir=192
+   drop  rec  31 px( 588, 376) z=208 dir=192
+   torch rec   0 px(1164, 328) z= 16 dir=192
+   torch rec   1 px(1212, 328) z= 16 dir=192
+   torch rec  16 px( 492, 856) z=272 dir=128
+   torch rec  17 px( 564, 856) z=272 dir=128
+   torch rec  18 px( 492, 904) z=272 dir=128
+   torch rec  19 px( 564, 904) z=272 dir=128
+   torch rec  23 px( 396, 168) z= 48 dir=192
+   torch rec  24 px( 492, 168) z= 48 dir=192
+   nearest drop-torch pairs (dist px, drop rec, torch rec): [(48, 25, 24), (64, 26, 23), (107, 25, 23), (115, 26, 24), (122, 27, 24), (146, 28, 23)]
+map 158: 14 drops, 0 torches
+   drop  rec  42 px( 204, 824) z=160 dir=192
+   drop  rec  43 px( 228, 456) z=160 dir=192
+   drop  rec  44 px( 372, 584) z=160 dir=192
+   drop  rec  45 px( 108, 680) z=160 dir=192
+   drop  rec  46 px( 516, 680) z=160 dir=192
+   drop  rec  47 px( 780, 536) z=272 dir=192
+   drop  rec  48 px( 948, 632) z=272 dir=192
+   drop  rec  49 px( 888, 776) z=192 dir=192
+   drop  rec  50 px(1104, 872) z=192 dir=192
+   drop  rec  51 px(1080, 680) z=192 dir=192
+   drop  rec  52 px(1128, 376) z=176 dir=192
+   drop  rec  53 px(1080, 280) z=176 dir=192
+   drop  rec  54 px(1104, 232) z=176 dir=192
+   drop  rec  55 px(1140, 168) z=176 dir=192
+   nearest drop-torch pairs (dist px, drop rec, torch rec): []
