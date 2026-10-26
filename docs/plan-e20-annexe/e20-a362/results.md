@@ -75,3 +75,13 @@ By partitions of disjoint namespaces (the shape of `docs/plan-e20-annexe/e20-e0d
 
 Zero failure in both configurations (7116 cases each). The four `docs/hero-trace-389-*.txt` were rewritten (end of line only) by the suites and restored with `git checkout`; none indexed. `cmp
 alundra-project/Alundra.dll Alundra/bin/Debug/net9.0-windows/Alundra.dll`: identical (the Debug build deposited it). `python -B tools/dll-structure/check_names.py --rules`: 0 finding (1 old warning, `TextBoxGpu.cs`).
+
+## T2 correction (2026-10-26): the fourth mutation
+
+The verifier found that the mutation "the hit pass skips the targets of class A" turned 39 of 47 cases red, not the predicted five methods. Cause: every test goes through the shared scene `Play`, which looked for the contact of the lid (`LidTouching`) to end the scene and threw "no end after 6000 frames" when the contact never came. Any mutation that removes the contact of the bomb on the lid (which (a7) requires red) therefore broke the scene for every test.
+
+Fix (arc only, no production code): without a contact the scene ends at `A + 16 + 248`, since H is defined as `A + 16` by the table (T0a). The tests that need the contact now fail on their own assertions.
+
+Replayed (`mutate.py m4`, the mutation applied by script then restored, `git diff` empty after): 15 red cases of 47, that is (a7), (a8), `A9_TheLidStaysInStatus3_E19Missing`, (a10) and `N2_ASwordStroke...`, each at the three cadences. Green: (a1) to (a6), the pin of the bomb, (a11), (n1), the second (n2) case and the preset test. This equals the prediction of T2. The arc and preset tests (327 cases with the test-saves tests) pass in Release with the neutralised copy.
+
+Flagged for the main session (unchanged, already in the T1 deviations above): the arrival (204, 144) walks up to Olen instead of talking from the arrival, and the bench of (n2) is at (176, 105, 32) instead of (176, 100, 32); `ArcRun.OneFrameWithTheDialogueButton` gained an optional `elapsed` parameter (a file outside `Arcs/`).
