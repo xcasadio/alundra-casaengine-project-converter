@@ -106,7 +106,10 @@ public sealed class TestSavesTests : IDisposable
     // E20.A362 T1 (docs/plan-e20-heros.md section 1.30.1a, D-A362-2): the preset of the scene of Olen's dream, the last of the table. `olen-m362`: the map 362, tile (8, 9, 2), two tiles below Olen (tile (8, 7)) at the pixel column of the arrival of the arc, with the flag G248 (word 7, bit 24, set by the map 363) and no other. The cell is the T0 (e) cell of docs/plan-e20-annexe/e20-a362/t0a.md (it is not the tile (10, 16) level 2 of the program B[6], the arrival from the map 185).
     private const string OlenPresetName = "olen-m362";
 
-    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName, BarricadePresetName, LiftPresetName, LiftPlatformPresetName, C4Map22PresetName, C4Map70PresetName, .. ChestPresetNames, LegendM14PresetName, LegendM7PresetName, .. HurtPresetNames, OlenPresetName];
+    // E20.g2c2 T2 (docs/plan-e20-heros.md section 1.24.5, D-G2C2-7): the preset of the torches of the map 92, the last of the table. `torche-m92`: the map 92, tile (34, 11, 5), the new game's kit and no flag. The cell is the T0 (e) cell of docs/plan-e20-annexe/e20-g2c2/results.md.
+    private const string TorchPresetName = "torche-m92";
+
+    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName, BarricadePresetName, LiftPresetName, LiftPlatformPresetName, C4Map22PresetName, C4Map70PresetName, .. ChestPresetNames, LegendM14PresetName, LegendM7PresetName, .. HurtPresetNames, OlenPresetName, TorchPresetName];
 
     public static TheoryData<string> WeaponNames => new([.. WeaponPresetNames, GrassPresetName, LegendM14PresetName]);
 
@@ -122,7 +125,7 @@ public sealed class TestSavesTests : IDisposable
     }
 
     [Fact]
-    public void TheTwentySevenPresets_AreListed_InTheOrderOfTheTable()
+    public void TheTwentyEightPresets_AreListed_InTheOrderOfTheTable()
     {
         Assert.Equal(AllPresetNames, TestSaves.Presets.Select(p => p.Name));
         Assert.Equal(AllPresetNames.Length, TestSaves.Presets.Count);
@@ -548,6 +551,25 @@ public sealed class TestSavesTests : IDisposable
         expectedCounts[3] = expectedCounts[35] = expectedCounts[51] = 1;
         expectedCounts[37] = expectedCounts[39] = expectedCounts[41] = expectedCounts[57] = expectedCounts[107] = expectedCounts[109] = 1;
         Assert.Equal(expectedCounts, save.NumberOfItems.Select(c => (int)c));
+        Assert.True(save.TryValidate(rules, out var error), error);
+    }
+
+    [Fact]
+    public void TheTorchPreset_IsTheNewGameOnTheLedgeOfTheTorchesOfTheMap92_WithNoFlag()
+    {
+        var rules = RealRules();
+        var save = Build(TorchPresetName);
+
+        // Map 92 (Magyscar), tile (34, 11), level 5: walkable (the cells (30 to 40, 10 to 11) of the map are at the height 5), between the torches of the tiles (33, 10) and (35, 10) (T0 (e), docs/plan-e20-annexe/e20-g2c2/results.md).
+        Assert.Equal(92, save.InitialMapId);
+        Assert.Equal((34, 11, 5), (save.CameraTileX, save.CameraTileY, save.CameraTileZ));
+
+        // No flag, no entry of the map table beyond the new game's, the new game's counters (items 1, 17 and 25: raw indices 3, 35, 51), the basic sword in hand, life 10 of 10.
+        Assert.All(save.GameFlags, word => Assert.Equal(0u, word));
+        var expectedCounts = new int[256];
+        expectedCounts[3] = expectedCounts[35] = expectedCounts[51] = 1;
+        Assert.Equal(expectedCounts, save.NumberOfItems.Select(c => (int)c));
+        Assert.Equal(((short)10, (short)10), (save.Hp, save.HpMax));
         Assert.True(save.TryValidate(rules, out var error), error);
     }
 

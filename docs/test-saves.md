@@ -230,6 +230,18 @@ For the scene of the map 362 (Coal Mine, Olen's dream; docs/plan-e20-heros.md se
 
 The hero stands on the cell x 192 to 215, y 144 to 159 (walkable, level 2), two tiles below Olen (tile (8, 7)); this is not the tile (10, 16) level 2 that the program B[6] reads (the arrival from the map 185). A save does not carry the direction (always south): walk up to Olen and press the button. The talk starts the scene: the hero is walked 48 pixels south without control, Olen walks and throws his bomb, which slides to the north wall, inside the footprint of the lid, and explodes against it; the lid reacts (its program deactivates it) but stays in place until E20.h3a makes it disappear with its break effect, and the bomb stays in the world, invisible; the four Murutas are born at 125, 156, 187 and 218 ticks after the explosion touches the lid.
 
+### Torches preset (E20.g2c2)
+
+For the torches (docs/plan-e20-heros.md section 1.24.5, "E20.g2c2"): Alundra lifts a torch (Magyscar, maps 86 to 94), throws it, and it burns at the first contact or at the landing and leaves a flame for 39 ticks; the flame lights the switches of the map 92 and burns the brambles. The new game's kit (the basic sword, life 10/10) and no flag.
+
+| Preset | Map, tile, z | Flag | Owned | Equipped |
+|---|---|---|---|---|
+| `torche-m92` | 92 (Magyscar), (34, 11), 5 | none | the kit's items 1, 17, 25 | the basic sword |
+
+The hero stands on the cell x 816 to 839, y 176 to 191 (walkable, level 5), one tile south of the torches of the tiles (33, 10) and (35, 10), four levels above the room of the four switches at the tiles (31, 15), (34, 14), (34, 17) and (37, 15). A save does not carry the direction (always south): walk to a torch, press the Square against it to lift it, then throw it
+south with the Square (walking, it flies farther) onto a switch: the switch lights (sound 39), the torch burns where it meets it and its flame lives 39 ticks (it touches the switch again 25 ticks after the blow, and hurts Alundra who walks into it). The lever of the room (the record 14, tile (2, 19)) lets four torches fall on the east room (216 to 288, 424 to 456): each burns where it lands. A torch thrown over
+a hole disappears without a flame; a flame born over deep water is destroyed. The brambles are for the save `tools/Saves/160-magyscar.sav` (the map 86): throw a torch at one, it burns, stops blocking and goes; the sword does nothing to it. The drops of water that put the torches out are E20.g2c3.
+
 ## What a save cannot carry
 
 - the temporary flags (id 0x8000 and above): the tool refuses them;

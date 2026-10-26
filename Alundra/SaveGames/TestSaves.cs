@@ -206,6 +206,11 @@ public static class TestSaves
         // game's kit, with the flag G248 (set by the map 363; word 7, bit 24) and no other: without it Olen repeats his first conversation. It is not the tile (10, 16) level 2 of the program B[6] (the arrival from the map 185). A save cannot carry the direction: walk up to Olen and press the button;
         // he talks, throws his bomb, and the bomb explodes against the lid of the bomb stalk, which stays in place until E20.h3a, then the four Murutas come out.
         new Preset("olen-m362", "test-olen-m362", 362, 8, 9, 2, [248u], [], [], []),
+
+        // E20.g2c2 T2 (docs/plan-e20-heros.md section 1.24.5, D-G2C2-7): the torches of the map 92 (Magyscar), on the new game's kit with no flag. Tile (34, 11), level 5: the cell (x 816 to 839, y 176 to 191) is walkable (the cells (30 to 40, 10 to 11) are all at the height 5, T0 (e) of
+        // docs/plan-e20-annexe/e20-g2c2/results.md), on the ledge between the torches of the tiles (33, 10) and (35, 10) (the records 43 to 46 stand on the row 10 at the tiles 31, 33, 35, 37), one tile south of them, four levels above the room of the four switches at the tiles (31, 15), (34, 14), (34, 17) and (37, 15). A save cannot
+        // carry the direction: lift a torch (Square against it), throw it south onto a switch (the switch lights, then its flame burns for 39 ticks); then the lever (the record 14, tile (2, 19)) lets four torches fall on the east room, each of which burns where it lands. The brambles are for the save 160 (the map 86).
+        new Preset("torche-m92", "test-torche-m92", 92, 34, 11, 5, [], [], [], []),
     ];
 
     /// <summary>Finds a preset by its exact name.</summary>
