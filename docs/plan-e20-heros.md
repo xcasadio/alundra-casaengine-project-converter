@@ -3653,7 +3653,7 @@ D-H2-6) ; i2b, la fonction des forces (§1.14.3), indépendante d'i2a, avant h4e
 (§1.14.4, esquisse), après i2b, E20.c2b et E20.h0a (elle touche la même zone de `PlayerManager.cs`). i2d (le serrage à la carte pour le héros et
 les entités placées, O-E19-17) reste hors de ces tranches (Q-I2-5, défaut A, D-E19-25).
 
-#### 1.14.2 E20.i2a — Le mur d'eau profonde sans bottes de nage (O-E19-22) ⏳ (détaillée le 2026-10-25 ; thème 2, avant i2b ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais)
+#### 1.14.2 E20.i2a — Le mur d'eau profonde sans bottes de nage (O-E19-22) ⏳ (détaillée le 2026-10-25 ; thème 2, avant i2b ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais ; T0 arrêté à (c) le 2026-10-27 ; **révision 3** du 2026-10-27, nouvelle époque)
 
 **Révision 1 (2026-10-25).** La relecture de la révision 0 (REVISE) a relevé deux blocages, corrigés (FIX) : (1) les traces vers l'est
 rejoignent l'écart connu du mur est (O-E19-42 : la DLL s'arrête au contact, le binaire une unité avant, le rebond un tick plus tôt) et la
@@ -3664,6 +3664,16 @@ mutants n'avaient pas de tueur démontré : chacun a son test, un doublon est re
 source du niveau des bottes (`EquipmentRecords.BootsLevel`) n'existe pas dans le montage des tests (`RunMontage` ne pose aucun
 `EquipmentRecords`, que rien ne lit en production) : le niveau vient de `PlayerManager.BootsLevelOf(GameState)`, la source que la physique
 de la DLL lit déjà, et T0 (c) prouve que les tests avec bottes restent verts.
+
+**Révision 3 (2026-10-27, nouvelle époque, la disposition de l'arrêt de T0 (c)).** Le T0 a mesuré, avec un câblage temporaire (le pseudo-bit
+`0x10000`, la fonction dans le tick du héros, `BlockedCorners` sur le masque vivant), l'écart des 15 traces à la DLL (`scratchpad/i2a/t0-measures.md`,
+à verser) : 14 traces tiennent (11 à 0 écart, R9 et les deux `W1-run` avec t1) ; `W5-L0-wall-diag` sort de t2 : les X égaux, mais sur Y le
+binaire n'avance que de 1 424 puis de 1 unité brute aux ticks 45 et 46 (sa recherche par moitiés divise les deux axes ensemble au contact
+du mur), la DLL de 75 296 à chacun : un décalage constant de 149 167 unités brutes (2,28 px) à partir du tick 46. C'est l'écart des pas que
+D-E20-80 garde (O-E19-42, D-E19-58 : la division conjointe du pas n'est pas portée) : t2 est élargie pour cette trace (D-I2A-6, révision 3).
+Un test non prédit bouge : `PrefabArcSupportTests.PrefabMode_OnMap478_TheHeroIsTheRealPrefabOfTheHero` épingle le masque vivant du héros à
+`0x41` ; sans bottes, il gagne le pseudo-bit : il entre dans la liste prédite, réécrit par dérivation. Le pseudo-bit et la case du
+préréglage sont ceux mesurés par T0 (d) et (e) (`DeepWaterWallMaskBit = 0x10000` ; `mur-m14` en (40, 48, 1)).
 
 **Prérequis.** E20.i (la nage) et E20.c2a (le niveau des bottes) : faites. Aucun prérequis de code d'i2b ou d'i2c.
 La tranche touche `Alundra/SaveGames/TestSaves.cs` comme b2, c2b, A362 et g2c2 : jamais en même temps qu'elles.
@@ -3702,7 +3712,8 @@ Aujourd'hui elle nage partout, écart épinglé par `HeroSwimArenaTests.WithoutT
 - **D-I2A-4** (Q-I2-2, défaut A) — Alundra déjà dans l'eau sans bottes est coincée, comme l'original.
 - **D-I2A-6** (révision 1) — **La liste fermée des tolérances** de la comparaison des 15 traces à la DLL, rien d'autre : (t1) le mur est,
   O-E19-42 (le précédent `HeroRunTests` R5-wall-E) : le rebond ou le `ForceAdjusted` décalé d'un tick au plus, la position à 1 unité brute ;
-  (t2) la diagonale (W5-L0-wall-diag ; le précédent `HeroSwimTests` W5-wall-UR) : la composante Y à 7 424 unités brutes au plus ; (t3) le
+  (t2) la diagonale (W5-L0-wall-diag ; le précédent `HeroSwimTests` W5-wall-UR) : la composante Y à 7 424 unités brutes au plus, et pour `W5-L0-wall-diag` à 149 167 unités brutes au plus à partir du tick 46 (révision 3 :
+  deux pas de Y que la recherche par moitiés du binaire perd au contact du mur, puis un décalage constant ; l'écart des pas de D-E20-80) ; (t3) le
   contact au sol un tick plus tard (O-E20-12) ; (t4) les sons non comparés. Une trace n'emploie que le sous-ensemble que T0 (c) écrit pour
   elle ; tout autre écart, ou une valeur au-delà, est un arrêt.
 - **D-I2A-5** (Q-I2-6, défaut A) — Un préréglage `mur-m14` : `swim-m14` sans bottes (la berge de l'étang de la 14, case (40, 48, 1), eau profonde
@@ -3721,7 +3732,8 @@ montage reçoit le bit par la fonction de production, pas à la main) ; les test
   sondes de la lecture, identiques ; (c) l'inventaire par exécution : un câblage temporaire (jamais commité, versé en `.txt`) du mur, la suite
   entière en Release, la liste nommée des tests qui bougent et pourquoi (le héros sans bottes posé sur ou près de l'eau profonde ; candidats de la
   critique : `CarryLockSwimAndStatesTests.SwimScene`, les arcs de la 416 et de la 14, les 40 fichiers qui parlent d'eau ou de `Slope_18c`) :
-  c'est la liste prédite, avec le test d'écart qui s'inverse et le test de liste des préréglages ; avec le même câblage temporaire,
+  c'est la liste prédite, avec le test d'écart qui s'inverse, le test de liste des préréglages et `PrefabArcSupportTests.PrefabMode_OnMap478_…`
+  (le masque vivant du héros sans bottes : `0x41 | DeepWaterWallMaskBit`, révision 3) ; avec le même câblage temporaire,
   **l'écart de chacune des 15 traces à la DLL**, versé, et pour chaque trace le sous-ensemble de la liste fermée des tolérances (D-I2A-6)
   qu'elle emploie, écrit dans l'annexe avant T1 ; (révision 2) la preuve, par le même câblage, que les tests avec bottes restent verts
   (les inventaires `b1b` et `b1c` du montage, les traces W1 et W2 en L2 et L3, `R9-deepwater-boots2`, `R9-allwater-start-T-R`) et que seules
