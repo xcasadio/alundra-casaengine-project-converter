@@ -8613,6 +8613,13 @@ indestructibles.
 - **D-G2C2-7** (Q-G2C2-4, défaut A) — Un préréglage `torche-m92` (la carte 92 : 16 interrupteurs, 16 torches, 13 ronces) ; la sauvegarde
   `tools/Saves/160-magyscar.sav` (carte 86) pour les ronces ; le test de liste des préréglages change mécaniquement (D-E0D-12).
 - **D-G2C2-8** — Des gardes des données : les types dont l'en-tête porte C70 ou E20 sont {393}, D34 {238, 239}, A19 et C71 {391}.
+- **D-G2C2-9** (2026-10-26, disposition de l'arrêt de T0 sur la sonde P1) — La pluie du levier de la 92 (des torches nées d'un enregistrement
+  par `0x8A`, sans le marqueur du Z logique) atterrit dans la DLL un tick avant le binaire à 1 et 2 ticks par image (15/15/18/19 contre
+  15/16/19/20 ; égale à 3 ticks par image) : le chemin du contrôleur d'une entité sans marqueur lit le sol au tick de l'atterrissage. C'est
+  la conséquence de D-E20-37 (les entités posées par la carte gardent l'ancienne règle de chute jusqu'à E19.h2), pas un défaut de g2c2 : la
+  même torche née par `SpawnEntityBySpriteIndex` (avec le marqueur) égale le binaire au tick. D-G2C2-4 tient (statut 3 au sol, la flamme, ses
+  codes à 0, l'animation 3 ; sans le bit `0x10`, rien pendant 60 ticks). (w5) reste tel qu'écrit, sans tick épinglé sur le statut 3 ;
+  l'écart rejoint ceux qu'E19.h2 refermera (`docs/plan-e20-annexe/e20-g2c2/results.md`, « Stop »).
 
 **Périmètre.** `Alundra/Ai/Objects/` (`TorchAi.cs` et `BrambleAi.cs` neufs ; `LiftableAi.cs` : la politique C70 et le `switch`) ;
 `Alundra/Ai/NativeSpriteRegistry.cs` (deux appels d'inscription et la doc) ; `Alundra/Hero/PlayerManager.cs` (l'ensemble câblé) ;
@@ -8623,7 +8630,9 @@ O-F6-3, la ligne de g2c3).
 boule de feu (f6b) ; le moteur.
 
 **Tâches.**
-- ⏳ **T0 — Versement, oracle, sondes, liste prédite** (commit de docs). (a) Les prérequis ; (b) verser les deux dossiers de la lecture à
+- ✅ **T0 — Versement, oracle, sondes, liste prédite** (commit de docs ; fait le 2026-10-26, `c7a78954` : les rejeux identiques, 90 vecteurs
+  de C70, E20 et D34 (0 écart), les sondes (le lancer égal au binaire aux trois cadences ; P1, la pluie, un tick d'avance disposé par
+  D-G2C2-9) ; la case (34, 11) niveau 5 de `torche-m92` ; 9 tests prédits, dont les cinq sommes du registre). (a) Les prérequis ; (b) verser les deux dossiers de la lecture à
   `docs/plan-e20-annexe/e20-g2c2-disc/` (README, `SHA1SUMS.txt`) ; (c) rejouer depuis une copie `s8_torch`, `f1_flame`, `p_hitswitch`,
   `p_rain`, `p_selfhit`, sorties identiques ; produire sur la machine au moins 25 vecteurs de C70, d'E20 et de D34 (tous les mots lus et
   écrits), versés ; (d) les sondes jetables de la DLL (versées en `.txt`) : une entité née par `0x8A` à `DeactivateOnImpact` posé par `0x62`
