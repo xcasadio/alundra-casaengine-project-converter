@@ -116,3 +116,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0100 | The bomb explodes and vanishes through D30 and E12, and the lids vanish through E19, all registered in production | Accepted | 2026-10-26 |
 | ADR-0101 | The torch burns through C70 and E20 and the brambles through D34, all registered in production, and the torch joins the wired set of the lift | Accepted | 2026-10-26 |
 | ADR-0102 | The drops of water fall through A19 and C71 and put out the torch under them, all registered in production | Accepted | 2026-10-26 |
+| ADR-0103 | The bomb is born in the hands by the Circle and runs C62, with a start, a driver and a cancellation registered in production | Accepted | 2026-10-26 |
