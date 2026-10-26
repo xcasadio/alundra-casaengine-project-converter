@@ -109,7 +109,10 @@ public sealed class TestSavesTests : IDisposable
     // E20.g2c2 T2 (docs/plan-e20-heros.md section 1.24.5, D-G2C2-7): the preset of the torches of the map 92, the last of the table. `torche-m92`: the map 92, tile (34, 11, 5), the new game's kit and no flag. The cell is the T0 (e) cell of docs/plan-e20-annexe/e20-g2c2/results.md.
     private const string TorchPresetName = "torche-m92";
 
-    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName, BarricadePresetName, LiftPresetName, LiftPlatformPresetName, C4Map22PresetName, C4Map70PresetName, .. ChestPresetNames, LegendM14PresetName, LegendM7PresetName, .. HurtPresetNames, OlenPresetName, TorchPresetName];
+    // E20.c2c T1 (docs/plan-e20-heros.md section 1.12.2, D-C2C-1): the four armour presets, on the cell of `blessure-m15`, listed after the two presets of the hurt hero.
+    private static readonly string[] ArmourPresetNames = ["blessure-m15-tissu", "blessure-m15-cuir", "blessure-m15-ancienne", "blessure-m15-argent"];
+
+    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName, BarricadePresetName, LiftPresetName, LiftPlatformPresetName, C4Map22PresetName, C4Map70PresetName, .. ChestPresetNames, LegendM14PresetName, LegendM7PresetName, .. HurtPresetNames, .. ArmourPresetNames, OlenPresetName, TorchPresetName];
 
     public static TheoryData<string> WeaponNames => new([.. WeaponPresetNames, GrassPresetName, LegendM14PresetName]);
 
@@ -125,7 +128,7 @@ public sealed class TestSavesTests : IDisposable
     }
 
     [Fact]
-    public void TheTwentyEightPresets_AreListed_InTheOrderOfTheTable()
+    public void TheThirtyTwoPresets_AreListed_InTheOrderOfTheTable()
     {
         Assert.Equal(AllPresetNames, TestSaves.Presets.Select(p => p.Name));
         Assert.Equal(AllPresetNames.Length, TestSaves.Presets.Count);
@@ -552,6 +555,57 @@ public sealed class TestSavesTests : IDisposable
         expectedCounts[37] = expectedCounts[39] = expectedCounts[41] = expectedCounts[57] = expectedCounts[107] = expectedCounts[109] = 1;
         Assert.Equal(expectedCounts, save.NumberOfItems.Select(c => (int)c));
         Assert.True(save.TryValidate(rules, out var error), error);
+    }
+
+    // ---- E20.c2c T1: the four armour presets (docs/plan-e20-heros.md section 1.12.2, D-C2C-1, D-C2C-2) ----------
+
+    /// <summary>(p1) The content of each armour preset, written by hand: the cell of <c>blessure-m15</c> (map 15, tile (7, 33, 7)), 10 of 10, the basic sword, no flag, the new game's kit (the items 1, 17 = the cloth armour, 25) and only the armour of the name among 0x12 to 0x14; no boots (0x1C), no bracelet (0x35), no charm (0x36).</summary>
+    [Theory]
+    [InlineData("blessure-m15-tissu", 0x11)]
+    [InlineData("blessure-m15-cuir", 0x12)]
+    [InlineData("blessure-m15-ancienne", 0x13)]
+    [InlineData("blessure-m15-argent", 0x14)]
+    public void TheArmourPresets_AreTheCellOfBlessureM15_WithFullLife_TheKitAndTheOneArmourOfTheirName_NoBootsNoBraceletNoCharm(string name, int armour)
+    {
+        var rules = RealRules();
+        var save = Build(name);
+
+        Assert.Equal((15, 7, 33, 7), (save.InitialMapId, save.CameraTileX, save.CameraTileY, save.CameraTileZ));
+        Assert.All(save.GameFlags, word => Assert.Equal(0u, word));
+        Assert.Equal(((short)10, (short)10, (short)1), (save.Hp, save.HpMax, save.WeaponId));
+
+        // The new game's counters (items 1, 17 and 25: raw indices 3, 35, 51), and by hand the raw index 2 * armour + 1 of the armour of the name (the cloth armour 0x11 is the kit's item 17: nothing added).
+        var expectedCounts = new int[256];
+        expectedCounts[3] = expectedCounts[35] = expectedCounts[51] = 1;
+        expectedCounts[2 * armour + 1] = 1;
+        Assert.Equal(expectedCounts, save.NumberOfItems.Select(c => (int)c));
+        Assert.Equal(0, save.NumberOfItems[2 * 0x1C + 1]);
+        Assert.Equal(0, save.NumberOfItems[2 * 0x35 + 1]);
+        Assert.Equal(0, save.NumberOfItems[2 * 0x36 + 1]);
+        Assert.True(save.TryValidate(rules, out var error), error);
+    }
+
+    /// <summary>(p2) The real rule: the armour the game wears for the bag of the preset (steps 2 to 6 of UpdateItemEffectState) and the life after a blow of the orc of the map 15 (the sheet 341, attribute 2, power 4) through Damage.ResolveBalanceTarget: 4, 3, 2 and 1 hearts.</summary>
+    [Theory]
+    [InlineData("blessure-m15-tissu", 0x11, 6)]
+    [InlineData("blessure-m15-cuir", 0x12, 7)]
+    [InlineData("blessure-m15-ancienne", 0x13, 8)]
+    [InlineData("blessure-m15-argent", 0x14, 9)]
+    public void TheArmourPresets_WearTheArmourOfTheirName_AndAnOrcsBlowCostsFourThreeTwoOneHearts(string name, int armour, int lifeAfterTheBlow)
+    {
+        var rules = RealRules();
+        var balance = Alundra.Combat.BalanceTables.GetOrCreate(ProjectRootFinder.Find());
+        var state = new GameState();
+        Build(name).ApplyTo(state);
+        var records = new Alundra.Items.EquipmentRecords();
+
+        PlayerManager.FillEquipmentRecords(state, rules.ItemTables, balance, 0, records);
+        PlayerManager.ComputeHeroSheet(new Alundra.Entities.EntityScriptProxy { IsPlayer = true }, records);
+
+        Assert.Equal(armour, records.ItemIdOf(Alundra.Items.EquipmentRecords.Armour));
+        var orcBlow = balance.Select(341, 0)!.Attacks[0];
+        Assert.Equal((2, 4), (orcBlow.Attribute, orcBlow.Power));
+        Assert.Equal(lifeAfterTheBlow, Alundra.Combat.Damage.ResolveBalanceTarget(orcBlow, records.HeroSheet, state.PlayerStats.Hp, records, 0));
     }
 
     [Fact]
