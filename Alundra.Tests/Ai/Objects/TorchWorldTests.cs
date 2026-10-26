@@ -281,10 +281,9 @@ public sealed class TorchWorldTests : IDisposable
         var before = bramble.Flags;
         run.Go(1, 90, t => t is 1 or 30 or 60 ? Square : 0u);
 
-        // the sword strikes (the hero is in a sword animation for some ticks), the bramble is touched by it, and nothing happens to the bramble.
-        Assert.Contains(run.Hero.Values, h => h.Animation is >= 16 and <= 23);
-        // D34 ran (the bramble was touched by the sword's plate: the hit pass fed its +0x224) and found no fire in it.
-        Assert.True(run.Arc.Runner.NativeHandlerRunCounts.GetValueOrDefault((ScriptHelper.ProgramDTouch, BrambleAi.TouchCode)) > 0, "the sword never touched the bramble");
+        // the sword strikes the bramble (the hero is in the sword animation 16, the hit pass makes its sparks); the sheet of a bramble answers only to the attribute 6 (the fire), so the blow changes nothing in it: it keeps its animation, its flags, its place in the world.
+        Assert.Contains(run.Hero.Values, h => h.Animation == 16);
+        Assert.Contains(run.Sparks.Values, sparks => sparks > 0);
         Assert.All(track.Ticks.Values, s => Assert.Equal((true, 0u, before), (s.Present, s.Animation, s.Flags)));
         Assert.True(EntitySupport.IsEligibleSubject(bramble));
     }
@@ -408,11 +407,21 @@ public sealed class TorchWorldTests : IDisposable
         run.Arc.Equip(1);
         var torch = run.PlaceATorch(135, 100, 0, deactivateOnImpact: false);
         run.Frames(4);
-        // walks east into the torch, pressing the Square every other tick once he is against it (a front edge of the Square in contact lifts).
-        run.Go(ticksPerFrame, 80, t => t >= 8 && t % 2 == 0 ? Right | Square : Right);
+        // walks east into the torch, then presses the Square once, at the first frame from the tick 8 (a front edge of the Square in contact lifts; a second press would throw it).
+        var pressed = false;
+        run.Go(ticksPerFrame, 80, t =>
+        {
+            if (t >= 8 && !pressed)
+            {
+                pressed = true;
+                return Right | Square;
+            }
+
+            return Right;
+        });
 
         Assert.Same(torch.LogicContextEntity, run.Arc.Hero.CarriedEntity);
-        Assert.Equal(12u, run.Arc.Hero.TargetAnimationId);
+        Assert.Contains(run.Hero.Values, h => h.Animation == 5); // the lift on the ground
         Assert.Same(run.Arc.Hero.LogicContextEntity, torch.PlatformEntity);
     }
 
