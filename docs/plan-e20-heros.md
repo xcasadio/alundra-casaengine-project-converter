@@ -9312,7 +9312,7 @@ Conséquence de D-E20-39 : aucun chemin de production ne met un objet dans les m
 haricots) : g1a et g2a sont inertes en jeu et se valident par des tests et des valeurs de référence tirées du binaire. Questions
 Q-G1A-1 à Q-G1A-6 (§2).
 
-#### 1.24.7 E20.g1c — L'ombre du contact du binaire (O-G3-3) ⏳ (détaillée le 2026-10-25 ; thème 2 ; D-E20-80 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais)
+#### 1.24.7 E20.g1c — L'ombre du contact du binaire (O-G3-3) ⏳ (détaillée le 2026-10-25 ; thème 2 ; D-E20-80 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais ; T0 arrêté à (a0) le 2026-10-26, `09c6be4f` ; **révision 3** du 2026-10-26, la disposition des entrées (D-G1C-4), nouvelle époque)
 
 **Provenance.** `docs/plan-e20-annexe/e20-step-search/` (la lecture et son critique : W4 et l'option D, `critic/work/crit_shadow.py`) ;
 `docs/plan-e20-annexe/e20-g1b/walk-release-disc/` (W4 : la cause d'O-G3-3) ; `docs/plan-e20-annexe/e20-g1b/t0b/` (la mesure d'O-G3-3 dans la DLL) ;
@@ -9327,6 +9327,15 @@ recense une par une, avec un arrêt pour une entrée absente.
 **Révision 2 (2026-10-25, disposition de la session principale après deux REVISE : FIX).** La relecture de la révision 1 a relevé que le périmètre
 nommait encore l'ancien point d'écriture et l'ancienne porte : il nomme maintenant `ScriptedMotion.cs` et `RunOneKinematicTick`, et
 `EntityScriptProxy.cs` reste inchangé.
+
+**Révision 3 (2026-10-26, nouvelle époque).** Le T0 s'est arrêté à (a0), par la règle du plan (`docs/plan-e20-annexe/e20-g1c/results.md`,
+`09c6be4f`) : les rejeux de (a) sont identiques, mais cinq entrées du binaire sont absentes de la DLL ou seulement approchées : la sortie précoce
+du test de murs (`[0x800DC058]`, `[0x800DC05C]`) ; les quatre hauteurs de coin `+0x158` du héros (`MapHeights` n'est rempli que pour les autres
+entités, `TrySampleGround` n'a pas la bosse `slopesHit` et `BlockedCorners` applique la règle du moteur) ; l'octet de pente d'une case (aucun
+lecteur) ; la liste des collidables (approchée pour les entités nées ou déplacées par script) ; la colonne d'un pixel `x < 0` (le binaire lit
+avant la table `0x80127168`). Le T0 a aussi établi que `HalvingStepSearch` (e0k5) ne peut pas porter l'ombre (elle rend la position, pas le
+verdict de l'avant-dernière tentative, et n'a ni branche sol, ni redémarrage du glissement, ni sortie `NoObstacleSlide`) : la fonction pure
+reste neuve, e0k5 n'est pas touchée. D-G1C-4 dispose les cinq entrées ; D-G1C-1 et le périmètre suivent ; le T0 reprend à (c) et (d).
 
 **Prérequis.** E20.g1b faite ; la branche du thème 2. Aucun lien avec e0k5 (deux fonctions pures distinctes, la même recherche du binaire).
 
@@ -9353,8 +9362,8 @@ l'original, au lieu de soulever la caisse voisine.
 **Décisions de la session.**
 - **D-G1C-1** (révision 1) — L'ombre ne vaut que **pour le héros** : une fonction pure neuve d'`Alundra/Physics/`, la copie **entière** de la
   recherche par moitiés (`0x80037730`, sa branche « marche au sol » comprise, comme le modèle `xymodel.py`), avec les candidats d'entités de la
-  liste des collidables (`0x80036F34`), la hauteur du sol (`0x800370C4`) et le test de murs du héros (`0x80037488`, avec sa sortie précoce sur
-  `[0x800DC058]`, la transition d'écran), depuis la position et la force du héros **d'avant le pas du tick** (retenues avant le premier `Move`) ; son
+  liste des collidables (`0x80036F34`), la hauteur du sol (`0x800370C4`, calculée par la copie elle-même, D-G1C-4 (ii)) et le test de murs du
+  héros (`0x80037488`, **sans** sa sortie précoce sur `[0x800DC058]`/`[0x800DC05C]`, D-G1C-4 (i) ; révision 3), depuis la position et la force du héros **d'avant le pas du tick** (retenues avant le premier `Move`) ; son
   verdict (le `+0x130` du binaire) remplace `XCollisionEntity` du héros **une seule fois par tick, après `SlideAlongWall`** dans
   `ScriptedMotion.RunOneKinematicTick` ; `SlideAlongWall` (son test `forbidden`), `ForceAdjusted`, `EntityBlockCount`, la position et le second pas
   du glissement gardent le contact du moteur, inchangés ; le second `MoveControllerAndPullPosition` du glissement ne lance pas l'ombre. Sans porte
@@ -9362,8 +9371,28 @@ l'original, au lieu de soulever la caisse voisine.
 - **D-G1C-2** — L'écart restant (7,8 % au tick 2, quand la position diverge du déficit) est gardé avec le reste des écarts du pas (D-E20-80) et
   consigné par un test nommé.
 - **D-G1C-3** — Les autres entités gardent leur contact (les PNJ, les objets poussés) : hors de la tranche.
+- **D-G1C-4** (révision 3, la disposition de l'arrêt de T0 (a0)) — Les entrées de la copie :
+  (i) **la sortie précoce** du test de murs du héros (`0x80037490-0x800374AC` : `[0x800DC058] < 0` et le bit 31 de `[0x800DC05C]`, un mode
+  « sans collision » posé depuis la manette) n'est pas copiée, comme pour le mur d'eau d'E20.i2a (§1.14.2, « n'est pas porté, pour les murs
+  ordinaires comme pour l'eau ») ; l'oracle la tient à 0 (`docs/plan-e20-annexe/e20-0-rapports/D1-oracle-moveplayer.md`) : un écart écrit ;
+  (ii) **la hauteur du sol et les quatre hauteurs de coin** du héros sont calculées par la fonction pure elle-même, depuis les octets bruts des
+  cases (l'octet de hauteur par `SampleRawCellHeight`, l'octet de pente par (iii), les mots de case par `SampleRawWalkability` et
+  `SampleGroundProperty`, la table des marches `AnimationTables.HeightsTable_800236d4`, comparée mot à mot à l'exécutable en T0), avec la bosse
+  `slopesHit` d'une empreinte à plusieurs cases en pente : la copie de `xymodel.py:ground_height` ; le test de murs du héros est celui du binaire
+  (`hauteur de coin < ModZ`, les tests d'attribut sur `walk | prop << 8` à la position tentée), le redémarrage du glissement de la table de saut
+  `0x80023734` celui de `xymodel.py:slide` ; `MapHeights`, `TrySampleGround`, `BlockedCorners`, `CornerTileWords` et `SlideAlongWall` ne sont ni
+  lus par la copie ni changés ;
+  (iii) **l'octet de pente** : un lecteur additif de `CellsCollisionField` (`internal`, sur le modèle de `SampleRawCellHeight` : la même case,
+  le même bornage, l'octet `_slope` brut ; nom contrôlé par `check_names.py --rules`) ; aucun membre existant ne change ;
+  (iv) **la liste des collidables** : `ScriptHost.Collidables` telle qu'elle est, avec les écarts acceptés d'O-E19-28 (e) et (f) (une entité
+  née ou déplacée par script entre dans la liste un tick plus tard, l'ordre de mise à jour par entité) ; exacte pour les caisses présentes dès le
+  chargement de la carte, le cas d'O-G3-3 ;
+  (v) **la colonne d'un pixel `x < 0`** : la copie prend la colonne 0, comme la DLL (`Math.Clamp`) ; le binaire y lit avant la table
+  `0x80127168`, une valeur sans source : un écart écrit, épinglé par un test nommé. Pour `x >= 0`, la table égale `min(x / 24, 51)` (le modèle,
+  les oracles MIPS ; son contenu reste une inférence partagée, aucun écrivain trouvé dans l'exécutable).
 
-**Périmètre.** `Alundra/Physics/` (la fonction pure) ; `Alundra/Physics/ScriptedMotion.cs` (`RunOneKinematicTick` : la position et la force du
+**Périmètre.** `Alundra/Physics/` (la fonction pure) ; `Alundra/Physics/CellsCollisionField.cs` (le lecteur additif de l'octet de pente,
+D-G1C-4 (iii) ; révision 3) ; `Alundra/Physics/ScriptedMotion.cs` (`RunOneKinematicTick` : la position et la force du
 héros retenues avant le premier `Move`, puis l'ombre écrite une fois après `SlideAlongWall`, pour le héros seul, sans porte ; le second `Move`
 du glissement ne la lance pas) ; `Alundra/Entities/EntityScriptProxy.cs` reste inchangé ; les tests (dont l'épingle `OG33_…_PinnedNotFollowed`, réécrite par dérivation sur la valeur du binaire) ; l'annexe
 `docs/plan-e20-annexe/e20-g1c/` ; un ADR neuf ; ce plan (O-G3-3 fermé).
@@ -9371,7 +9400,9 @@ du glissement ne la lance pas) ; `Alundra/Entities/EntityScriptProxy.cs` reste i
 **Hors périmètre.** Le moteur ; `ForceAdjusted` et la position ; les entités autres que le héros.
 
 **Tâches.**
-- ⏳ **T0 — Oracle, sondes, liste prédite** (commit de docs). (a0) **La table des entrées** : chaque adresse que lisent la recherche, le test
+- ⏳ **T0 — Oracle, sondes, liste prédite** (commit de docs ; (a), (a0) et (b) faits le 2026-10-26, `09c6be4f` : les rejeux identiques, la
+  table des entrées, l'arrêt disposé par D-G1C-4 ; **reprise à (c) et (d)**, la sonde câblant temporairement l'ombre avec les entrées de
+  D-G1C-4). (a0) **La table des entrées** : chaque adresse que lisent la recherche, le test
   d'entités, la hauteur du sol et le test de murs du héros (les globales `[0x800DC058]` et `[0x800DC05C]` de la transition d'écran,
   `[0x80127000]` (les bottes, `< 2`), `[0x80127164]` (l'objet en cours, `== 0x20`, la cape), les mots de case bruts sur 16 bits derrière les
   pointeurs `+0x148`, les hauteurs des coins `+0x158`, les drapeaux, la boîte, `ModZ`, la liste des collidables), chacune avec son membre de la
@@ -9382,7 +9413,10 @@ du glissement ne la lance pas) ; `Alundra/Entities/EntityScriptProxy.cs` reste i
   en l'air égalait déjà l'oracle ; il doit rester égal) ; (d) la liste prédite des tests déplacés, mesurée par ce câblage temporaire, annulé ensuite
   (attendu : l'épingle O-G3-3 ; les arcs de g4b (b3) et de g1b (m7) à surveiller). Arrêts : le contact en l'air (g1b (b1)) cesse d'égaler
   l'oracle ; plus de 10 tests existants déplacés ; un besoin du moteur.
-- ⏳ **T1 — Phase A, tests d'abord** : la fonction pure contre le modèle (un fuzz d'au moins 20 000 cas, 0 écart sur le verdict rendu) ; puis le corps.
+- ⏳ **T1 — Phase A, tests d'abord** : la fonction pure contre le modèle (un fuzz d'au moins 20 000 cas, 0 écart sur le verdict rendu ; le
+  fuzz tire aussi des cases en pente (`& 3` de 1 à 3), des marches, une empreinte à plusieurs cases en pente (la bosse `slopesHit`), les
+  bottes et l'objet en cours `0x20` ; révision 3) ; le lecteur de pente comparé à `CellsRecords` sur une carte réelle (chaque case) ; la colonne 0
+  pour `x < 0` épinglée par un test nommé (D-G1C-4 (v)) ; puis le corps.
 - ⏳ **T2 — Phase B** : l'épingle O-G3-3 réécrite sur la valeur du binaire (rouge avant : la DLL pose le contact un tick trop tôt) ; un Carré au tick
   de l'arrivée sur la rec5 donne l'épée, un tick plus tard soulève rec10 (rouge avant) ; le soulèvement en l'air (g1b (m7)) et au sol (g1b (m1))
   inchangés ; **avec l'ombre, `ForceAdjusted`, `PosX`/`PosY` et le compte de glissements du héros inchangés** sur la route R7 et sur un cas de
@@ -9390,13 +9424,14 @@ du glissement ne la lance pas) ; `Alundra/Entities/EntityScriptProxy.cs` reste i
   dernier, zéro échec, partitions disjointes ; les traces de la 389 ; `cmp` ; `check_names.py --rules` ; le moteur sans diff.
 - ⏳ **T3 — Mutants, ADR** : au moins 8 mutants réels, tous tués (la branche sol de la copie retirée, tuée par les tests au sol de g1b ; le verdict de la dernière tentative au lieu
   de l'avant-dernière ; l'ombre écrite avant `SlideAlongWall` ; l'ombre lancée aussi au second pas du glissement ; l'ombre pour toute entité ; la position d'après le pas ; le test de murs des non-héros pour le héros ; un seul axe ; l'ombre
-  qui écrit aussi `ForceAdjusted` ; l'ombre retirée) ; un ADR neuf ; O-G3-3 fermé.
+  qui écrit aussi `ForceAdjusted` ; l'ombre retirée ; la bosse `slopesHit` retirée ; la hauteur de coin prise à `TrySampleGround` ; le
+  lecteur de pente qui rend 0 ; révision 3) ; un ADR neuf ; O-G3-3 fermé.
 - ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
 **Acceptation.** Les sorties de T0 (a) identiques ; T1 et T2 rouges avant et verts après ; le contact en l'air et au sol inchangé ; la suite en Release
 et en Debug, zéro échec ; les tests déplacés ⊂ la liste de T0 (d) ; le moteur sans diff.
 
-**Arrêts.** Une entrée du binaire sans source dans la DLL (T0 (a0)) ; le contact en l'air ou au sol cesse d'égaler l'oracle ; un test hors de la liste
+**Arrêts.** Une entrée du binaire sans source dans la DLL autre que les cinq disposées par D-G1C-4 (révision 3) ; le contact en l'air ou au sol cesse d'égaler l'oracle ; un test hors de la liste
 prédite bouge ; un besoin de toucher au moteur ; un test qui boucle.
 
 **Budget.** Un `executor` par phase ; deux tentatives. Un `plan-verifier` avant ; deux verifiers frais après.
