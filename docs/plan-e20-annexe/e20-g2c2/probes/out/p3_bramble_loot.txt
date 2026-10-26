@@ -1,0 +1,17 @@
+P3 bramble loot over 300 seeds. ContentsItemId drawn at birth (type:value -> count):
+  238:0 -> 132
+  238:69 -> 9
+  238:84 -> 9
+  239:0 -> 131
+  239:69 -> 1
+  239:70 -> 1
+  239:71 -> 7
+  239:84 -> 2
+  239:85 -> 8
+entities born at DestroyEntity(bramble, -1) (sprite types -> count):
+  - -> 263
+  100 -> 1
+  101 -> 7
+  114 -> 11
+  115 -> 8
+  99 -> 10

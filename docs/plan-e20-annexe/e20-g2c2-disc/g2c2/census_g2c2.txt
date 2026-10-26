@@ -1,0 +1,113 @@
+map 2: bramble238 x10, bramble239 x1
+map 3: bramble238 x1
+map 4: bramble238 x3
+map 7: bramble238 x1
+map 13: bramble238 x2
+map 14: bramble238 x1
+map 15: bramble238 x2
+map 84: bramble238 x1
+map 86: bramble238 x1, bramble239 x8, torch x6
+map 87: bramble238 x6, bramble239 x9, drop x6, torch x8
+map 88: bramble238 x1, bramble239 x5, drop x13, torch x3
+map 89: bramble238 x2, bramble239 x20, torch x4
+map 90: bramble238 x1, bramble239 x13, drop x7, torch x4
+map 92: bramble238 x7, bramble239 x6, drop x9, torch x16
+map 93: bramble238 x7, bramble239 x12, torch x4
+map 94: bramble238 x6, bramble239 x17, drop x7, torch x8
+map 158: drop x14
+map 311: bramble238 x1
+map 324: bramble239 x2
+map 380: bramble238 x2
+map 398: bramble238 x1
+map 411: bramble238 x1
+map 441: bramble238 x3, torch x3
+map 442: bramble238 x2, torch x1
+map 447: bramble238 x1, bramble239 x5
+TOTAL enabled placements: {'bramble238': 63, 'bramble239': 98, 'torch': 57, 'drop': 56}
+
+--- torches (map, rec, enabled, x, y, h, dir, scripted programs, contents)
+map  86 rec   0 en=1 pos(  6, 94,h16) dir=192 scripted={} contents=0
+map  86 rec   1 en=1 pos( 16, 94,h16) dir=192 scripted={} contents=0
+map  86 rec   2 en=1 pos( 17, 70,h16) dir=192 scripted={} contents=0
+map  86 rec   5 en=1 pos( 32, 42,h10) dir=192 scripted={} contents=0
+map  86 rec   6 en=1 pos( 50, 42,h10) dir=192 scripted={} contents=0
+map  86 rec  38 en=1 pos( 82, 46,h10) dir=192 scripted={} contents=0
+map  87 rec   1 en=1 pos( 32, 88,h 8) dir=192 scripted={} contents=0
+map  87 rec   2 en=1 pos(  2,102,h 8) dir=192 scripted={} contents=0
+map  87 rec   3 en=1 pos( 24,108,h 8) dir=192 scripted={} contents=0
+map  87 rec   9 en=1 pos( 38, 26,h14) dir=192 scripted={} contents=0
+map  87 rec  10 en=1 pos( 42, 26,h14) dir=192 scripted={} contents=0
+map  87 rec  54 en=1 pos( 73, 22,h30) dir=128 scripted={'C': 183} contents=0
+map  87 rec  55 en=1 pos( 66, 22,h30) dir=128 scripted={'C': 183} contents=0
+map  87 rec  56 en=1 pos( 80, 22,h30) dir=128 scripted={'C': 183} contents=0
+map  88 rec  19 en=1 pos( 82, 24,h 6) dir=192 scripted={} contents=0
+map  88 rec  20 en=1 pos( 90, 24,h 6) dir=192 scripted={} contents=0
+map  88 rec  21 en=1 pos( 96, 26,h 6) dir=192 scripted={} contents=0
+map  89 rec  46 en=1 pos( 57, 32,h 2) dir=192 scripted={} contents=0
+map  89 rec  55 en=1 pos(100, 98,h20) dir=192 scripted={} contents=0
+map  89 rec  56 en=1 pos( 84,108,h 2) dir=192 scripted={} contents=0
+map  89 rec  57 en=1 pos( 48, 16,h 2) dir=192 scripted={} contents=0
+map  90 rec   4 en=1 pos( 92, 34,h28) dir=128 scripted={'C': 130} contents=0
+map  90 rec  12 en=1 pos( 14, 26,h16) dir=192 scripted={} contents=0
+map  90 rec  13 en=1 pos(  4, 60,h 8) dir=192 scripted={} contents=0
+map  90 rec  14 en=1 pos( 18, 94,h 2) dir=192 scripted={} contents=0
+map  92 rec   0 en=1 pos( 26, 30,h20) dir=192 scripted={} contents=0
+map  92 rec   1 en=1 pos( 26, 36,h10) dir=192 scripted={} contents=0
+map  92 rec   2 en=1 pos( 16, 36,h10) dir=192 scripted={} contents=0
+map  92 rec  21 en=1 pos( 30,104,h 6) dir=192 scripted={} contents=0
+map  92 rec  22 en=1 pos( 30,108,h 6) dir=192 scripted={} contents=0
+map  92 rec  23 en=1 pos( 26,104,h 6) dir=192 scripted={} contents=0
+map  92 rec  24 en=1 pos( 26,108,h 6) dir=192 scripted={} contents=0
+map  92 rec  43 en=1 pos( 74, 20,h10) dir=192 scripted={} contents=0
+map  92 rec  44 en=1 pos( 70, 20,h10) dir=192 scripted={} contents=0
+map  92 rec  45 en=1 pos( 66, 20,h10) dir=192 scripted={} contents=0
+map  92 rec  46 en=1 pos( 62, 20,h10) dir=192 scripted={} contents=0
+map  92 rec  56 en=1 pos( 92, 80,h 8) dir=192 scripted={} contents=0
+map  92 rec  57 en=1 pos( 98, 94,h 2) dir=192 scripted={} contents=0
+map  92 rec  58 en=1 pos( 72, 84,h 2) dir=192 scripted={} contents=0
+map  92 rec  59 en=1 pos( 76, 84,h 2) dir=192 scripted={} contents=0
+map  92 rec  68 en=1 pos( 38, 48,h22) dir=128 scripted={} contents=0
+map  93 rec  21 en=1 pos( 72, 24,h 8) dir=192 scripted={} contents=0
+map  93 rec  27 en=1 pos(  2, 60,h 2) dir=192 scripted={} contents=0
+map  93 rec  28 en=1 pos( 16, 46,h 2) dir=192 scripted={} contents=0
+map  93 rec  29 en=1 pos(  2, 32,h 2) dir=192 scripted={} contents=0
+map  94 rec   0 en=1 pos( 96, 40,h 2) dir=192 scripted={} contents=0
+map  94 rec   1 en=1 pos(100, 40,h 2) dir=192 scripted={} contents=0
+map  94 rec  16 en=1 pos( 40,106,h34) dir=128 scripted={'C': 145} contents=0
+map  94 rec  17 en=1 pos( 46,106,h34) dir=128 scripted={'C': 145} contents=0
+map  94 rec  18 en=1 pos( 40,112,h34) dir=128 scripted={'C': 145} contents=0
+map  94 rec  19 en=1 pos( 46,112,h34) dir=128 scripted={'C': 145} contents=0
+map  94 rec  23 en=1 pos( 32, 20,h 6) dir=192 scripted={} contents=0
+map  94 rec  24 en=1 pos( 40, 20,h 6) dir=192 scripted={} contents=0
+map 441 rec  15 en=1 pos( 10, 80,h 4) dir=192 scripted={} contents=0
+map 441 rec  17 en=1 pos( 32, 98,h 4) dir=192 scripted={} contents=0
+map 441 rec  30 en=1 pos( 34, 98,h 4) dir=192 scripted={} contents=0
+map 442 rec  28 en=1 pos( 28, 78,h 4) dir=192 scripted={} contents=0
+
+--- maps that hold at least one torch: brambles / drops
+map  86: torches 6, brambles 238: 1, brambles 239: 8, drops: 0
+map  87: torches 8, brambles 238: 6, brambles 239: 9, drops: 6
+map  88: torches 3, brambles 238: 1, brambles 239: 5, drops: 13
+map  89: torches 4, brambles 238: 2, brambles 239: 20, drops: 0
+map  90: torches 4, brambles 238: 1, brambles 239: 13, drops: 7
+map  92: torches 16, brambles 238: 7, brambles 239: 6, drops: 9
+map  93: torches 4, brambles 238: 7, brambles 239: 12, drops: 0
+map  94: torches 8, brambles 238: 6, brambles 239: 17, drops: 7
+map 441: torches 3, brambles 238: 3, brambles 239: 0, drops: 0
+map 442: torches 1, brambles 238: 2, brambles 239: 0, drops: 0
+
+--- maps with brambles but no torch (map: n238/n239)
+map   2: 238 x10, 239 x1
+map   3: 238 x1, 239 x0
+map   4: 238 x3, 239 x0
+map   7: 238 x1, 239 x0
+map  13: 238 x2, 239 x0
+map  14: 238 x1, 239 x0
+map  15: 238 x2, 239 x0
+map  84: 238 x1, 239 x0
+map 311: 238 x1, 239 x0
+map 324: 238 x0, 239 x2
+map 380: 238 x2, 239 x0
+map 398: 238 x1, 239 x0
+map 411: 238 x1, 239 x0
+map 447: 238 x1, 239 x5

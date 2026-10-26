@@ -1,0 +1,8 @@
+drop at x=140: +0x130 names the drop at ticks []; byte 0x274 first non-zero at None; flame ticks 87..125
+drop at x=160: +0x130 names the drop at ticks []; byte 0x274 first non-zero at None; flame ticks 87..125
+drop at x=170: +0x130 names the drop at ticks []; byte 0x274 first non-zero at None; flame ticks 87..125
+drop at x=178: +0x130 names the drop at ticks []; byte 0x274 first non-zero at None; flame ticks 87..125
+drop at x=184: +0x130 names the drop at ticks []; byte 0x274 first non-zero at None; flame ticks 87..125
+drop at x=190: +0x130 names the drop at ticks []; byte 0x274 first non-zero at None; flame ticks 87..125
+drop at x=200: +0x130 names the drop at ticks []; byte 0x274 first non-zero at None; flame ticks 87..125
+drop at x=210: +0x130 names the drop at ticks []; byte 0x274 first non-zero at None; flame ticks 87..125

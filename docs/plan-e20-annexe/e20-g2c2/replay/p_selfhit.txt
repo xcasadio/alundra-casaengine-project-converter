@@ -1,0 +1,17 @@
+variant moving: (tick, torch status, torch anim_t, torch flags, torch HitCounter, torch +0x1C8, hero +0x224, hero +0x1D0, hero hp)
+(61, 2, 1, '0x332376', 0, '0x80146166', '0x0', 0, 10)
+(84, 3, 2, '0x332346', 0, '0x80146166', '0x0', 0, 10)
+(87, 4, 2, '0x332346', 0, '0x80146166', '0x0', 0, 10)
+(88, 0, 0, '0x0', 0, '0x0', '0x0', 0, 10)
+first journal fx/spark lines: [(87, 'fxattach(id=10,target=slot 1)')]
+
+variant still: (tick, torch status, torch anim_t, torch flags, torch HitCounter, torch +0x1C8, hero +0x224, hero +0x1D0, hero hp)
+(61, 2, 3, '0x332376', 0, '0x80146166', '0x0', 0, 10)
+(84, 3, 2, '0x332346', 0, '0x80146166', '0x0', 0, 10)
+(87, 4, 2, '0x332346', 0, '0x80146166', '0x0', 0, 10)
+(88, 0, 0, '0x0', 0, '0x0', '0x0', 0, 10)
+first journal fx/spark lines: [(87, 'fxattach(id=10,target=slot 1)')]
+
+variant carry: (tick, torch status, torch anim_t, torch flags, torch HitCounter, torch +0x1C8, hero +0x224, hero +0x1D0, hero hp)
+first journal fx/spark lines: []
+

@@ -1,0 +1,101 @@
+=== site 8002f818
+8002f814 lw $a3, 0x114($a0)
+8002f818 jal 0x80039f58
+8002f81c move $a1, $zero
+=== site 80032bec
+80032bdc move $a1, $a0
+80032be8 lw $a3, 0x114($s1)
+80032bec jal 0x80039f58
+80032bf0 addiu $a2, $s0, 0x1e
+=== site 80032cd8
+80032cc4 move $a1, $a0
+80032cc8 addiu $a2, $s0, 0x1e
+80032ccc move $a3, $s3
+80032cd8 jal 0x80039f58
+80032cdc sw $zero, 0x18($sp)
+=== site 80036134
+80036110 lui $a3, 0xffa0
+80036118 addu $a3, $t0, $a3
+80036134 jal 0x80039f58
+80036138 sw $t0, 0x10($sp)
+=== site 80062280
+80062264 lw $a2, 0x68($s2)
+80062268 move $a1, $s0
+80062278 addiu $a2, $a2, -0x100
+80062280 jal 0x80039f58
+80062284 sw $v1, 0x14($sp)
+=== site 8006c060
+8006c034 lw $a3, ($a3)
+8006c05c addu $a3, $t2, $a3
+8006c060 jal 0x80039f58
+8006c064 sw $v0, 0x18($sp)
+=== site 8006cd38
+8006cd10 lw $a3, 0x11c($s0)
+8006cd1c addu $a3, $a3, $t1
+8006cd24 lw $a3, ($v0)
+8006cd34 addu $a3, $t2, $a3
+8006cd38 jal 0x80039f58
+8006cd3c sw $v0, 0x18($sp)
+=== site 8006d88c
+8006d864 lw $a3, 0x11c($s0)
+8006d870 addu $a3, $a3, $t1
+8006d878 lw $a3, ($v0)
+8006d888 addu $a3, $t2, $a3
+8006d88c jal 0x80039f58
+8006d890 sw $v0, 0x18($sp)
+=== site 8006e79c
+8006e774 lw $t0, 4($a3)
+8006e778 lw $a3, ($a3)
+8006e790 addu $a3, $t2, $a3
+8006e79c jal 0x80039f58
+8006e7a0 sw $v0, 0x18($sp)
+=== site 8006efec
+8006efc4 lh $a3, ($v1)
+8006efd8 sll $a3, $a3, 0xb
+8006efe4 addu $a3, $t0, $a3
+8006efec jal 0x80039f58
+8006eff0 sw $v0, 0x14($sp)
+=== site 8006f0a8
+8006f080 lh $a3, ($s3)
+8006f094 sll $a3, $a3, 0xc
+8006f0a0 addu $a3, $t0, $a3
+8006f0a8 jal 0x80039f58
+8006f0ac sw $v0, 0x14($sp)
+=== site 8006f564
+8006f55c addu $a3, $a3, $v0
+8006f564 jal 0x80039f58
+8006f568 sw $t0, 0x14($sp)
+=== site 8006f704
+8006f6e8 addiu $a1, $zero, 1
+8006f6f0 ori $a2, $a2, 0xe6
+8006f6f8 move $a3, $t5
+8006f704 jal 0x80039f58
+8006f708 sw $v0, 0x14($sp)
+=== site 80071dd8
+80071dac lw $a3, 0x114($s3)
+80071dbc addu $a3, $a3, $t4
+80071dd8 jal 0x80039f58
+80071ddc sw $t0, 0x14($sp)
+=== site 800731cc
+800731ac lw $a3, 0x114($a0)
+800731b4 addu $a3, $a3, $s2
+800731cc jal 0x80039f58
+800731d0 sw $v1, 0x14($sp)
+=== site 80077250
+80077230 addiu $a1, $zero, 1
+80077234 addiu $a2, $a2, -0x100
+80077238 move $a3, $t4
+80077250 jal 0x80039f58
+80077254 sw $v1, 0x14($sp)
+=== site 8007ca24
+8007ca08 sll $a3, $v0, 1
+8007ca0c addu $a3, $a3, $v0
+8007ca10 sll $a3, $a3, 0x13
+8007ca1c addu $a3, $a3, $v0
+8007ca24 jal 0x80039f58
+8007ca28 sw $v1, 0x14($sp)
+=== site 8007fd30
+8007fd0c move $a1, $zero
+8007fd2c lw $a3, 0x114($s1)
+8007fd30 jal 0x80039f58
+8007fd34 addiu $a2, $s2, 0x1e

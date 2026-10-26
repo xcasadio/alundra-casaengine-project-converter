@@ -1,0 +1,19 @@
+8007e8ac 8c820224 lw $v0, 0x224($a0)
+8007e8b0 00000000 nop 
+8007e8b4 8c4201c8 lw $v0, 0x1c8($v0)
+8007e8b8 00000000 nop 
+8007e8bc 90420000 lbu $v0, ($v0)
+8007e8c0 24030006 addiu $v1, $zero, 6
+8007e8c4 3042000f andi $v0, $v0, 0xf
+8007e8c8 14430007 bne $v0, $v1, 0x8007e8e8
+8007e8cc 24030001 addiu $v1, $zero, 1
+8007e8d0 8c82006c lw $v0, 0x6c($a0)
+8007e8d4 ac830088 sw $v1, 0x88($a0)
+8007e8d8 2403ff7f addiu $v1, $zero, -0x81
+8007e8dc 34420046 ori $v0, $v0, 0x46
+8007e8e0 00431024 and $v0, $v0, $v1
+8007e8e4 ac82006c sw $v0, 0x6c($a0)
+8007e8e8 03e00008 jr $ra
+8007e8ec 00000000 nop 
+8007e8f0 27bdffe8 addiu $sp, $sp, -0x18
+-----

@@ -1,0 +1,61 @@
+P5 thrown per_frame=1 walking=False: Square at tick 1; hero anim 12, torch flags 0x3323E2
+t1 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=0 z=36.00 b274=0 | flame=- snd(26)
+t2 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=0 z=39.50 b274=0 | flame=- 
+t3 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=0 z=42.50 b274=0 | flame=- 
+t4 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=0 z=45.00 b274=0 | flame=- 
+t5 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=0 z=47.00 b274=0 | flame=- 
+t6 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=0 z=48.50 b274=0 | flame=- 
+t7 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=0 z=49.50 b274=0 | flame=- 
+t8 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=0 z=50.00 b274=0 | flame=- 
+t9 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=0 z=50.00 b274=0 | flame=- 
+t10 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=0 z=49.50 b274=0 | flame=- 
+t11 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=0 z=48.50 b274=0 | flame=- 
+t12 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=0 z=47.00 b274=0 | flame=- 
+t13 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=0 z=45.00 b274=0 | flame=- 
+t14 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=0 z=42.50 b274=0 | flame=- 
+t15 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=0 z=39.50 b274=0 | flame=- 
+t16 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=0 z=36.00 b274=0 | flame=- 
+t17 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=0 z=32.00 b274=0 | flame=- 
+t18 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=0 z=27.50 b274=0 | flame=- 
+t19 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=0 z=22.50 b274=0 | flame=- 
+t20 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=0 z=17.00 b274=0 | flame=- 
+t21 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=0 z=11.00 b274=0 | flame=- 
+t22 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=0 z=4.50 b274=0 | flame=- 
+t23 torch present=True st=Normal anim_t=3 reset=0 flags=0x332376 ground=1 z=0.00 b274=0 | flame=- 
+t24 torch present=True st=Deactivated anim_t=2 reset=0 flags=0x332346 ground=1 z=0.00 b274=0 | flame=- snd(142)
+t25 torch present=True st=Deactivated anim_t=2 reset=0 flags=0x332346 ground=1 z=0.00 b274=0 | flame=- 
+t26 torch present=True st=Deactivated anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=- 
+t27 torch present=True st=FlagToDestroy anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Loaded anim_t=3 flags=0x132146 x=143.50 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t28 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 snd(41)
+t29 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t30 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t31 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t32 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t33 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t34 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t35 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t36 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t37 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t38 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t39 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t40 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t41 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t42 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t43 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t44 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t45 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t46 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t47 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t48 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t49 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t50 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t51 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t52 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t53 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t54 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t55 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t56 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t57 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t58 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t59 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 
+t60 torch present=False st=Destroyed anim_t=2 reset=1 flags=0x332346 ground=1 z=0.00 b274=0 | flame=st=Normal anim_t=3 flags=0x132146 x=143.00 y=100.00 z=0.00 codes=0/0/0/0/0/0 

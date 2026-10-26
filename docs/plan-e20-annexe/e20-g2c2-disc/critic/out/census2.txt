@@ -1,0 +1,15 @@
+C70: held by 10 (map,index) pairs; indices {137: 10}
+   enabled placements per map: {86: 6, 87: 8, 88: 3, 89: 4, 90: 4, 92: 16, 93: 4, 94: 8, 441: 3, 442: 1}  total=57
+   DISABLED placements per map: {}  total=0
+E20: held by 10 (map,index) pairs; indices {137: 10}
+   enabled placements per map: {86: 6, 87: 8, 88: 3, 89: 4, 90: 4, 92: 16, 93: 4, 94: 8, 441: 3, 442: 1}  total=57
+   DISABLED placements per map: {}  total=0
+C71: held by 6 (map,index) pairs; indices {135: 6}
+   enabled placements per map: {87: 6, 88: 13, 90: 7, 92: 9, 94: 7, 158: 14}  total=56
+   DISABLED placements per map: {}  total=0
+A19: held by 6 (map,index) pairs; indices {135: 6}
+   enabled placements per map: {87: 6, 88: 13, 90: 7, 92: 9, 94: 7, 158: 14}  total=56
+   DISABLED placements per map: {}  total=0
+D34: held by 0 (map,index) pairs; indices {}
+   enabled placements per map: {}  total=0
+   DISABLED placements per map: {}  total=0

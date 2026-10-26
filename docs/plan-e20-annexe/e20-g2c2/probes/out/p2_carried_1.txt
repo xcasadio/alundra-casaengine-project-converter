@@ -1,0 +1,15 @@
+P2 carried per_frame=1; hero anim 12, carried=True, torch flags 0x3323E2 hp=10
+t1 torch st=Normal anim_t=0 hit=0 touching=False pos=(109.00,100.00,32.00) | hero hp=10 anim=12 touching=False hit=0 carried=True frameBox=True sparks=0
+t2 torch st=Normal anim_t=0 hit=0 touching=False pos=(109.00,100.00,32.00) | hero hp=10 anim=12 touching=False hit=0 carried=True frameBox=True sparks=0
+t3 torch st=Normal anim_t=0 hit=0 touching=False pos=(109.00,100.00,32.00) | hero hp=10 anim=12 touching=False hit=0 carried=True frameBox=True sparks=0
+t10 torch st=Normal anim_t=0 hit=0 touching=False pos=(109.00,100.00,32.00) | hero hp=10 anim=12 touching=False hit=0 carried=True frameBox=True sparks=0
+t20 torch st=Normal anim_t=0 hit=0 touching=False pos=(109.00,100.00,32.00) | hero hp=10 anim=12 touching=False hit=0 carried=True frameBox=True sparks=0
+t30 torch st=Normal anim_t=0 hit=0 touching=False pos=(109.00,100.00,32.00) | hero hp=10 anim=12 touching=False hit=0 carried=True frameBox=True sparks=0
+t40 torch st=Normal anim_t=0 hit=0 touching=False pos=(109.00,100.00,32.00) | hero hp=10 anim=12 touching=False hit=0 carried=True frameBox=True sparks=0
+t50 torch st=Normal anim_t=0 hit=0 touching=False pos=(109.00,100.00,32.00) | hero hp=10 anim=12 touching=False hit=0 carried=True frameBox=True sparks=0
+t60 torch st=Normal anim_t=0 hit=0 touching=False pos=(109.00,100.00,32.00) | hero hp=10 anim=12 touching=False hit=0 carried=True frameBox=True sparks=0
+t70 torch st=Normal anim_t=0 hit=0 touching=False pos=(109.00,100.00,32.00) | hero hp=10 anim=12 touching=False hit=0 carried=True frameBox=True sparks=0
+t80 torch st=Normal anim_t=0 hit=0 touching=False pos=(109.00,100.00,32.00) | hero hp=10 anim=12 touching=False hit=0 carried=True frameBox=True sparks=0
+t90 torch st=Normal anim_t=0 hit=0 touching=False pos=(109.00,100.00,32.00) | hero hp=10 anim=12 touching=False hit=0 carried=True frameBox=True sparks=0
+t100 torch st=Normal anim_t=0 hit=0 touching=False pos=(109.00,100.00,32.00) | hero hp=10 anim=12 touching=False hit=0 carried=True frameBox=True sparks=0
+SUMMARY max torch HitCounter=0; ticks where the hero touches an entity=0; hero hp=10; torch status=Normal; sparks=0

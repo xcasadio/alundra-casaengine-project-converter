@@ -1,0 +1,1 @@
+vectors 90 {'C70': 30, 'E20': 30, 'D34': 30} differences 0 words read by the real code 328 words written 188

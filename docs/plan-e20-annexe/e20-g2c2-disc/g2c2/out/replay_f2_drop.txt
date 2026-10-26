@@ -1,0 +1,96 @@
+variant nodrop (drop slot None, drop entity None, drop type None)
+t60: status=2 anim_t=0 flags=0x3323e2 xcoll=0 b274=0 AC=0 x=109.0
+t61: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=112.0
+t62: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=115.0
+t63: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=118.0
+t64: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=121.0
+t65: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=124.0
+t66: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=127.0
+t67: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=130.0
+t68: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=133.0
+t69: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=136.0
+t70: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=139.0
+t71: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=142.0
+t72: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=145.0
+t73: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=148.0
+t74: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=151.0
+t75: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=154.0
+t76: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=157.0
+t77: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=160.0
+t78: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=163.0
+t79: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=166.0
+t80: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=169.0
+t81: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=172.0
+t82: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=175.0
+t83: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=178.0
+t84: status=3 anim_t=2 flags=0x332346 xcoll=0 b274=0 AC=0 x=178.0
+t86: status=3 anim_t=2 flags=0x332346 xcoll=0 b274=0 AC=1 x=178.0
+t87: status=4 anim_t=2 flags=0x332346 xcoll=0 b274=0 AC=1 x=178.0
+t88: status=0 anim_t=0 flags=0x0 xcoll=0 b274=0 AC=0 x=0.0
+flame slots at the end: []
+journal: [(61, ['snd(26)', 'snd(0)']), (80, ['snd(0)']), (84, ['snd(142)']), (87, ['snd(0)', 'fxattach(id=10,target=slot 1)', 'stubA@8006174C(slot2)']), (88, ['stubA@8006174C(slot2)', 'snd(41)'])]
+
+variant drop (drop slot 2, drop entity 0x80128258, drop type 0x187)
+t60: status=2 anim_t=0 flags=0x3323e2 xcoll=0 b274=0 AC=0 x=109.0
+t61: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=112.0
+t62: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=115.0
+t63: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=118.0
+t64: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=121.0
+t65: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=124.0
+t66: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=127.0
+t67: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=130.0
+t68: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=133.0
+t69: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=136.0
+t70: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=139.0
+t71: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=142.0
+t72: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=145.0
+t73: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=148.0
+t74: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=151.0
+t75: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=154.0
+t76: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=157.0
+t77: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=160.0
+t78: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=163.0
+t79: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=166.0
+t80: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=169.0
+t81: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=172.0
+t82: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=175.0
+t83: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=178.0
+t84: status=3 anim_t=2 flags=0x332346 xcoll=0 b274=0 AC=0 x=178.0
+t86: status=3 anim_t=2 flags=0x332346 xcoll=0 b274=0 AC=1 x=178.0
+t87: status=4 anim_t=2 flags=0x332346 xcoll=0 b274=0 AC=1 x=178.0
+t88: status=0 anim_t=0 flags=0x0 xcoll=0 b274=0 AC=0 x=0.0
+flame slots at the end: []
+journal: [(61, ['stubC@8004205C(slot2)', 'snd(26)', 'snd(0)']), (80, ['stubC@8004205C(slot2)', 'snd(0)']), (84, ['stubC@8004205C(slot2)', 'snd(142)']), (87, ['snd(0)', 'fxattach(id=10,target=slot 1)', 'stubC@8004205C(slot2)', 'stubA@8006174C(slot3)']), (88, ['stubC@8004205C(slot2)', 'stubA@8006174C(slot3)', 'snd(41)'])]
+
+variant dropfar (drop slot 2, drop entity 0x80128258, drop type 0x187)
+t60: status=2 anim_t=0 flags=0x3323e2 xcoll=0 b274=0 AC=0 x=109.0
+t61: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=112.0
+t62: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=115.0
+t63: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=118.0
+t64: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=121.0
+t65: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=124.0
+t66: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=127.0
+t67: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=130.0
+t68: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=133.0
+t69: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=136.0
+t70: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=139.0
+t71: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=142.0
+t72: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=145.0
+t73: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=148.0
+t74: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=151.0
+t75: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=154.0
+t76: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=157.0
+t77: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=160.0
+t78: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=163.0
+t79: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=166.0
+t80: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=169.0
+t81: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=172.0
+t82: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=175.0
+t83: status=2 anim_t=1 flags=0x332376 xcoll=0 b274=0 AC=0 x=178.0
+t84: status=3 anim_t=2 flags=0x332346 xcoll=0 b274=0 AC=0 x=178.0
+t86: status=3 anim_t=2 flags=0x332346 xcoll=0 b274=0 AC=1 x=178.0
+t87: status=4 anim_t=2 flags=0x332346 xcoll=0 b274=0 AC=1 x=178.0
+t88: status=0 anim_t=0 flags=0x0 xcoll=0 b274=0 AC=0 x=0.0
+flame slots at the end: []
+journal: [(61, ['stubC@8004205C(slot2)', 'snd(26)', 'snd(0)']), (80, ['stubC@8004205C(slot2)', 'snd(0)']), (84, ['stubC@8004205C(slot2)', 'snd(142)']), (87, ['snd(0)', 'fxattach(id=10,target=slot 1)', 'stubC@8004205C(slot2)', 'stubA@8006174C(slot3)']), (88, ['stubC@8004205C(slot2)', 'stubA@8006174C(slot3)', 'snd(41)'])]
+

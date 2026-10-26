@@ -1,0 +1,233 @@
+29
+=== 8002bdf4 rt=2 rs=17
+   8002bde0 jal 0x8002e130
+   8002bde4 addiu $a0, $a0, 0x10
+   8002bde8 lw $v1, -0x3fa8($s0)
+   8002bdec nop 
+   8002bdf0 bgez $v1, 0x8002be0c
+   8002bdf4 sw $v0, 0x28($s1)
+   8002bdf8 lw $v0, 4($s1)
+=== 8002d988 rt=2 rs=8
+   8002d974 sw $zero, 0x24($t0)
+   8002d978 lw $v0, 8($t1)
+   8002d97c nop 
+   8002d980 beqz $v0, 0x8002d9bc
+   8002d984 addu $v0, $a1, $v0
+   8002d988 sw $v0, 0x28($t0)
+   8002d98c move $v1, $v0
+=== 8002ee1c rt=3 rs=16
+   8002ee08 addiu $v1, $v0, 0x7d30
+   8002ee0c sw $s0, 0x2c($v1)
+   8002ee10 lw $v0, 0x12c($s0)
+   8002ee14 nop 
+   8002ee18 bne $v0, $v1, 0x8002ee38
+   8002ee1c sw $v1, 0x28($s0)
+   8002ee20 lw $v0, 0x144($v1)
+=== 80031464 rt=2 rs=19
+   80031450 addu $v0, $v0, $v1
+   80031454 sll $s1, $a0, 0x10
+   80031458 lbu $v1, 8($a3)
+   8003145c lw $v0, ($v0)
+   80031460 nop 
+   80031464 sw $v0, 0x28($s3)
+   80031468 addiu $v0, $zero, 3
+=== 8003429c rt=16 rs=5
+   80034288 addiu $a2, $zero, 1
+   8003428c move $a1, $v0
+   80034290 beqz $a1, 0x8003430c
+   80034294 addiu $v0, $zero, 1
+   80034298 sw $a1, 0x2c($s0)
+   8003429c sw $s0, 0x28($a1)
+   800342a0 lw $v0, 0x144($s0)
+=== 800345fc rt=16 rs=5
+   800345e8 beqz $a1, 0x8003466c
+   800345ec addiu $v0, $zero, 1
+   800345f0 addiu $v0, $zero, 0xf0
+   800345f4 sw $v0, 0x274($a1)
+   800345f8 sw $a1, 0x2c($s0)
+   800345fc sw $s0, 0x28($a1)
+   80034600 lw $v0, 0x144($s0)
+=== 8003ebe0 rt=2 rs=16
+   8003ebcc sw $a3, 0xc($s0)
+   8003ebd0 lw $v0, ($a2)
+   8003ebd4 nop 
+   8003ebd8 lbu $v0, 7($v0)
+   8003ebdc nop 
+   8003ebe0 sw $v0, 0x28($s0)
+   8003ebe4 lw $a0, ($a2)
+=== 80041540 rt=2 rs=3
+   8004152c sw $v0, 0x44($v1)
+   80041530 lw $v0, ($a2)
+   80041534 nop 
+   80041538 lbu $a0, 6($v0)
+   8004153c addiu $v0, $zero, 1
+   80041540 sw $v0, 0x28($v1)
+   80041544 sw $a0, 0x2c($v1)
+=== 80042f78 rt=3 rs=2
+   80042f64 addiu $a1, $zero, 0x10
+   80042f68 sw $zero, 0x38($v0)
+   80042f6c sw $zero, 0x34($v0)
+   80042f70 sw $zero, 0x30($v0)
+   80042f74 jal 0x80042c9c
+   80042f78 sw $v1, 0x28($v0)
+   80042f7c lw $ra, 0x10($sp)
+=== 80042fc8 rt=3 rs=2
+   80042fb4 addiu $a1, $zero, 0x10
+   80042fb8 sw $zero, 0x38($v0)
+   80042fbc sw $zero, 0x34($v0)
+   80042fc0 sw $zero, 0x30($v0)
+   80042fc4 jal 0x80042c9c
+   80042fc8 sw $v1, 0x28($v0)
+   80042fcc lw $ra, 0x10($sp)
+=== 800431ac rt=2 rs=3
+   80043198 sw $v0, 0x40($v1)
+   8004319c lui $v0, 0x20
+   800431a0 sw $v0, 0x3c($v1)
+   800431a4 addiu $v0, $zero, 1
+   800431a8 sw $v0, 0x2c($v1)
+   800431ac sw $v0, 0x28($v1)
+   800431b0 lui $v0, 0xff
+=== 80043280 rt=3 rs=2
+   8004326c addiu $a1, $zero, 0x1e
+   80043270 sw $zero, 0x38($v0)
+   80043274 sw $zero, 0x34($v0)
+   80043278 sw $zero, 0x30($v0)
+   8004327c sw $v1, 0x2c($v0)
+   80043280 sw $v1, 0x28($v0)
+   80043284 sw $zero, 0x18($v0)
+=== 80043434 rt=3 rs=2
+   80043420 sw $zero, 0x34($v0)
+   80043424 sw $zero, 0x30($v0)
+   80043428 sw $zero, 0x44($v0)
+   8004342c sw $v1, 0x2c($v0)
+   80043430 jal 0x80042c9c
+   80043434 sw $v1, 0x28($v0)
+   80043438 lw $ra, 0x28($sp)
+=== 8004351c rt=3 rs=2
+   80043508 sw $zero, 0x38($v0)
+   8004350c sw $zero, 0x34($v0)
+   80043510 sw $zero, 0x30($v0)
+   80043514 sw $zero, 0x3c($v0)
+   80043518 sw $v1, 0x2c($v0)
+   8004351c sw $v1, 0x28($v0)
+   80043520 sw $zero, 0x18($v0)
+=== 800435cc rt=3 rs=2
+   800435b8 addiu $a1, $zero, 0x12c
+   800435bc sw $zero, 0x38($v0)
+   800435c0 sw $zero, 0x34($v0)
+   800435c4 sw $zero, 0x30($v0)
+   800435c8 jal 0x80042c9c
+   800435cc sw $v1, 0x28($v0)
+   800435d0 lw $ra, 0x10($sp)
+=== 800441ac rt=3 rs=2
+   80044198 addiu $v1, $zero, 1
+   8004419c sw $zero, 0x44($v0)
+   800441a0 sw $zero, 0x40($v0)
+   800441a4 sw $zero, 0x3c($v0)
+   800441a8 j 0x80044304
+   800441ac sw $v1, 0x28($v0)
+   800441b0 addiu $a0, $zero, 1
+=== 800441e4 rt=3 rs=2
+   800441d0 move $v1, $a0
+   800441d4 sw $zero, 0x44($v0)
+   800441d8 sw $zero, 0x40($v0)
+   800441dc sw $zero, 0x3c($v0)
+   800441e0 j 0x80044304
+   800441e4 sw $v1, 0x28($v0)
+   800441e8 addiu $a0, $zero, 1
+=== 8004421c rt=2 rs=16
+   80044208 move $v0, $a0
+   8004420c sw $zero, 0x44($s0)
+   80044210 sw $zero, 0x40($s0)
+   80044214 sw $zero, 0x3c($s0)
+   80044218 jal 0x80042c9c
+   8004421c sw $v0, 0x28($s0)
+   80044220 lw $v0, 0x48($s0)
+=== 800442ac rt=3 rs=2
+   80044298 move $v1, $a0
+   8004429c sw $zero, 0x44($v0)
+   800442a0 sw $zero, 0x40($v0)
+   800442a4 sw $zero, 0x3c($v0)
+   800442a8 j 0x80044304
+   800442ac sw $v1, 0x28($v0)
+   800442b0 addiu $a0, $zero, 2
+=== 800442e4 rt=2 rs=16
+   800442d0 addiu $v0, $zero, 1
+   800442d4 sw $zero, 0x44($s0)
+   800442d8 sw $zero, 0x40($s0)
+   800442dc sw $zero, 0x3c($s0)
+   800442e0 jal 0x80042c9c
+   800442e4 sw $v0, 0x28($s0)
+   800442e8 lw $v0, 0x50($s0)
+=== 8004c458 rt=2 rs=16
+   8004c444 lui $v0, 0x800b
+   8004c448 lw $v0, 0x28($s0)
+   8004c44c nop 
+   8004c450 addiu $v0, $v0, -1
+   8004c454 bgez $v0, 0x8004c468
+   8004c458 sw $v0, 0x28($s0)
+   8004c45c addiu $v0, $zero, 3
+=== 8004c464 rt=2 rs=16
+   8004c450 addiu $v0, $v0, -1
+   8004c454 bgez $v0, 0x8004c468
+   8004c458 sw $v0, 0x28($s0)
+   8004c45c addiu $v0, $zero, 3
+   8004c460 j 0x8004c47c
+   8004c464 sw $v0, 0x28($s0)
+   8004c468 bnez $v0, 0x8004c480
+=== 80059e08 rt=9 rs=4
+   80059df4 sw $zero, 0x2c($a0)
+   80059df8 sw $v0, 0xc($a0)
+   80059dfc sw $v1, 0x10($a0)
+   80059e00 sw $t0, 0x14($a0)
+   80059e04 jr $ra
+   80059e08 sw $t1, 0x28($a0)
+   80059e0c move $t0, $a0
+=== 80080a6c rt=3 rs=2
+   80080a58 move $a0, $v1
+   80080a5c addiu $a1, $zero, 8
+   80080a60 sw $zero, 0x38($v0)
+   80080a64 sw $zero, 0x34($v0)
+   80080a68 sw $zero, 0x30($v0)
+   80080a6c sw $v1, 0x28($v0)
+   80080a70 jal 0x80042a08
+=== 80080ac4 rt=3 rs=2
+   80080ab0 addiu $v1, $zero, 1
+   80080ab4 sw $a0, 0x44($v0)
+   80080ab8 sw $a0, 0x40($v0)
+   80080abc sw $a0, 0x3c($v0)
+   80080ac0 move $a0, $v1
+   80080ac4 sw $v1, 0x28($v0)
+   80080ac8 jal 0x80042a08
+=== 80083d58 rt=2 rs=17
+   80083d44 move $s2, $zero
+   80083d48 lw $a0, 0x28($s1)
+   80083d4c lw $v1, 0x24($s1)
+   80083d50 addiu $v0, $a0, 1
+   80083d54 addu $v1, $v1, $a0
+   80083d58 sw $v0, 0x28($s1)
+   80083d5c sb $a1, ($v1)
+=== 80083f4c rt=2 rs=17
+   80083f38 ori $a1, $zero, 0x20
+   80083f3c lw $a0, 0x28($s1)
+   80083f40 lw $v1, 0x24($s1)
+   80083f44 addiu $v0, $a0, 1
+   80083f48 addu $v1, $v1, $a0
+   80083f4c sw $v0, 0x28($s1)
+   80083f50 sb $a1, ($v1)
+=== 80083f94 rt=2 rs=17
+   80083f80 beq $a2, $v0, 0x80083fcc
+   80083f84 addiu $a1, $zero, -1
+   80083f88 lw $a0, 0x28($s1)
+   80083f8c nop 
+   80083f90 addiu $v0, $a0, 1
+   80083f94 sw $v0, 0x28($s1)
+   80083f98 lw $v0, 0x24($s1)
+=== 8008b078 rt=23 rs=4
+   8008b064 sw $s2, 0x14($a0)
+   8008b068 sw $s3, 0x18($a0)
+   8008b06c sw $s4, 0x1c($a0)
+   8008b070 sw $s5, 0x20($a0)
+   8008b074 sw $s6, 0x24($a0)
+   8008b078 sw $s7, 0x28($a0)
+   8008b07c move $v0, $zero

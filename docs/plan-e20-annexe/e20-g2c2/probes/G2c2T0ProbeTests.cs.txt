@@ -1,0 +1,300 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using Alundra.Ai.Objects;
+using Alundra.Audio;
+using Alundra.Entities;
+using Alundra.Events;
+using Alundra.Hero;
+using Alundra.Maps;
+using Alundra.Rng;
+using Alundra.Session;
+using Alundra.Tests.Audio;
+using Alundra.Tests.Support;
+using Alundra.Transitions;
+using Xunit;
+
+namespace Alundra.Tests.Probes;
+
+/// <summary>E20.g2c2 T0 THROWAWAY probes (never committed; kept as .txt in the annex): P1 the rain of the map 92 (D-G2C2-4), P2 the carried torch against the attack plate, P3 the loot of a bramble (Contents 255), P4 the hero when the carried torch is destroyed.</summary>
+[Collection(MusicPlayerSingletonCollection.Name)]
+public sealed class G2c2T0ProbeTests : IDisposable
+{
+    private static readonly string Out = Environment.GetEnvironmentVariable("G2C2_OUT") ?? Path.GetTempPath();
+
+    public G2c2T0ProbeTests()
+    {
+        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    public void Dispose()
+    {
+        EventProgramRunner.NativeSpriteTypeFilterForTests = null;
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    private static void Save(string name, string text) => File.WriteAllText(Path.Combine(Out, name), text);
+
+    internal sealed class Sounds : ISoundPlayer
+    {
+        internal int Tick;
+        internal readonly List<(int Tick, int Sfx)> Played = new();
+        public void PlaySfx(int sfxId) => Played.Add((Tick, sfxId));
+        public void RemixVoice(int sfxId, int left, int right) { }
+        public void FlushFrameSounds() { }
+        public void StopAllSfx() { }
+    }
+
+    /// <summary>The real world of the map 92 on the synthetic flat field, emptied but the hero, the native handlers off but for the types asked.</summary>
+    private sealed class Bench : IDisposable
+    {
+        internal readonly ArcRun Arc;
+        internal readonly Sounds Heard = new();
+        internal int Tick;
+        internal int Sparks;
+
+        internal Bench(string name, int heroX, int heroY, int[] types)
+        {
+            var spec = new ArcSpec("E20g2c2-" + name, "Magyscar", "Magyscar-92", Array.Empty<int>(), 8, 6, 0, 2000, RealController: true, Prefabs: true);
+            Arc = new ArcRun(spec);
+            try
+            {
+                Frames(4);
+                SyntheticField.Install(Arc, null);
+                foreach (var other in Arc.Entities.Where(e => !ReferenceEquals(e, Arc.Hero)).ToList())
+                {
+                    other.Status = EntityStatus.FlagToDestroy;
+                }
+
+                Arc.Proxy.RecycleDestroyedEntities();
+                typeof(WorldProxy).GetField("<SoundPlayer>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(Arc.Proxy, Heard);
+                Arc.Runner.NativeHandlersEnabled = false;
+                EventProgramRunner.NativeSpriteTypeFilterForTests = new HashSet<int>(types);
+                Arc.Hero.TargetDirection = 24;
+                Arc.PlaceHero(heroX, heroY, 0);
+                Frames(2);
+            }
+            catch
+            {
+                Dispose();
+                throw;
+            }
+        }
+
+        internal IEntityWorldContext World => Arc.Proxy;
+
+        internal void Frames(int count)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                Arc.HoldDirections(0);
+                Arc.OneFrame();
+            }
+        }
+
+        /// <summary>Ticks 1..last, <paramref name="perFrame"/> ticks per frame; <paramref name="onTick"/> is called at the end of every tick (the "inventory" pass), <paramref name="before"/> at the head of every frame.</summary>
+        internal void Go(int perFrame, int last, Action<int> onTick, Action<int>? before = null, Func<int, uint>? pad = null)
+        {
+            Tick = 0;
+            Arc.Proxy.HitSparksForTests = (_, _, _) => Sparks++;
+            Arc.Proxy.TickTraceForTests = pass =>
+            {
+                if (pass == "pad")
+                {
+                    Tick++;
+                    Heard.Tick = Tick;
+                }
+                else if (pass == "inventory")
+                {
+                    onTick(Tick);
+                }
+            };
+            for (var t = 1; t <= last; t += perFrame)
+            {
+                before?.Invoke(t);
+                Arc.HoldDirections(pad == null ? 0u : pad(t));
+                Arc.OneFrame(perFrame * 0.02f);
+            }
+
+            Arc.Proxy.TickTraceForTests = null;
+        }
+
+        public void Dispose()
+        {
+            EventProgramRunner.NativeSpriteTypeFilterForTests = null;
+            Arc.Dispose();
+        }
+    }
+
+    private static string Px(int raw) => (raw / 65536.0).ToString("F2", CultureInfo.InvariantCulture);
+
+    private static string Row(int tick, EntityScriptProxy torch, IEnumerable<EntityScriptProxy> all, Sounds s)
+    {
+        var flame = all.FirstOrDefault(e => e.SpriteType == 12);
+        var snd = string.Join(",", s.Played.Where(p => p.Tick == tick).Select(p => "snd(" + p.Sfx + ")"));
+        return $"t{tick} torch present={all.Contains(torch)} st={torch.Status} anim_t={torch.TargetAnimationId} reset={torch.ForceResetAnimationFlag} flags=0x{torch.Flags:X} ground={torch.IsOnGround} z={Px(torch.PosZ)} b274={torch.Bytes[0]} "
+            + $"| flame={(flame == null ? "-" : $"st={flame.Status} anim_t={flame.TargetAnimationId} flags=0x{flame.Flags:X} x={Px(flame.PosX)} y={Px(flame.PosY)} z={Px(flame.PosZ)} codes={string.Join("/", flame.SpriteProgramIndexes)}")} {snd}";
+    }
+
+    /// <summary>P1 (D-G2C2-4): the torch born by the record 68 of the map 92 (the 0x8A of C[15]) at the absolute position of the lever's trap, 0x62 [98, 68, 16, 0] posing DeactivateOnImpact; against the same torch without the bit.</summary>
+    [Theory]
+    [InlineData(1, true)]
+    [InlineData(2, true)]
+    [InlineData(3, true)]
+    [InlineData(1, false)]
+    public void P1_Rain(int perFrame, bool withBit)
+    {
+        using var b = new Bench("p1", 40, 40, new[] { 393, 12 });
+        var torch = b.World.SpawnEntityByRecordId(b.Arc.Hero, 68) ?? throw new InvalidOperationException("record 68 not born");
+        // 0x8A: absolute position (216, 424, 176 for the first of the four points), then 0x62 [98, 68, 16, 0]: Flags |= 0x10 on the entities of the record 68
+        torch.PosX = 216 << 16;
+        torch.PosY = 424 << 16;
+        torch.PosZ = 55 << 16;      // the oracle's p_rain falls from 55 px
+        torch.PushLogicalPositionToRoot();
+        torch.JoinsBirthTick = true;
+        var before = torch.Flags;
+        if (withBit)
+        {
+            torch.Flags |= 0x10;
+        }
+
+        var sb = new StringBuilder();
+        sb.AppendLine($"P1 rain per_frame={perFrame} withBit={withBit} flags at birth 0x{before:X} -> 0x{torch.Flags:X} type={torch.SpriteType} C={torch.SpriteProgramIndexes[2]} E={torch.SpriteProgramIndexes[4]} gravity-bit={(torch.Flags & 0x100) != 0}");
+        b.Go(perFrame, 60, tick => sb.AppendLine(Row(tick, torch, b.Arc.Entities, b.Heard)));
+        Save($"p1_rain_{perFrame}_{(withBit ? "bit" : "nobit")}.txt", sb.ToString());
+    }
+
+    /// <summary>P2: the torch in the hands for 100 ticks: nothing hits the hero, the torch never goes out (the attack plate against the hero).</summary>
+    [Theory]
+    [InlineData(1)]
+    [InlineData(3)]
+    public void P2_CarriedTorch(int perFrame)
+    {
+        using var b = new Bench("p2", 109, 100, new[] { 393, 12 });
+        var torch = b.World.SpawnEntityBySpriteIndex(null, true, 137, 109 << 16, 100 << 16, 32 << 16, 0x10) ?? throw new InvalidOperationException("torch not born");
+        torch.RidingEntity = b.Arc.Hero.LogicContextEntity;
+        PlayerManager.PutInHands(b.Arc.Hero, torch);
+        b.Frames(8);
+        var sb = new StringBuilder();
+        sb.AppendLine($"P2 carried per_frame={perFrame}; hero anim {b.Arc.Hero.TargetAnimationId}, carried={(b.Arc.Hero.CarriedEntity != null)}, torch flags 0x{torch.Flags:X} hp={b.Arc.Hero.Hp}");
+        var hits = 0;
+        var touched = 0;
+        b.Go(perFrame, 100, tick =>
+        {
+            hits = Math.Max(hits, torch.HitCounter);
+            if (b.Arc.Hero.TouchingEntity != null)
+            {
+                touched++;
+            }
+
+            if (tick % 10 == 0 || tick <= 3)
+            {
+                sb.AppendLine($"t{tick} torch st={torch.Status} anim_t={torch.TargetAnimationId} hit={torch.HitCounter} touching={(torch.TouchingEntity != null)} pos=({Px(torch.PosX)},{Px(torch.PosY)},{Px(torch.PosZ)}) | hero hp={b.Arc.Hero.Hp} anim={b.Arc.Hero.TargetAnimationId} touching={(b.Arc.Hero.TouchingEntity != null)} hit={b.Arc.Hero.HitCounter} carried={(b.Arc.Hero.CarriedEntity != null)} frameBox={torch.HasFrameBox} sparks={b.Sparks}");
+            }
+        });
+        sb.AppendLine($"SUMMARY max torch HitCounter={hits}; ticks where the hero touches an entity={touched}; hero hp={b.Arc.Hero.Hp}; torch status={torch.Status}; sparks={b.Sparks}");
+        Save($"p2_carried_{perFrame}.txt", sb.ToString());
+    }
+
+    /// <summary>P3: the loot of a bramble that is destroyed (the Contents 255 of its header): the draw of the contents at birth and the entities that appear at the destruction, over 300 seeds.</summary>
+    [Fact]
+    public void P3_BrambleLoot()
+    {
+        using var b = new Bench("p3", 40, 40, new[] { 393, 12 });
+        var sb = new StringBuilder();
+        var hist = new SortedDictionary<string, int>();
+        var contents = new SortedDictionary<string, int>();
+        for (var seed = 1; seed <= 300; seed++)
+        {
+            GameRandom.RandomSeed = unchecked(0x1234567u * (uint)seed + 0x9E3779B9u);
+            var type = seed % 2 == 0 ? 238 : 239;
+            var bramble = b.World.SpawnEntityBySpriteIndex(null, false, type, 120 << 16, 120 << 16, 0, 0) ?? throw new InvalidOperationException("bramble not born");
+            var c = $"{type}:{bramble.ContentsItemId}";
+            contents[c] = contents.GetValueOrDefault(c) + 1;
+            var known = new HashSet<EntityScriptProxy>(b.Arc.Entities, ReferenceEqualityComparer.Instance);
+            b.Arc.Proxy.DestroyEntity(bramble, -1);
+            var born = b.Arc.Entities.Where(e => !known.Contains(e)).Select(e => e.SpriteType).ToList();
+            var k = born.Count == 0 ? "-" : string.Join("+", born);
+            hist[k] = hist.GetValueOrDefault(k) + 1;
+            foreach (var e in b.Arc.Entities.Where(e => !ReferenceEquals(e, b.Arc.Hero)).ToList())
+            {
+                e.Status = EntityStatus.FlagToDestroy;
+            }
+
+            b.Arc.Proxy.RecycleDestroyedEntities();
+        }
+
+        sb.AppendLine("P3 bramble loot over 300 seeds. ContentsItemId drawn at birth (type:value -> count):");
+        foreach (var kv in contents) { sb.AppendLine($"  {kv.Key} -> {kv.Value}"); }
+        sb.AppendLine("entities born at DestroyEntity(bramble, -1) (sprite types -> count):");
+        foreach (var kv in hist) { sb.AppendLine($"  {kv.Key} -> {kv.Value}"); }
+        Save("p3_bramble_loot.txt", sb.ToString());
+    }
+
+    /// <summary>P4: the hero carries the torch, the torch is destroyed (DestroyEntity(torch, -1): what E20 does after C71 forced it to status 3): the state of the hero afterwards.</summary>
+    [Fact]
+    public void P4_CarriedTorchDestroyed()
+    {
+        using var b = new Bench("p4", 109, 100, new[] { 393, 12 });
+        var torch = b.World.SpawnEntityBySpriteIndex(null, true, 137, 109 << 16, 100 << 16, 32 << 16, 0x10) ?? throw new InvalidOperationException("torch not born");
+        torch.RidingEntity = b.Arc.Hero.LogicContextEntity;
+        PlayerManager.PutInHands(b.Arc.Hero, torch);
+        b.Frames(8);
+        var sb = new StringBuilder();
+        sb.AppendLine($"P4 before: hero anim_t={b.Arc.Hero.TargetAnimationId} carried={(b.Arc.Hero.CarriedEntity != null)} lock={b.Arc.Hero.CarryLockCounter} torch st={torch.Status} platform={(torch.PlatformEntity != null)}");
+        b.Go(1, 40, tick =>
+        {
+            sb.AppendLine($"t{tick} hero anim_t={b.Arc.Hero.TargetAnimationId} anim_c={b.Arc.Hero.CurrentAnimationId} carried={(b.Arc.Hero.CarriedEntity != null)} lock={b.Arc.Hero.CarryLockCounter} dir={b.Arc.Hero.TargetDirection} hp={b.Arc.Hero.Hp} | torch present={b.Arc.Entities.Contains(torch)} st={torch.Status} platform={(torch.PlatformEntity != null)}");
+        }, t =>
+        {
+            if (t == 11)
+            {
+                b.Arc.Proxy.DestroyEntity(torch, -1);
+                sb.AppendLine($"-- DestroyEntity(torch, -1) called at the head of tick {t}: carried={(b.Arc.Hero.CarriedEntity != null)}");
+            }
+        });
+        Save("p4_carried_destroyed.txt", sb.ToString());
+    }
+
+    /// <summary>P5 (P-T-2): the torch in the hands thrown by the Square at the tick 1: the chronology of the thrown torch (the oracle: landing T+22, status 3 T+23, flame T+26, torch freed T+27), still and walking.</summary>
+    [Theory]
+    [InlineData(1, false)]
+    [InlineData(2, false)]
+    [InlineData(3, false)]
+    [InlineData(1, true)]
+    public void P5_ThrownTorch(int perFrame, bool walking)
+    {
+        using var b = new Bench("p5", 109, 100, new[] { 393, 12 });
+        var torch = b.World.SpawnEntityBySpriteIndex(null, true, 137, 109 << 16, 100 << 16, 32 << 16, 0x10) ?? throw new InvalidOperationException("torch not born");
+        torch.RidingEntity = b.Arc.Hero.LogicContextEntity;
+        PlayerManager.PutInHands(b.Arc.Hero, torch);
+        b.Frames(8);
+        var sb = new StringBuilder();
+        sb.AppendLine($"P5 thrown per_frame={perFrame} walking={walking}: Square at tick 1; hero anim {b.Arc.Hero.TargetAnimationId}, torch flags 0x{torch.Flags:X}");
+        b.Go(perFrame, 60, tick => sb.AppendLine(Row(tick, torch, b.Arc.Entities, b.Heard)), null, t => t == 1 ? (PadState.Square | (walking ? PadState.Right : 0u)) : (walking && t < 4 ? PadState.Right : 0u));
+        Save($"p5_thrown_{perFrame}_{(walking ? "walk" : "still")}.txt", sb.ToString());
+    }
+
+    /// <summary>P1b: the same rain, the torch born by the sprite index (the marker of the entities born during play, HasLogicalZ) instead of the record: where the ground is read.</summary>
+    [Theory]
+    [InlineData(1)]
+    [InlineData(3)]
+    public void P1b_RainBornBySpriteIndex(int perFrame)
+    {
+        using var b = new Bench("p1b", 40, 40, new[] { 393, 12 });
+        var torch = b.World.SpawnEntityBySpriteIndex(null, true, 137, 216 << 16, 424 << 16, 55 << 16, 0x10) ?? throw new InvalidOperationException("torch not born");
+        torch.Flags |= 0x10;
+        var sb = new StringBuilder();
+        sb.AppendLine($"P1b rain by sprite index per_frame={perFrame} marker={torch.HasLogicalZ} flags 0x{torch.Flags:X}");
+        b.Go(perFrame, 40, tick => sb.AppendLine(Row(tick, torch, b.Arc.Entities, b.Heard)));
+        Save($"p1b_rain_sprite_{perFrame}.txt", sb.ToString());
+    }
+}

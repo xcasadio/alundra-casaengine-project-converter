@@ -1,0 +1,16 @@
+C70 0x8007b7b0 entries at ['0x800c504c'] base ['0x800c4f34']
+E20 0x8007f6c8 entries at ['0x800c5784'] base ['0x800c5734']
+D34 0x8007e8ac entries at ['0x800c53bc'] base ['0x800c5334']
+C23 0x8006b848 entries at ['0x800c4f90'] base ['0x800c4f34']
+C4 0x80066984 entries at ['0x800c4f44'] base ['0x800c4f34']
+E2 0x8007ed30 entries at ['0x800c573c'] base ['0x800c5734']
+C60 0x8007a8a0 entries at ['0x800c5024'] base ['0x800c4f34']
+E9 0x8007ef50 entries at ['0x800c5758'] base ['0x800c5734']
+C base 800c4f34, D base 800c5334, E base 800c5734
+C->D spacing 0x400 D->E spacing 0x400
+A base 800c4734 code0 -> 0x0
+B base 800c4b34 code0 -> 0x8006174c
+C base 800c4f34 code0 -> 0x0
+D base 800c5334 code0 -> 0x0
+E base 800c5734 code0 -> 0x8007ed10
+A19 -> 0x0  C71 -> 0x8007b834  A0 -> 0x0  E0 -> 0x8007ed10  E1 -> 0x8007ed10

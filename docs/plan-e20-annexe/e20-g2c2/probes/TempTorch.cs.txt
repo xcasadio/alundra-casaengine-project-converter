@@ -1,0 +1,93 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Alundra.Entities;
+using Alundra.Events;
+using Alundra.Maps;
+
+namespace Alundra.Ai.Objects;
+
+/// <summary>E20.g2c2 T0 THROWAWAY (never committed, kept as .txt in the annex): a try-out of C70 (0x8007B7B0), E20 (0x8007F6C8) and D34 (0x8007E8AC) to probe the DLL against the binary and to measure the displaced tests.</summary>
+internal static class TempTorch
+{
+    internal static readonly int[] TorchTypes = { 393 };
+    internal static readonly int[] BrambleTypes = { 238, 239 };
+
+    internal static void Register(NativeSpriteRegistry registry)
+    {
+        registry.Register(ScriptHelper.ProgramCTick, 70, TorchTypes, (entity, context, state) => C70(entity));
+        registry.Register(ScriptHelper.ProgramEDeactivate, 20, TorchTypes, (entity, context, state) => E20(entity));
+        registry.Register(ScriptHelper.ProgramDTouch, 34, BrambleTypes, (entity, context, state) => D34(entity));
+    }
+
+    internal static void C70(EntityScriptProxy entity)
+    {
+        if (entity.PlatformEntity == null)
+        {
+            return;
+        }
+
+        if (entity.Flags2 == 0)
+        {
+            entity.TargetAnimationId = 0;
+            return;
+        }
+
+        if (LiftableAi.ReleaseAnimation(entity.Flags2) is not { } animation)
+        {
+            return;
+        }
+
+        entity.TargetAnimationId = animation;
+        entity.Flags2 = 0;
+        if (entity.PlatformEntity?.GameplayProxy is EntityScriptProxy carrier)
+        {
+            carrier.CarriedEntity = null;
+        }
+
+        entity.PlatformEntity = null;
+        entity.RidingEntity = null;
+        entity.Flags = (entity.Flags | 0x34) & ~0x80u;
+    }
+
+    internal static void E20(EntityScriptProxy entity)
+    {
+        if (entity.TargetAnimationId == 2 && entity.ForceResetAnimationFlag == 1)
+        {
+            if (entity.Bytes[0] == 0)
+            {
+                var flame = (entity.ScriptHost as IEntityWorldContext)?.SpawnEntityBySpriteIndex(entity, false, 12, entity.PosX, entity.PosY, entity.PosZ, (int)entity.TargetDirection);
+                if (flame != null)
+                {
+                    for (var i = 0; i < 6; i++)
+                    {
+                        flame.SpriteProgramIndexes[i] = 0;
+                    }
+
+                    flame.TargetAnimationId = 3;
+                    flame.Flags = (flame.Flags & ~0x10u) | 2;
+                }
+            }
+
+            entity.ScriptHost?.DestroyEntity(entity, -1);
+            return;
+        }
+
+        entity.TargetAnimationId = 2;
+        entity.Flags = (entity.Flags | 0x40) & ~0x30u;
+        if (entity.XCollisionEntity is { } contact && contact.SpriteType == 391)
+        {
+            entity.Bytes[0] = 1;
+        }
+    }
+
+    internal static void D34(EntityScriptProxy entity)
+    {
+        if (entity.TouchingEntity?.GameplayProxy is EntityScriptProxy attacker && attacker.CurrentAttack is { } attack && (attack.Attribute & 0xF) == 6)
+        {
+            entity.TargetAnimationId = 1;
+            entity.Flags = (entity.Flags | 0x46) & ~0x80u;
+        }
+    }
+}

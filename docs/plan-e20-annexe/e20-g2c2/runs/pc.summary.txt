@@ -1,0 +1,2 @@
+Échoué!  - échec :     1, réussite :  2207, ignorée(s) :     0, total :  2208, durée : 5 m 19 s - Alundra.Tests.dll (net9.0)
+RED Alundra.Tests.Arcs.LiftMap72ArcTests.M5_AnObjectOutsideTheSet_GivesTheSword_TheJarOfTheSameSceneLifts

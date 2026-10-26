@@ -1,0 +1,2 @@
+Échoué!  - échec :     1, réussite :   411, ignorée(s) :     0, total :   412, durée : 3 s - Alundra.Tests.dll (net9.0)
+RED Alundra.Tests.SaveGames.TestSavesTests.TheTwentySevenPresets_AreListed_InTheOrderOfTheTable

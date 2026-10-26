@@ -1,0 +1,37 @@
+diff --git a/Alundra/Ai/NativeSpriteRegistry.cs b/Alundra/Ai/NativeSpriteRegistry.cs
+index 87797e08..d6f27b49 100644
+--- a/Alundra/Ai/NativeSpriteRegistry.cs
++++ b/Alundra/Ai/NativeSpriteRegistry.cs
+@@ -52,6 +52,7 @@ internal sealed class NativeSpriteRegistry
+         BallAi.Register(registry);
+         BombAi.Register(registry);
+         BombLidAi.Register(registry);
++        TempTorch.Register(registry);
+         return registry;
+     }
+ 
+diff --git a/Alundra/Hero/PlayerManager.cs b/Alundra/Hero/PlayerManager.cs
+index 326c596d..3b86d097 100644
+--- a/Alundra/Hero/PlayerManager.cs
++++ b/Alundra/Hero/PlayerManager.cs
+@@ -1171,7 +1171,7 @@ public static class PlayerManager
+     /// (<see cref="Alundra.Ai.Objects.LiftableAi.C4ProductionTypes"/>: the barrel, the stone, the trunk, the four objects of the plates, the ice block (already there by C23) and the eleven shop articles), 18 types added to the seven of C23 (the 304 is in both), 25 in all; a type is never wired without its key
+     /// <c>(C, 4)</c> (the object would stay stuck to the hands), and all of them hold it since the phase B.
+     /// </summary>
+-    internal static readonly System.Collections.Generic.IReadOnlySet<int> ProductionWiredLiftableTypes = new System.Collections.Generic.HashSet<int>(System.Linq.Enumerable.Concat(Alundra.Ai.Objects.LiftableAi.SpriteTypes, Alundra.Ai.Objects.LiftableAi.C4ProductionTypes));
++    internal static readonly System.Collections.Generic.IReadOnlySet<int> ProductionWiredLiftableTypes = new System.Collections.Generic.HashSet<int>(System.Linq.Enumerable.Concat(System.Linq.Enumerable.Concat(Alundra.Ai.Objects.LiftableAi.SpriteTypes, Alundra.Ai.Objects.LiftableAi.C4ProductionTypes), Alundra.Ai.Objects.TempTorch.TorchTypes));
+ 
+     /// <summary>E20.g1b test seam, per thread: when set, replaces <see cref="ProductionWiredLiftableTypes"/>.</summary>
+     [ThreadStatic]
+diff --git a/Alundra/SaveGames/TestSaves.cs b/Alundra/SaveGames/TestSaves.cs
+index 67a13c8b..a9d85a2e 100644
+--- a/Alundra/SaveGames/TestSaves.cs
++++ b/Alundra/SaveGames/TestSaves.cs
+@@ -206,6 +206,7 @@ public static class TestSaves
+         // game's kit, with the flag G248 (set by the map 363; word 7, bit 24) and no other: without it Olen repeats his first conversation. It is not the tile (10, 16) level 2 of the program B[6] (the arrival from the map 185). A save cannot carry the direction: walk up to Olen and press the button;
+         // he talks, throws his bomb, and the bomb explodes against the lid of the bomb stalk, which stays in place until E20.h3a, then the four Murutas come out.
+         new Preset("olen-m362", "test-olen-m362", 362, 8, 9, 2, [248u], [], [], []),
++        new Preset("torche-m92", "test-torche-m92", 92, 34, 11, 5, [], [], [], []),
+     ];
+ 
+     /// <summary>Finds a preset by its exact name.</summary>

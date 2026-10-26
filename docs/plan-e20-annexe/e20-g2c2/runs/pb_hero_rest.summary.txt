@@ -1,0 +1,3 @@
+Échoué!  - échec :     2, réussite :   548, ignorée(s) :     0, total :   550, durée : 28 s - Alundra.Tests.dll (net9.0)
+RED Alundra.Tests.Hero.LiftWorldTests.M5_AnObjectOutsideTheSet_GivesTheSword_NextToTheCrateOfTheSameSceneThatLifts
+RED Alundra.Tests.Hero.LiftPureTests.TheProductionSet_IsTheTwentyFiveTypesOfC23C4AndTheShopArticles_AndTheTestSeamReplacesIt
