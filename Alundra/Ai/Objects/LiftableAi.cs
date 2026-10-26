@@ -119,7 +119,13 @@ internal static class LiftableAi
     {
         C23,
         C4,
+
+        /// <summary>E20.g2c2 (D-G2C2-1): the torch's C70, the twin of C23 with <c>(flags | 0x34) &amp; ~0x80</c>.</summary>
+        C70,
     }
+
+    /// <summary>The bits C70 raises (<c>| 0x34</c>: C23's <c>0x30</c> and the bit 4) in the flags of the torch it lets go; it clears <see cref="ReleaseClearBits"/> as C23 does.</summary>
+    private const uint TorchReleaseSetBits = 0x34;
 
     /// <summary>The bit C4 raises (<c>| 0x10</c>) when it releases the code -1 of an object whose native E code is <see cref="C4DeathFlagsNativeCode"/>; it clears <see cref="ReleaseClearBits"/> as C23 does.</summary>
     private const uint C4DeathSetBits = 0x10;
@@ -207,7 +213,9 @@ internal static class LiftableAi
         entity.Flags = policy switch
         {
             ReleaseFlagsPolicy.C23 => ReleasedFlags(entity.Flags),
-            _ => throwKind == -1 && entity.SpriteProgramIndexes[ScriptHelper.ProgramEDeactivate] == C4DeathFlagsNativeCode ? (entity.Flags | C4DeathSetBits) & ~ReleaseClearBits : entity.Flags,
+            ReleaseFlagsPolicy.C70 => (entity.Flags | TorchReleaseSetBits) & ~ReleaseClearBits,
+            ReleaseFlagsPolicy.C4 => throwKind == -1 && entity.SpriteProgramIndexes[ScriptHelper.ProgramEDeactivate] == C4DeathFlagsNativeCode ? (entity.Flags | C4DeathSetBits) & ~ReleaseClearBits : entity.Flags,
+            _ => throw new ArgumentOutOfRangeException(nameof(policy), policy, "no case for this release policy"),
         };
     }
 
