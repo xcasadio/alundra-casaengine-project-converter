@@ -103,7 +103,10 @@ public sealed class TestSavesTests : IDisposable
     // E20.c2b T4 (docs/plan-e20-heros.md section 1.12.1, D-C2B-12): the two presets of the hurt hero, the last of the table. `blessure-m15`: the orcs of the map 15, tile (7, 33, 7), three tiles from each of the two orcs of the records at the tiles (7, 30) and (7, 36); `blessure-m14`: the Beannoids arena, tile (5, 29, 5), three tiles from the Beannoid of the record 0 at the tile (5, 26). The cells are the T0 (e) cells of docs/plan-e20-annexe/e20-c2b/results.md.
     private static readonly string[] HurtPresetNames = ["blessure-m15", "blessure-m14"];
 
-    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName, BarricadePresetName, LiftPresetName, LiftPlatformPresetName, C4Map22PresetName, C4Map70PresetName, .. ChestPresetNames, LegendM14PresetName, LegendM7PresetName, .. HurtPresetNames];
+    // E20.A362 T1 (docs/plan-e20-heros.md section 1.30.1a, D-A362-2): the preset of the scene of Olen's dream, the last of the table. `olen-m362`: the map 362, tile (8, 9, 2), two tiles below Olen (tile (8, 7)) at the pixel column of the arrival of the arc, with the flag G248 (word 7, bit 24, set by the map 363) and no other. The cell is the T0 (e) cell of docs/plan-e20-annexe/e20-a362/t0a.md (it is not the tile (10, 16) level 2 of the program B[6], the arrival from the map 185).
+    private const string OlenPresetName = "olen-m362";
+
+    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName, BarricadePresetName, LiftPresetName, LiftPlatformPresetName, C4Map22PresetName, C4Map70PresetName, .. ChestPresetNames, LegendM14PresetName, LegendM7PresetName, .. HurtPresetNames, OlenPresetName];
 
     public static TheoryData<string> WeaponNames => new([.. WeaponPresetNames, GrassPresetName, LegendM14PresetName]);
 
@@ -119,7 +122,7 @@ public sealed class TestSavesTests : IDisposable
     }
 
     [Fact]
-    public void TheTwentySixPresets_AreListed_InTheOrderOfTheTable()
+    public void TheTwentySevenPresets_AreListed_InTheOrderOfTheTable()
     {
         Assert.Equal(AllPresetNames, TestSaves.Presets.Select(p => p.Name));
         Assert.Equal(AllPresetNames.Length, TestSaves.Presets.Count);
@@ -545,6 +548,31 @@ public sealed class TestSavesTests : IDisposable
         expectedCounts[3] = expectedCounts[35] = expectedCounts[51] = 1;
         expectedCounts[37] = expectedCounts[39] = expectedCounts[41] = expectedCounts[57] = expectedCounts[107] = expectedCounts[109] = 1;
         Assert.Equal(expectedCounts, save.NumberOfItems.Select(c => (int)c));
+        Assert.True(save.TryValidate(rules, out var error), error);
+    }
+
+    [Fact]
+    public void TheOlenPreset_IsTheNewGameInOlensDream_OnTheCellBelowOlen_WithTheFlag248Alone()
+    {
+        var rules = RealRules();
+        var save = Build(OlenPresetName);
+
+        // Map 362 (Coal Mine, Olen's Dream), tile (8, 9), level 2: the cell x 192 to 215, y 144 to 159, walkable, two tiles below Olen (tile (8, 7)); not the tile (10, 16) level 2 of B[6] (docs/plan-e20-annexe/e20-a362/t0a.md, (e)).
+        Assert.Equal(362, save.InitialMapId);
+        Assert.Equal((8, 9, 2), (save.CameraTileX, save.CameraTileY, save.CameraTileZ));
+        Assert.NotEqual((10, 16, 2), (save.CameraTileX, save.CameraTileY, save.CameraTileZ));
+
+        // The flag G248 is word 7 (248 / 32), bit 24 (248 % 32): 0x01000000, and nothing else is set.
+        for (var word = 0; word < save.GameFlags.Length; word++)
+        {
+            Assert.Equal(word == 7 ? 0x01000000u : 0u, save.GameFlags[word]);
+        }
+
+        // The new game's counters (items 1, 17 and 25: raw indices 3, 35, 51), nothing else, the basic sword in hand, life 10 of 10.
+        var expectedCounts = new int[256];
+        expectedCounts[3] = expectedCounts[35] = expectedCounts[51] = 1;
+        Assert.Equal(expectedCounts, save.NumberOfItems.Select(c => (int)c));
+        Assert.Equal(((short)10, (short)10), (save.Hp, save.HpMax));
         Assert.True(save.TryValidate(rules, out var error), error);
     }
 

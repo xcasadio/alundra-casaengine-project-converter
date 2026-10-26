@@ -201,6 +201,11 @@ public static class TestSaves
         // game wears the best armour owned (FillEquipmentRecords), the silver one here, so the blow of an orc costs 1 heart; the 4, 3, 2 hearts of the lower armours need a bag without the higher ones (to settle with the author, results.md).
         BlessurePreset("blessure-m15", 15, 7, 33, 7),
         BlessurePreset("blessure-m14", 14, 5, 29, 5),
+
+        // E20.A362 T1 (docs/plan-e20-heros.md section 1.30.1a, D-A362-2): the scene of Olen's dream (the map 362, Coal Mine). Tile (8, 9), level 2 (the cell x 192 to 215, y 144 to 159, walkable), two tiles below Olen (tile (8, 7)) at the pixel column of the arrival of the arc A362, on the new
+        // game's kit, with the flag G248 (set by the map 363; word 7, bit 24) and no other: without it Olen repeats his first conversation. It is not the tile (10, 16) level 2 of the program B[6] (the arrival from the map 185). A save cannot carry the direction: walk up to Olen and press the button;
+        // he talks, throws his bomb, and the bomb explodes against the lid of the bomb stalk, which stays in place until E20.h3a, then the four Murutas come out.
+        new Preset("olen-m362", "test-olen-m362", 362, 8, 9, 2, [248u], [], [], []),
     ];
 
     /// <summary>Finds a preset by its exact name.</summary>

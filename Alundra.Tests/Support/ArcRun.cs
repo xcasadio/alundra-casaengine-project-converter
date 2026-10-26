@@ -530,12 +530,12 @@ internal sealed class ArcRun : IDisposable
 
     /// <summary>One frame under the rule of <see cref="RunUntilPressingTheButtonOnEveryDialogueFrame"/>, for the arcs whose own loop must also pick a choice:
     /// Square is held during it when a dialogue is open and not (the box waits for a press and Square was held during the frame before). The button stays
-    /// as it is after the frame; <see cref="LetGoOfTheDialogueButton"/> lets go of it when the loop ends.</summary>
-    public void OneFrameWithTheDialogueButton()
+    /// as it is after the frame; <see cref="LetGoOfTheDialogueButton"/> lets go of it when the loop ends. E20.A362: <paramref name="elapsed"/> is the time of the frame (<c>k / 50f</c> for k ticks, as <see cref="OneFrame"/>).</summary>
+    public void OneFrameWithTheDialogueButton(float elapsed = 0.02f)
     {
         var director = DialogueDirector.Instance;
         _dialogueHold = director.IsOpen && !(director.Box.IsWaitingForPress && _dialogueHoldPreviousFrame);
-        OneFrame();
+        OneFrame(elapsed);
     }
 
     /// <summary>Lets go of the button of <see cref="OneFrameWithTheDialogueButton"/>.</summary>

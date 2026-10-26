@@ -220,6 +220,16 @@ For the hurt hero (docs/plan-e20-heros.md section 1.12.1): at the contact of an 
 `blessure-m15`: the two orcs of the map stand three tiles (48 px) north and south of the arrival; walk to one and let it hit you. `blessure-m14`: the Beannoid of the record 0 stands three tiles north. The game wears the best armour owned (the silver one here), so an orc's blow costs 1 heart; the lower
 armours (4, 3, 2 hearts) are not testable from these bags. Select the Charm of Nava as the Circle item to be spared the fire. The hazard cells (maps 0 and 36) hurt every 120 ticks the hero who has not the boots of level 3: build a save without the item 0x1C to walk onto them (the map 0, tiles (4, 53) and (10, 53)).
 
+### Olen's dream preset (E20.A362)
+
+For the scene of the map 362 (Coal Mine, Olen's dream; docs/plan-e20-heros.md section 1.30.1a): Olen throws his bomb, which explodes against the lid of the bomb stalk, then the four Murutas come out. The new game's kit (the basic sword, life 10/10), the flag G248 (set by the map 363; without it Olen repeats his first conversation) and no other.
+
+| Preset | Map, tile, z | Flag | Owned | Equipped |
+|---|---|---|---|---|
+| `olen-m362` | 362 (Coal Mine, Olen's dream), (8, 9), 2 | G248 | the kit's items 1, 17, 25 | the basic sword |
+
+The hero stands on the cell x 192 to 215, y 144 to 159 (walkable, level 2), two tiles below Olen (tile (8, 7)); this is not the tile (10, 16) level 2 that the program B[6] reads (the arrival from the map 185). A save does not carry the direction (always south): walk up to Olen and press the button. The talk starts the scene: the hero is walked 48 pixels south without control, Olen walks and throws his bomb, which slides to the north wall, inside the footprint of the lid, and explodes against it; the lid reacts (its program deactivates it) but stays in place until E20.h3a makes it disappear with its break effect, and the bomb stays in the world, invisible; the four Murutas are born at 125, 156, 187 and 218 ticks after the explosion touches the lid.
+
 ## What a save cannot carry
 
 - the temporary flags (id 0x8000 and above): the tool refuses them;
