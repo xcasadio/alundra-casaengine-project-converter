@@ -1,0 +1,73 @@
+// E20.h3a T0 (f): the THROWAWAY test that produced probe_generator_dll.txt (it was never committed and is not part of the suite; this is its text, kept as .txt).
+// It stood in Alundra.Tests/Ai/Projectiles/ZzT0ProbeScratch.cs at the HEAD of departure (af1ec8e9) and was run with T0_PROBE_OUT=<path of the output>.
+// The bench is the one of BallRun / ArrowRun: HitArena (the real world of the map 14, the hero at (100, 100)), SyntheticField (the synthetic field of the oracle, all zero), every entity of the map
+// but the hero removed, a bomb born by the interface (SpawnEntityBySpriteIndex, type 2) at (252, 200), the generator set to 0x12345678 at the head of the tick 1, 54 frames of ONE tick.
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Xunit;
+using Alundra.Entities;
+using Alundra.Events;
+using Alundra.Hero;
+using Alundra.Maps;
+using Alundra.Rng;
+using Alundra.Session;
+using Alundra.Tests.Audio;
+using Alundra.Tests.Support;
+
+namespace Alundra.Tests.Ai.Projectiles;
+
+[Collection(MusicPlayerSingletonCollection.Name)]
+public sealed class ZzT0ProbeScratch
+{
+    [Fact]
+    public void Probe()
+    {
+        var sb = new StringBuilder();
+        using var arena = new HitArena("h3a-t0-probe", 100, 100, new List<int[]>(), 24, 0);
+        var bench = SyntheticField.Install(arena.Arc, null);
+        var keep = new HashSet<EntityScriptProxy> { arena.Hero };
+        foreach (var other in arena.Arc.Entities.Where(e => !keep.Contains(e)).ToList())
+        {
+            other.Status = EntityStatus.FlagToDestroy;
+        }
+
+        arena.Arc.Proxy.RecycleDestroyedEntities();
+        var tables = ((IScriptHost)arena.Arc.Proxy).ItemTables!;
+        var owned = new List<string>();
+        for (var n = 0; n < 0x62; n++)
+        {
+            var count = PlayerManager.GetNumberOfItem(ArcRun.State, n);
+            if (count > 0)
+            {
+                owned.Add($"{n}x{count}(cat{tables.DropField3[n] & 0x7F})");
+            }
+        }
+
+        sb.AppendLine("owned items of the bench hero before any Give: [" + string.Join(", ", owned) + "]");
+        var bomb = ((IEntityWorldContext)arena.Arc.Proxy).SpawnEntityBySpriteIndex(arena.Hero, false, 2, 252 << 16, 200 << 16, 0, 0);
+        sb.AppendLine("bomb born by the interface: " + (bomb is not null) + " ; entities: " + arena.Arc.Entities.Count);
+        uint frameStart = 0;
+        arena.BeforeTick = tick =>
+        {
+            if (tick == 1)
+            {
+                GameRandom.RandomSeed = 0x12345678;
+            }
+
+            frameStart = unchecked((uint)GameRandom.RandomSeed);
+        };
+        arena.Begin();
+        for (var tick = 1; tick <= 54; tick++)
+        {
+            arena.Frame(0, 1);
+            var after = unchecked((uint)GameRandom.RandomSeed);
+            sb.AppendLine($"frame {tick}: after={after:X8} steps={Alundra.Tests.Ai.Projectiles.ArrowRun.Steps(frameStart, after)}");
+        }
+
+        File.WriteAllText(Environment.GetEnvironmentVariable("T0_PROBE_OUT")!, sb.ToString());
+    }
+}

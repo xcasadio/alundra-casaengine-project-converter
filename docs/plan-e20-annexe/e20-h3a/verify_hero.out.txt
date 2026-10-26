@@ -1,0 +1,5 @@
+armour word = 0
+hero hp 10, x 100.00, y 100.00
+inventory slots non-zero: [(1, '0x10000'), (17, '0x10000'), (25, '0x10000')]
+categories (byte +6 & 0x7F, 2 = armour) of the inventory items: {1: 1, 17: 2, 25: 0}
+owned item of category 2 in the inventory: [17]

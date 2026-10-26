@@ -1,0 +1,14 @@
+hero at (100.00,100.00) ; bomb slot at 0x80127fc4 born at (300.00,300.00) z 0.00 ; fuse word 240
+k  -5 bomb(st,tanim,canim,end,z,box)=(2, 0, 0, 0, 0.0, 0) hero(hp,state,touching,1cc,1d0)=(10, '0x0', '0x0', 0, 0) x=100.00 y=100.00 
+k  +0 bomb(st,tanim,canim,end,z,box)=(3, 0, 0, 0, 0.0, 0) hero(hp,state,touching,1cc,1d0)=(10, '0x0', '0x0', 0, 0) x=100.00 y=100.00 
+k  +1 bomb(st,tanim,canim,end,z,box)=(3, 1, 1, 0, 0.0, 0) hero(hp,state,touching,1cc,1d0)=(10, '0x0', '0x0', 0, 0) x=100.00 y=100.00 [('sound', 46)]
+k  +2 bomb(st,tanim,canim,end,z,box)=(3, 1, 1, 0, 0.0, 0) hero(hp,state,touching,1cc,1d0)=(10, '0x0', '0x0', 0, 0) x=100.00 y=100.00 
+k +17 bomb(st,tanim,canim,end,z,box)=(3, 1, 1, 0, 0.0, -2145656256) hero(hp,state,touching,1cc,1d0)=(10, '0x0', '0x0', 0, 0) x=100.00 y=100.00 
+k +20 bomb(st,tanim,canim,end,z,box)=(3, 1, 1, 0, 0.0, -2145656250) hero(hp,state,touching,1cc,1d0)=(10, '0x0', '0x0', 0, 0) x=100.00 y=100.00 
+k +24 bomb(st,tanim,canim,end,z,box)=(3, 1, 1, 0, 0.0, -2145656244) hero(hp,state,touching,1cc,1d0)=(10, '0x0', '0x0', 0, 0) x=100.00 y=100.00 
+k +26 bomb(st,tanim,canim,end,z,box)=(3, 1, 1, 0, 0.0, -2145656238) hero(hp,state,touching,1cc,1d0)=(10, '0x0', '0x0', 0, 0) x=100.00 y=100.00 
+k +32 bomb(st,tanim,canim,end,z,box)=(3, 1, 1, 0, 0.0, 0) hero(hp,state,touching,1cc,1d0)=(10, '0x0', '0x0', 0, 0) x=100.00 y=100.00 
+k +52 bomb(st,tanim,canim,end,z,box)=(3, 1, 1, 1, 0.0, 0) hero(hp,state,touching,1cc,1d0)=(10, '0x0', '0x0', 0, 0) x=100.00 y=100.00 
+k +53 bomb(st,tanim,canim,end,z,box)=(4, 1, 1, 1, 0.0, 0) hero(hp,state,touching,1cc,1d0)=(10, '0x0', '0x0', 0, 0) x=100.00 y=100.00 
+k +54 bomb(st,tanim,canim,end,z,box)=(0, 0, 0, 0, 0.0, 0) hero(hp,state,touching,1cc,1d0)=(10, '0x0', '0x0', 0, 0) x=100.00 y=100.00 
+k +54 bomb slot free

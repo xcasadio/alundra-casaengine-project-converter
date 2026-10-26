@@ -1,0 +1,2 @@
+frame 54 : no key line k+55 (the bomb slot is free in the key: nothing to compare)
+frames compared 53 deviations 0

@@ -1,0 +1,1 @@
+production=18 pickup=2 chest=1 charged=1 arrow=1 pillar=1 liftable=1 break=1 c4=1 ball=2

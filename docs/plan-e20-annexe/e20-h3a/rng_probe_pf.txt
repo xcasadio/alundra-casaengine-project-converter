@@ -1,0 +1,58 @@
+bomb born at (252, 200), z 0, slot 0x80127fc4 ; hero at (100.00, 100.00) ; bush cells: none (nograss) ; K = 5 (status 3 poked at the end of tick K) ; seed 0x12345678 at the end of tick K
+k  +1 rng0=12345678 rng1=12345678 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10 snd=[46]
+k  +2 rng0=B806E07F rng1=B806E07F draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k  +3 rng0=24D2C78A rng1=24D2C78A draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k  +4 rng0=5D571F09 rng1=5D571F09 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k  +5 rng0=AFBE9EAC rng1=AFBE9EAC draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k  +6 rng0=3DC70963 rng1=3DC70963 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k  +7 rng0=A3E4185E rng1=A3E4185E draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k  +8 rng0=6B275A0D rng1=6B275A0D draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k  +9 rng0=E9C2B520 rng1=E9C2B520 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +10 rng0=ECCE7F87 rng1=ECCE7F87 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +11 rng0=279A5972 rng1=279A5972 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +12 rng0=5AAD3C51 rng1=5AAD3C51 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +13 rng0=8BD96DD4 rng1=8BD96DD4 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +14 rng0=ED8046EB rng1=ED8046EB draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +15 rng0=3693FEC6 rng1=3693FEC6 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +16 rng0=AAC6E9D5 rng1=AAC6E9D5 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +17 rng0=090BDCC8 rng1=090BDCC8 draws=0 bomb(st,tanim,box)=(3, 1, 1) hero(hp)=10
+k +18 rng0=C666A38F rng1=C666A38F draws=0 bomb(st,tanim,box)=(3, 1, 1) hero(hp)=10
+k +19 rng0=6091BC5A rng1=6091BC5A draws=0 bomb(st,tanim,box)=(3, 1, 1) hero(hp)=10
+k +20 rng0=D123C699 rng1=D123C699 draws=0 bomb(st,tanim,box)=(3, 1, 1) hero(hp)=10
+k +21 rng0=A24755FC rng1=A24755FC draws=0 bomb(st,tanim,box)=(3, 1, 1) hero(hp)=10
+k +22 rng0=A2571973 rng1=A2571973 draws=0 bomb(st,tanim,box)=(3, 1, 1) hero(hp)=10
+k +23 rng0=0F8A862E rng1=0F8A862E draws=0 bomb(st,tanim,box)=(3, 1, 1) hero(hp)=10
+k +24 rng0=6C88769D rng1=6C88769D draws=0 bomb(st,tanim,box)=(3, 1, 1) hero(hp)=10
+k +25 rng0=2F116D70 rng1=2F116D70 draws=0 bomb(st,tanim,box)=(3, 1, 1) hero(hp)=10
+k +26 rng0=E7D66C97 rng1=E7D66C97 draws=0 bomb(st,tanim,box)=(3, 1, 1) hero(hp)=10
+k +27 rng0=BCFF9042 rng1=BCFF9042 draws=0 bomb(st,tanim,box)=(3, 1, 1) hero(hp)=10
+k +28 rng0=4252DDE1 rng1=4252DDE1 draws=0 bomb(st,tanim,box)=(3, 1, 1) hero(hp)=10
+k +29 rng0=9C7BF724 rng1=9C7BF724 draws=0 bomb(st,tanim,box)=(3, 1, 1) hero(hp)=10
+k +30 rng0=65BCA0FB rng1=65BCA0FB draws=0 bomb(st,tanim,box)=(3, 1, 1) hero(hp)=10
+k +31 rng0=3F904E96 rng1=3F904E96 draws=0 bomb(st,tanim,box)=(3, 1, 1) hero(hp)=10
+k +32 rng0=6B3E2065 rng1=6B3E2065 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +33 rng0=76590718 rng1=76590718 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +34 rng0=9918FA9F rng1=9918FA9F draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +35 rng0=24CE752A rng1=24CE752A draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +36 rng0=5366A229 rng1=5366A229 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +37 rng0=0EAEF14C rng1=0EAEF14C draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +38 rng0=D055FD83 rng1=D055FD83 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +39 rng0=4B51F7FE rng1=4B51F7FE draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +40 rng0=718E072D rng1=718E072D draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +41 rng0=176C49C0 rng1=176C49C0 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +42 rng0=2F9D6DA7 rng1=2F9D6DA7 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +43 rng0=310D0B12 rng1=310D0B12 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +44 rng0=D99F3371 rng1=D99F3371 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +45 rng0=C25BE474 rng1=C25BE474 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +46 rng0=DA7C4F0B rng1=DA7C4F0B draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +47 rng0=A9E02266 rng1=A9E02266 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +48 rng0=0E724AF5 rng1=0E724AF5 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +49 rng0=BB58D568 rng1=BB58D568 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +50 rng0=C6C6E5AF rng1=C6C6E5AF draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +51 rng0=F26DF1FA rng1=F26DF1FA draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +52 rng0=B6D0B1B9 rng1=B6D0B1B9 draws=0 bomb(st,tanim,box)=(3, 1, 0) hero(hp)=10
+k +53 rng0=90C2709C rng1=90C2709C draws=0 bomb(st,tanim,box)=(4, 1, 0) hero(hp)=10
+k +54 rng0=FCBCB593 rng1=FCBCB593 draws=0 bomb(st,tanim,box)=(0, 0, 0) hero(hp)=10
+cells cut (k, (col,row)): []
+cells cut, sorted (col,row): [] count 0
+bomb slot free at k+54
