@@ -91,6 +91,12 @@ internal sealed class RunMontage
                 PlayerManager.SetPlayerWeaponId(rig.Host.GameState, tables, tables.ItemsProperties[4 * 5]);
                 rig.Host.GameState.NumberOfItems[0x1B * 2 + 1] = 1;
                 break;
+            case var named when named.StartsWith("item", StringComparison.Ordinal) && int.TryParse(named.AsSpan(4), System.Globalization.NumberStyles.HexNumber, null, out var itemId):
+                // E20.h0a: the boots 0x1B of the kit of the swim traces and the object `itemId` owned and equipped (the family W9-item1F to W9-item32).
+                rig.Host.GameState.NumberOfItems[0x1B * 2 + 1] = 1;
+                rig.Host.GameState.NumberOfItems[itemId * 2 + 1] = 1;
+                rig.Host.GameState.PlayerStats.ItemId = (short)itemId;
+                break;
             default:
                 throw new InvalidOperationException($"{trace.Name}: the inventory '{trace.Inventory}' is not built by the montage");
         }
@@ -223,7 +229,7 @@ internal sealed class RunMontage
                 Check("b0", row.AnimCompleteCounter, Trace.Col("b0_complete", o)); // E20.i: the counter of animation ends (+0xB0), turned by the chains of the swim.
             }
 
-            // `ignoreSound(tick, id)` drops one sound of this tick on both sides (E20.i: the sound 3 of the Circle is E20.h, the sounds 21 and 6 of a landing in the water are E20.e).
+            // `ignoreSound(tick, id)` drops one sound of this tick on both sides (E20.i: the sounds 21 and 6 of a landing in the water are E20.e).
             bool Kept(int id) => !IsStubbedSound(id) && ignoreSound?.Invoke(tick, id) != true;
             var dllSounds = string.Join(",", row.Sounds.Where(Kept).OrderBy(s => s));
             var oracleSounds = string.Join(",", Trace.Journal(o).Where(j => j.Kind == "sound" && j.Id > 0 && Kept(j.Id)).Select(j => j.Id).OrderBy(s => s));

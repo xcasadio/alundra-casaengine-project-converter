@@ -19,7 +19,7 @@ namespace Alundra.Tests.Hero;
 /// of the plan are asserted beside each comparison, written before the first run.
 /// <para>
 /// WHAT IS NOT COMPARED, and why (each is an allowance of the plan): the effects 6 and 0x15 (the splash, the wake and the ripple of the dive: the shadow pass <c>0x80038E84</c> and <c>CreatePlayerAnimationEffects</c>, E20.e), the sounds 21
-/// and 6 of a landing in the water (E20.e), the sound 3 of the Circle (the item driver, E20.h); the hurt of the water is entered through the REAL entry of the hero's damage (E20.c2b): the traces W7 hurt the hero with a Beannoid the
+/// and 6 of a landing in the water (E20.e), the hurt of the water is entered through the REAL entry of the hero's damage (E20.c2b): the traces W7 hurt the hero with a Beannoid the
 /// montage does not have, so the test poses the toucher the hit pass of the previous tick would have written (<see cref="HurtAccess"/>) and the effect 9 of that touch is not compared; the wall of the deep water without the swim boots (O-E19-22) and the currents (O-E20-16) are not ported, the traces of
 /// boots level 0 and 1 are information; the east wall stops one unit short in the binary (O-E19-42); the clamp at the border of the map (O-E19-17).
 /// </para>
@@ -58,9 +58,9 @@ public sealed class HeroSwimTests : IDisposable
     // Helpers.
     // -----------------------------------------------------------------------------------------
 
-    /// <summary>The sounds the DLL does not ask in the water: the Circle (3, E20.h) and the landing in the water (21 and 6 the tick after an air animation, E20.e).</summary>
+    /// <summary>The sounds the DLL does not ask in the water: the landing in the water (21 and 6 the tick after an air animation, E20.e).</summary>
     private static Func<int, int, bool> StubbedSounds(RunOracleTrace trace)
-        => (tick, id) => id == 3 || (id is 21 or 6 && tick >= 1 && trace.Col("anim_cur", tick - 1) is 0x2C or 0x2D or 0x02 or 0x2B);
+        => (tick, id) => (id is 21 or 6 && tick >= 1 && trace.Col("anim_cur", tick - 1) is 0x2C or 0x2D or 0x02 or 0x2B);
 
     /// <summary>The allowance on the positions X and Y, in units of 1/65536 px: the mover of the DLL works on floats (24 bits of mantissa: 4 units at x 600 px, and a few of them add up on a diagonal), the binary on integers (the family of O-E19-42, as the 16 units of the ice of E20.d1).</summary>
     private const int FloatUnits = 16;
@@ -714,6 +714,24 @@ public sealed class HeroSwimTests : IDisposable
     [InlineData("w10/W10-channel-edge")]
     [InlineData("w10/W10-shallow-to-deep")]
     public void W9W10_TheOtherCases_AreTheOracle(string name) => Equal(name);
+
+    /// <summary>
+    /// E20.h0a (o1): the Circle pressed at tick 10 in the float, with the object equipped. The object of the Circle is promoted (<c>0x8004E0F8</c>) and the frame refuses the four holes of its table (<c>0x21</c>, <c>0x22</c>, <c>0x28</c>,
+    /// <c>0x2A</c>) with the sound 3 at the press (<c>0x80034AB4</c>): the trace is the oracle, the sound 3 included. The other 16 objects of the family (W9-item1F to W9-item32) get their sound 3 from the start of their own object in deep
+    /// water, which another slice carries (h1, h2, h3, h4a): not compared here.
+    /// </summary>
+    [Theory]
+    [InlineData("w9/W9-item21")]
+    [InlineData("w9/W9-item22")]
+    [InlineData("w9/W9-item28")]
+    [InlineData("w9/W9-item2A")]
+    public void W9_TheHolesOfTheItemTable_RefuseWithTheSound3_AsTheOracle(string name)
+    {
+        var m = Equal(name);
+
+        Assert.Contains(m.Rows, r => r.Tick == 10 && r.Sounds.Contains(3));
+        Assert.Equal(1, m.Rows.Sum(r => r.Sounds.Count(s => s == 3)));
+    }
 
     // -----------------------------------------------------------------------------------------
     // Two ticks in a frame.

@@ -19,8 +19,7 @@ namespace Alundra.Tests.Hero;
 /// numbers of the plan are asserted on the DLL itself, written before the first run.
 /// <para>
 /// WHAT IS NOT COMPARED, and why (each is an allowance of the plan):
-/// the step (sound 12, dust) and the landing (sound 11, effect 7) are stubs of E20.e; the hurt of the Beannoid (columns after the blow) is E20.c2b; the sound 3 of a Circle pressed in the preparation is the item driver
-/// <c>TryUseItem</c> (E20.h); the east wall bounces one tick EARLY (O-E19-42 / D-E19-58: the DLL stops at the contact where the binary stops one unit short), the traces of that wall are compared with the DLL's pad shifted
+/// the step (sound 12, dust) and the landing (sound 11, effect 7) are stubs of E20.e; the hurt of the Beannoid (columns after the blow) is E20.c2b; the east wall bounces one tick EARLY (O-E19-42 / D-E19-58: the DLL stops at the contact where the binary stops one unit short), the traces of that wall are compared with the DLL's pad shifted
 /// by one tick from the bounce on; the ground column of a ledge is compared one tick late at the tick of the loss (O-E20-12, as AT8); the deep-water wall without boots (O-E19-22) and the clamp at the border
 /// of the map (O-E19-17) are not ported (the swim is E20.i's: see <see cref="HeroSwimTests"/>).
 /// </para>
@@ -610,8 +609,8 @@ public sealed class HeroRunTests : IDisposable
         AssertStates(cross, Prepare, 1, 25);
         Assert.Equal(Sprint, cross.Rows[26].AnimTarget);
 
-        // The Circle: the preparation carries on; the binary's TryUseItem plays the sound 3 on the press (E20.h, a stub here), the only difference.
-        var circle = Equal("g7/R7-circle-windup", ignore: (tick, field) => tick == 10 && field == "sounds");
+        // The Circle: the preparation carries on; the TryUseItem of the frame (E20.h0a) refuses the press with the sound 3, as the binary does (no item of the Circle), compared with the oracle.
+        var circle = Equal("g7/R7-circle-windup");
         AssertStates(circle, Prepare, 1, 25);
         Assert.Equal(Sprint, circle.Rows[26].AnimTarget);
     }
