@@ -548,26 +548,25 @@ public sealed class OlenBombLidArcTests
     }
 
     // -----------------------------------------------------------------------------------------
-    // (a9) the two pins of D-A362-1: what is still missing
+    // (a9) the two pins of D-A362-1, rewritten by E20.h3a T3 on what the registered E19 and E12 do
     // -----------------------------------------------------------------------------------------
 
-    /// <summary>Row 19 (KEY): from H + 1 to the end the lid is present, in status 3, where it was, never destroyed; no sound 230 (<c>0xE6</c>) and no break effect 11: <c>(E, 19)</c> is not registered. E20.h3a rewrites this test.</summary>
+    /// <summary>Row 19 (KEY), rewritten by E20.h3a T3: once <c>(E, 19)</c> is registered, from H + 1 (status 3) the lid is in status 4 at H + 2 with the sound 230 (<c>0xE6</c>) once and ONE break effect 11, and is out of the world from H + 3 to the end.</summary>
     [Theory]
     [MemberData(nameof(Cadences))]
-    public void A9_TheLidStaysInStatus3_E19Missing(int k)
+    public void A9_TheLidIsDestroyedOneTickAfterItsStatus3_WithTheSound230AndTheBreakEffect11(int k)
     {
         var line = Scene(k, true);
         var h = line.H;
 
-        foreach (var x in line.Between(h + 1, line.Snaps.Count - 1))
-        {
-            Assert.True(x.LidPresent);
-            Assert.Equal(EntityStatus.Deactivated, x.LidStatus);
-            Assert.Equal((212, 100, 32), (x.LidX >> 16, x.LidY >> 16, x.LidZ >> 16));
-        }
-
-        Assert.DoesNotContain(line.Sounds, x => x.Id == 230);
-        Assert.All(line.Frames, f => Assert.Equal(0, f.Break11));
+        Assert.Equal(EntityStatus.Deactivated, line.At(h + 1).LidStatus);
+        Assert.Equal((212, 100, 32), (line.At(h + 1).LidX >> 16, line.At(h + 1).LidY >> 16, line.At(h + 1).LidZ >> 16));
+        Assert.Equal(EntityStatus.FlagToDestroy, line.At(h + 2).LidStatus);
+        Assert.All(line.Between(h + 3, line.Snaps.Count - 1), x => Assert.False(x.LidPresent));
+        Assert.Equal(new[] { h + 2 }, line.Sounds.Where(x => x.Id == 230).Select(x => x.Tick).ToArray());
+        var first = line.Frames.Find(f => f.Break11 > 0); // the stage holds the effect for several frames: the first frame that holds it is the one of H + 2, with ONE effect.
+        Assert.InRange(first.EndTick, h + 2, h + 2 + k - 1);
+        Assert.Equal(1, first.Break11);
     }
 
     /// <summary>
@@ -596,10 +595,10 @@ public sealed class OlenBombLidArcTests
         Assert.Equal(1, frame.Break11);
     }
 
-    /// <summary>Row 20 (KEY): the bomb is in status 2 until its animation ends and from A + 53 to the end it is still in the world, in status 3 (its last frame draws nothing, so it is invisible), never destroyed: <c>(E, 12)</c> is not registered (the native one would give the status 4 at A + 52 and a free slot at A + 53). A + 51 and A + 52 are not asserted. E20.h3a rewrites this test.</summary>
+    /// <summary>Row 20 (KEY), rewritten by E20.h3a T3: the bomb is in status 2 until A + 51; <c>(E, 12)</c>, registered, finds the end of its animation 1 and gives the status 4 at A + 52 and a free slot from A + 53 to the end.</summary>
     [Theory]
     [MemberData(nameof(Cadences))]
-    public void A9_TheBombStaysInStatus3Invisible_E12Missing(int k)
+    public void A9_TheBombIsDestroyedAtTheEndOfItsExplosion_E12(int k)
     {
         var line = Scene(k, true);
         var a = line.A;
@@ -609,11 +608,8 @@ public sealed class OlenBombLidArcTests
             Assert.Equal(EntityStatus.Normal, x.BombStatus);
         }
 
-        foreach (var x in line.Between(a + 53, line.Snaps.Count - 1))
-        {
-            Assert.True(x.BombPresent);
-            Assert.Equal(EntityStatus.Deactivated, x.BombStatus);
-        }
+        Assert.Equal(EntityStatus.FlagToDestroy, line.At(a + 52).BombStatus);
+        Assert.All(line.Between(a + 53, line.Snaps.Count - 1), x => Assert.False(x.BombPresent));
     }
 
     // -----------------------------------------------------------------------------------------

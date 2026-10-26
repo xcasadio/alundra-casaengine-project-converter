@@ -86,3 +86,26 @@ So the (w) tests are red for the right reason only (the missing registration), a
 ## Predicted list (T0 (d)) at T2
 
 Nothing moves: no existing test changed; the five pins of the registry, the two pins of A362 and `LogicalZWorldTests` Z4 and Z7 are green. They move at T3 only (the five pins and the six cases of A362; Z4 and Z7 predicted neutral).
+
+---
+
+# E20.h3a T3 (phase B, the two registrations): results (2026-10-26)
+
+Branch `chantier/theme2-attaques-objets`, HEAD of departure `4d98a658` (T2). One commit: the two calls and the rewritten pins.
+
+## What changed
+
+- `Alundra/Ai/NativeSpriteRegistry.cs`: `CreateForProduction` calls `BombAi.Register(registry)` and `BombLidAi.Register(registry)` after `BallAi.Register` (14 `Register` calls; 18 keys -> 21), the two usings, the two doc comments.
+- The five pins of the registry (predicted list rows 1 to 5): the sums gain `+ BombAi.Keys.Count + BombLidAi.Keys.Count` (`NativeSpriteRegistryTests` production runner, `WaveSwordLifeTests.V3`, and in `LiftableAiRegistrationTests.R1`, `ChargedArrowAiTests.C2`, `BallFlamesTests.M3` both the `sum` registry (two `Register` lines) and the explicit sum on the next line, which the T0 table had not listed as a second edit).
+- The two pins of the arc A362, rewritten on their expected value after h3a, renamed without "Missing":
+  `A9_TheLidIsDestroyedOneTickAfterItsStatus3_WithTheSound230AndTheBreakEffect11` (status 3 at H+1, status 4 at H+2, sound 230 once at H+2, ONE effect 11 in the first frame that holds it, out of the world from H+3) and
+  `A9_TheBombIsDestroyedAtTheEndOfItsExplosion_E12` (Normal from A to A+50, status 4 at A+52, slot free from A+53; the values were read from the run, they are the ones the old comment of the pin predicted). Cadences k = 1, 2, 3 each.
+
+## Red before / green after
+
+- Before T3 (T2): the 51 (w) failures, see above. After: `BombWorldTests` + `OlenBombLidArcTests` + the (b) tests + the five pins: **261 tests, 261 green** (first run: 9 red = the 3 pins whose explicit sum I had missed (R1, C2, M3) and the A9 lid pin whose effect count was a standing count of the stage; fixed in the tests, not in the DLL).
+- Removal proof (the two calls deleted by script, same 261 tests, then restored, `git diff` of `Alundra/` back to the T3 change): **62 red** = (w1) to (w4), (w6) in `BombWorldTests` (48 rows) + `W5` (3) + the 5 pins of the registry + the 6 A9 cases of the arc A362 (lid 3, bomb 3). Exactly the predicted set; nothing else red.
+
+## Full suite
+
+Release (`skipcopy.targets`), three disjoint partitions (`e20-e0d/suite-wired/run.sh` copy; p1 Arcs/Ai/Audio/Cameras/Cells/Combat/Dialogues, p2 Entities/Events/ExportGuards/Hero/Items, p3 the complement): p1 2046, p2 3229, p3 1971 = **7246 tests, 0 failure** (p1 took 10 min 1 s). The same 7246 as the T2 run (no test added or removed by T3). Predicted list respected: the only existing tests that moved are the five pins and the two A9 pins (six cases); `LogicalZWorldTests` Z4 and Z7 stayed green (neutral, as predicted). The four `docs/hero-trace-389-*.txt` were rewritten (end of lines only, `git diff --ignore-cr-at-eol --quiet -- docs/` true) and restored. `check_names.py --rules`: 0 finding (the same pre-existing warning).

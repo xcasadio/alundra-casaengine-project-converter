@@ -1,5 +1,7 @@
 #nullable enable
 using Xunit;
+using Alundra.Ai.Props;
+using Alundra.Ai.Items;
 using Alundra.Ai;
 using Alundra.Ai.Enemies;
 using Alundra.Ai.Objects;
@@ -73,9 +75,11 @@ public sealed class LiftableAiRegistrationTests
         LiftableAi.RegisterBreak(sum);
         LiftableAi.RegisterC4Production(sum); // E20.g2c1
         BallAi.Register(sum); // E20.f6b
+        BombAi.Register(sum); // E20.h3a: (D, 30) and (E, 12)
+        BombLidAi.Register(sum); // E20.h3a: (E, 19)
 
         Assert.Equal(sum.Count, production.Count);
-        Assert.Equal(3 + 3 + 1 + PickupAi.Keys.Count + ChestAi.Keys.Count + ChargedArrowAi.Keys.Count + ArrowAi.Keys.Count + PillarAi.Keys.Count + LiftableAi.Keys.Count + LiftableAi.BreakKeys.Count + LiftableAi.C4Keys.Count + BallAi.Keys.Count, production.Count);
+        Assert.Equal(3 + 3 + 1 + PickupAi.Keys.Count + ChestAi.Keys.Count + ChargedArrowAi.Keys.Count + ArrowAi.Keys.Count + PillarAi.Keys.Count + LiftableAi.Keys.Count + LiftableAi.BreakKeys.Count + LiftableAi.C4Keys.Count + BallAi.Keys.Count + BombAi.Keys.Count + BombLidAi.Keys.Count, production.Count);
     }
 
     [Fact]
