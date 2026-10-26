@@ -2980,7 +2980,7 @@ après.
 le héros invulnérable 120 ticks mais toujours dessiné) ; puis T2 et T1 ensemble (l'entrée et le bloc retirés : le héros ne perd plus rien,
 l'état d'aujourd'hui), les tests et `HitArena` revenus à leur forme.
 
-#### 1.12.2 E20.c2c — Quatre sauvegardes de test, une par armure ⏳ (détaillée le 2026-10-26 ; thème 2 ; D-E20-84, réponse de l'auteur à Q-C2B-7 ; à relire)
+#### 1.12.2 E20.c2c — Quatre sauvegardes de test, une par armure ⏳ (détaillée le 2026-10-26 ; thème 2 ; D-E20-84, réponse de l'auteur à Q-C2B-7 ; **READY** à la première relecture, `plan-verifier` frais)
 
 **Provenance.** La réponse de l'auteur à Q-C2B-7 (D-E20-84 : « Oui, quatre sauvegardes ») ; D-C2B-12 et D-C2B-15 (3) d'E20.c2b ; la lecture de c2
 (`docs/plan-e20-annexe/e20-c2/c2-dll.md` §1.9, `c2-oracle.md` A2 et la ligne 76) et la mesure de la découverte de c2b
