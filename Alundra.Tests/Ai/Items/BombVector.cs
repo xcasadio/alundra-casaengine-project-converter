@@ -15,8 +15,10 @@ namespace Alundra.Tests.Ai.Items;
 /// </summary>
 internal sealed class BombVector
 {
-    private BombVector(string function, uint entity, IReadOnlyDictionary<uint, uint> reads, IReadOnlyDictionary<uint, uint> writes, IReadOnlyList<(string Kind, uint[] Arguments)> journal)
+    private BombVector(string function, uint entity, IReadOnlyDictionary<uint, uint> reads, IReadOnlyDictionary<uint, uint> writes, IReadOnlyList<(string Kind, uint[] Arguments)> journal, uint spawnReturn, long? ret)
     {
+        SpawnReturn = spawnReturn;
+        Return = ret;
         Function = function;
         Entity = entity;
         Reads = reads;
@@ -24,7 +26,13 @@ internal sealed class BombVector
         Journal = journal;
     }
 
-    /// <summary>The name of the function: D30, E12 or E19.</summary>
+    /// <summary>What the real function returned (<c>ret</c>), null for a function that returns nothing (the cancellations, C62).</summary>
+    internal long? Return { get; }
+
+    /// <summary>The address the stubbed birth handed back (<c>spawn_ret</c>; 0: the table was full), for the vectors of the start of the bomb.</summary>
+    internal uint SpawnReturn { get; }
+
+    /// <summary>The name of the function: D30, E12, E19, C62 or one of the starts, drivers and cancellations of the bomb.</summary>
     internal string Function { get; }
 
     /// <summary>The address of the entity (<c>self</c>).</summary>
@@ -66,7 +74,7 @@ internal sealed class BombVector
             var journal = vector.GetProperty("journal").EnumerateArray()
                 .Select(j => (j[0].GetString()!, j.EnumerateArray().Skip(1).Select(a => unchecked((uint)a.GetInt64())).ToArray()))
                 .ToList();
-            list.Add(new BombVector(function, Hex(vector.GetProperty("self").GetString()!), Words(vector.GetProperty("reads")), Words(vector.GetProperty("writes")), journal));
+            list.Add(new BombVector(function, vector.GetProperty("self").GetString() is { } self ? Hex(self) : 0, Words(vector.GetProperty("reads")), Words(vector.GetProperty("writes")), journal, vector.TryGetProperty("spawn_ret", out var spawn) ? Hex(spawn.GetString()!) : 0, vector.TryGetProperty("ret", out var ret) && ret.ValueKind == JsonValueKind.Number ? ret.GetInt64() : null));
         }
 
         return list;

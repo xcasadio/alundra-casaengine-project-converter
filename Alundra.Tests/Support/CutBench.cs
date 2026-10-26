@@ -146,9 +146,10 @@ internal sealed class CutBench
             entity.Status = EntityStatus.FlagToDestroy;
         }
 
-        public void DestroyEntity(EntityScriptProxy entity)
-        {
-        }
+        /// <summary>E20.h3b: the calls of the single-argument <c>DestroyEntity(entity)</c> (<c>0x8003A774</c>), in order; the entity is left as it is.</summary>
+        public List<EntityScriptProxy> DestroyedAlone { get; } = new();
+
+        public void DestroyEntity(EntityScriptProxy entity) => DestroyedAlone.Add(entity);
 
         private sealed class NoOpRunner : IEventProgramRunner
         {

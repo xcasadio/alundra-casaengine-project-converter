@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Alundra.Events;
 using Alundra.Entities;
+using Alundra.Maps;
 
 namespace Alundra.Ai.Items;
 
@@ -93,6 +94,35 @@ internal static class BombAi
         StubCallsForTests?.Add(entity);
         Alundra.Cells.TileEffect.Trigger(entity);
     }
+
+    /// <summary>The program code of C62 in slot C.</summary>
+    internal const int TickCode = 62;
+
+    /// <summary>E20.h3b T1 skeleton: the fuse of the bomb, <c>+0x274</c> (a signed word held little-endian on <see cref="EntityScriptProxy.Bytes"/> 0 to 3).</summary>
+    internal static int Fuse(EntityScriptProxy bomb)
+        => bomb.Bytes[0] | (bomb.Bytes[1] << 8) | (bomb.Bytes[2] << 16) | (bomb.Bytes[3] << 24);
+
+    /// <summary>E20.h3b T1 skeleton: writes the fuse of the bomb (see <see cref="Fuse"/>).</summary>
+    internal static void SetFuse(EntityScriptProxy bomb, int value)
+    {
+        bomb.Bytes[0] = (byte)value;
+        bomb.Bytes[1] = (byte)(value >> 8);
+        bomb.Bytes[2] = (byte)(value >> 16);
+        bomb.Bytes[3] = (byte)(value >> 24);
+    }
+
+    /// <summary>E20.h3b T1 skeleton: the start of the bomb, <c>0x8003453C</c>.</summary>
+    internal static int Start(EntityScriptProxy hero) => throw new NotImplementedException("E20.h3b T1: the start of the bomb");
+
+    /// <summary>E20.h3b T1 skeleton: the driver of the bomb, <c>0x800352C4</c>.</summary>
+    internal static int Drive(EntityScriptProxy hero) => throw new NotImplementedException("E20.h3b T1: the driver of the bomb");
+
+    /// <summary>E20.h3b T1 skeleton: the cancellation of the bomb, <c>0x80034B54</c>.</summary>
+    internal static void Cancel(EntityScriptProxy hero) => throw new NotImplementedException("E20.h3b T1: the cancellation of the bomb");
+
+    /// <summary>E20.h3b T1 skeleton: C62, <c>0x8007A978</c>.</summary>
+    internal static void Tick(EntityScriptProxy bomb, IEntityWorldContext context, Func<EntityScriptProxy, uint[]>? readCorners = null)
+        => throw new NotImplementedException("E20.h3b T1: C62");
 
     private sealed class Registrations : IDisposable
     {
