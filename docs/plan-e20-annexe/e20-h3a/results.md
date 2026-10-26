@@ -109,3 +109,5 @@ Branch `chantier/theme2-attaques-objets`, HEAD of departure `4d98a658` (T2). One
 ## Full suite
 
 Release (`skipcopy.targets`), three disjoint partitions (`e20-e0d/suite-wired/run.sh` copy; p1 Arcs/Ai/Audio/Cameras/Cells/Combat/Dialogues, p2 Entities/Events/ExportGuards/Hero/Items, p3 the complement): p1 2046, p2 3229, p3 1971 = **7246 tests, 0 failure** (p1 took 10 min 1 s). The same 7246 as the T2 run (no test added or removed by T3). Predicted list respected: the only existing tests that moved are the five pins and the two A9 pins (six cases); `LogicalZWorldTests` Z4 and Z7 stayed green (neutral, as predicted). The four `docs/hero-trace-389-*.txt` were rewritten (end of lines only, `git diff --ignore-cr-at-eol --quiet -- docs/` true) and restored. `check_names.py --rules`: 0 finding (the same pre-existing warning).
+
+Debug (last, with the DLL deposit): p1 2046, p2 3229, p3 1971 = 7246 tests, 0 failure (p1 10 min 46 s). Traces restored; moteur, convertisseur and data without diff. `cmp`: the four traces are text-identical (only the end of lines is rewritten by the suite, then restored).
