@@ -11369,7 +11369,7 @@ plan, l'index des ADR et un ADR.
 
 **Questions de l'auteur** (défauts réversibles retenus en mode autonome ; §2) : Q-H3-1 à Q-H3-8.
 
-#### 1.30.5 E20.h1 — Les cinq objets instantanés : l'herbe, les deux potions, l'extrait et le breuvage ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `31fc8b2` ; révision 3 du 2026-10-25 (D-E20-50, D-E20-78, e0c faite), relue à la clôture de la nouvelle époque : REVISE ; ⚠️ **en pause de relecture** : la révision 4 ci-dessous corrige les deux blocages mais n'est pas relue ; une nouvelle relecture ne s'ouvre que sur décision de l'auteur, Q-H1-P)
+#### 1.30.5 E20.h1 — Les cinq objets instantanés : l'herbe, les deux potions, l'extrait et le breuvage ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `31fc8b2` ; révision 3 du 2026-10-25 (D-E20-50, D-E20-78, e0c faite), relue à la clôture de la nouvelle époque : REVISE ; ⚠️ **en pause de relecture** ; la révision 4 relue le 2026-10-26 (la relecture accordée par D-E20-81 après h0a) : REVISE ; **révision 5** écrite, non relue ; une nouvelle relecture sur décision de l'auteur, Q-H1-P2)
 
 **Révision 3 (2026-10-25).** Trois faits ont changé depuis la relecture de clôture du 2026-10-18 :
 - **D-E20-78** (Q-H1-3 rouverte, l'erratum de D-E20-51) : un soin donné par `0x82` s'ajoute au sac sans être bu, et un coffre refuse l'objet sac
@@ -11389,6 +11389,15 @@ plan, l'index des ADR et un ADR.
 prérequis et les arrêts citaient « les défauts » de Q-H1-2 et Q-H1-3, alors que l'auteur a répondu autrement à Q-H1-2 (D-E20-50) et que Q-H1-3 a
 été rouverte (D-E20-78) : ils citent maintenant les réponses ; (2) D-H1-1, le périmètre et la preuve de retrait nommaient des membres qui
 n'existent pas au HEAD (`Half`, `Full`, `Magic`, `Both`) et déclaraient `HeroHeals.cs` neuf : ils reprennent les membres réels.
+
+**Révision 5 (2026-10-26, non relue : la tranche reste en pause).** La relecture de la révision 4 (accordée par D-E20-81) a relevé deux
+blocages : (1) D-H1-1, le périmètre et l'épingle (lv) faisaient encore écrire à h1 des créateurs d'effets dans `NativeEffects.cs` et rendre
+internes `BurstTableX/Y`, alors qu'E20.e0c les a écrits (`CreateHealGlow`, `CreateHealSpark`, `CreateHealRing`) et que les corps de `HeroHeals`
+les appellent déjà par `Emit` ; (v1) nommait encore `Half(5)` pour l'eau 1 ; (2) la preuve de retrait « le soin H ne crée plus ses effets »
+omettait les tests existants d'e0c qui observent ces effets (`HeroHealsTests` compte les huit anneaux de `LargePotion`). Corrections :
+`NativeEffects.cs` sort du périmètre (aucun créateur neuf, aucune signature changée ; (e1) lit les effets dans le réservoir après `RunFrame`,
+comme les tests d'e0c, et recopie en littéraux les deux tables du binaire) ; l'épingle (lv) tombe ; l'eau 1 est `LargeHeart` ; T0 (e) nomme,
+pour chaque corps, les tests existants qui observent ses effets, et la preuve de retrait les compte dans son ensemble rouge.
 
 **Prérequis.** h0a (la table de départ, les mots de l'objet, la couture `ItemStartForTests`, le refus par le son 3) ; E20.c2a ✅ (les PV de
 l'entité du héros et leur miroir) ; la fin du chantier et Q-R-7 ; les réponses de l'auteur : Q-H1-1 (le défaut), Q-H1-2 (D-E20-50 : Start + Select non porté), Q-H1-3 (D-E20-78 : rien
@@ -11413,7 +11422,7 @@ propre interpréteur et son propre modèle, aucun P0 ni P1).
   deux, 8 anneaux et 8 étincelles, 16 tirages, son `0x30` ; Potion S `PV = min(PVmax, PV + max(10, PVmax / 2))`, 4 étincelles, 8 tirages, son
   `0x31`. Tous créent l'effet global 14 (`0x8003BDD8(0, 14, animation, x, y, z)`) ; les anneaux : `+0x3C += tabX[4i] << 11`, `+0x40 += tabY[4i]
   << 11`, forces `tab[(8 + 4i) & 31] × 448`, `ForceZ 0x30000`, Z + `0x80000` (les tables `0x80023654`/`0x80023694` sont `BurstTableX/Y` de la
-  DLL, `Alundra/Rendering/Effects/NativeEffects.cs:78`, `:85`) ; l'étincelle : **deux tirages** (`h-g-deps.md` §2.1 disait trois : RÉFUTÉ),
+  DLL, privées, `Alundra/Rendering/Effects/NativeEffects.cs:156`, `:163` au HEAD du 2026-10-26) ; l'étincelle : **deux tirages** (`h-g-deps.md` §2.1 disait trois : RÉFUTÉ),
   `ForceX = hi(r1 × 0x20001) − 0x10000`, `ForceY = hi(r2 × 0x30001) − 0x18000`, Z + `0x100000` ; un effet refusé (réservoir plein) ne tire pas.
   L'ordre dans un départ : le soin (et ses effets), puis le son, puis `UseItem` (`0x8004E5C4`, identique à `PlayerManager.UseItem`,
   `Alundra/Hero/PlayerManager.cs:2263`). Les PV écrits sont ceux de l'entité (`+0x14`) ; les PM passent par les fonctions des stats ; les stats
@@ -11424,7 +11433,7 @@ propre interpréteur et son propre modèle, aucun P0 ni P1).
   mêmes sons et mêmes effets qu'à terre (critique §4, mesuré) ; la DLL appelle `TryUseItem` dans ces états (`PlayerManager.cs:697-700`).
 - **Le second site de garde `0x8002BB94` n'est pas une potion de secours** : c'est Start + Select tenu 121 images, qui consomme un Breuvage s'il
   y en a un puis met les PV du héros à 0 (la mort ; `+0x1CC = 0x78`) ; il n'est pas porté (Q-H1-2, D-E20-50 ; O-H-3 fermé).
-- **Les soins servent ailleurs** : l'eau 1 (`0x80032F84`, `Half(5)`) et l'eau 2 (`0x80033274`, la Potion L) par leurs pilotes, la mort (le départ
+- **Les soins servent ailleurs** : l'eau 1 (`0x80032F84`, `LargeHeart`) et l'eau 2 (`0x80033274`, la Potion L) par leurs pilotes, la mort (le départ
   du Breuvage), le ramassage C255 (`0x80033F00` : un soin ramassé que le sac refuse est bu sur place ; Q-H1-3).
 - **La décompilation** envoie la Potion S sur le corps du Breuvage et place les anneaux de la Potion L avec le mauvais indice (D-H1-1 et D-H1-2
   du rapport, deux défauts de la décompilation, pas de l'original) ; le binaire tranche. Aucun défaut avéré de l'original dans la tranche.
@@ -11434,9 +11443,10 @@ propre interpréteur et son propre modèle, aucun P0 ni P1).
   `LargeCrystal`, le Breuvage `Brew`, la Potion S `SmallPotion`, l'eau 1 `LargeHeart` (deux membres distincts, chacun son appel d'effets) ; ils
   prennent **le héros seul** (les vecteurs synthétiques où `a0` n'est pas le héros sont classés « binaire seul » ; critique C-8) ; h1 ne les renomme
   ni ne les fusionne ; un seul fichier neuf (Q-R-7) : `Alundra/Hero/InstantItems.cs` (les cinq départs `(EntityScriptProxy, uint) → int`,
-  toujours 1) ; les créateurs d'effets dans `NativeEffects.cs` (l'herbe ; les anneaux, l'animation en paramètre ; les étincelles, le nombre,
-  l'animation et `ForceZ` en paramètres ; le Breuvage) ; les tables `BurstTableX/Y` rendues internes ; la fiole de vie
-  (`CreateLifeVesselEffects`, `:31`) ne change pas de comportement, épinglée (critique C-15). Les additions de PV en `unchecked` (enroulement 32
+  toujours 1) ; **les créateurs d'effets existent** (E20.e0c : `CreateHealGlow`, `CreateHealSpark`, `CreateHealRing` de `NativeEffects.cs`,
+  appelés par les corps de `HeroHeals` par `Emit`) : les départs appellent les corps et ne créent aucun effet eux-mêmes ; h1 n'écrit aucun
+  créateur et ne change aucune signature ; `NativeEffects.cs` sort du périmètre et `BurstTableX/Y` restent privées (révision 5 ; la fiole de
+  vie, `CreateLifeVesselEffects`, n'est donc pas touchée et son épingle (lv) tombe). Les additions de PV en `unchecked` (enroulement 32
   bits des vecteurs ; aucun `CheckForOverflowUnderflow`).
 - **D-H1-2** — Le soin lit et écrit l'entité (`Hp`, `HpMax`), **sans repli sur les stats** : un héros qui n'a pas repris sa vie (`LifePulledFromStats`
   faux, 0/0) refuse (« PV < PVmax » est faux) ; c'est le binaire, qui n'a que l'entité, contrairement au repli de `IncreaseHpMaxAndFill` et de
@@ -11452,12 +11462,12 @@ propre interpréteur et son propre modèle, aucun P0 ni P1).
   `ItemsCount = 99` en constante, `PlayerManager.cs:2033` ; le chemin d'erreur de `UseItem` est déjà épinglé,
   `Alundra.Tests/AlundraItemAndMoneyOpcodesTests.cs:126-129`) et ceux où `a0` n'est pas le héros (D-H1-1).
 
-**Périmètre.** `InstantItems.cs` (neuf) ; `HeroHeals.cs` (existant : seulement un corps manquant, si T0 en trouve un) ; `NativeEffects.cs` ; les cinq entrées de h0a dans `PlayerManager.cs` (phase B) ;
+**Périmètre.** `InstantItems.cs` (neuf) ; `HeroHeals.cs` (existant : seulement un corps manquant, si T0 en trouve un) ; les cinq entrées de h0a dans `PlayerManager.cs` (phase B) ;
 `Alundra/SaveGames/TestSaves.cs` (le préréglage de Q-H1-1) ; `Alundra.Tests/` ; l'annexe `docs/plan-e20-annexe/e20-h1/` ; ce plan, l'index des
-ADR et un ADR. **Hors périmètre** : le cadre (h0a) ; Start + Select et la mort (E18) ; le ramassage (e0c) ; la résurrection (E18) ; les tomes
+ADR et un ADR. **Hors périmètre** : le cadre (h0a) ; `NativeEffects.cs` et ses créateurs (e0c, révision 5) ; Start + Select et la mort (E18) ; le ramassage (e0c) ; la résurrection (E18) ; les tomes
 (h4) ; les sons eux-mêmes ; le moteur, le convertisseur et les données.
 
-**Phases.** A (T1) : les fonctions, les créateurs et les tests, inertes en production ; les tests de monde par `ItemStartForTests` (D-H-4),
+**Phases.** A (T1) : les départs et les tests, inertes en production ; les tests de monde par `ItemStartForTests` (D-H-4),
 verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouges avant.
 
 ##### Tâches
@@ -11474,14 +11484,18 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
   Z d'un effet créé au repos vaut `PosZ + 1 + 0x100000` ou `+ 0x80000` (les `z44` des clés) ; P3, un réservoir rempli de 128 − K effets donne K
   créations puis `null` ; P4, le miroir donne le même PVmax aux stats et à l'entité, 24 et 30 compris ; P5, les sons 48, 49 et 50 résolus par
   `alundra-project/Sounds/sfx-manifest.json` (assertion de non-régression, critique C-13) ; (e) la liste prédite : les tests existants qui appellent déjà
-  ces corps (`HeroHealsTests`, les tests d'`ItemEffects` d'e0c) ne doivent pas bouger, et s'ils bougent c'est un arrêt ; avec le préréglage de Q-H1-1, `AlundraTestSavesTests.TheNinePresets_AreListed_InTheOrderOfTheTable` et les lignes de la théorie
+  ces corps (`HeroHealsTests`, les tests d'`ItemEffects` d'e0c) ne doivent pas bouger, et s'ils bougent c'est un arrêt ; **l'annexe nomme, pour chaque corps H, les tests existants qui
+  observent ses effets** (au moins `HeroHealsTests.WithoutAnEffectStage_TheHealIsDoneAll_TheSame_WhileWithOneTheEffectsAreQueued` pour
+  `LargePotion`, `PickupAiPlacedTests.P6_TheSparksOfThePickup_AreOnTheQueue_TheReservoirIsEmptyAndNoNumberIsDrawnBeforeTheStageRuns_ThenTheyAreCreated`
+  pour `SmallPotion`, et ceux d'`ItemEffectsTests` et de `MagicSeedTests` qui comptent ou comparent les effets créés), recomptés au HEAD de
+  départ, pour la preuve de retrait (révision 5) ; avec le préréglage de Q-H1-1, `AlundraTestSavesTests.TheNinePresets_AreListed_InTheOrderOfTheTable` et les lignes de la théorie
   `EveryPresetName` ; recomptée au HEAD de départ ; (f) h0a faite (la table, les trois coutures, `ItemInUse`) ; (g) les noms passent la garde ; (h) les traces
   d'oracle que h0a T0 (b) laisse « en attente de la tranche de leur objet » pour les cinq objets (`docs/plan-e20-annexe/e20-d/oracle/out*/w9/`,
   `W9-item24`, `-25`, `-26`, `-27`, `-29` ; `0x28` est un trou, déjà exact avec h0a) : pour chacune, la prédiction écrite avant (un soin, ou un
   refus si la vie et la magie de la trace sont au maximum), comparée par (o1) de T2 ; un écart est un arrêt (révision 1).
 - ⏳ **T1 — Phase A** (tests d'abord ; chaque « sans effet » accolé à un positif ; tous les tests (r), (e1), (e2), (g1) appellent le départ ou le
   soin **directement**, jamais par la table) : (v1) un test par soin, six, sur son fichier de vecteurs moins les « binaire seul », par
-  l'adaptateur (un écart sur un vecteur le rend rouge ; l'eau 1 par `Half(5)`) ; (v2) un test par départ, cinq, de même ; (r-herbe+), (r-potionL+),
+  l'adaptateur (un écart sur un vecteur le rend rouge ; l'eau 1 par `LargeHeart`) ; (v2) un test par départ, cinq, de même ; (r-herbe+), (r-potionL+),
   (r-extrait+), (r-breuvage+), (r-potionS+) : le positif avec des montants calculés à la main (Herbe : PVmax ∈ {10, 19, 20, 23, 24, 25, 40, 50} à
   PVmax − 1 et à 3 ; Potion S : 10, **19**, 25, 30 ; le plafond ; le son ; le compte − 1 ; l'objet reste équipé à 0 exemplaire), et, **en tests
   séparés**, (r-herbe−) à (r-potionS−) le refus (PV ou PM au maximum : son 3, compte et valeurs inchangés) (révision 1) ; (r-breuvage+) les trois
@@ -11490,11 +11504,12 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
   que les valeurs de vie et de magie, ni le son ni le compte (révisions 1 et 2) ; (r-hud)
   aucun calage du HUD ; (r-ordre-X), un par objet : un faux `ISoundPlayer` lit les PV (ou les PM) et le compte à l'appel de `PlaySfx` (les valeurs
   déjà soignées, le compte pas encore décrémenté ; critique C-7), **puis le test vérifie le compte final décrémenté** au retour du départ
-  (révision 1) ; (e1) les effets de chaque objet par `CreatedForTests` : nombre, animation, Z, positions et forces
-  des anneaux calculés à la main depuis les deux tables ; (e2) un réservoir à K emplacements libres : K créations, 2 tirages par étincelle
-  obtenue ; (g1) les tirages 0, 0, 0, 16, 8 et l'état final du générateur égal à `rng1` de la clé ; (lv) la fiole de vie inchangée : une épingle
-  neuve de ses positions, forces et tirages (`CreateLifeVesselEffects`, appelée par `Alundra/Events/EventProgramRunner.cs:3154` ; aucun test ne
-  la nomme au HEAD), écrite et verte avant tout changement de `NativeEffects` ; puis les tests de monde, **un par clé** (les 30 de la découverte et les six clés ajoutées de T0 (b)) :
+  (révision 1) ; (e1) les effets de chaque objet, lus dans `Stage.Reservoir.ActiveSlots` après `RunFrame` (le mécanisme d'`ItemEffectsTests.Created()` et de
+  `HeroHealsTests` ; les créateurs de soin n'appellent pas `CreatedForTests`, révision 5) : nombre, animation, Z, positions et forces
+  des anneaux calculés à la main depuis les deux tables du binaire (`0x80023654`, `0x80023694`, recopiées en littéraux depuis l'annexe ;
+  `BurstTableX/Y` restent privées) ; (e2) un réservoir à K emplacements libres : K créations, 2 tirages par étincelle
+  obtenue ; (g1) les tirages 0, 0, 0, 16, 8 et l'état final du générateur égal à `rng1` de la clé ; (l'épingle (lv) de la fiole de vie
+  tombe : `NativeEffects.cs` n'est plus touché, révision 5) ; puis les tests de monde, **un par clé** (les 30 de la découverte et les six clés ajoutées de T0 (b)) :
   `ArcRun` de la carte 14, champ plat, entités de la carte retirées, `Give`, `SetItem`, `SetMp`, la vie abaissée **sur l'entité** (`Hero.Hp`,
   après la reprise de la vie ; un abaissement dans les stats seules serait écrasé par le miroir, `PlayerManager.cs:638-644` ; révision 1), graine
   posée avant la première
@@ -11526,14 +11541,16 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
   Debug, zéro échec ; tests déplacés ⊂ liste prédite ; `cmp` ; les traces versionnées de la garde d'octets inchangées (les traces d'oracle W9 de
   T0 (h) sont des sorties de l'annexe d'E20.d, comparées par (o1), non réécrites) ; moteur, convertisseur et données sans diff (révision 2).
 - **Preuve de retrait** (critique C-3) : rendre les cinq entrées à leurs bouchons rend rouges exactement (p1) à (p5), (p7) et (o1) (révision 2), (v), (r), (e), (g),
-  (lv), les tests de monde et (p6) restant verts (ils appellent les départs directement ou par la couture) ; **retirer l'appel de `UseItem` du
+  les tests de monde et (p6) restant verts (ils appellent les départs directement ou par la couture) ; **retirer l'appel de `UseItem` du
   départ X** rend rouges exactement (v2) de X (l'écriture du compte), (r-X+), (r-ordre-X) (le compte final), les clés de monde de X qui ont un usage
   réussi et le (p) de X, et laisse verts (r-X−), (r-nu), (r-hud), les clés de refus de X et tout ce qui touche les autres objets ; **retirer l'appel
   de `PlaySfx` du succès de X** rend rouges exactement (v2) de X (le journal des sons), (r-X+), (r-ordre-X) (le faux n'est jamais appelé), les clés
   de X qui ont un usage réussi et le (p) de X, avec les mêmes verts ; **faire que le soin H ne crée plus ses effets** rend rouges exactement (v1)
   de H (un corps, un (v1) : `SmallPotion` et `LargeHeart` sont deux membres distincts), (v2) des départs qui appellent H, (e1) et (e2) de leurs objets, (g1) si
   H crée des étincelles (Potion S, Breuvage), les clés de monde de leurs objets où un effet est obtenu (toutes sauf les refus et les
-  `*_pool_full`) et le (p) de leurs objets, et laisse verts les (r), (r-ordre), les clés de refus et les `*_pool_full` (le test compare les effets
+  `*_pool_full`) et le (p) de leurs objets, **et les tests existants d'e0c qui observent les effets de H, nommés par T0 (e)** (au moins
+  `HeroHealsTests.WithoutAnEffectStage_TheHealIsDoneAll_TheSame_WhileWithOneTheEffectsAreQueued` pour `LargePotion` ; révision 5), et laisse
+  verts les (r), (r-ordre), les clés de refus et les `*_pool_full` (le test compare les effets
   créés) (révision 1).
 - **Recette de l'auteur** (non bloquante) : le préréglage de Q-H1-1 ; Rond puis l'objet voulu : les cœurs ou les points de magie qui montent, le
   son, les anneaux ou les étincelles, un exemplaire de moins ; à pleine vie, le son de refus et rien de consommé ; dans l'eau profonde, de même.
@@ -11542,7 +11559,7 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
 
 - **Arrêts** : un test hors de la liste prédite bouge ; un vecteur ou une clé diffère d'un octet ou d'un tick ; une sonde P1 à P5 contredite ; une
   adresse sans membre hors des vecteurs « binaire seul » ; une des six clés ajoutées de T0 (b) que la machine ne sait pas faire ; h0a sans ses trois coutures ; un
-  besoin de toucher au moteur ; un nom refusé ; une réponse de l'auteur autre que le défaut à Q-H1-1 (Q-H1-2 et Q-H1-3 sont tranchées : D-E20-50, D-E20-78).
+  besoin de toucher au moteur ou à `NativeEffects.cs` (révision 5) ; un nom refusé ; une réponse de l'auteur autre que le défaut à Q-H1-1 (Q-H1-2 et Q-H1-3 sont tranchées : D-E20-50, D-E20-78).
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : rendre les cinq entrées à leurs bouchons ; la phase A reste inerte.
 
@@ -12932,6 +12949,7 @@ les trois entrées `0x31`.
 | Q-H2-P | (2026-10-25, E20.h2, à l'auteur) La tranche de la cape de sable a eu trois relectures REVISE (la dernière, de clôture, a trouvé que le recalcul du masque proposé aurait mis la gravité d'Alundra à zéro) ; la règle du dépôt arrête là les relectures automatiques. Une révision 3 est écrite au plan. Ouvrir une nouvelle relecture (une époque neuve) au début du thème 2, après h0a ? Défaut proposé : oui **Réponse de l'auteur (2026-10-25)** : « prend toutes les réponses défaut » : oui (D-E20-81). | Tranché le 2026-10-25 (D-E20-81) |
 | Q-H2-P2 | (2026-10-26, E20.h2, à l'auteur) La relecture de la cape de sable que tu avais accordée après h0a (D-E20-81) a rendu REVISE : la cape doit partager avec le mur d'eau (i2a) sa fonction de masque, le bit doit tomber au tick même d'un verrou (dialogue, scène) et le glissement le long d'un mur doit voir la règle du sable. La révision 4 corrige les trois points ; elle n'est pas relue. Proposition : relire la révision 4 une fois i2a faite (i2a crée la fonction que la cape étend). Défaut : oui, une relecture après i2a | à l'auteur (défaut : une relecture après i2a) |
 | Q-H1-P | (2026-10-25, E20.h1, à l'auteur) La tranche des cinq soins (Herbe, Potions, Extrait, Breuvage), READY depuis le 2026-10-18, a été révisée pour D-E20-50, D-E20-78 et le code d'e0c ; sa relecture de clôture a rendu REVISE (deux corrections de texte : citer vos réponses, et les vrais noms des corps de soin) ; la règle arrête là. Une révision 4 est écrite. Ouvrir une relecture au début du thème 2 ? Défaut proposé : oui **Réponse de l'auteur (2026-10-25)** : « prend toutes les réponses défaut » : oui (D-E20-81). | Tranché le 2026-10-25 (D-E20-81) |
+| Q-H1-P2 | (2026-10-26, E20.h1, à l'auteur) La relecture des cinq soins que tu avais accordée après h0a (D-E20-81) a rendu REVISE sur deux points de texte : le plan faisait encore réécrire à h1 les effets des soins (les anneaux, les étincelles) alors qu'ils existent depuis le ramassage des soins (e0c), et une preuve de retrait oubliait les tests de ce ramassage. Rien ne change en jeu. La révision 5 corrige les deux points ; elle n'est pas relue. Proposition : une relecture de la révision 5. Défaut : oui, une relecture | à l'auteur (défaut : une relecture) |
 | O-H2-1 | (2026-10-25, relevé par la clôture de h2) `ResyncControllerFromFlags` commence par `ApplyGravitySettingsToController`, qui met la gravité et la vitesse de chute à 0 : quand un opcode de drapeaux (`0x16`/`0x17`, `0x62`/`0x63`) vise le héros, sa chute serait coupée ; à vérifier au T0 de h2 (un écart préexistant, hors cape) | E20.h2 T0 |
 | Q-G1A-1 | (2026-10-17) Avec D-E20-39, aucun objet n'arrive dans les mains avant g3 et g1b : veut-on voir porter ou lancer quelque chose en jeu plus tôt ? (A, défaut) non, g1a et g2a restent invisibles jusque-là ; (B) par h3 (la bombe et les haricots naissent portés ; demande h0, h1 et leurs gestionnaires) ; (C) un geste de test qui met une caisse dans les mains **Réponse de l'auteur (2026-10-22)** : le défaut (A) : confirmé. | Tranché le 2026-10-22 |
 | Q-G1A-2 | (2026-10-17) Touché, mort ou sur une case de sortie avec un objet : dans l'original l'objet tombe et se brise ; en attendant E20.c2b et E18, le héros garderait la caisse dans les mains. Acceptable ? **Réponse de l'auteur (2026-10-22)** : « oui » : accepté. | Tranché le 2026-10-22 |
