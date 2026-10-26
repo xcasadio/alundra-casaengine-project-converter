@@ -1,0 +1,80 @@
+source: ../e20-a362-disc/discovery/out/map362_programs.txt
+
+== Olen C[4] from @558 (V = tick of the first call of @558; S = the tick of @569)
+  @558  0x37 Wait                                             V+0
+  @560  0x09 Set direction                                    V+11
+  @562  0x37 Wait                                             V+11
+  @564  0x1A Set anim                                         V+42
+  @566  0xBD Play sound 2                                     V+42
+  @569  0x8B Spawn entity next to entity                      V+42
+  @578  0x37 Wait                                             V+42
+  @580  0x1A Set anim                                         V+73
+  @582  0x05 Flag on                                          V+73
+  @585  0xBD Play sound 2                                     V+73
+  @588  0x1C Wait for animation ends (Hold flag or end counter) V+73
+
+  gap(@558 -> @562) = 11 ; gap(@562 -> @569 = S) = 31 ; gap(@569 -> @582 = T4) = 31 ; V = S - 42
+
+== bomb C[5] from @628 (its first tick)
+  @628  0x17 Low gravity                                      B+0
+  @629  0x1B Fly                                              B+0
+  @632  0x36 Wait until flag on                               B+0
+
+== bomb C[5] from @635 (the tick where it sees T4)
+  @635  0x1A Set anim                                         X4+0
+  @637  0x16 High gravity                                     X4+0
+  @638  0x36 Wait until flag on                               X4+0
+
+== bomb C[5] from @641 (the tick where it sees T5; A = this tick)
+  @641  0x1A Set anim                                         A+0
+  @643  0x00 Break                                            A+0
+  @644  0x00 Break                                            A+1
+  @645  0x00 Break                                            A+2
+  @646  0x00 Break                                            A+3
+  @647  0x00 Break                                            A+4
+  @648  0x00 Break                                            A+5
+  @649  0x00 Break                                            A+6
+  @650  0x00 Break                                            A+7
+  @651  0x00 Break                                            A+8
+  @652  0x00 Break                                            A+9
+  @653  0x00 Break                                            A+10
+  @654  0x00 Break                                            A+11
+  @655  0xFF End script                                       A+12
+
+== map program B[4] from @171 (the Break, the tick where B[4] sees T6; call it U; U = H + 2)
+  @171  0x00 Break                                            U+0
+  @172  0x8E Camera sway start                                U+1
+  @177  0x37 Wait                                             U+1
+  @179  0x8F Camera sway stop                                 U+62
+  @180  0x37 Wait                                             U+62
+  @182  0x8A Spawn entity at position                         U+123
+  @190  0x37 Wait                                             U+123
+  @192  0x8A Spawn entity at position                         U+154
+  @200  0x37 Wait                                             U+154
+  @202  0x8A Spawn entity at position                         U+185
+  @210  0x37 Wait                                             U+185
+  @212  0x8A Spawn entity at position                         U+216
+  @220  0x37 Wait                                             U+216
+  @222  0x00 Break                                            U+247
+  @223  0x0D Dialog                                           U+248
+  @226  0x39 Wait for dialog                                  U+248
+
+  in terms of H (H = the tick of the hit pass; D[1] runs at H+1; U = H+2):
+    @171  0x00 Break                              H+2
+    @172  0x8E Camera sway start                  H+3
+    @179  0x8F Camera sway stop                   H+64
+    @182  0x8A Spawn entity at position           H+125
+    @192  0x8A Spawn entity at position           H+156
+    @202  0x8A Spawn entity at position           H+187
+    @212  0x8A Spawn entity at position           H+218
+    @222  0x00 Break                              H+249
+    @223  0x0D Dialog                             H+250
+    @226  0x39 Wait for dialog                    H+250
+
+== lid D[1] from @728 (the tick H+1)
+  @728  0x87 Check TouchingEntity attack type                 D+0
+  @731  0x04 If false goto                                    D+0
+  @734  0x05 Flag on                                          D+0
+  @737  0x19 Deactivate entity                                D+0
+  @738  0xFF End script                                       D+0
+

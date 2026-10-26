@@ -1,0 +1,19 @@
+hero (100.00,100.00) bomb1 (300.00,300.00) bomb2 (311.00,300.00)
+k  -5 bomb1(st,anim,end,hitc,box)=(2, 0, 0, 0, 0) bomb2=(2, 0, 0, 0, 0) hero(hp,state,touching)=(10, 0, 0) 
+k  +0 bomb1(st,anim,end,hitc,box)=(3, 0, 0, 0, 0) bomb2=(2, 0, 0, 0, 0) hero(hp,state,touching)=(10, 0, 0) 
+k  +1 bomb1(st,anim,end,hitc,box)=(3, 1, 0, 0, 0) bomb2=(2, 0, 0, 0, 0) hero(hp,state,touching)=(10, 0, 0) sounds [46]
+k  +2 bomb1(st,anim,end,hitc,box)=(3, 1, 0, 0, 0) bomb2=(2, 0, 0, 0, 0) hero(hp,state,touching)=(10, 0, 0) 
+k +17 bomb1(st,anim,end,hitc,box)=(3, 1, 0, 1, 1) bomb2=(2, 0, 0, 0, 0) hero(hp,state,touching)=(10, 0, 0) 
+k +18 bomb1(st,anim,end,hitc,box)=(3, 1, 0, 0, 1) bomb2=(3, 0, 0, 0, 0) hero(hp,state,touching)=(10, 0, 0) 
+k +19 bomb1(st,anim,end,hitc,box)=(3, 1, 0, 0, 1) bomb2=(3, 1, 0, 0, 0) hero(hp,state,touching)=(10, 0, 0) sounds [46]
+k +20 bomb1(st,anim,end,hitc,box)=(3, 1, 0, 0, 1) bomb2=(3, 1, 0, 0, 0) hero(hp,state,touching)=(10, 0, 0) 
+k +32 bomb1(st,anim,end,hitc,box)=(3, 1, 0, 0, 0) bomb2=(3, 1, 0, 0, 0) hero(hp,state,touching)=(10, 0, 0) 
+k +35 bomb1(st,anim,end,hitc,box)=(3, 1, 0, 0, 0) bomb2=(3, 1, 0, 0, 1) hero(hp,state,touching)=(10, 0, 0) 
+k +50 bomb1(st,anim,end,hitc,box)=(3, 1, 0, 0, 0) bomb2=(3, 1, 0, 0, 0) hero(hp,state,touching)=(10, 0, 0) 
+k +52 bomb1(st,anim,end,hitc,box)=(3, 1, 1, 0, 0) bomb2=(3, 1, 0, 0, 0) hero(hp,state,touching)=(10, 0, 0) 
+k +53 bomb1(st,anim,end,hitc,box)=(4, 1, 1, 0, 0) bomb2=(3, 1, 0, 0, 0) hero(hp,state,touching)=(10, 0, 0) 
+k +54 bomb1(st,anim,end,hitc,box)=(0, 0, 0, 0, 0) bomb2=(3, 1, 0, 0, 0) hero(hp,state,touching)=(10, 0, 0) 
+k +70 bomb1(st,anim,end,hitc,box)=(0, 0, 0, 0, 0) bomb2=(3, 1, 1, 0, 0) hero(hp,state,touching)=(10, 0, 0) 
+k +71 bomb1(st,anim,end,hitc,box)=(0, 0, 0, 0, 0) bomb2=(4, 1, 1, 0, 0) hero(hp,state,touching)=(10, 0, 0) 
+k +72 bomb1(st,anim,end,hitc,box)=(0, 0, 0, 0, 0) bomb2=(0, 0, 0, 0, 0) hero(hp,state,touching)=(10, 0, 0) 
+k +72 both slots free

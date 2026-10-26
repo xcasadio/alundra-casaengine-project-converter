@@ -1,0 +1,127 @@
+lid 0x80127fc4 flags 0x320a1 pos (212.00,100.00,0.00)
+t  1 bomb x 204.00 y 136.00 z 31.50 status 2 canim 0 box False | lid touching False status 2 1d0 0 
+t  2 bomb x 204.00 y 136.00 z 30.50 status 2 canim 0 box False | lid touching False status 2 1d0 0 
+t  3 bomb x 204.00 y 136.00 z 29.00 status 2 canim 0 box False | lid touching False status 2 1d0 0 
+t  4 bomb x 204.00 y 136.00 z 27.00 status 2 canim 0 box False | lid touching False status 2 1d0 0 
+t  5 bomb x 204.00 y 136.00 z 24.50 status 2 canim 0 box False | lid touching False status 2 1d0 0 
+t  6 bomb x 204.00 y 135.00 z 28.50 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t  7 bomb x 204.00 y 134.00 z 32.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t  8 bomb x 204.00 y 133.00 z 35.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t  9 bomb x 204.00 y 132.00 z 37.50 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 10 bomb x 204.00 y 131.00 z 39.50 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 11 bomb x 204.00 y 130.00 z 41.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 12 bomb x 204.00 y 129.00 z 42.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 13 bomb x 204.00 y 128.00 z 42.50 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 14 bomb x 204.00 y 127.00 z 42.50 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 15 bomb x 204.00 y 126.00 z 42.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 16 bomb x 204.00 y 125.00 z 41.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 17 bomb x 204.00 y 124.00 z 39.50 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 18 bomb x 204.00 y 123.00 z 37.50 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 19 bomb x 204.00 y 122.00 z 35.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 20 bomb x 204.00 y 121.00 z 32.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 21 bomb x 204.00 y 120.00 z 28.50 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 22 bomb x 204.00 y 119.00 z 24.50 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 23 bomb x 204.00 y 118.00 z 20.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 24 bomb x 204.00 y 117.00 z 15.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 25 bomb x 204.00 y 116.00 z 9.50 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 26 bomb x 204.00 y 115.00 z 3.50 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 27 bomb x 204.00 y 114.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 28 bomb x 204.00 y 113.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 29 bomb x 204.00 y 112.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 30 bomb x 204.00 y 111.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 31 bomb x 204.00 y 110.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 32 bomb x 204.00 y 109.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 33 bomb x 204.00 y 108.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 34 bomb x 204.00 y 107.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 35 bomb x 204.00 y 106.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 36 bomb x 204.00 y 105.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 37 bomb x 204.00 y 104.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 38 bomb x 204.00 y 103.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 39 bomb x 204.00 y 102.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 40 bomb x 204.00 y 101.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 41 bomb x 204.00 y 100.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 42 bomb x 204.00 y 99.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 43 bomb x 204.00 y 98.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 44 bomb x 204.00 y 97.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 45 bomb x 204.00 y 96.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 46 bomb x 204.00 y 95.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 47 bomb x 204.00 y 94.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 48 bomb x 204.00 y 93.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 49 bomb x 204.00 y 92.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 50 bomb x 204.00 y 91.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 51 bomb x 204.00 y 90.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 52 bomb x 204.00 y 89.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 53 bomb x 204.00 y 88.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 54 bomb x 204.00 y 87.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 55 bomb x 204.00 y 86.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 56 bomb x 204.00 y 85.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 57 bomb x 204.00 y 84.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 58 bomb x 204.00 y 83.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 59 bomb x 204.00 y 82.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 60 bomb x 204.00 y 81.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 61 bomb x 204.00 y 80.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 62 bomb x 204.00 y 79.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 63 bomb x 204.00 y 78.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 64 bomb x 204.00 y 77.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 65 bomb x 204.00 y 76.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 66 bomb x 204.00 y 75.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 67 bomb x 204.00 y 74.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 68 bomb x 204.00 y 73.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 69 bomb x 204.00 y 72.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 70 bomb x 204.00 y 71.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 71 bomb x 204.00 y 70.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 72 bomb x 204.00 y 69.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 73 bomb x 204.00 y 68.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 74 bomb x 204.00 y 67.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 75 bomb x 204.00 y 66.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 76 bomb x 204.00 y 65.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 77 bomb x 204.00 y 64.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 78 bomb x 204.00 y 63.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 79 bomb x 204.00 y 62.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 80 bomb x 204.00 y 61.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 81 bomb x 204.00 y 60.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 82 bomb x 204.00 y 59.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 83 bomb x 204.00 y 58.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 84 bomb x 204.00 y 57.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 85 bomb x 204.00 y 56.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 86 bomb x 204.00 y 55.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 87 bomb x 204.00 y 54.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 88 bomb x 204.00 y 53.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 89 bomb x 204.00 y 52.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 90 bomb x 204.00 y 51.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 91 bomb x 204.00 y 50.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 92 bomb x 204.00 y 49.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 93 bomb x 204.00 y 48.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 94 bomb x 204.00 y 47.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 95 bomb x 204.00 y 46.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 96 bomb x 204.00 y 45.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 97 bomb x 204.00 y 44.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 98 bomb x 204.00 y 43.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t 99 bomb x 204.00 y 42.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t100 bomb x 204.00 y 41.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t101 bomb x 204.00 y 40.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t102 bomb x 204.00 y 39.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t103 bomb x 204.00 y 38.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t104 bomb x 204.00 y 37.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t105 bomb x 204.00 y 36.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t106 bomb x 204.00 y 35.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t107 bomb x 204.00 y 34.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t108 bomb x 204.00 y 33.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t109 bomb x 204.00 y 32.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t110 bomb x 204.00 y 31.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t111 bomb x 204.00 y 30.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t112 bomb x 204.00 y 29.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t113 bomb x 204.00 y 28.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t114 bomb x 204.00 y 27.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t115 bomb x 204.00 y 26.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t116 bomb x 204.00 y 25.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t117 bomb x 204.00 y 24.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t118 bomb x 204.00 y 23.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t119 bomb x 204.00 y 22.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t120 bomb x 204.00 y 21.00 z 0.00 status 2 canim 2 box False | lid touching False status 2 1d0 0 
+t121 bomb x 204.00 y 21.00 z 0.00 status 2 canim 1 box False | lid touching False status 2 1d0 0 [('sound', 46)]
+t122 bomb x 204.00 y 21.00 z 0.00 status 2 canim 1 box False | lid touching False status 2 1d0 0 
+t137 bomb x 204.00 y 21.00 z 0.00 status 2 canim 1 box True | lid touching False status 2 1d0 0 
+t152 bomb x 204.00 y 21.00 z 0.00 status 2 canim 1 box False | lid touching False status 2 1d0 0 
+t173 bomb x 204.00 y 21.00 z 0.00 status 4 canim 1 box False | lid touching False status 2 1d0 0 
+t174 bomb x 0.00 y 0.00 z 0.00 status 0 canim 0 box False | lid touching False status 2 1d0 0 

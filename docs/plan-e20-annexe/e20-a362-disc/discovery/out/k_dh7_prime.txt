@@ -1,0 +1,11 @@
+hero +0x1C4 (balance record pointer) = 0x801441f8 ; record bytes: [255, 169, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 0]
+t244 hero hp 10 state 0x0 x 100.00 touching(+0x224) at that tick
+t261 hero hp 5 state 0x31 x 103.00 touching(+0x224) at that tick
+t265 hero hp 5 state 0x1c x 114.81 touching(+0x224) at that tick
+t276 hero hp 5 state 0x0 x 133.09 touching(+0x224) at that tick
+final hero hp 5 x 133.09375
+===
+hero +0x1C4 (balance record pointer) = 0x801441f8 ; record bytes: [255, 169, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 0]
+response byte for nibble 4 (record + 6) posed to 0x80
+t244 hero hp 10 state 0x0 x 100.00 touching(+0x224) at that tick
+final hero hp 10 x 100.0

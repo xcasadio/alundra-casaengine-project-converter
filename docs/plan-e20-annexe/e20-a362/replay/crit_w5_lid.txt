@@ -1,0 +1,6 @@
+lid slot 0x80127fc4 born at (300.00,300.00,0.00) status 1 type 243 flags 0x320a1 break-effect byte
+k -5 lid(status,type)=(2, 243) journal=[]
+k +0 lid(status,type)=(3, 243) journal=[]
+k +1 lid(status,type)=(4, 243) journal=[('sound', 230), ('effect_3BE74', ('effect_3BE74', (0, 11, 0, 2148696004, 1, 0, 0, 0, 2148696004, 2148696004)))]
+k +2 lid(status,type)=(0, 0) journal=[]
+journal kinds seen: ['effect_3BE74', 'pass_38E84_effects_stub', 'sound']

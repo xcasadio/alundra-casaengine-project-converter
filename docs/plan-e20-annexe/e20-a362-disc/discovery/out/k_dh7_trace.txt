@@ -1,0 +1,23 @@
+t256 entity hp 10  stats hp 5  resp[nibble4]=0x10  tanim 0x0  touching 0x0
+t257 entity hp 10  stats hp 5  resp[nibble4]=0x10  tanim 0x0  touching 0x0
+t258 entity hp 10  stats hp 5  resp[nibble4]=0x10  tanim 0x0  touching 0x0
+t259 entity hp 10  stats hp 5  resp[nibble4]=0x10  tanim 0x0  touching 0x0
+t260 entity hp 10  stats hp 5  resp[nibble4]=0x10  tanim 0x0  touching 0x80127fc4
+t261 entity hp  5  stats hp 5  resp[nibble4]=0x10  tanim 0x31  touching 0x0
+t262 entity hp  5  stats hp 5  resp[nibble4]=0x10  tanim 0x31  touching 0x0
+t263 entity hp  5  stats hp 5  resp[nibble4]=0x10  tanim 0x31  touching 0x0
+t264 entity hp  5  stats hp 5  resp[nibble4]=0x10  tanim 0x31  touching 0x0
+t265 entity hp  5  stats hp 5  resp[nibble4]=0x10  tanim 0x1c  touching 0x0
+t266 entity hp  5  stats hp 5  resp[nibble4]=0x10  tanim 0x1c  touching 0x0
+===
+t256 entity hp 10  stats hp 5  resp[nibble4]=0x80  tanim 0x0  touching 0x0
+t257 entity hp 10  stats hp 5  resp[nibble4]=0x80  tanim 0x0  touching 0x0
+t258 entity hp 10  stats hp 5  resp[nibble4]=0x80  tanim 0x0  touching 0x0
+t259 entity hp 10  stats hp 5  resp[nibble4]=0x80  tanim 0x0  touching 0x0
+t260 entity hp 10  stats hp 5  resp[nibble4]=0x80  tanim 0x0  touching 0x80127fc4
+t261 entity hp 10  stats hp 5  resp[nibble4]=0x80  tanim 0x31  touching 0x0
+t262 entity hp 10  stats hp 5  resp[nibble4]=0x80  tanim 0x31  touching 0x0
+t263 entity hp 10  stats hp 5  resp[nibble4]=0x80  tanim 0x31  touching 0x0
+t264 entity hp 10  stats hp 5  resp[nibble4]=0x80  tanim 0x31  touching 0x0
+t265 entity hp 10  stats hp 5  resp[nibble4]=0x80  tanim 0x1c  touching 0x0
+t266 entity hp 10  stats hp 5  resp[nibble4]=0x80  tanim 0x1c  touching 0x0

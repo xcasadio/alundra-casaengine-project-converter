@@ -1,0 +1,6 @@
+tick 5 [('sound', 46)]
+tick 22 [('effect_3BDD8', [0, 2]), ('sound', 31)]
+tick 25 [('effect_3BDD8', [0, 2]), ('sound', 31), ('effect_3BDD8', [0, 2]), ('sound', 31), ('effect_3BDD8', [0, 2]), ('sound', 31)]
+tick 29 [('effect_3BDD8', [0, 2]), ('sound', 31), ('effect_3BDD8', [0, 2]), ('sound', 31)]
+bomb cell (12, 18) cut cells (col,row)->tick: {(12, 18): 22, (11, 18): 25, (11, 19): 25, (13, 18): 25, (13, 19): 25, (11, 17): 29, (13, 17): 29}
+count 7 of 49

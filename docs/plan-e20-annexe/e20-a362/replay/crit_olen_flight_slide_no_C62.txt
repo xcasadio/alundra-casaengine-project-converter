@@ -1,0 +1,161 @@
+bomb 0x80127fc4 dir param 0x10 flags 0x13234e target dir +0x98? 1 dir +0x9C -2145656800
+t  1 x 200.00 y 200.00 z 31.50 status 2 canim 0 forceAdj 0 gnd 0x0 tanim 2
+t  2 x 200.00 y 199.00 z 35.50 status 2 canim 2 forceAdj 0 gnd 0x0 tanim 2
+t  3 x 200.00 y 198.00 z 39.00 status 2 canim 2 forceAdj 0 gnd 0x0 tanim 2
+t  4 x 200.00 y 197.00 z 42.00 status 2 canim 2 forceAdj 0 gnd 0x0 tanim 2
+t  5 x 200.00 y 196.00 z 44.50 status 2 canim 2 forceAdj 0 gnd 0x0 tanim 2
+t  6 x 200.00 y 195.00 z 46.50 status 2 canim 2 forceAdj 0 gnd 0x0 tanim 2
+t  7 x 200.00 y 194.00 z 48.00 status 2 canim 2 forceAdj 0 gnd 0x0 tanim 2
+t  8 x 200.00 y 193.00 z 49.00 status 2 canim 2 forceAdj 0 gnd 0x0 tanim 2
+t  9 x 200.00 y 192.00 z 49.50 status 2 canim 2 forceAdj 0 gnd 0x0 tanim 2
+t 10 x 200.00 y 191.00 z 49.50 status 2 canim 2 forceAdj 0 gnd 0x0 tanim 2
+t 11 x 200.00 y 190.00 z 49.00 status 2 canim 2 forceAdj 0 gnd 0x0 tanim 2
+t 12 x 200.00 y 189.00 z 48.00 status 2 canim 2 forceAdj 0 gnd 0x0 tanim 2
+t 13 x 200.00 y 188.00 z 46.50 status 2 canim 2 forceAdj 0 gnd 0x0 tanim 2
+t 14 x 200.00 y 187.00 z 44.50 status 2 canim 2 forceAdj 0 gnd 0x0 tanim 2
+t 15 x 200.00 y 186.00 z 42.00 status 2 canim 2 forceAdj 0 gnd 0x0 tanim 2
+t 16 x 200.00 y 185.00 z 39.00 status 2 canim 2 forceAdj 0 gnd 0x0 tanim 2
+t 17 x 200.00 y 184.00 z 35.50 status 2 canim 2 forceAdj 0 gnd 0x0 tanim 2
+t 18 x 200.00 y 183.00 z 31.50 status 2 canim 2 forceAdj 0 gnd 0x0 tanim 2
+t 19 x 200.00 y 182.00 z 27.00 status 2 canim 2 forceAdj 0 gnd 0x0 tanim 2
+t 20 x 200.00 y 181.00 z 22.00 status 2 canim 2 forceAdj 0 gnd 0x0 tanim 2
+t 21 x 200.00 y 180.00 z 16.50 status 2 canim 2 forceAdj 0 gnd 0x0 tanim 2
+t 22 x 200.00 y 179.00 z 10.50 status 2 canim 2 forceAdj 0 gnd 0x0 tanim 2
+t 23 x 200.00 y 178.00 z 4.00 status 2 canim 2 forceAdj 0 gnd 0x0 tanim 2
+t 24 x 200.00 y 177.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 25 x 200.00 y 176.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 26 x 200.00 y 175.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 27 x 200.00 y 174.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 28 x 200.00 y 173.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 29 x 200.00 y 172.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 30 x 200.00 y 171.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 31 x 200.00 y 170.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 32 x 200.00 y 169.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 33 x 200.00 y 168.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 34 x 200.00 y 167.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 35 x 200.00 y 166.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 36 x 200.00 y 165.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 37 x 200.00 y 164.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 38 x 200.00 y 163.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 39 x 200.00 y 162.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 40 x 200.00 y 161.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 41 x 200.00 y 160.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 42 x 200.00 y 159.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 43 x 200.00 y 158.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 44 x 200.00 y 157.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 45 x 200.00 y 156.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 46 x 200.00 y 155.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 47 x 200.00 y 154.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 48 x 200.00 y 153.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 49 x 200.00 y 152.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 50 x 200.00 y 151.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 51 x 200.00 y 150.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 52 x 200.00 y 149.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 53 x 200.00 y 148.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 54 x 200.00 y 147.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 55 x 200.00 y 146.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 56 x 200.00 y 145.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 57 x 200.00 y 144.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 58 x 200.00 y 143.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 59 x 200.00 y 142.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 60 x 200.00 y 141.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 61 x 200.00 y 140.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 62 x 200.00 y 139.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 63 x 200.00 y 138.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 64 x 200.00 y 137.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 65 x 200.00 y 136.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 66 x 200.00 y 135.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 67 x 200.00 y 134.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 68 x 200.00 y 133.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 69 x 200.00 y 132.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 70 x 200.00 y 131.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 71 x 200.00 y 130.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 72 x 200.00 y 129.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 73 x 200.00 y 128.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 74 x 200.00 y 127.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 75 x 200.00 y 126.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 76 x 200.00 y 125.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 77 x 200.00 y 124.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 78 x 200.00 y 123.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 79 x 200.00 y 122.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 80 x 200.00 y 121.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 81 x 200.00 y 120.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 82 x 200.00 y 119.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 83 x 200.00 y 118.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 84 x 200.00 y 117.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 85 x 200.00 y 116.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 86 x 200.00 y 115.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 87 x 200.00 y 114.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 88 x 200.00 y 113.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 89 x 200.00 y 112.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 90 x 200.00 y 111.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 91 x 200.00 y 110.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 92 x 200.00 y 109.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 93 x 200.00 y 108.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 94 x 200.00 y 107.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 95 x 200.00 y 106.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 96 x 200.00 y 105.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 97 x 200.00 y 104.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 98 x 200.00 y 103.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t 99 x 200.00 y 102.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t100 x 200.00 y 101.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t101 x 200.00 y 100.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t102 x 200.00 y 99.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t103 x 200.00 y 98.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t104 x 200.00 y 97.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t105 x 200.00 y 96.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t106 x 200.00 y 95.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t107 x 200.00 y 94.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t108 x 200.00 y 93.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t109 x 200.00 y 92.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t110 x 200.00 y 91.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t111 x 200.00 y 90.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t112 x 200.00 y 89.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t113 x 200.00 y 88.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t114 x 200.00 y 87.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t115 x 200.00 y 86.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t116 x 200.00 y 85.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t117 x 200.00 y 84.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t118 x 200.00 y 83.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t119 x 200.00 y 82.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t120 x 200.00 y 81.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t121 x 200.00 y 80.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t122 x 200.00 y 79.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t123 x 200.00 y 78.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t124 x 200.00 y 77.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t125 x 200.00 y 76.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t126 x 200.00 y 75.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t127 x 200.00 y 74.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t128 x 200.00 y 73.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t129 x 200.00 y 72.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t130 x 200.00 y 71.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t131 x 200.00 y 70.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t132 x 200.00 y 69.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t133 x 200.00 y 68.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t134 x 200.00 y 67.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t135 x 200.00 y 66.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t136 x 200.00 y 65.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t137 x 200.00 y 64.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t138 x 200.00 y 63.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t139 x 200.00 y 62.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t140 x 200.00 y 61.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t141 x 200.00 y 60.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t142 x 200.00 y 59.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t143 x 200.00 y 58.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t144 x 200.00 y 57.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t145 x 200.00 y 56.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t146 x 200.00 y 55.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t147 x 200.00 y 54.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t148 x 200.00 y 53.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t149 x 200.00 y 52.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t150 x 200.00 y 51.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t151 x 200.00 y 50.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t152 x 200.00 y 49.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t153 x 200.00 y 48.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t154 x 200.00 y 47.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t155 x 200.00 y 46.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t156 x 200.00 y 45.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t157 x 200.00 y 44.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t158 x 200.00 y 43.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t159 x 200.00 y 42.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2
+t160 x 200.00 y 41.00 z 0.00 status 2 canim 2 forceAdj 0 gnd 0x1 tanim 2

@@ -1,0 +1,24 @@
+hero anim 0x10, 'right' (east, TargetDirection 24): frames (first tick, last tick, offset x y z, size w d h)
+  ticks 1-4  offset (0,0,0)  size 29x15x15
+  ticks 5-6  offset (21,-8,0)  size 29x15x15
+  ticks 7-8  offset (22,-16,0)  size 23x15x15
+  ticks 9-11  offset (22,-16,0)  size 23x15x15
+  ticks 12-15  offset (-5,-18,0)  size 23x15x15
+  ticks 16-21  offset (-5,-18,0)  size 23x15x15
+
+model check, first tick (frame 0) against the Beannoid body: contact for dx -9..38 (the oracle: -9..38)
+
+lid body (x, y, z, sx, sy, sz) = (189, 100, 32, 48, 8, 44)
+frame 0 (tick 1 of the stroke), hero facing east: hero x in 161..236, y in 86..107, z in 18..75 overlap the lid body
+  hero at (176, 100, 32), ticks 1-4 (offset 0,0,0): OVERLAPS
+  hero at (176, 100, 32), ticks 5-6 (offset 21,-8,0): OVERLAPS
+  hero at (176, 100, 32), ticks 7-8 (offset 22,-16,0): no overlap
+  hero at (176, 100, 32), ticks 9-11 (offset 22,-16,0): no overlap
+  hero at (176, 100, 32), ticks 12-15 (offset -5,-18,0): no overlap
+  hero at (176, 100, 32), ticks 16-21 (offset -5,-18,0): no overlap
+
+margins of the chosen position (176, 100, 32): x 15 inside from the low edge (first x = 161) and 60 from the high edge (last x = 236); y 14 and 7 (first y = 86, last y = 107); z 32 in 18..75
+centre of the overlap at the first tick (where the three sparks appear), raw 16.16: (12910591, 6815743, 2588671) = (196.99998, 103.99998, 39.49998) px
+  control 50 px west                       (126, 100, 32): frame 0 does not overlap
+  control 20 px north (y 80)               (176, 80, 32): frame 0 does not overlap
+  control 3 px above the body in z (z 80)  (176, 100, 80): frame 0 does not overlap

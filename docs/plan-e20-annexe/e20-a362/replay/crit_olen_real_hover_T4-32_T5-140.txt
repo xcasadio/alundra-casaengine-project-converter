@@ -1,0 +1,18 @@
+cell (8,5) 0x50c1041 (8,6) 0x2048000 (8,7) 0x2040000 ; lid pos (212.00,100.00,32.00) ; bomb born (204.00,136.00,64.00)
+t 32 bomb x 204.00 y 136.00 z 64.00 status 2 canim 0 box False | lid touching False status 2 
+t 42 bomb x 204.00 y 126.00 z 81.50 status 2 canim 2 box False | lid touching False status 2 
+t 57 bomb x 204.00 y 111.00 z 32.00 status 2 canim 2 box False | lid touching False status 2 
+t 62 bomb x 204.00 y 106.00 z 32.00 status 2 canim 2 box False | lid touching False status 2 
+t 72 bomb x 204.00 y 103.00 z 32.00 status 2 canim 2 box False | lid touching False status 2 
+t 92 bomb x 204.00 y 103.00 z 32.00 status 2 canim 2 box False | lid touching False status 2 
+t139 bomb x 204.00 y 103.00 z 32.00 status 2 canim 2 box False | lid touching False status 2 
+t140 bomb x 204.00 y 103.00 z 32.00 status 2 canim 2 box False | lid touching False status 2 
+t141 bomb x 204.00 y 103.00 z 32.00 status 2 canim 1 box False | lid touching False status 2 [('sound', 46)]
+t155 bomb x 204.00 y 103.00 z 32.00 status 2 canim 1 box False | lid touching False status 2 
+t156 bomb x 204.00 y 103.00 z 32.00 status 2 canim 1 box False | lid touching False status 2 
+t157 bomb x 204.00 y 103.00 z 32.00 status 2 canim 1 box True | lid touching True status 2 [('effect_3BDD8', (0, 9)), ('effect_3BDD8', (0, 9)), ('effect_3BDD8', (0, 9))]
+t158 bomb x 204.00 y 103.00 z 32.00 status 2 canim 1 box True | lid touching False status 2 
+t159 bomb x 204.00 y 103.00 z 32.00 status 2 canim 1 box True | lid touching False status 2 
+t160 bomb x 204.00 y 103.00 z 32.00 status 2 canim 1 box True | lid touching False status 2 
+t165 bomb x 204.00 y 103.00 z 32.00 status 2 canim 1 box True | lid touching False status 2 
+first box tick 157 ; lid touched (+0x224) at tick 157 ; T5 = 140  => box starts at T5+17, contact at T5+17

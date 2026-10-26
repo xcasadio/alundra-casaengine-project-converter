@@ -1,0 +1,9 @@
+t244 hero hp 10 tanim 0x0 x 100.00 y 100.00
+t261 hero hp 5 tanim 0x31 x 103.00 y 100.00
+t265 hero hp 5 tanim 0x1c x 114.81 y 100.00
+t276 hero hp 5 tanim 0x0 x 133.09 y 100.00
+final stats hp 5
+
+real	0m3.513s
+user	0m0.015s
+sys	0m0.015s
