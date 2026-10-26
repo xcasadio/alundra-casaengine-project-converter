@@ -8675,7 +8675,7 @@ tests déplacés ; un besoin de toucher au moteur ; un test qui boucle.
 **Retour arrière.** La phase C se retire seule (393 hors de l'ensemble câblé : la torche ne se soulève plus) ; puis la phase B (les clés
 retirées : les ronces redeviennent indestructibles, une torche posée par un script reste inerte) ; la phase A est inerte.
 
-##### E20.g2c3 — Les gouttes d'eau (A19, C71) ⏳ (détaillée le 2026-10-26 ; thème 2, après g2c2 (D-G2C2-6) ; ferme O-G2C3-1 ; défauts de Q-G2C3-1 à Q-G2C3-7 pris par la règle de l'auteur du 2026-10-25, D-E20-83 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-26 après disposition)
+##### E20.g2c3 — Les gouttes d'eau (A19, C71) ⏳ (détaillée le 2026-10-26 ; thème 2, après g2c2 (D-G2C2-6) ; ferme O-G2C3-1 ; défauts de Q-G2C3-1 à Q-G2C3-7 pris par la règle de l'auteur du 2026-10-25, D-E20-83 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-26 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais)
 
 **Provenance.** Lecture seule du 2026-10-26 (HEAD `22ddf0be` puis `0d3e7e14`, `Alundra/` et `Alundra.Tests/` inchangés entre les deux) :
 rapport et critique frais (`scratchpad/t2-next/g2c3/`, `scratchpad/t2-next/g2c3-critic/`, scripts, rejeux et sorties ; les deux rapports
