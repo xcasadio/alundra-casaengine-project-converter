@@ -1,0 +1,4 @@
+start_bomb    vectors  6000  mismatches    0  covered  81/ 81 instrs  (17.5s)
+drv_bomb      vectors  6000  mismatches    0  covered  23/ 23 instrs  (16.5s)
+cancel_bomb   vectors  6000  mismatches    0  covered  34/ 34 instrs  (16.6s)
+C62           vectors  6000  mismatches    0  covered 186/186 instrs  (16.6s)

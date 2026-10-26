@@ -1,0 +1,8 @@
+global sprite types with C = 62: [2]
+maps scanned: 483
+maps with a placement of a sprite whose header has C = 62: 1
+  map 362  [(5, 2, 'global', 133)]
+placed types: [2]
+placements by page: {'global': 1}
+placements: 1 ; with a map program of their own in the slot C (EventCodesC_TickIndex != 0, native C62 never reached): 1 ; without (native C62 runs from the load): 0
+on the 30 chain maps: {}

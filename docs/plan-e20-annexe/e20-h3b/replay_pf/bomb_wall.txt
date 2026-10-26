@@ -1,0 +1,9 @@
+t001 H ta=0x1 c2c=0x0 hp=10 inuse=0x0 x=201.2 y=200.0
+t004 H ta=0x5 c2c=0x80127fc4 hp=10 inuse=0x23 x=205.0 y=200.0 | E1(ty2) st=1 ta=0 c28=0x80127d30 gr=0 adj=0 dr=0 b278=0 pos=(205.0,200.0,0.0) | snd 44
+t005 E1(ty2) st=2 ta=0 c28=0x80127d30 gr=0 adj=1 dr=0 b278=0 pos=(205.0,200.0,1.0)
+t040 H ta=0xc c2c=0x80127fc4 hp=10 inuse=0x23 x=205.0 y=200.0
+t050 H ta=0x9 c2c=0x0 hp=10 inuse=0x23 x=205.0 y=200.0 | E1(ty2) st=2 ta=2 c28=0x0 gr=0 adj=1 dr=24 b278=0 pos=(205.0,200.0,36.0) | snd 26
+t051 H ta=0x9 c2c=0x0 hp=10 inuse=0x0 x=205.0 y=200.0 | E1(ty2) st=2 ta=2 c28=0x0 gr=0 adj=0 dr=8 b278=1 pos=(203.5,200.0,40.0) | fx [0, 9, 0, 13434880, 13107200, 2883585]
+t069 H ta=0x0 c2c=0x0 hp=10 inuse=0x0 x=205.0 y=200.0
+t074 E1(ty2) st=2 ta=2 c28=0x0 gr=1 adj=0 dr=8 b278=1 pos=(169.0,200.0,0.0)
+t075 E1(ty2) st=2 ta=0 c28=0x0 gr=1 adj=0 dr=8 b278=0 pos=(168.2,200.0,0.0) | snd 24

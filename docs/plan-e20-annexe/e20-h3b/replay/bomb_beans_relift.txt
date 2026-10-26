@@ -1,0 +1,32 @@
+--- item 0x23
+t073 E1(ty2) st=2 ta=0 c28=0x0 t24=0 pos=(241.3,200.0,0.0) | snd 24
+t080 H ta=0x1 c2c=0x0 hp=10 inuse=0x0 x=207.3 y=200.0
+t100 H ta=0x10 c2c=0x0 hp=10 inuse=0x0 x=254.8 y=200.0 | snd 29
+t121 H ta=0x0 c2c=0x0 hp=10 inuse=0x0 x=254.8 y=200.0
+t122 H ta=0x1 c2c=0x0 hp=10 inuse=0x0 x=256.1 y=200.0
+t130 H ta=0x10 c2c=0x0 hp=10 inuse=0x0 x=274.3 y=200.0 | snd 29
+t151 H ta=0x0 c2c=0x0 hp=10 inuse=0x0 x=274.3 y=200.0
+t152 H ta=0x1 c2c=0x0 hp=10 inuse=0x0 x=275.6 y=200.0
+t160 H ta=0x10 c2c=0x0 hp=10 inuse=0x0 x=293.8 y=200.0 | snd 29
+t181 H ta=0x0 c2c=0x0 hp=10 inuse=0x0 x=293.8 y=200.0
+t182 H ta=0x1 c2c=0x0 hp=10 inuse=0x0 x=295.1 y=200.0
+t190 fx [0, 9, 0, 15816704, 13107200, 524289]
+t198 fx [0, 9, 0, 15816704, 13107200, 524289]
+t200 H ta=0x0 c2c=0x0 hp=10 inuse=0x0 x=337.7 y=200.0
+hero x at the end 337.7 ; carried=0x0 ; flags of the object 0x13234e
+--- item 0x1f
+t073 E1(ty1) st=3 ta=1 c28=0x0 t24=0 pos=(240.6,200.0,0.0)
+t075 E1(ty1) st=4 ta=1 c28=0x0 t24=0 pos=(240.6,200.0,0.0) | fx [0, 8, 0, 2148696004, 1, 0]
+t076 E1 gone
+t080 H ta=0x1 c2c=0x0 hp=10 inuse=0x0 x=207.3 y=200.0
+t100 H ta=0x10 c2c=0x0 hp=10 inuse=0x0 x=254.8 y=200.0 | snd 29
+t121 H ta=0x0 c2c=0x0 hp=10 inuse=0x0 x=254.8 y=200.0
+t122 H ta=0x1 c2c=0x0 hp=10 inuse=0x0 x=256.1 y=200.0
+t130 H ta=0x10 c2c=0x0 hp=10 inuse=0x0 x=274.3 y=200.0 | snd 29
+t151 H ta=0x0 c2c=0x0 hp=10 inuse=0x0 x=274.3 y=200.0
+t152 H ta=0x1 c2c=0x0 hp=10 inuse=0x0 x=275.6 y=200.0
+t160 H ta=0x10 c2c=0x0 hp=10 inuse=0x0 x=293.8 y=200.0 | snd 29
+t181 H ta=0x0 c2c=0x0 hp=10 inuse=0x0 x=293.8 y=200.0
+t182 H ta=0x1 c2c=0x0 hp=10 inuse=0x0 x=295.1 y=200.0
+t200 H ta=0x0 c2c=0x0 hp=10 inuse=0x0 x=337.7 y=200.0
+hero x at the end 337.7 ; carried=0x0 ; flags of the object 0x0

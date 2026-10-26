@@ -1,0 +1,139 @@
+t001 hero hp=10 ta=0x1 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=0 x=201.2
+t004 hero hp=10 ta=0x5 c2c=0x80127fc4 inuse=0x23 inv1D0=0 blink1CC=0 x=206.1 | B1 st=1 ta=0 c28=0x80127d30 t24=0 pos=(206.1,200.0,0.0) fz=0
+t005 hero hp=10 ta=0x5 c2c=0x80127fc4 inuse=0x23 inv1D0=0 blink1CC=0 x=206.1 | B1 st=2 ta=0 c28=0x80127d30 t24=0 pos=(206.1,200.0,1.0) fz=0
+t040 hero hp=10 ta=0xc c2c=0x80127fc4 inuse=0x23 inv1D0=0 blink1CC=0 x=206.1 | B1 st=2 ta=0 c28=0x80127d30 t24=0 pos=(206.1,200.0,32.0) fz=0
+t050 hero hp=10 ta=0x9 c2c=0x0 inuse=0x23 inv1D0=0 blink1CC=0 x=206.1 | B1 st=2 ta=2 c28=0x0 t24=0 pos=(207.6,200.0,36.0) fz=4
+t051 hero hp=10 ta=0x9 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=0 x=206.1 | B1 st=2 ta=2 c28=0x0 t24=0 pos=(209.1,200.0,39.5) fz=3
+t069 hero hp=10 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=0 x=206.1 | B1 st=2 ta=2 c28=0x0 t24=0 pos=(236.1,200.0,17.0) fz=-6
+t073 hero hp=10 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=0 x=206.1 | B1 st=2 ta=0 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0
+t090 hero hp=10 ta=0x5 c2c=0x80128258 inuse=0x23 inv1D0=0 blink1CC=0 x=206.1 | B1 st=2 ta=0 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=1 ta=0 c28=0x80127d30 t24=0 pos=(206.1,200.0,0.0) fz=0
+t091 hero hp=10 ta=0x5 c2c=0x80128258 inuse=0x23 inv1D0=0 blink1CC=0 x=206.1 | B1 st=2 ta=0 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=0 c28=0x80127d30 t24=0 pos=(206.1,200.0,1.0) fz=0
+t126 hero hp=10 ta=0xc c2c=0x80128258 inuse=0x23 inv1D0=0 blink1CC=0 x=206.1 | B1 st=2 ta=0 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=0 c28=0x80127d30 t24=0 pos=(206.1,200.0,32.0) fz=0
+t140 hero hp=10 ta=0x7 c2c=0x80128258 inuse=0x23 inv1D0=0 blink1CC=0 x=208.5 | B1 st=2 ta=0 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=0 c28=0x80127d30 t24=0 pos=(208.5,200.0,32.0) fz=0
+t147 hero hp=10 ta=0xc c2c=0x80128258 inuse=0x23 inv1D0=0 blink1CC=0 x=224.4 | B1 st=2 ta=0 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=0 c28=0x80127d30 t24=0 pos=(224.4,200.0,32.0) fz=0
+t246 hero hp=10 ta=0xc c2c=0x80128258 inuse=0x23 inv1D0=0 blink1CC=0 x=224.4 | B1 st=3 ta=0 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=0 c28=0x80127d30 t24=0 pos=(224.4,200.0,32.0) fz=0
+t247 hero hp=10 ta=0xc c2c=0x80128258 inuse=0x23 inv1D0=0 blink1CC=0 x=224.4 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=0 c28=0x80127d30 t24=0 pos=(224.4,200.0,32.0) fz=0
+t263 hero hp=10 ta=0xc c2c=0x80128258 inuse=0x23 inv1D0=25 blink1CC=0 x=224.4 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=0 c28=0x80127d30 t24=0 pos=(224.4,200.0,32.0) fz=0
+t264 hero hp=5 ta=0x31 c2c=0x0 inuse=0x23 inv1D0=24 blink1CC=119 x=221.4 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(225.9,200.0,36.0) fz=4
+t265 hero hp=5 ta=0x31 c2c=0x0 inuse=0x0 inv1D0=23 blink1CC=118 x=218.4 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(227.4,200.0,39.5) fz=3
+t266 hero hp=5 ta=0x31 c2c=0x0 inuse=0x0 inv1D0=22 blink1CC=117 x=215.4 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(228.9,200.0,42.5) fz=3
+t267 hero hp=5 ta=0x31 c2c=0x0 inuse=0x0 inv1D0=21 blink1CC=116 x=212.4 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(230.4,200.0,45.0) fz=2
+t268 hero hp=5 ta=0x1c c2c=0x0 inuse=0x0 inv1D0=20 blink1CC=115 x=209.6 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(231.9,200.0,47.0) fz=2
+t269 hero hp=5 ta=0x1c c2c=0x0 inuse=0x0 inv1D0=19 blink1CC=114 x=206.9 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(233.4,200.0,48.5) fz=1
+t270 hero hp=5 ta=0x1c c2c=0x0 inuse=0x0 inv1D0=18 blink1CC=113 x=204.5 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(234.9,200.0,49.5) fz=1
+t271 hero hp=5 ta=0x1c c2c=0x0 inuse=0x0 inv1D0=17 blink1CC=112 x=202.2 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(236.4,200.0,50.0) fz=0
+t272 hero hp=5 ta=0x1c c2c=0x0 inuse=0x0 inv1D0=16 blink1CC=111 x=200.2 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(237.9,200.0,50.0) fz=0
+t273 hero hp=5 ta=0x1c c2c=0x0 inuse=0x0 inv1D0=15 blink1CC=110 x=198.3 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(239.4,200.0,49.5) fz=-1
+t274 hero hp=5 ta=0x1c c2c=0x0 inuse=0x0 inv1D0=14 blink1CC=109 x=196.6 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(240.9,200.0,48.5) fz=-1
+t275 hero hp=5 ta=0x1c c2c=0x0 inuse=0x0 inv1D0=13 blink1CC=108 x=195.1 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(242.4,200.0,47.0) fz=-2
+t276 hero hp=5 ta=0x1c c2c=0x0 inuse=0x0 inv1D0=12 blink1CC=107 x=193.8 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(243.9,200.0,45.0) fz=-2
+t277 hero hp=5 ta=0x1c c2c=0x0 inuse=0x0 inv1D0=11 blink1CC=106 x=192.7 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(245.4,200.0,42.5) fz=-3
+t278 hero hp=5 ta=0x1c c2c=0x0 inuse=0x0 inv1D0=10 blink1CC=105 x=191.8 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(246.9,200.0,39.5) fz=-3
+t279 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=9 blink1CC=104 x=191.3 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(248.4,200.0,36.0) fz=-4
+t280 hero hp=5 ta=0x1 c2c=0x0 inuse=0x0 inv1D0=8 blink1CC=103 x=192.3 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(249.9,200.0,32.0) fz=-4
+t281 hero hp=5 ta=0x1 c2c=0x0 inuse=0x0 inv1D0=7 blink1CC=102 x=194.7 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(251.4,200.0,27.5) fz=-5
+t282 hero hp=5 ta=0x1 c2c=0x0 inuse=0x0 inv1D0=6 blink1CC=101 x=197.1 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(252.9,200.0,22.5) fz=-5
+t283 hero hp=5 ta=0x1 c2c=0x0 inuse=0x0 inv1D0=5 blink1CC=100 x=199.6 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(254.4,200.0,17.0) fz=-6
+t284 hero hp=5 ta=0x1 c2c=0x0 inuse=0x0 inv1D0=4 blink1CC=99 x=202.0 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(255.9,200.0,11.0) fz=-6
+t285 hero hp=5 ta=0x1 c2c=0x0 inuse=0x0 inv1D0=3 blink1CC=98 x=204.5 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(257.4,200.0,4.5) fz=-7
+t286 hero hp=5 ta=0x1 c2c=0x0 inuse=0x0 inv1D0=2 blink1CC=97 x=206.9 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=2 c28=0x0 t24=0 pos=(258.9,200.0,0.0) fz=0
+t287 hero hp=5 ta=0x1 c2c=0x0 inuse=0x0 inv1D0=1 blink1CC=96 x=209.3 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t288 hero hp=5 ta=0x1 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=95 x=211.8 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t289 hero hp=5 ta=0x1 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=94 x=214.2 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t290 hero hp=5 ta=0x1 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=93 x=216.6 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t291 hero hp=5 ta=0x1 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=92 x=219.1 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t292 hero hp=5 ta=0x1 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=91 x=221.5 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t293 hero hp=5 ta=0x1 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=90 x=224.0 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t294 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=89 x=225.2 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t295 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=88 x=225.2 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t296 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=87 x=225.2 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t297 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=86 x=225.2 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t298 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=85 x=225.2 | B1 st=3 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t299 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=84 x=225.2 | B1 st=4 ta=1 c28=0x0 t24=0 pos=(241.3,200.0,0.0) fz=0 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t300 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=83 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t301 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=82 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t302 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=81 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t303 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=80 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t304 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=79 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t305 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=78 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t306 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=77 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t307 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=76 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t308 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=75 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t309 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=74 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t310 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=73 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t311 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=72 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t312 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=71 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t313 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=70 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t314 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=69 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t315 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=68 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t316 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=67 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t317 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=66 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t318 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=65 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t319 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=64 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t320 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=63 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t321 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=62 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t322 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=61 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t323 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=60 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t324 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=59 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t325 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=58 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t326 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=57 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t327 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=56 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t328 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=55 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t329 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=54 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t330 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=53 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t331 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=52 x=225.2 | B2 st=2 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t332 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=51 x=225.2 | B2 st=3 ta=0 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t333 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=50 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t334 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=49 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t335 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=48 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t336 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=47 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t337 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=46 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t338 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=45 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t339 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=44 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t340 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=43 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t341 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=42 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t342 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=41 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t343 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=40 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t344 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=39 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t345 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=38 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t346 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=37 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t347 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=36 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t348 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=35 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t349 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=34 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t350 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=33 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t351 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=32 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t352 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=31 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t353 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=30 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t354 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=29 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t355 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=28 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t356 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=27 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t357 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=26 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t358 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=25 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t359 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=24 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t360 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=23 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t361 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=22 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t362 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=21 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t363 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=20 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t364 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=19 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t365 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=18 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t366 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=17 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t367 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=16 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t368 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=15 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t369 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=14 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t370 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=13 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t371 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=12 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t372 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=11 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t373 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=10 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t374 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=9 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t375 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=8 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t376 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=7 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t377 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=6 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t378 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=5 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t379 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=4 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t380 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=3 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t381 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=2 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t382 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=1 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t383 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=0 x=225.2 | B2 st=3 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t385 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=0 x=225.2 | B2 st=4 ta=1 c28=0x0 t24=0 pos=(259.6,200.0,0.0) fz=0
+t386 hero hp=5 ta=0x0 c2c=0x0 inuse=0x0 inv1D0=0 blink1CC=0 x=225.2
+journal tail: [(247, 'sound', 46), (264, 'sound', 23), (264, 'sound', 0), (268, 'sound', 0), (279, 'sound', 0), (280, 'sound', 0), (287, 'sound', 24), (287, 'sound', 0), (289, 'sound', 0), (294, 'sound', 0), (333, 'sound', 46)]

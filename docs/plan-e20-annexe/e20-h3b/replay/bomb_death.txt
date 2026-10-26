@@ -1,0 +1,5 @@
+t061 H ta=0x39 c2c=0x0 hp=0 inuse=0x0 x=206.1 y=200.0 | E1(ty2) st=2 ta=2 c28=0x0 t24=0 gr=0 pos=(207.6,200.0,36.0)
+t083 E1(ty2) st=2 ta=2 c28=0x0 t24=0 gr=1 pos=(240.6,200.0,0.0)
+t084 E1(ty2) st=2 ta=0 c28=0x0 t24=0 gr=1 pos=(241.3,200.0,0.0) | snd 24
+t111 H ta=0x4e c2c=0x0 hp=0 inuse=0x0 x=206.1 y=200.0
+journal non-sound: []

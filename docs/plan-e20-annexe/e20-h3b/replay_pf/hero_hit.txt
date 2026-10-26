@@ -1,0 +1,6 @@
+t244 hero hp 10 tanim 0 x 100.00 y 100.00 z 0.00
+t261 hero hp 5 tanim 49 x 103.00 y 100.00 z 0.00
+t265 hero hp 5 tanim 28 x 114.81 y 100.00 z 0.00
+t276 hero hp 5 tanim 0 x 133.09 y 100.00 z 0.00
+hero working sheet response bytes @0x80127008: [255, 15, 0, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 0, 255, 15, 0, 12, 12]
+stats hp: 5 5

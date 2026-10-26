@@ -1,0 +1,14 @@
+vectors 4000 seed 100 mismatches 0
+   841 start_bomb result=0
+   3159 start_bomb result=1
+coverage start_bomb     81/ 81  never executed: 
+vectors 4000 seed 100 mismatches 0
+   895 drv_bomb result=0
+   3105 drv_bomb result=1
+coverage drv_bomb       23/ 23  never executed: 
+vectors 4000 seed 100 mismatches 0
+   4000 cancel_bomb
+coverage cancel_bomb    34/ 34  never executed: 
+vectors 4000 seed 100 mismatches 0
+   4000 C62
+coverage C62           186/186  never executed: 

@@ -1,0 +1,38 @@
+#nullable enable
+using System;
+using System.IO;
+using System.Linq;
+using Xunit;
+using Alundra.Entities;
+using Alundra.Hero;
+using Alundra.Events;
+using Alundra.Tests.Support;
+
+namespace Alundra.Tests.Probes;
+
+[Collection(Alundra.Tests.Audio.MusicPlayerSingletonCollection.Name)]
+public sealed class H3bT0ProbeTests
+{
+    [Fact]
+    public void Probe_Map362_OlenBomb_ProgramCodes()
+    {
+        var lines = new System.Collections.Generic.List<string>();
+        using var arc = new ArcRun(new ArcSpec("H3bT0-362", "Coal Mine _ Olen's Dream", "Coal Mine _ Olen's Dream-362", new[] { 248 }, 0, 0, 0, 100_000, RealController: true, Prefabs: true, Arrival: new ArcArrival(204 << 16, 144 << 16, 2 << 20, Alundra.Session.GameState.ResetAnimationId, 16)));
+        const float el = 1 / 50f;
+        for (var i = 0; i < 4; i++) { arc.OneFrame(el); }
+        arc.HoldDirections(PadState.Up);
+        var still = 0; var lastY = arc.Hero.PosY;
+        while (still < 3) { arc.OneFrame(el); still = arc.Hero.PosY == lastY ? still + 1 : 0; lastY = arc.Hero.PosY; }
+        arc.Press(0x80, el);
+        arc.ReleaseDirections();
+        for (var i = 0; i < 1500 && arc.EntityByRecord(5) == null; i++) { arc.OneFrameWithTheDialogueButton(el); }
+        lines.Add("frames run: " + arc.Frame);
+        foreach (var e in arc.Entities.OrderBy(e => e.EntityRefId))
+        {
+            lines.Add($"record {e.EntityRefId,3} sprite type {e.SpriteType,4} programIndexes[A..F]=[{string.Join(",", e.ProgramIndexes)}] spriteProgramIndexes[A..F]=[{string.Join(",", e.SpriteProgramIndexes)}]");
+        }
+        var bomb = arc.EntityByRecord(5);
+        lines.Add(bomb == null ? "record 5 absent" : $"RECORD 5: type {bomb.SpriteType}, slot C: map program index {bomb.ProgramIndexes[ScriptHelper.ProgramCTick]} (& 0x7f = {bomb.ProgramIndexes[ScriptHelper.ProgramCTick] & 0x7f}), native code of the sprite {bomb.SpriteProgramIndexes[ScriptHelper.ProgramCTick]}");
+        File.WriteAllLines(Path.Combine(Path.GetTempPath(), "h3b_probe_362.txt"), lines);
+    }
+}

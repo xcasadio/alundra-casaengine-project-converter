@@ -1,0 +1,8 @@
+t187 st1 b806e07f st2 24d2c78a  force X 0000a815 Y ffff49a5  slot 0xa815 0xffff49a5  OK
+t195 st1 5d571f09 st2 afbe9eac  force X ffff9805 Y 00005f7d  slot 0xffff9805 0x5f7d  OK
+t203 st1 3dc70963 st2 a3e4185e  force X ffff3955 Y 000047c8  slot 0xffff3955 0x47c8  OK
+t211 st1 6b275a0d st2 e9c2b520  force X ffffc176 Y 0000d386  slot 0xffffc176 0xd386  OK
+t219 st1 ecce7f87 st2 279a5972  force X 0001466c Y ffff4f34  slot 0x1466c 0xffff4f34  OK
+t227 st1 5aad3c51 st2 8bd96dd4  force X ffff9008 Y 000017b3  slot 0xffff9008 0x17b3  OK
+t235 st1 ed8046eb st2 3693fec6  force X 00014881 Y ffff6d28  slot 0x14881 0xffff6d28  OK
+sparks checked 7, differences 0

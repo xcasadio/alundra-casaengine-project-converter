@@ -1,0 +1,63 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Xunit;
+using Alundra.Rendering.Effects;
+using Alundra.Tests.Support;
+
+namespace Alundra.Tests.Probes;
+
+public sealed class H3bT0ProbeTests
+{
+    [Fact]
+    public void Probe_EffectStage_CreateNow_WhenIsAnEffectObtained()
+    {
+        var lines = new List<string>();
+        foreach (var (name, make) in new (string, Func<EffectStage>)[]
+        {
+            ("default stage (empty bank)", () => new EffectStage()),
+            ("real bank of Overworld 3,1-14", () => { var s = new EffectStage(); s.Load(EffectBankLoader.Load(ProjectRootFinder.Find(), "Overworld 3,1-14")); return s; }),
+        })
+        {
+            var stage = make();
+            stage.BeginSource(0, 1);
+            var first = stage.CreateNow(false, 9, 0, 1 << 16, 2 << 16, 3 << 16);
+            stage.EndSource();
+            lines.Add($"[{name}] first CreateNow(false, 9, 0, ...) -> {(first == null ? "null" : "slot " + first.Index + " active=" + first.Active + " effect=" + first.TargetEffect + " mapTable=" + first.TargetMapTable)}; active slots now {stage.Reservoir.ActiveSlots.Count()}");
+            // lifetime of the spark: ticks of RunFrame until the slot is inactive
+            var ticks = 0;
+            for (; ticks < 2000 && first != null && first.Active; ticks++) stage.RunFrame(1, new[] { false });
+            lines.Add($"[{name}] the spark slot is inactive after {ticks} RunFrame(1) ticks (stops at 2000)");
+            // fill the reservoir
+            var s2 = make();
+            var made = 0;
+            for (var i = 0; i < 200; i++)
+            {
+                s2.BeginSource(0, 1);
+                var sl = s2.CreateNow(false, 9, 0, 0, 0, 0);
+                s2.EndSource();
+                if (sl == null) { lines.Add($"[{name}] CreateNow #{i + 1} returned null (reservoir full) after {made} successes; SlotCount={EffectReservoir.SlotCount}"); break; }
+                made++;
+            }
+            // Emit on a full reservoir: the operation runs and the Create inside it returns null
+            EffectSlot? viaEmit = null;
+            s2.BeginSource(0, 1);
+            s2.Emit(r => viaEmit = r.Create(false, 9, 0, 0, 0, 0));
+            s2.EndSource();
+            s2.RunFrame(1, new[] { false });
+            lines.Add($"[{name}] Emit(Create) on the full reservoir -> {(viaEmit == null ? "null (silently)" : "slot")}; active slots {s2.Reservoir.ActiveSlots.Count()}");
+            // a slot freed gives room again
+            var any = s2.Reservoir.ActiveSlots.First();
+            s2.Reservoir.Free(any);
+            s2.BeginSource(0, 1);
+            var again = s2.CreateNow(false, 9, 0, 0, 0, 0);
+            s2.EndSource();
+            lines.Add($"[{name}] after freeing slot {any.Index}: CreateNow -> {(again == null ? "null" : "slot " + again.Index)}");
+        }
+
+        File.WriteAllLines(Path.Combine(Path.GetTempPath(), "h3b_probe_effectstage.txt"), lines);
+        Assert.True(true);
+    }
+}

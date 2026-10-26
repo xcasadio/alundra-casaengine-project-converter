@@ -1,0 +1,22 @@
+#nullable enable
+using System.IO;
+using Xunit;
+using Alundra.Ai;
+
+namespace Alundra.Tests.Probes;
+
+public sealed class H3bT0ProbeTests
+{
+    [Fact]
+    public void Probe_RegistryCount()
+    {
+        var r = NativeSpriteRegistry.CreateForProduction();
+        File.WriteAllLines(Path.Combine(Path.GetTempPath(), "h3b_probe_registry.txt"), new[]
+        {
+            $"production registry at the HEAD of departure: Count = {r.Count}",
+            $"has (C, 62) for the type 2: {r.TryGet(Alundra.Entities.ScriptHelper.ProgramCTick, 62, 2, out _)}",
+            $"has (D, 30) for the type 2: {r.TryGet(Alundra.Entities.ScriptHelper.ProgramDTouch, 30, 2, out _)}",
+            $"has (E, 12) for the type 2: {r.TryGet(Alundra.Entities.ScriptHelper.ProgramEDeactivate, 12, 2, out _)}",
+        });
+    }
+}

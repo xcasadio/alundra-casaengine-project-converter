@@ -1,0 +1,4 @@
+RIGHT hero at (101.83,100.00)  bomb at rest (137.08,100.00) offset (35.25,0.00)  first hurt: None   final hp 10
+LEFT  hero at (98.17,100.00)  bomb at rest (62.92,100.00) offset (-35.25,0.00)  first hurt: None   final hp 10
+UP    hero at (100.00,98.78)  bomb at rest (100.00,75.28) offset (0.00,-23.50)  first hurt: None   final hp 10
+DOWN  hero at (100.00,101.22)  bomb at rest (100.00,124.72) offset (0.00,23.50)  first hurt: (273, 5, '0x31')   final hp 5

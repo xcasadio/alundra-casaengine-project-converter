@@ -1,0 +1,8 @@
+t001 H ta=0x1 c2c=0x0 hp=10 inuse=0x0 x=201.2 y=200.0
+t004 H ta=0x5 c2c=0x80127fc4 hp=10 inuse=0x23 x=206.1 y=200.0 | E1(ty2) st=1 ta=0 c28=0x80127d30 t24=0 pos=(206.1,200.0,0.0) | snd 44
+t005 E1(ty2) st=2 ta=0 c28=0x80127d30 t24=0 pos=(206.1,200.0,1.0)
+t040 H ta=0xc c2c=0x80127fc4 hp=10 inuse=0x23 x=206.1 y=200.0
+t061 H ta=0x7 c2c=0x80127fc4 hp=10 inuse=0x23 x=208.5 y=200.0
+t080 H ta=0x1d c2c=0x0 hp=10 inuse=0x0 x=254.5 y=200.0 | E1(ty2) st=4 ta=0 c28=0x80127d30 t24=0 pos=(252.4,200.0,32.0) | fx [0, 12, 0, 16541696, 13107200, 2097153]
+t081 H ta=0xf c2c=0x0 hp=10 inuse=0x0 x=256.6 y=200.0 | E1 gone | snd 22
+fx: [(80, 12, 252)]

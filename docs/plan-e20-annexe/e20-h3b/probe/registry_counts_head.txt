@@ -1,0 +1,4 @@
+production registry at the HEAD of departure: Count = 26
+has (C, 62) for the type 2: False
+has (D, 30) for the type 2: True
+has (E, 12) for the type 2: True

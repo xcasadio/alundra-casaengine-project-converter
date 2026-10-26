@@ -1,0 +1,10 @@
+[default stage (empty bank)] first CreateNow(false, 9, 0, ...) -> slot 0 active=True effect=9 mapTable=False; active slots now 1
+[default stage (empty bank)] the spark slot is inactive after 2 RunFrame(1) ticks (stops at 2000)
+[default stage (empty bank)] CreateNow #129 returned null (reservoir full) after 128 successes; SlotCount=128
+[default stage (empty bank)] Emit(Create) on the full reservoir -> null (silently); active slots 128
+[default stage (empty bank)] after freeing slot 0: CreateNow -> slot 0
+[real bank of Overworld 3,1-14] first CreateNow(false, 9, 0, ...) -> slot 0 active=True effect=9 mapTable=False; active slots now 1
+[real bank of Overworld 3,1-14] the spark slot is inactive after 27 RunFrame(1) ticks (stops at 2000)
+[real bank of Overworld 3,1-14] CreateNow #129 returned null (reservoir full) after 128 successes; SlotCount=128
+[real bank of Overworld 3,1-14] Emit(Create) on the full reservoir -> null (silently); active slots 128
+[real bank of Overworld 3,1-14] after freeing slot 0: CreateNow -> slot 0
