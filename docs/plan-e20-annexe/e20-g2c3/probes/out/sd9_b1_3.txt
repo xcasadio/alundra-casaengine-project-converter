@@ -1,0 +1,15 @@
+S-D9 per_frame=3: hero tile (38,10,5) px=(924.00,168.00,80.00) hp=10; entities=16 torches(393)=4 drops(391)=0
+  torch at (900.00,168.00,80.00) st=Normal b274=0
+  torch at (852.00,168.00,80.00) st=Normal b274=0
+  torch at (804.00,168.00,80.00) st=Normal b274=0
+  torch at (756.00,168.00,80.00) st=Normal b274=0
+t1 torches [Normal/0 Normal/0 Normal/0 Normal/0] flames=0 snd=
+t603 NEW drop at (756.00,168.00,240.00) rec-born prog2=0 total drops=4 entities=20
+t603 NEW drop at (804.00,168.00,240.00) rec-born prog2=0 total drops=4 entities=20
+t603 NEW drop at (852.00,168.00,240.00) rec-born prog2=0 total drops=4 entities=20
+t603 NEW drop at (900.00,168.00,240.00) rec-born prog2=0 total drops=4 entities=20
+t669 torches [Deactivated/1 Deactivated/1 Deactivated/1 Deactivated/1] flames=0 snd=
+t670 torches [Deactivated/1 Deactivated/1 Deactivated/1 Deactivated/1] flames=0 snd=142,142,142,142
+t673 torches [FlagToDestroy/1 FlagToDestroy/1 FlagToDestroy/1 FlagToDestroy/1] flames=0 snd=
+t674 torches [Destroyed/1x Destroyed/1x Destroyed/1x Destroyed/1x] flames=0 snd=
+END tick=1002 hero hp=10 tile=(38,10) drops=4

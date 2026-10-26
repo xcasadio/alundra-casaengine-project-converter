@@ -1,0 +1,7 @@
+S-D1 scripted record 28: at birth status=Loaded type=391 prog2=157 spriteprog=19/0/71/0/0/0 b275=0
+t1 D st=Normal b274=0 b275=157 c282=0 anim_t=0 AC=0 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=157 
+t2 D st=Normal b274=0 b275=157 c282=0 anim_t=0 AC=0 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=157 
+t3 D st=Normal b274=0 b275=157 c282=0 anim_t=0 AC=0 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=157 
+t4 D st=Normal b274=0 b275=157 c282=0 anim_t=0 AC=0 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=157 
+t5 D st=Normal b274=0 b275=157 c282=0 anim_t=0 AC=0 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=157 
+t6 D st=Normal b274=0 b275=157 c282=0 anim_t=0 AC=0 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=157 

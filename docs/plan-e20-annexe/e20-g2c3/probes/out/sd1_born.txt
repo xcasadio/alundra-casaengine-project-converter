@@ -1,0 +1,7 @@
+S-D1 born record 15: at birth status=Loaded type=391 prog2=0 spriteprog=19/0/71/0/0/0 b275=0
+t1 D st=Normal b274=0 b275=0 c282=0 anim_t=0 AC=0 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=0 
+t2 D st=Normal b274=1 b275=0 c282=40 anim_t=0 AC=0 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=0 
+t3 D st=Normal b274=1 b275=0 c282=39 anim_t=0 AC=0 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=0 
+t4 D st=Normal b274=1 b275=0 c282=38 anim_t=0 AC=0 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=0 
+t5 D st=Normal b274=1 b275=0 c282=37 anim_t=0 AC=0 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=0 
+t6 D st=Normal b274=1 b275=0 c282=36 anim_t=0 AC=0 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=0 

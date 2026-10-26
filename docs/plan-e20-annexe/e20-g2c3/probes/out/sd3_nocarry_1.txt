@@ -1,0 +1,15 @@
+S-D3 contact nocarry per_frame=1: hero at 109,100 hp=10; drop z 160
+t1 D st=Normal b274=0 b275=0 c282=0 anim_t=0 AC=0 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=0  | H anim_t=0 anim_c=0 hp=10 carried=False | T=- flames=0
+t2 D st=Normal b274=1 b275=0 c282=40 anim_t=0 AC=0 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=0  | H anim_t=0 anim_c=0 hp=10 carried=False | T=- flames=0
+t42 D st=Normal b274=2 b275=0 c282=0 anim_t=1 AC=0 flags=0x32180 ground=0 collz=0 ride=- z=159.50 fz=-32768 prog2=0  | H anim_t=0 anim_c=0 hp=10 carried=False | T=- flames=0
+t64 D st=Normal b274=2 b275=0 c282=0 anim_t=1 AC=0 flags=0x32180 ground=1 collz=1 ride=- z=32.00 fz=0 prog2=0  | H anim_t=0 anim_c=0 hp=10 carried=False | T=- flames=0
+t65 D st=Normal b274=3 b275=0 c282=0 anim_t=2 AC=0 flags=0x32180 ground=1 collz=0 ride=H z=32.00 fz=0 prog2=0 snd(145) | H anim_t=0 anim_c=0 hp=10 carried=False | T=- flames=0
+t66 D st=Normal b274=4 b275=0 c282=0 anim_t=2 AC=0 flags=0x32100 ground=0 collz=0 ride=- z=31.50 fz=-32768 prog2=0  | H anim_t=0 anim_c=0 hp=10 carried=False | T=- flames=0
+t76 D st=Normal b274=4 b275=0 c282=0 anim_t=2 AC=0 flags=0x32100 ground=1 collz=1 ride=- z=0.00 fz=0 prog2=0  | H anim_t=0 anim_c=0 hp=10 carried=False | T=- flames=0
+t86 D st=Normal b274=4 b275=0 c282=0 anim_t=2 AC=1 flags=0x32100 ground=1 collz=1 ride=- z=0.00 fz=0 prog2=0  | H anim_t=0 anim_c=0 hp=10 carried=False | T=- flames=0
+t87 D st=Normal b274=0 b275=0 c282=0 anim_t=0 AC=1 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=0  | H anim_t=0 anim_c=0 hp=10 carried=False | T=- flames=0
+t88 D st=Normal b274=1 b275=0 c282=40 anim_t=0 AC=0 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=0  | H anim_t=0 anim_c=0 hp=10 carried=False | T=- flames=0
+t128 D st=Normal b274=2 b275=0 c282=0 anim_t=1 AC=0 flags=0x32180 ground=0 collz=0 ride=- z=159.50 fz=-32768 prog2=0  | H anim_t=0 anim_c=0 hp=10 carried=False | T=- flames=0
+t150 D st=Normal b274=2 b275=0 c282=0 anim_t=1 AC=0 flags=0x32180 ground=1 collz=1 ride=- z=32.00 fz=0 prog2=0  | H anim_t=0 anim_c=0 hp=10 carried=False | T=- flames=0
+t151 D st=Normal b274=3 b275=0 c282=0 anim_t=2 AC=0 flags=0x32180 ground=1 collz=0 ride=H z=32.00 fz=0 prog2=0 snd(145) | H anim_t=0 anim_c=0 hp=10 carried=False | T=- flames=0
+t152 D st=Normal b274=4 b275=0 c282=0 anim_t=2 AC=0 flags=0x32100 ground=0 collz=0 ride=- z=31.50 fz=-32768 prog2=0  | H anim_t=0 anim_c=0 hp=10 carried=False | T=- flames=0

@@ -1,0 +1,27 @@
+S-D2 cycle record 15 per_frame=3; hero at 100,100; drop at 300,100, z 160
+t1 D st=Normal b274=0 b275=0 c282=0 anim_t=0 AC=0 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=0  root={X:300 Y:100 Z:160}
+t2 D st=Normal b274=1 b275=0 c282=40 anim_t=0 AC=0 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=0  root={X:300 Y:100 Z:160}
+t42 D st=Normal b274=2 b275=0 c282=0 anim_t=1 AC=0 flags=0x32180 ground=0 collz=0 ride=- z=159.50 fz=-32768 prog2=0  root={X:300 Y:100 Z:159.5}
+t66 D st=Normal b274=2 b275=0 c282=0 anim_t=1 AC=0 flags=0x32180 ground=1 collz=1 ride=- z=0.00 fz=0 prog2=0  root={X:300 Y:100 Z:0}
+t67 D st=Normal b274=3 b275=0 c282=0 anim_t=2 AC=0 flags=0x32180 ground=1 collz=1 ride=- z=0.00 fz=0 prog2=0 snd(145) root={X:300 Y:100 Z:0}
+t68 D st=Normal b274=4 b275=0 c282=0 anim_t=2 AC=0 flags=0x32100 ground=1 collz=1 ride=- z=0.00 fz=0 prog2=0  root={X:300 Y:100 Z:0}
+t88 D st=Normal b274=4 b275=0 c282=0 anim_t=2 AC=1 flags=0x32100 ground=1 collz=1 ride=- z=0.00 fz=0 prog2=0  root={X:300 Y:100 Z:0}
+t89 D st=Normal b274=0 b275=0 c282=0 anim_t=0 AC=1 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=0  root={X:300 Y:100 Z:160}
+t90 D st=Normal b274=1 b275=0 c282=40 anim_t=0 AC=0 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=0  root={X:300 Y:100 Z:160}
+t130 D st=Normal b274=2 b275=0 c282=0 anim_t=1 AC=0 flags=0x32180 ground=0 collz=0 ride=- z=159.50 fz=-32768 prog2=0  root={X:300 Y:100 Z:159.5}
+t154 D st=Normal b274=2 b275=0 c282=0 anim_t=1 AC=0 flags=0x32180 ground=1 collz=1 ride=- z=0.00 fz=0 prog2=0  root={X:300 Y:100 Z:0}
+t155 D st=Normal b274=3 b275=0 c282=0 anim_t=2 AC=0 flags=0x32180 ground=1 collz=1 ride=- z=0.00 fz=0 prog2=0 snd(145) root={X:300 Y:100 Z:0}
+t156 D st=Normal b274=4 b275=0 c282=0 anim_t=2 AC=0 flags=0x32100 ground=1 collz=1 ride=- z=0.00 fz=0 prog2=0  root={X:300 Y:100 Z:0}
+t176 D st=Normal b274=4 b275=0 c282=0 anim_t=2 AC=1 flags=0x32100 ground=1 collz=1 ride=- z=0.00 fz=0 prog2=0  root={X:300 Y:100 Z:0}
+t177 D st=Normal b274=0 b275=0 c282=0 anim_t=0 AC=1 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=0  root={X:300 Y:100 Z:160}
+t178 D st=Normal b274=1 b275=0 c282=40 anim_t=0 AC=0 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=0  root={X:300 Y:100 Z:160}
+t218 D st=Normal b274=2 b275=0 c282=0 anim_t=1 AC=0 flags=0x32180 ground=0 collz=0 ride=- z=159.50 fz=-32768 prog2=0  root={X:300 Y:100 Z:159.5}
+t242 D st=Normal b274=2 b275=0 c282=0 anim_t=1 AC=0 flags=0x32180 ground=1 collz=1 ride=- z=0.00 fz=0 prog2=0  root={X:300 Y:100 Z:0}
+t243 D st=Normal b274=3 b275=0 c282=0 anim_t=2 AC=0 flags=0x32180 ground=1 collz=1 ride=- z=0.00 fz=0 prog2=0 snd(145) root={X:300 Y:100 Z:0}
+t244 D st=Normal b274=4 b275=0 c282=0 anim_t=2 AC=0 flags=0x32100 ground=1 collz=1 ride=- z=0.00 fz=0 prog2=0  root={X:300 Y:100 Z:0}
+t264 D st=Normal b274=4 b275=0 c282=0 anim_t=2 AC=1 flags=0x32100 ground=1 collz=1 ride=- z=0.00 fz=0 prog2=0  root={X:300 Y:100 Z:0}
+t265 D st=Normal b274=0 b275=0 c282=0 anim_t=0 AC=1 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=0  root={X:300 Y:100 Z:160}
+t266 D st=Normal b274=1 b275=0 c282=40 anim_t=0 AC=0 flags=0x32080 ground=0 collz=0 ride=- z=160.00 fz=0 prog2=0  root={X:300 Y:100 Z:160}
+t306 D st=Normal b274=2 b275=0 c282=0 anim_t=1 AC=0 flags=0x32180 ground=0 collz=0 ride=- z=159.50 fz=-32768 prog2=0  root={X:300 Y:100 Z:159.5}
+t330 D st=Normal b274=2 b275=0 c282=0 anim_t=1 AC=0 flags=0x32180 ground=1 collz=1 ride=- z=0.00 fz=0 prog2=0  root={X:300 Y:100 Z:0}
+SUMMARY max |root Z - logical Z| = 0.500; sounds: t67:145,t155:145,t243:145

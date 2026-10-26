@@ -1,0 +1,88 @@
+#nullable enable
+using System;
+using Alundra.Entities;
+using Alundra.Events;
+using Alundra.Maps;
+
+namespace Alundra.Ai.Objects;
+
+/// <summary>E20.g2c3 T0 THROWAWAY (never committed, kept as .txt in the annex): a try-out of A19 (0x800619D0) and C71 (0x8007B834) to probe the DLL against the binary and to measure the displaced tests.</summary>
+internal static class TempWaterDrop
+{
+    internal static readonly int[] DropTypes = { 391 };
+
+    internal static void Register(NativeSpriteRegistry registry)
+    {
+        registry.Register(ScriptHelper.ProgramALoad, 19, DropTypes, (entity, context, state) => A19(entity));
+        registry.Register(ScriptHelper.ProgramCTick, 71, DropTypes, (entity, context, state) => C71(entity, context));
+    }
+
+    internal static void A19(EntityScriptProxy e) => e.Bytes[1] = (byte)e.ProgramIndexes[2];
+
+    internal static void C71(EntityScriptProxy e, IEntityWorldContext context)
+    {
+        switch (e.Bytes[0])
+        {
+            case 0:
+                e.Bytes[0] = 1;
+                e.AIValues[1] = 40;
+                break;
+            case 1:
+                e.AIValues[1] = (short)(e.AIValues[1] - 1);
+                if (e.AIValues[1] == 0)
+                {
+                    e.TargetAnimationId = 1;
+                    e.Bytes[0] = 2;
+                    e.Flags |= 0x100;
+                    e.ResyncControllerFromFlags();
+                }
+
+                break;
+            case 2:
+                if (e.CollidedWithEntityZ != 0 || e.IsOnGround != 0)
+                {
+                    e.TargetAnimationId = 2;
+                    e.Bytes[0] = 3;
+                }
+
+                break;
+            case 3:
+                e.Bytes[0] = 4;
+                e.Flags &= ~0x80u;
+                e.ResyncControllerFromFlags();
+                var support = e.RidingEntity;
+                var hero = context.PlayerEntity;
+                EntityScriptProxy? target;
+                if (support != null && hero != null && ReferenceEquals(support, hero.LogicContextEntity))
+                {
+                    target = hero.CarriedEntity?.GameplayProxy as EntityScriptProxy;
+                }
+                else
+                {
+                    target = support?.GameplayProxy as EntityScriptProxy;
+                }
+
+                if (target != null && target.SpriteType == 393)
+                {
+                    target.Status = EntityStatus.Deactivated;
+                    target.Bytes[0] = 1;
+                }
+
+                break;
+            case 4:
+                if (e.ForceResetAnimationFlag != 0)
+                {
+                    e.Bytes[0] = 0;
+                    e.TargetAnimationId = 0;
+                    e.ForceZ = 0;
+                    e.Flags = (e.Flags & ~0x100u) | 0x80u;
+                    e.ResyncControllerFromFlags();
+                    e.ProgramIndexes[2] = e.Bytes[1];
+                    e.PosZ += 160 << 16;
+                    e.PushLogicalPositionToRoot();
+                }
+
+                break;
+        }
+    }
+}

@@ -1,0 +1,24 @@
+diff --git a/Alundra/Ai/NativeSpriteRegistry.cs b/Alundra/Ai/NativeSpriteRegistry.cs
+index 1949c19b..0dc02d82 100644
+--- a/Alundra/Ai/NativeSpriteRegistry.cs
++++ b/Alundra/Ai/NativeSpriteRegistry.cs
+@@ -54,6 +54,7 @@ internal sealed class NativeSpriteRegistry
+         BombLidAi.Register(registry);
+         TorchAi.Register(registry);
+         BrambleAi.Register(registry);
++        TempWaterDrop.Register(registry);
+         return registry;
+     }
+ 
+diff --git a/Alundra/SaveGames/TestSaves.cs b/Alundra/SaveGames/TestSaves.cs
+index 46f4bd01..f797ce5c 100644
+--- a/Alundra/SaveGames/TestSaves.cs
++++ b/Alundra/SaveGames/TestSaves.cs
+@@ -223,6 +223,7 @@ public static class TestSaves
+         // docs/plan-e20-annexe/e20-g2c2/results.md), on the ledge between the torches of the tiles (33, 10) and (35, 10) (the records 43 to 46 stand on the row 10 at the tiles 31, 33, 35, 37), one tile south of them, four levels above the room of the four switches at the tiles (31, 15), (34, 14), (34, 17) and (37, 15). A save cannot
+         // carry the direction: lift a torch (Square against it), throw it south onto a switch (the switch lights, then its flame burns for 39 ticks); then the lever (the record 14, tile (2, 19)) lets four torches fall on the east room, each of which burns where it lands. The brambles are for the save 160 (the map 86).
+         new Preset("torche-m92", "test-torche-m92", 92, 34, 11, 5, [], [], [], []),
++        new Preset("gouttes-m92", "test-gouttes-m92", 92, 38, 10, 5, [], [], [], []),
+     ];
+ 
+     /// <summary>Finds a preset by its exact name.</summary>

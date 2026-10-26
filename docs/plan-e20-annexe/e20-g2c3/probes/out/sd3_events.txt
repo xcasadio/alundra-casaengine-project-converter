@@ -1,0 +1,8 @@
+sd3_carry_1.txt {'landing(ground=1)': 64, 'state3': 65, 'ride': 65, 'snd145': 65, 'state4': 66, 'torch st=Deactivated': 66, 'snd142': 67, 'torch AC=1': 69, 'torch FlagToDestroy': 70, 'torch gone': 71, 'hero anim_t=0': 71}
+sd3_carry_2.txt {'landing(ground=1)': 64, 'state3': 65, 'ride': 65, 'snd145': 65, 'state4': 66, 'torch st=Deactivated': 66, 'snd142': 67, 'torch AC=1': 69, 'torch FlagToDestroy': 70, 'torch gone': 71, 'hero anim_t=0': 71}
+sd3_carry_3.txt {'landing(ground=1)': 64, 'state3': 65, 'ride': 65, 'snd145': 65, 'state4': 66, 'torch st=Deactivated': 66, 'snd142': 67, 'torch AC=1': 70, 'torch FlagToDestroy': 70, 'torch gone': 71, 'hero anim_t=0': 71}
+sd3_posed_1.txt {'hero anim_t=0': 1, 'landing(ground=1)': 65, 'state3': 66, 'ride': 66, 'snd145': 66, 'state4': 67, 'torch st=Deactivated': 67, 'snd142': 68, 'torch AC=1': 70, 'torch FlagToDestroy': 71, 'torch gone': 72}
+sd3_posed_2.txt {'hero anim_t=0': 1, 'landing(ground=1)': 65, 'state3': 66, 'ride': 66, 'snd145': 66, 'state4': 67, 'torch st=Deactivated': 67, 'snd142': 68, 'torch AC=1': 70, 'torch FlagToDestroy': 71, 'torch gone': 72}
+sd3_posed_3.txt {'hero anim_t=0': 1, 'landing(ground=1)': 65, 'state3': 66, 'ride': 66, 'snd145': 66, 'state4': 67, 'torch st=Deactivated': 67, 'snd142': 68, 'torch AC=1': 70, 'torch FlagToDestroy': 71, 'torch gone': 72}
+sd3_nocarry_1.txt {'hero anim_t=0': 1, 'landing(ground=1)': 64, 'state3': 65, 'ride': 65, 'snd145': 65, 'state4': 66}
+sd3_nocarry_3.txt {'hero anim_t=0': 1, 'landing(ground=1)': 64, 'state3': 65, 'ride': 65, 'snd145': 65, 'state4': 66}

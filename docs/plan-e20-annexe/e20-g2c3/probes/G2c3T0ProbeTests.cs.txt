@@ -1,0 +1,311 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using Alundra.Ai.Objects;
+using Alundra.Audio;
+using Alundra.Entities;
+using Alundra.Entities.Spawning;
+using Alundra.Events;
+using Alundra.Hero;
+using Alundra.Maps;
+using Alundra.Session;
+using Alundra.Tests.Audio;
+using Alundra.Tests.Support;
+using Alundra.Transitions;
+using Xunit;
+
+namespace Alundra.Tests.Probes;
+
+/// <summary>E20.g2c3 T0 THROWAWAY probes S-D1 to S-D8 (never committed; kept as .txt in the annex).</summary>
+[Collection(MusicPlayerSingletonCollection.Name)]
+public sealed class G2c3T0ProbeTests : IDisposable
+{
+    private static readonly string Out = Environment.GetEnvironmentVariable("G2C3_OUT") ?? Path.GetTempPath();
+
+    public G2c3T0ProbeTests()
+    {
+        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    public void Dispose()
+    {
+        EventProgramRunner.NativeSpriteTypeFilterForTests = null;
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    private static void Save(string name, string text) => File.WriteAllText(Path.Combine(Out, name), text);
+
+    internal sealed class Sounds : ISoundPlayer
+    {
+        internal int Tick;
+        internal readonly List<(int Tick, int Sfx)> Played = new();
+        public void PlaySfx(int sfxId) => Played.Add((Tick, sfxId));
+        public void RemixVoice(int sfxId, int left, int right) { }
+        public void FlushFrameSounds() { }
+        public void StopAllSfx() { }
+    }
+
+    private sealed class Bench : IDisposable
+    {
+        internal readonly ArcRun Arc;
+        internal readonly Sounds Heard = new();
+        internal int Tick;
+
+        internal Bench(string name, int heroX, int heroY, int[] types)
+        {
+            var spec = new ArcSpec("E20g2c3-" + name, "Magyscar", "Magyscar-92", Array.Empty<int>(), 8, 6, 0, 2000, RealController: true, Prefabs: true);
+            Arc = new ArcRun(spec);
+            try
+            {
+                Frames(4);
+                SyntheticField.Install(Arc, null);
+                foreach (var other in Arc.Entities.Where(e => !ReferenceEquals(e, Arc.Hero)).ToList())
+                {
+                    other.Status = EntityStatus.FlagToDestroy;
+                }
+
+                Arc.Proxy.RecycleDestroyedEntities();
+                typeof(WorldProxy).GetField("<SoundPlayer>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(Arc.Proxy, Heard);
+                Arc.Runner.NativeHandlersEnabled = false;
+                EventProgramRunner.NativeSpriteTypeFilterForTests = new HashSet<int>(types);
+                Arc.Hero.TargetDirection = 24;
+                Arc.PlaceHero(heroX, heroY, 0);
+                Frames(2);
+            }
+            catch
+            {
+                Dispose();
+                throw;
+            }
+        }
+
+        internal IEntityWorldContext World => Arc.Proxy;
+
+        internal void Frames(int count)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                Arc.HoldDirections(0);
+                Arc.OneFrame();
+            }
+        }
+
+        internal void Go(int perFrame, int last, Action<int> onTick, Action<int>? before = null)
+        {
+            Tick = 0;
+            Arc.Proxy.TickTraceForTests = pass =>
+            {
+                if (pass == "pad")
+                {
+                    Tick++;
+                    Heard.Tick = Tick;
+                }
+                else if (pass == "inventory")
+                {
+                    onTick(Tick);
+                }
+            };
+            for (var t = 1; t <= last; t += perFrame)
+            {
+                before?.Invoke(t);
+                Arc.HoldDirections(0);
+                Arc.OneFrame(perFrame * 0.02f);
+            }
+
+            Arc.Proxy.TickTraceForTests = null;
+        }
+
+        public void Dispose()
+        {
+            EventProgramRunner.NativeSpriteTypeFilterForTests = null;
+            Arc.Dispose();
+        }
+    }
+
+    private static string Px(int raw) => (raw / 65536.0).ToString("F2", CultureInfo.InvariantCulture);
+
+    /// <summary>Born like the 0x8A: the record, the absolute position, the push to the root, the tick joined.</summary>
+    private static EntityScriptProxy BornAt(Bench b, int record, int xPx, int yPx, int zPx)
+    {
+        var e = b.World.SpawnEntityByRecordId(b.Arc.Hero, record) ?? throw new InvalidOperationException("record " + record + " not born");
+        e.PosX = xPx << 16;
+        e.PosY = yPx << 16;
+        e.PosZ = zPx << 16;
+        e.PushLogicalPositionToRoot();
+        e.JoinsBirthTick = true;
+        return e;
+    }
+
+    private static string RootZ(EntityScriptProxy e) => e.OwnerEntity?.RootComponent == null ? "-" : e.OwnerEntity.RootComponent.LocalTransform.Position.ToString();
+
+    private static string Who(Bench b, EntityScriptProxy drop, EntityScriptProxy? torch)
+    {
+        var r = drop.RidingEntity;
+        if (r == null) { return "-"; }
+        if (ReferenceEquals(r, b.Arc.Hero.LogicContextEntity)) { return "H"; }
+        if (torch != null && ReferenceEquals(r, torch.LogicContextEntity)) { return "T"; }
+        return "?";
+    }
+
+    private static string DropRow(Bench b, int tick, EntityScriptProxy d, EntityScriptProxy? torch)
+    {
+        var snd = string.Join(",", b.Heard.Played.Where(p => p.Tick == tick).Select(p => "snd(" + p.Sfx + ")"));
+        return $"t{tick} D st={d.Status} b274={d.Bytes[0]} b275={d.Bytes[1]} c282={d.AIValues[1]} anim_t={d.TargetAnimationId} AC={d.ForceResetAnimationFlag} flags=0x{d.Flags:X} ground={d.IsOnGround} collz={d.CollidedWithEntityZ} ride={Who(b, d, torch)} z={Px(d.PosZ)} fz={d.ForceZ} prog2={d.ProgramIndexes[2]} {snd}";
+    }
+
+    private static string Change(string row) => string.Join(" ", row.Split(' ').Skip(1).Where(s => !s.StartsWith("snd(") && !s.StartsWith("z=") && !s.StartsWith("fz=")));
+
+    /// <summary>S-D1: A19 at the first pass.</summary>
+    [Theory]
+    [InlineData(15, "born")]
+    [InlineData(28, "scripted")]
+    public void SD1_A19(int record, string label)
+    {
+        using var b = new Bench("sd1", 100, 100, new[] { 391, 393, 12 });
+        var d = BornAt(b, record, 300, 100, 160);
+        var sb = new StringBuilder();
+        sb.AppendLine($"S-D1 {label} record {record}: at birth status={d.Status} type={d.SpriteType} prog2={d.ProgramIndexes[2]} spriteprog={string.Join("/", d.SpriteProgramIndexes)} b275={d.Bytes[1]}");
+        b.Go(1, 6, tick => sb.AppendLine(DropRow(b, tick, d, null)));
+        Save($"sd1_{label}.txt", sb.ToString());
+    }
+
+    /// <summary>S-D2, S-D3, S-D6, S-D7: the cycle of a native or a scripted drop (no contact).</summary>
+    [Theory]
+    [InlineData(15, 1, 330)]
+    [InlineData(15, 2, 330)]
+    [InlineData(15, 3, 330)]
+    [InlineData(28, 1, 330)]
+    [InlineData(28, 3, 330)]
+    public void SD2_Cycle(int record, int perFrame, int last)
+    {
+        using var b = new Bench("sd2", 100, 100, new[] { 391, 393, 12 });
+        var d = BornAt(b, record, 300, 100, 160);
+        var sb = new StringBuilder();
+        sb.AppendLine($"S-D2 cycle record {record} per_frame={perFrame}; hero at 100,100; drop at 300,100, z 160");
+        string? prev = null;
+        var maxRootGap = 0f;
+        b.Go(perFrame, last, tick =>
+        {
+            var row = DropRow(b, tick, d, null);
+            var key = Change(row) + RootZ(d);
+            if (key != prev || row.Contains("snd("))
+            {
+                sb.AppendLine(row + " root=" + RootZ(d));
+                prev = key;
+            }
+
+            if (d.OwnerEntity?.RootComponent != null)
+            {
+                var want = EntitySpawnFactory.ResolveLogicalPosition(d.PosX, d.PosY, d.PosZ);
+                maxRootGap = Math.Max(maxRootGap, Math.Abs(d.OwnerEntity.RootComponent.LocalTransform.Position.Z - want.Z));
+            }
+        });
+        sb.AppendLine($"SUMMARY max |root Z - logical Z| = {maxRootGap:F3}; sounds: {string.Join(",", b.Heard.Played.Select(p => $"t{p.Tick}:{p.Sfx}"))}");
+        Save($"sd2_rec{record}_{perFrame}.txt", sb.ToString());
+    }
+
+    /// <summary>S-D3, S-D4, S-D5, S-D8: the three contacts.</summary>
+    [Theory]
+    [InlineData("carry", 1)]
+    [InlineData("carry", 2)]
+    [InlineData("carry", 3)]
+    [InlineData("nocarry", 1)]
+    [InlineData("nocarry", 3)]
+    [InlineData("posed", 1)]
+    [InlineData("posed", 2)]
+    [InlineData("posed", 3)]
+    public void SD3_Contact(string mode, int perFrame)
+    {
+        var heroX = mode == "posed" ? 100 : 109;
+        using var b = new Bench("sd3", heroX, 100, new[] { 391, 393, 12 });
+        EntityScriptProxy? torch = null;
+        if (mode == "carry")
+        {
+            torch = b.World.SpawnEntityBySpriteIndex(null, true, 137, 109 << 16, 100 << 16, 32 << 16, 0x10) ?? throw new InvalidOperationException("torch not born");
+            torch.RidingEntity = b.Arc.Hero.LogicContextEntity;
+            PlayerManager.PutInHands(b.Arc.Hero, torch);
+            b.Frames(8);
+        }
+        else if (mode == "posed")
+        {
+            torch = b.World.SpawnEntityBySpriteIndex(null, true, 137, 130 << 16, 100 << 16, 0, 0x10) ?? throw new InvalidOperationException("torch not born");
+        }
+
+        var d = BornAt(b, 15, mode == "posed" ? 130 : 109, 100, 160);
+        var sb = new StringBuilder();
+        sb.AppendLine($"S-D3 contact {mode} per_frame={perFrame}: hero at {heroX},100 hp={b.Arc.Hero.Hp}; drop z 160");
+        string? prev = null;
+        b.Go(perFrame, 160, tick =>
+        {
+            var h = b.Arc.Hero;
+            var snd = string.Join(",", b.Heard.Played.Where(p => p.Tick == tick).Select(p => "snd(" + p.Sfx + ")"));
+            var flames = b.Arc.Entities.Count(e => e.SpriteType == 12);
+            var t = torch == null ? "T=-" : $"T st={torch.Status} b274={torch.Bytes[0]} anim_t={torch.TargetAnimationId} AC={torch.ForceResetAnimationFlag} present={b.Arc.Entities.Contains(torch)} carrier={(torch.PlatformEntity != null)}";
+            var row = $"{DropRow(b, tick, d, torch)} | H anim_t={h.TargetAnimationId} anim_c={h.CurrentAnimationId} hp={h.Hp} carried={(h.CarriedEntity != null)} | {t} flames={flames}";
+            var key = Change(DropRow(b, tick, d, torch)) + t + flames + h.TargetAnimationId + h.Hp + (h.CarriedEntity != null) + d.PosZ.ToString();
+            if (key != prev || snd != "")
+            {
+                sb.AppendLine(row);
+                prev = key;
+            }
+        });
+        Save($"sd3_{mode}_{perFrame}.txt", sb.ToString());
+    }
+
+    /// <summary>S-D9: the program B[1] of the map 92 in the real world, the hero on the tile (38, 10) level 5 (the preset gouttes-m92): the tick of the four births, the torches 43 to 46 and their extinction.</summary>
+    [Theory]
+    [InlineData(1)]
+    [InlineData(3)]
+    public void SD9_B1(int perFrame)
+    {
+        var spec = new ArcSpec("E20g2c3-sd9", "Magyscar", "Magyscar-92", Array.Empty<int>(), 38, 10, 5, 4000, RealController: true, Prefabs: true, Arrival: new ArcArrival((38 * 24 + 12) << 16, (10 * 16 + 8) << 16, 0, 0x36, 0));
+        using var arc = new ArcRun(spec);
+        var heard = new Sounds();
+        typeof(WorldProxy).GetField("<SoundPlayer>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(arc.Proxy, heard);
+        arc.HoldDirections(0);
+        arc.OneFrame();
+        var sb = new StringBuilder();
+        var torches = arc.Entities.Where(e => e.SpriteType == 393).ToList();
+        sb.AppendLine($"S-D9 per_frame={perFrame}: hero tile ({arc.Hero.TileX},{arc.Hero.TileY},{arc.Hero.TileZ}) px=({Px(arc.Hero.PosX)},{Px(arc.Hero.PosY)},{Px(arc.Hero.PosZ)}) hp={arc.Hero.Hp}; entities={arc.Entities.Count()} torches(393)={torches.Count} drops(391)={arc.Entities.Count(e => e.SpriteType == 391)}");
+        foreach (var t in torches) { sb.AppendLine($"  torch at ({Px(t.PosX)},{Px(t.PosY)},{Px(t.PosZ)}) st={t.Status} b274={t.Bytes[0]}"); }
+        var tick = 0;
+        var seenDrops = new HashSet<EntityScriptProxy>();
+        var lastTorchState = "";
+        arc.Proxy.TickTraceForTests = pass =>
+        {
+            if (pass == "pad") { tick++; heard.Tick = tick; }
+            else if (pass == "inventory")
+            {
+                foreach (var d in arc.Entities.Where(e => e.SpriteType == 391 && seenDrops.Add(e)))
+                {
+                    sb.AppendLine($"t{tick} NEW drop at ({Px(d.PosX)},{Px(d.PosY)},{Px(d.PosZ)}) rec-born prog2={d.ProgramIndexes[2]} total drops={arc.Entities.Count(e => e.SpriteType == 391)} entities={arc.Entities.Count()}");
+                }
+
+                var ts = string.Join(" ", torches.Select(t => $"{t.Status}/{t.Bytes[0]}{(arc.Entities.Contains(t) ? "" : "x")}"));
+                var snd = string.Join(",", heard.Played.Where(p => p.Tick == tick).Select(p => p.Sfx));
+                if (ts != lastTorchState || snd.Contains("142"))
+                {
+                    sb.AppendLine($"t{tick} torches [{ts}] flames={arc.Entities.Count(e => e.SpriteType == 12)} snd={snd}");
+                    lastTorchState = ts;
+                }
+            }
+        };
+        for (var t = 1; t <= 1000; t += perFrame)
+        {
+            arc.HoldDirections(0);
+            arc.OneFrame(perFrame * 0.02f);
+        }
+
+        arc.Proxy.TickTraceForTests = null;
+        sb.AppendLine($"END tick={tick} hero hp={arc.Hero.Hp} tile=({arc.Hero.TileX},{arc.Hero.TileY}) drops={arc.Entities.Count(e => e.SpriteType == 391)}");
+        Save($"sd9_b1_{perFrame}.txt", sb.ToString());
+    }
+}
