@@ -10967,7 +10967,7 @@ qu'il mesurera le manque `(E, 19)`), puis h3a ; h3b après g1a et g2a ; h3c et h
 
 ---
 
-#### 1.30.1 E20.h0a — Le cadre de l'usage d'un objet ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `1314242`)
+#### 1.30.1 E20.h0a — Le cadre de l'usage d'un objet ✅ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `1314242` ; **faite et CONFIRMED le 2026-10-26**, `bd80bbc5` à `3dd9852c`, ADR-0099 ; recette de l'auteur à faire)
 
 **Prérequis.** E20.c2a ✅ ; la fin du chantier de restructuration et la garde des fichiers neufs (Q-R-7).
 
@@ -10985,7 +10985,9 @@ trou de la table, un autre objet en cours) ; un objet dont le départ n'est pas 
 
 ##### Tâches
 
-- ⏳ **T0 — Annexe, oracle, liste prédite** (aucun code) : (a) la table des 63 états de la critique rapportée à la DLL : pour chaque état, la ligne
+- ✅ **T0 — Annexe, oracle, liste prédite** (aucun code ; fait le 2026-10-25, `bd80bbc5` : 51 états avec une ligne d'appel dans la DLL, 12
+  qui attendent leur tranche (la cape h2, les tomes h4a, et les quatre états de mort `0x39`, `0x3C`, `0x4E`, `0x4F`, rangés à E18) ; la relecture
+  de ce que c2b a posé : le pilote appelé une fois au tick de la blessure, `case 0x31` qui appelle `TryUseItem`) : (a) la table des 63 états de la critique rapportée à la DLL : pour chaque état, la ligne
   d'appel de la DLL (`PlayerManager.cs` : `:432`, `:451`, `:575`, `:607`, `:617`, `:669`, `:675`, `:679`, `:700`, `:726`, `:756`, `:861`, `:915`) ou la
   tranche qui portera l'état (fait 1), et les 15 états `Skip` ; versée au README ; (b) les traces d'oracle qui ont un front de Rond
   (`docs/plan-e20-annexe/e20-d/oracle/out*/` : `w3/W3-O-idle`, `W3-O-swim`, `w9/W9-circle-idle`, `W9-circle-swim`, `g7/R7-circle-windup`, et les 20
@@ -10993,7 +10995,8 @@ trou de la table, un autre objet en cours) ; un objet dont le départ n'est pas 
   objets des trous `0x21`, `0x22`, `0x28`, `0x2A`) et lesquelles attendent la tranche de leur objet ; (c) la liste prédite des tests qui bougent :
   ceux qui ignorent le son 3 (`AlundraHeroRunTests.cs:612`, `AlundraHeroSwimTests.cs:60`, `AlundraRunSupport.cs:402-405`), qui deviennent exacts et
   perdent leur exception ; aucun autre attendu ; recomptée au HEAD de départ.
-- ⏳ **T1 — Tests puis code.** Chaque cas « sans effet » est accolé à un positif :
+- ✅ **T1 — Tests puis code** (fait le 2026-10-25, `802d38fd`, `b85aa183`, `1c53d031` : 133 tests rouges sur 141 avant le code, 141 verts après ;
+  l'annulation de la branche verrouillée placée après `UpdatePlayerCarriedEntity(1)` et avant l'entrée de c2b). Chaque cas « sans effet » est accolé à un positif :
   - (a1) le front : Rond tenu sans front ne tente rien ; un front tente ;
   - (a2) le verrou : un front avec `PlayerControlFlags` non nul (chaque bit qui ne passe pas par la branche verrouillée) : son 3, rien en cours ;
   - (a3) les refus : objet du Rond nul (`0x8004E0F8` rend −1 : son 3), hors de `0x1F`-`0x32`, les quatre trous, **un objet en cours différent** de
@@ -11015,9 +11018,11 @@ trou de la table, un autre objet en cours) ; un objet dont le départ n'est pas 
   - (a8) le menu : refusé tant qu'un objet est en cours, ouvert sans (`InventoryDirector`), accolés ;
   - (a9) le héros reconstruit (nouvelle carte) n'a plus d'objet en cours.
   Puis le code.
-- ⏳ **T2 — Tests d'oracle** : (o1) les traces de T0 (b) que h0a rend exactes, comparées à l'identique, son 3 compris ; (o2) les tests de la liste
+- ✅ **T2 — Tests d'oracle** (fait le 2026-10-26, `f07f52d6` : les cinq traces sans objet et les quatre trous de la table exactes, son 3 compris ;
+  les exceptions du son 3 retirées, comme prédit ; 7 066 tests verts en Release et en Debug) : (o1) les traces de T0 (b) que h0a rend exactes, comparées à l'identique, son 3 compris ; (o2) les tests de la liste
   prédite sans leur exception du son 3.
-- ⏳ **T3 — ADR, plan, verifiers frais** (deux, l'un sur la table des états). Mutants, au moins 15, tous tués (révision 1) : front ignoré ; verrou
+- ✅ **T3 — ADR, plan, verifiers frais** (deux, l'un sur la table des états ; fait le 2026-10-26, `3dd9852c`, `wf_ecf77fae-49c` : 28 mutants
+  réels, 16 du plan, tous tués sauf un équivalent ; ADR-0099 ; les deux verifiers CONFIRMED). Mutants, au moins 15, tous tués (révision 1) : front ignoré ; verrou
   limité à `0x34` ; borne `0x62` abaissée à `0x32` (tuée par l'objet `0x32` avec un départ de test qui réussit ; la hausse à `0x63` est équivalente,
   `e20-h4/report.md:140`, et n'est pas demandée) ; un trou oublié ; un trou de trop ; objet en cours ignoré ; refus dès qu'un objet est en cours, le
   même compris (tué par le cas « même objet » de (a3)) ; compteur non incrémenté ; libération sur 0 au lieu de non nul ; libération à chaque tick ;
