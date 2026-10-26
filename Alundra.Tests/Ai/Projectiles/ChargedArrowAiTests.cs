@@ -239,11 +239,12 @@ public sealed class ChargedArrowAiTests : IDisposable
         BombLidAi.Register(sum); // E20.h3a: (E, 19)
         TorchAi.Register(sum); // E20.g2c2: (C, 70) and (E, 20)
         BrambleAi.Register(sum); // E20.g2c2: (D, 34)
+        WaterDropAi.Register(sum); // E20.g2c3: (A, 19) and (C, 71)
 
         Assert.True(production.TryGet(ScriptHelper.ProgramCTick, 94, 7, out _));
         Assert.False(production.TryGet(ScriptHelper.ProgramCTick, 94, 3, out _));
         Assert.Equal(sum.Count, production.Count);
-        Assert.Equal(3 + 3 + 1 + PickupAi.Keys.Count + ChestAi.Keys.Count + ChargedArrowAi.Keys.Count + ArrowAi.Keys.Count + PillarAi.Keys.Count + LiftableAi.Keys.Count + LiftableAi.BreakKeys.Count + LiftableAi.C4Keys.Count + BallAi.Keys.Count + BombAi.Keys.Count + BombLidAi.Keys.Count + TorchAi.Keys.Count + BrambleAi.Keys.Count, production.Count);
+        Assert.Equal(3 + 3 + 1 + PickupAi.Keys.Count + ChestAi.Keys.Count + ChargedArrowAi.Keys.Count + ArrowAi.Keys.Count + PillarAi.Keys.Count + LiftableAi.Keys.Count + LiftableAi.BreakKeys.Count + LiftableAi.C4Keys.Count + BallAi.Keys.Count + BombAi.Keys.Count + BombLidAi.Keys.Count + TorchAi.Keys.Count + BrambleAi.Keys.Count + WaterDropAi.Keys.Count, production.Count);
     }
 
     [Fact]

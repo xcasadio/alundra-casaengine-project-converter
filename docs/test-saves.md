@@ -243,7 +243,17 @@ For the torches (docs/plan-e20-heros.md section 1.24.5, "E20.g2c2"): Alundra lif
 
 The hero stands on the cell x 816 to 839, y 176 to 191 (walkable, level 5), one tile south of the torches of the tiles (33, 10) and (35, 10), four levels above the room of the four switches at the tiles (31, 15), (34, 14), (34, 17) and (37, 15). A save does not carry the direction (always south): walk to a torch, press the Square against it to lift it, then throw it
 south with the Square (walking, it flies farther) onto a switch: the switch lights (sound 39), the torch burns where it meets it and its flame lives 39 ticks (it touches the switch again 25 ticks after the blow, and hurts Alundra who walks into it). The lever of the room (the record 14, tile (2, 19)) lets four torches fall on the east room (216 to 288, 424 to 456): each burns where it lands. A torch thrown over
-a hole disappears without a flame; a flame born over deep water is destroyed. The brambles are for the save `tools/Saves/160-magyscar.sav` (the map 86): throw a torch at one, it burns, stops blocking and goes; the sword does nothing to it. The drops of water that put the torches out are E20.g2c3.
+a hole disappears without a flame; a flame born over deep water is destroyed. The brambles are for the save `tools/Saves/160-magyscar.sav` (the map 86): throw a torch at one, it burns, stops blocking and goes; the sword does nothing to it. The drops of water that put the torches out are the next preset.
+
+### Drops of water preset (E20.g2c3)
+
+For the drops of water (docs/plan-e20-heros.md section 1.24.5, "E20.g2c3"): the arrival of the portal from the map 91 into the map 92 (Magyscar), the only one that holds the four torches of the top row of the room and the zone of the program that makes four drops fall on them. The new game's kit and no flag.
+
+| Preset | Map, tile, z | Flag | Owned | Equipped |
+|---|---|---|---|---|
+| `gouttes-m92` | 92 (Magyscar), (38, 10), 5 | none | the kit's items 1, 17, 25 | the basic sword |
+
+The hero stands on the cell x 912 to 935, y 160 to 175 (walkable, level 5). A save does not carry the direction (always south). Stay at the back of the room: about 13.5 seconds (674 ticks at 50 Hz) after the arrival four drops of water are born above the four torches of the top row (tiles (31, 10), (33, 10), (35, 10), (37, 10)) and fall; the torches go out without leaving a flame (the sound 142 and a small break effect). Going out of the zone (tiles x 26 to 42, y 8 to 28) before makes no drop. To see a drop fall on Alundra: lift a torch (Square against it) before the drops arrive and stand under one: the torch goes out in his hands in a fraction of a second and disappears, he stays standing, unhurt; without a torch only the splash is heard. Every drop of the game cycles the same way: it waits, falls in 24 ticks, splashes (sound 145) for 21 ticks and goes back up 160 pixels to start again; in the Fairy cave (map 158) the drops fall only while Alundra is in their zone.
 
 ## What a save cannot carry
 

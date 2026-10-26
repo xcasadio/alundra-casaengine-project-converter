@@ -223,6 +223,11 @@ public static class TestSaves
         // docs/plan-e20-annexe/e20-g2c2/results.md), on the ledge between the torches of the tiles (33, 10) and (35, 10) (the records 43 to 46 stand on the row 10 at the tiles 31, 33, 35, 37), one tile south of them, four levels above the room of the four switches at the tiles (31, 15), (34, 14), (34, 17) and (37, 15). A save cannot
         // carry the direction: lift a torch (Square against it), throw it south onto a switch (the switch lights, then its flame burns for 39 ticks); then the lever (the record 14, tile (2, 19)) lets four torches fall on the east room, each of which burns where it lands. The brambles are for the save 160 (the map 86).
         new Preset("torche-m92", "test-torche-m92", 92, 34, 11, 5, [], [], [], []),
+
+        // E20.g2c3 T2 (docs/plan-e20-heros.md section 1.24.5, D-G2C3-6): the arrival of the portal from the map 91 into the map 92 (Magyscar), on the new game's kit with no flag. Tile (38, 10), level 5 (the pixel centre (924, 168); the cell is walkable, T0 (f),
+        // docs/plan-e20-annexe/e20-g2c3/results.md): the only arrival from the 91 that holds the four torches of the top row (the records 43 to 46) and the zone of the program B[1], which makes four drops of water fall on them after 603 ticks. A save cannot carry the direction:
+        // stay at the back of the room about 13.5 seconds (674 ticks) and the four drops put the four torches out without a flame; lift a torch (Square against it) and stand under a drop: it goes out in the hands of Alundra, who stays standing, unhurt.
+        new Preset("gouttes-m92", "test-gouttes-m92", 92, 38, 10, 5, [], [], [], []),
     ];
 
     /// <summary>Finds a preset by its exact name.</summary>

@@ -221,7 +221,8 @@ public sealed class WaterDropWorldTests : IDisposable
         Assert.Equal(new[] { 67 }, run.SoundTicks(142));
         Assert.Equal(70, torch.First(x => x.Status == EntityStatus.FlagToDestroy));
         Assert.Equal(71, torch.First(x => !x.Present));
-        Assert.Equal(70, Assert.Single(run.Effects, e => e.Id == 10).Tick);
+        // the break effect 10 is queued by the destruction at d + 28 = 70 (the binary attaches it at that tick, `fxattach` of the journal) and the stage makes it at the end of its frame: seen once, from the tick after to the tick after the frame.
+        Assert.InRange(Assert.Single(run.Effects, e => e.Id == 10).Tick, 71, 70 + ticksPerFrame + 1);
 
         // no flame, ever: the mark made the torch go without one.
         Assert.All(run.Flames.Values, count => Assert.Equal(0, count));
@@ -295,7 +296,8 @@ public sealed class WaterDropWorldTests : IDisposable
         Assert.Equal(new[] { 68 }, run.SoundTicks(142));
         Assert.Equal(71, torch.First(x => x.Status == EntityStatus.FlagToDestroy));
         Assert.Equal(72, torch.First(x => !x.Present));
-        Assert.Equal(71, Assert.Single(run.Effects, e => e.Id == 10).Tick);
+        // the break effect 10: queued by the destruction at d + 29 = 71, made by the stage at the end of its frame (see (w3)).
+        Assert.InRange(Assert.Single(run.Effects, e => e.Id == 10).Tick, 72, 71 + ticksPerFrame + 1);
         Assert.All(run.Flames.Values, count => Assert.Equal(0, count));
 
         // the hero, a few pixels away, is not touched; the drop falls from the top of the torch to the floor (Z 0 at d + 32 = 74) and is restored at d + 46 = 88.
