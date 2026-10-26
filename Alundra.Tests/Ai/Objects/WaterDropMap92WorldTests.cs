@@ -82,12 +82,12 @@ public sealed class WaterDropMap92WorldTests : IDisposable
 
     [Theory]
     [MemberData(nameof(Cadences))]
-    public void W8_AliceStayingAtTheBackOfTheRoom92_SeesFourDropsBornAtTheTick603AboveTheFourTorches_WhichGoOutWithoutAFlame_AndAliceWhoLeavesBeforeMakesNone(int ticksPerFrame)
+    public void W8_AlundraStayingAtTheBackOfTheRoom92_SeesFourDropsBornAtTheTick603AboveTheFourTorches_WhichGoOutWithoutAFlame_AndAlundraWhoLeavesBeforeMakesNone(int ticksPerFrame)
     {
         AssertTheFourDropsPutTheFourTorchesOut(ticksPerFrame);
 
         // and the same arrival, Alundra leaving the zone at the tick 301: no drop, the torches stay lit.
-        AssertThatAliceWhoLeavesTheZoneBeforeTheTick603MakesNoDropAndTheTorchesStayLit(ticksPerFrame);
+        AssertThatAlundraWhoLeavesTheZoneBeforeTheTick603MakesNoDropAndTheTorchesStayLit(ticksPerFrame);
     }
 
     private static void AssertTheFourDropsPutTheFourTorchesOut(int ticksPerFrame)
@@ -158,7 +158,7 @@ public sealed class WaterDropMap92WorldTests : IDisposable
         Assert.Equal(hp, arc.Hero.Hp);
     }
 
-    private static void AssertThatAliceWhoLeavesTheZoneBeforeTheTick603MakesNoDropAndTheTorchesStayLit(int ticksPerFrame)
+    private static void AssertThatAlundraWhoLeavesTheZoneBeforeTheTick603MakesNoDropAndTheTorchesStayLit(int ticksPerFrame)
     {
         using var arc = ArriveFromThe91("E20g2c3-w8-out-" + ticksPerFrame);
         var torches = arc.Entities.Where(e => e.SpriteType == 393).ToList();

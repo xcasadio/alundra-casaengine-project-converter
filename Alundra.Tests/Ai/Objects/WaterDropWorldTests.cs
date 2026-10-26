@@ -189,7 +189,7 @@ public sealed class WaterDropWorldTests : IDisposable
 
     [Theory]
     [MemberData(nameof(Cadences))]
-    public void W3_ADropOnAliceWhoCarriesATorch_PutsItOutInHerHands_TheSound142_TheEffect10_NoFlame_AndAlundraStaysStandingUnhurt(int ticksPerFrame)
+    public void W3_ADropOnAlundraWhoCarriesATorch_PutsItOutInHisHands_TheSound142_TheEffect10_NoFlame_AndAlundraStaysStandingUnhurt(int ticksPerFrame)
     {
         using var run = new WaterDropRun("w3-" + ticksPerFrame, 109, 100);
         var torch = run.Watch(run.CarryATorch());
@@ -242,7 +242,7 @@ public sealed class WaterDropWorldTests : IDisposable
 
     [Theory]
     [MemberData(nameof(Cadences))]
-    public void W4_ADropOnAliceWithoutATorch_MakesTheSplashAlone_TheDropPassesTheStates3And4_AndRestoresItselfAt87(int ticksPerFrame)
+    public void W4_ADropOnAlundraWithoutATorch_MakesTheSplashAlone_TheDropPassesTheStates3And4_AndRestoresItselfAt87(int ticksPerFrame)
     {
         using var run = new WaterDropRun("w4-" + ticksPerFrame, 109, 100);
         var drop = run.Watch(run.BornAt(NativeRecord, 109, 100, 160));
@@ -351,7 +351,7 @@ public sealed class WaterDropWorldTests : IDisposable
     [Theory]
     [InlineData(1)]
     [InlineData(3)]
-    public void W7_ADropOfTheMap158_HangsMotionlessWhileAliceIsOutsideItsBox_FallsWhenHeEnters_AndCyclesEveryNPlus91WhileHeStays(int ticksPerFrame)
+    public void W7_ADropOfTheMap158_HangsMotionlessWhileAlundraIsOutsideItsBox_FallsWhenHeEnters_AndCyclesEveryNPlus91WhileHeStays(int ticksPerFrame)
     {
         const int N = 60;
         const int EntryTick = 121;
@@ -425,7 +425,7 @@ public sealed class WaterDropWorldTests : IDisposable
 
     [Theory]
     [MemberData(nameof(Cadences))]
-    public void W10_AfterTheState3TheDropGoesThroughAlice_EndsItsFallOnTheGround_AndRisesFromThereAtTheRestoration(int ticksPerFrame)
+    public void W10_AfterTheState3TheDropGoesThroughAlundra_EndsItsFallOnTheGround_AndRisesFromThereAtTheRestoration(int ticksPerFrame)
     {
         using var run = new WaterDropRun("w10-" + ticksPerFrame, 109, 100);
         var drop = run.Watch(run.BornAt(NativeRecord, 109, 100, 160));
