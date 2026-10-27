@@ -138,18 +138,20 @@ public sealed class HeroSwimArenaTests : IDisposable
     }
 
     [Fact]
-    public void WithoutTheBoots_TheHeroSwimsToo_AnAcceptedDeviation_O_E19_22()
+    public void WithoutTheBoots_TheHeroStopsAtTheEdgeOfTheDeepWater_O_E19_22()
     {
-        // The original stops a hero without boots of level 2 at the edge of the deep water (the wall of 0x80037504, O-E19-22, Q-N3: not ported): this one falls in and swims, the same as with the boots.
+        // E20.i2a (D-I2A-1): the original stops a hero without boots of level 2 at the edge of the deep water (the wall of 0x80037504, O-E19-22): this one walks to the bank and stays there, where with the boots it falls in and swims.
         var with = Play(boots: true, 120, tick => Down);
         var without = Play(boots: false, 120, tick => Down);
 
-        Assert.Contains(without, r => r.Anim == 0x0F);
-        for (var t = 0; t < with.Count; t++)
-        {
-            Assert.Equal(with[t].Anim, without[t].Anim);
-            Assert.Equal(with[t].ForceY, without[t].ForceY);
-            Assert.Equal(with[t].PosY, without[t].PosY);
-        }
+        Assert.Contains(with, r => r.Anim == 0x0F);
+        Assert.DoesNotContain(without, r => r.Anim is 0x0F or 0x1D or 0x2C or 0x2D);
+        Assert.DoesNotContain(without, r => r.Slope == 4);
+        const int bankEdgeY = 49 * 16 << 16; // the first row of the deep water (tile y 49)
+        Assert.All(without, r => Assert.True(r.PosY < bankEdgeY, $"tick {r.Number}: the hero is at y {r.PosY / 65536.0}, in the water"));
+        Assert.All(without, r => Assert.Equal(ShoreZ << 16, r.PosZ));
+        Assert.Equal(without[^2].PosY, without[^1].PosY); // stopped against the edge
+        Assert.True(without.Skip(1).Any(r => r.Adjusted), "the hero meets the edge");
+        Assert.True(with[^1].PosY > without[^1].PosY);
     }
 }
