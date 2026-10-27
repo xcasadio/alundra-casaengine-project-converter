@@ -1,0 +1,3 @@
+camera+sway: 3000 trials, mismatches 0, coverage 184/185
+uncovered ['0x8002cf38']
+scrollY after each camera step (start 300, target centred, kick +2 once): [302, 301, 300, 300, 300, 300]

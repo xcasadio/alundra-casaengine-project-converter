@@ -1,0 +1,4 @@
+real14 hero vram flags OR = 0 (& 0x180 = 0) hero ta=0 ground=1 slope=0
+synthetic hero vram flags OR = 0
+e13 ticks: 51 67 83 99 115 131 147 179 195 211
+cancel ticks: 

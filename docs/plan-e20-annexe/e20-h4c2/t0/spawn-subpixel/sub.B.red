@@ -1,0 +1,3 @@
+  Échoué Alundra.Tests.Ai.Objects.LiftableBreakWorldTests.B5_TheContentsOfTheCrateAreDroppedAtItsBreak_WhereAContentOfZeroDropsNothing(ticksPerFrame: 1)
+  Échoué Alundra.Tests.Ai.Objects.LiftableBreakWorldTests.B5_TheContentsOfTheCrateAreDroppedAtItsBreak_WhereAContentOfZeroDropsNothing(ticksPerFrame: 2)
+  Échoué Alundra.Tests.Ai.Objects.LiftableBreakWorldTests.B5_TheContentsOfTheCrateAreDroppedAtItsBreak_WhereAContentOfZeroDropsNothing(ticksPerFrame: 3)

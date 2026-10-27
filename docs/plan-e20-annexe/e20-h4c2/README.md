@@ -14,3 +14,10 @@ never-used slot, because the h4 harness zeroes the 64 slots instead of writing t
 this annex are remade with the index. The duplicate copies of the e20-h4b vectors made by the agents are left out (they are in
 `docs/plan-e20-annexe/e20-h4b/bin/vec/`). The scripts read the binary at the absolute path they name (outside the repository) and write next to
 themselves: rerun them from a copy, never in place. `SHA1SUMS` lists every file here.
+
+## Added by T0 (2026-10-27, HEAD `45a1b50a`)
+
+- `t0/`: the replays (`replay/`), the predictions written before the probes (`predictions.md`), the facts read in the keys (`key_facts.*`, `expected.json`), the table of the bytes read by the vectors (`mapping.md`), the probes (s1) to (s12) of the DLL
+  (`probes/`), the starting suite (`suite/`), the experiment on the sub-pixel of the spawn (`spawn-subpixel/`) and `results.md` (the verdict: **STOP**, see its section 0). `t0/SHA1SUMS` lists every file.
+- `rockfix/`: the reading of 2026-10-25 and the four "corrected" keys of D-H4C2-4 (**indicative, not faithful to the byte**; the keys of `disc/keys/` and `critic/keys/` stay the oracle of the original). `rockfix/SHA1SUMS` lists every file.
+- The `SHA1SUMS` of this folder still lists the 179 files of the reading of 2026-10-18 only.

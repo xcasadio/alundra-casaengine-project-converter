@@ -1,0 +1,411 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using Alundra.Ai;
+using Alundra.Audio;
+using Alundra.Entities;
+using Alundra.Events;
+using Alundra.Hero;
+using Alundra.Maps;
+using Alundra.Rng;
+using Alundra.Session;
+using Alundra.Tests.Audio;
+using Alundra.Tests.Support;
+using Alundra.Transitions;
+using Xunit;
+
+namespace Alundra.Tests.Probes;
+
+/// <summary>E20.h4c2 T0 THROWAWAY probes (s1) to (s12) (never committed as code; kept as .cs.txt in the annex). A throwaway port of the driver 0x800354D0, of E13 0x8007F30C (mode Fix = D-H4C2-3, mode None = no E13) and of the cancel 0x80034BDC run in the test; the rows are written as CSV for t0/probes/cmp_probe.py.</summary>
+[Collection(MusicPlayerSingletonCollection.Name)]
+public sealed class H4c2T0ProbeTests : IDisposable
+{
+    private static readonly string Out = Environment.GetEnvironmentVariable("H4C2_OUT") ?? Path.GetTempPath();
+
+    private const int Rock = 17;
+    private const int Item = 0x2C;
+
+    public H4c2T0ProbeTests()
+    {
+        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    public void Dispose()
+    {
+        PlayerManager.ItemStartForTests = null;
+        PlayerManager.ItemDriverForTests = null;
+        PlayerManager.ItemCancelForTests = null;
+        EventProgramRunner.NativeSpriteTypeFilterForTests = null;
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    private sealed class Sounds : ISoundPlayer
+    {
+        internal int Tick;
+        internal readonly List<(int Tick, int Sfx)> Played = new();
+        public void PlaySfx(int sfxId) => Played.Add((Tick, sfxId));
+        public void RemixVoice(int sfxId, int left, int right) { }
+        public void FlushFrameSounds() { }
+        public void StopAllSfx() { }
+    }
+
+    // the table 0x80023504 of the binary: 15 entries (u16 tick, s16 p) and the sentinel (checked against the executable by t0/probes/check_table.py)
+    private static readonly int[] TableTick = { 16, 32, 48, 64, 80, 96, 112, 128, 144, 160, 176, 192, 224, 224, 240 };
+
+    private static int TableP(int i) => 512 * (i + 1);
+
+    private enum Mode { None, Fix }
+
+    private sealed class Run : IDisposable
+    {
+        internal readonly HitArena Arena;
+        internal readonly Sounds Heard = new();
+        internal int Tick;
+        internal readonly StringBuilder Rows = new();
+        internal readonly StringBuilder HeroRows = new();
+        internal readonly StringBuilder Births = new();
+        internal readonly StringBuilder Gen = new();
+        internal readonly StringBuilder SoundRows = new();
+        internal readonly StringBuilder Notes = new();
+        internal readonly StringBuilder Passes = new();
+        internal readonly List<int> E13Ticks = new();
+        internal readonly List<int> CancelTicks = new();
+        internal uint StateBefore;
+        internal IDisposable? Registration;
+        internal readonly Mode Mode;
+        private readonly bool _subPixel;
+
+        internal Run(string name, int heroX, int heroY, Func<int, int, CutBench.Cell>? cell, Mode mode, IReadOnlyList<int[]>? targets = null, bool subPixel = false)
+        {
+            Mode = mode;
+            _subPixel = subPixel;
+            Arena = new HitArena("h4c2t0-" + name, 100, 100, targets?.ToList() ?? new List<int[]>(), 24, 0);
+            try
+            {
+                Notes.AppendLine("real14 hero vram flags OR = " + Arena.Hero.CombinedVramFlagsOR + " (& 0x180 = " + (Arena.Hero.CombinedVramFlagsOR & 0x180) + ") hero ta=" + Arena.Hero.TargetAnimationId + " ground=" + Arena.Hero.IsOnGround + " slope=" + Arena.Hero.Slope_18c);
+                SyntheticField.Install(Arena.Arc, cell);
+                if (heroX != 100 || heroY != 100)
+                {
+                    Arena.Arc.PlaceHero(heroX, heroY, 0);
+                }
+
+                var keep = new HashSet<EntityScriptProxy>(Arena.Targets) { Arena.Hero };
+                foreach (var other in Arena.Arc.Entities.Where(e => !keep.Contains(e)).ToList())
+                {
+                    other.Status = EntityStatus.FlagToDestroy;
+                }
+
+                Arena.Arc.Proxy.RecycleDestroyedEntities();
+                typeof(WorldProxy).GetField("<SoundPlayer>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(Arena.Arc.Proxy, Heard);
+                Arena.Arc.Give(Item);
+                Arena.Arc.SetMp(4, 4);
+                PlayerManager.SetCurrentItemId(GameState.Instance, Item);
+                Arena.Hero.FrameCollisionTickCounter = 0;
+                Arena.Hero.DamagedTickCounter = 0;
+                Arena.Hero.HitCounter = 0;
+                Arena.Hero.TouchingEntity = null;
+                Notes.AppendLine("synthetic hero vram flags OR = " + Arena.Hero.CombinedVramFlagsOR);
+
+                EventProgramRunner.NativeSpriteTypeFilterForTests = new HashSet<int> { Rock };
+                PlayerManager.ItemStartForTests = PlayerManager.TomeStart;
+                PlayerManager.ItemDriverForTests = (hero, _) => Driver(hero);
+                PlayerManager.ItemCancelForTests = (hero, _) => Cancel(hero);
+                Arena.Arc.Runner.NativeHandlersEnabled = false;
+                var prev = Arena.Arc.Proxy.TickTraceForTests;
+                Arena.Arc.Proxy.TickTraceForTests = pass =>
+                {
+                    prev?.Invoke(pass);
+                    if (name == "mid" && Tick >= 16 && Tick <= 36)
+                    {
+                        foreach (var e in Arena.Arc.Entities.Where(x => x.SpriteType == Rock && x.Status != EntityStatus.Destroyed).ToList())
+                        {
+                            Passes.AppendLine(string.Join(",", Tick, pass, e.Slot, (int)e.Status, e.PosX, e.PosY, e.PosZ, e.ForceX, e.ForceY, e.ForceZ, e.TargetDirection, e.AnimationDirection, e.TargetAnimationId, e.CurrentAnimationId, e.ModX, e.ModY, e.ModdedPosX, e.ModdedPosY));
+                        }
+                    }
+                };
+                if (mode == Mode.Fix)
+                {
+                    Registration = Arena.Arc.Runner.NativeSprites.Register(ScriptHelper.ProgramEDeactivate, 13, new[] { Rock }, (entity, context, state) => E13(entity));
+                }
+            }
+            catch
+            {
+                Dispose();
+                throw;
+            }
+        }
+
+        // the driver 0x800354D0 (throwaway port)
+        private int Driver(EntityScriptProxy hero)
+        {
+            var world = (IEntityWorldContext)hero.ScriptHost!;
+            switch (hero.ItemUsePhase)
+            {
+                case 0:
+                {
+                    var guard = PlayerManager.TomeSlopeGuard(hero);
+                    if (guard != 0)
+                    {
+                        return guard;
+                    }
+
+                    var counter = hero.ItemUseCounter;
+                    var i = 0;
+                    while (i < 15 && counter >= TableTick[i])
+                    {
+                        if (TableTick[i] == counter)
+                        {
+                            var r1 = EnemyHelpers.Below(32);
+                            var r2 = EnemyHelpers.Below(32);
+                            var p = TableP(i) + 0xA00;
+                            var x = hero.PosX + AnimationTables.OffsetXList[r1] * p;
+                            var y = hero.PosY + AnimationTables.OffsetYList[r1] * p;
+                            var z = hero.PosZ + 0x1000000;
+                            var born = world.SpawnEntityBySpriteIndex(hero, false, Rock, x, y, z, r2);
+                            if (born is null)
+                            {
+                                Births.AppendLine(string.Join(",", Tick, counter, r1, r2, x, y, z, 0, 0, 0));
+                            }
+                            else
+                            {
+                                if (_subPixel)
+                                {
+                                    born.PushLogicalPositionToRoot(keepSubPixel: true);
+                                }
+
+                                var terrain = born.ComputeTerrainHeight();
+                                var destroy = unchecked(hero.PosZ + 1 + 0x1000000) < terrain;
+                                Births.AppendLine(string.Join(",", Tick, counter, r1, r2, x, y, z, 1, terrain, destroy ? 1 : 0, born.Slot, born.PosX, born.PosY, born.PosZ, born.ForceX, born.ForceY, born.ForceZ, born.TargetDirection, (int)born.Status, born.ForceAdjusted, born.JoinsBirthTick ? 1 : 0));
+                                if (destroy)
+                                {
+                                    world.DestroyEntity(born);
+                                }
+                                else
+                                {
+                                    born.ForceZ = unchecked((int)0xFFF80000);
+                                }
+                            }
+                        }
+
+                        i++;
+                    }
+
+                    if (i >= 15)
+                    {
+                        hero.ItemUsePhase = 1;
+                    }
+
+                    return 0;
+                }
+                case 1:
+                {
+                    var guard = PlayerManager.TomeSlopeGuard(hero);
+                    if (guard != 0)
+                    {
+                        return guard;
+                    }
+
+                    if (hero.ItemUseCounter < 0x118)
+                    {
+                        return 0;
+                    }
+
+                    hero.TargetAnimationId = 0x34;
+                    hero.ItemUsePhase = 2;
+                    return 0;
+                }
+                default:
+                    return hero.TargetAnimationId == 0x34 ? 0 : 1;
+            }
+        }
+
+        // the cancel 0x80034BDC (throwaway port): the type 17 at the status 2 go to the status 3, +0x20 = 0, +0x88 = 1
+        private void Cancel(EntityScriptProxy hero)
+        {
+            CancelTicks.Add(Tick);
+            foreach (var e in Arena.Arc.Entities)
+            {
+                if (e.SpriteType == Rock && e.Status == EntityStatus.Normal)
+                {
+                    e.Status = EntityStatus.Deactivated;
+                    e.BlockedByEntity = null;
+                    e.TargetAnimationId = 1;
+                }
+            }
+        }
+
+        // E13 0x8007F30C (throwaway port, mode Fix = D-H4C2-3)
+        private void E13(EntityScriptProxy entity)
+        {
+            if (entity.TargetAnimationId == 1)
+            {
+                if (entity.ForceResetAnimationFlag == 1)
+                {
+                    entity.ScriptHost!.DestroyEntity(entity, -1);
+                }
+
+                return;
+            }
+
+            if (entity.IsOnGround == 0)
+            {
+                entity.Status = EntityStatus.Normal;
+                return;
+            }
+
+            E13Ticks.Add(Tick);
+            entity.TargetAnimationId = 1;
+            entity.Flags = (entity.Flags | 0x40u) & ~0x30u;
+            entity.ResyncControllerFromFlags();
+        }
+
+        internal static uint State() => unchecked((uint)GameRandom.RandomSeed);
+
+        internal static int Steps(uint from, uint to)
+        {
+            var s = from;
+            for (var k = 0; k <= 64; k++)
+            {
+                if (s == to)
+                {
+                    return k;
+                }
+
+                s = unchecked(s * 0x7D2B89DDu + 0xE06A02E7u);
+            }
+
+            return -1;
+        }
+
+        internal void Go(int last, int ticksPerFrame = 1, int? interruptAt = null)
+        {
+            Arena.BeforeTick = tick =>
+            {
+                Tick = tick;
+                Heard.Tick = tick;
+                if (tick == 1)
+                {
+                    GameRandom.RandomSeed = 0x12345678;
+                }
+
+                if (tick % ticksPerFrame == 1 || ticksPerFrame == 1)
+                {
+                    StateBefore = State();
+                }
+
+                if (interruptAt == tick)
+                {
+                    Arena.Hero.TargetAnimationId = 0x31;
+                }
+            };
+            Arena.AfterTick = tick =>
+            {
+                foreach (var e in Arena.Arc.Entities.Where(x => x.SpriteType == Rock).OrderBy(x => x.Slot).ToList())
+                {
+                    e.EvaluateFrameBox();
+                    Rows.AppendLine(string.Join(",", tick, e.Slot, (int)e.Status, e.PosX, e.PosY, e.PosZ, e.ForceX, e.ForceY, e.ForceZ, e.TargetDirection, e.TargetAnimationId, e.ForceResetAnimationFlag, e.Flags, e.ForceAdjusted,
+                        e.IsOnGround, e.Slope_18c, e.FrameCollisionTickCounter, e.CollisionWidth, e.CollisionDepth, e.CollisionHeight, e.CurrentAttack?.Attribute ?? -1, e.CurrentAttack?.Power ?? -1, e.ComputeTerrainHeight()));
+                }
+
+                var h = Arena.Hero;
+                HeroRows.AppendLine(string.Join(",", tick, h.TargetAnimationId, h.ItemInUse, h.ItemUsePhase, h.ItemUseCounter, h.PosX, h.PosY, h.PosZ, h.CombinedVramFlagsOR, h.Slope_18c, h.IsOnGround, h.DamagedTickCounter,
+                    Arena.Samples[^1].Sparks.Count));
+            };
+            Arena.Begin();
+            for (var tick = 1; tick <= last; tick += ticksPerFrame)
+            {
+                var ticks = Math.Min(ticksPerFrame, last - tick + 1);
+                Arena.Frame(tick == 1 ? PadState.Circle : 0, ticks);
+                Gen.AppendLine(string.Join(",", tick + ticks - 1, State(), Steps(StateBefore, State())));
+            }
+
+            foreach (var (tick, sfx) in Heard.Played)
+            {
+                SoundRows.AppendLine(tick + "," + sfx);
+            }
+        }
+
+        internal void Write(string name)
+        {
+            File.WriteAllText(Path.Combine(Out, name + ".rocks.csv"), Rows.ToString());
+            File.WriteAllText(Path.Combine(Out, name + ".hero.csv"), HeroRows.ToString());
+            File.WriteAllText(Path.Combine(Out, name + ".births.csv"), Births.ToString());
+            File.WriteAllText(Path.Combine(Out, name + ".gen.csv"), Gen.ToString());
+            File.WriteAllText(Path.Combine(Out, name + ".sounds.csv"), SoundRows.ToString());
+            File.WriteAllText(Path.Combine(Out, name + ".passes.txt"), Passes.ToString());
+            File.WriteAllText(Path.Combine(Out, name + ".notes.txt"), Notes + "e13 ticks: " + string.Join(" ", E13Ticks) + "\ncancel ticks: " + string.Join(" ", CancelTicks) + "\n");
+        }
+
+        public void Dispose()
+        {
+            Registration?.Dispose();
+            PlayerManager.ItemStartForTests = null;
+            PlayerManager.ItemDriverForTests = null;
+            PlayerManager.ItemCancelForTests = null;
+            EventProgramRunner.NativeSpriteTypeFilterForTests = null;
+            Arena.Dispose();
+        }
+    }
+
+    private static Func<int, int, CutBench.Cell> From(int column, CutBench.Cell cell) => (c, _) => c >= column ? cell : default;
+
+    private void Scenario(string name, int heroX, int heroY, Func<int, int, CutBench.Cell>? cell, Mode mode, int last, int tpf = 1, int? interruptAt = null, IReadOnlyList<int[]>? targets = null, bool subPixel = false)
+    {
+        using var run = new Run(name, heroX, heroY, cell, mode, targets, subPixel);
+        run.Go(last, tpf, interruptAt);
+        run.Write(name);
+    }
+
+    [Fact]
+    public void RegistryAtTheHead()
+    {
+        var registry = NativeSpriteRegistry.CreateForProduction();
+        var lines = new StringBuilder();
+        lines.AppendLine("production registry count " + registry.Count);
+        foreach (var type in new[] { 16, 17, 469 })
+        {
+            lines.AppendLine("TryGet(E, 13, " + type + ") = " + registry.TryGet(ScriptHelper.ProgramEDeactivate, 13, type, out _));
+        }
+
+        lines.AppendLine("TryGet(E, 3, 16) = " + registry.TryGet(ScriptHelper.ProgramEDeactivate, 3, 16, out _));
+        File.WriteAllText(Path.Combine(Out, "registry.txt"), lines.ToString());
+    }
+
+    [Fact] public void Mid() => Scenario("mid", 600, 480, null, Mode.Fix, 330);
+
+    [Fact] public void Mid2() => Scenario("mid_t2", 600, 480, null, Mode.Fix, 330, 2);
+
+    [Fact] public void Mid3() => Scenario("mid_t3", 600, 480, null, Mode.Fix, 330, 3);
+
+    [Fact] public void MidSub() => Scenario("mid_sub", 600, 480, null, Mode.Fix, 330, 1, null, null, true);
+
+    [Fact] public void EdgeSub() => Scenario("edge_sub", 100, 100, null, Mode.Fix, 330, 1, null, null, true);
+
+    [Fact] public void Hb16Sub() => Scenario("hb16_sub", 100, 100, From(7, new CutBench.Cell(0, 16)), Mode.Fix, 240, 1, null, null, true);
+
+    [Fact] public void Hb17Sub() => Scenario("hb17_sub", 100, 100, From(7, new CutBench.Cell(0, 17)), Mode.Fix, 240, 1, null, null, true);
+
+    [Fact] public void Edge() => Scenario("edge", 100, 100, null, Mode.Fix, 330);
+
+    [Fact] public void S9a() => Scenario("s9a", 100, 100, null, Mode.None, 240);
+
+    [Fact] public void Hb16() => Scenario("hb16", 100, 100, From(7, new CutBench.Cell(0, 16)), Mode.None, 240);
+
+    [Fact] public void Hb17() => Scenario("hb17", 100, 100, From(7, new CutBench.Cell(0, 17)), Mode.None, 240);
+
+    [Fact] public void Water() => Scenario("water", 100, 100, From(7, new CutBench.Cell(0, 0, null, 0x08)), Mode.Fix, 330);
+
+    [Fact] public void Cancel100() => Scenario("cancel100", 100, 100, null, Mode.Fix, 140, 1, 100);
+
+    [Fact]
+    public void Targets() => Scenario("targets", 100, 100, null, Mode.Fix, 330, 1, null,
+        new List<int[]> { new[] { 140, 100 }, new[] { 100, 140 }, new[] { 180, 100 }, new[] { 100, 60 }, new[] { 60, 100 }, new[] { 140, 140 } });
+}

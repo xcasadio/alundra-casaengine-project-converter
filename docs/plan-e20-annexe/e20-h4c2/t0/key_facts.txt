@@ -1,0 +1,184 @@
+== (s1) the generator: steps of the DLL during the frame of tick t = steps(rng0(t) -> rng0(t+1)) = draws(t) + 1
+  orig     ticks 399  rng0(t+1)=step(rng1(t)) and steps=draws+1 on every tick: True ; ticks with steps != 1: {18: 3, 34: 3, 50: 3, 66: 3, 82: 3, 98: 3, 114: 3, 130: 3, 146: 3, 162: 3, 178: 3, 194: 3, 226: 5, 242: 3}
+  mid      ticks 399  rng0(t+1)=step(rng1(t)) and steps=draws+1 on every tick: True ; ticks with steps != 1: {18: 3, 34: 3, 50: 3, 66: 3, 82: 3, 98: 3, 114: 3, 130: 3, 146: 3, 162: 3, 178: 3, 194: 3, 226: 5, 242: 3}
+  fix      ticks 399  rng0(t+1)=step(rng1(t)) and steps=draws+1 on every tick: True ; ticks with steps != 1: {18: 3, 34: 3, 50: 3, 66: 3, 82: 3, 98: 3, 114: 3, 130: 3, 146: 3, 162: 3, 178: 3, 194: 3, 226: 5, 242: 3}
+  hb16fix  ticks 399  rng0(t+1)=step(rng1(t)) and steps=draws+1 on every tick: True ; ticks with steps != 1: {18: 3, 34: 3, 50: 3, 66: 3, 82: 3, 98: 3, 114: 3, 130: 3, 146: 3, 162: 3, 178: 3, 194: 3, 226: 5, 242: 3}
+  hb17fix  ticks 399  rng0(t+1)=step(rng1(t)) and steps=draws+1 on every tick: True ; ticks with steps != 1: {18: 3, 34: 3, 50: 3, 66: 3, 82: 3, 98: 3, 114: 3, 130: 3, 146: 3, 162: 3, 178: 3, 194: 3, 226: 5, 242: 3}
+== (s2)/(s3) the births: tick, raw x y z of the key (the DLL Z is the key Z - 1), the terrain word +0x138, the first tick ForceAdjusted (+0x13C)
+  orig    
+    id 2 slot1 b 18  x=  4999104 y=  5472896 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=50 st3=51 ta1=51 animend=97 st4=98
+    id 3 slot2 b 34  x=  6129600 y=  8384128 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=66 st3=67 ta1=67 animend=113 st4=114
+    id 4 slot3 b 50  x=  3577920 y=  5818944 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=82 st3=83 ta1=83 animend=129 st4=130
+    id 5 slot4 b 66  x=  4541504 y=  4658752 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=98 st3=99 ta1=99 animend=145 st4=146
+    id 6 slot5 b 82  x=  3349440 y=  7939520 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=114 st3=115 ta1=115 animend=161 st4=162
+    id 7 slot6 b 98  x=  4279136 y=  4108928 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=130 st3=131 ta1=131 animend=177 st4=178
+    id 8 slot1 b114  x=  7577440 y=  3514752 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=146 st3=147 ta1=147 animend=193 st4=194
+    id 9 slot2 b130  x= 11565568 y=  5969920 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=162 st3=163 ta1=163 animend=209 st4=210
+    id10 slot3 b146  x=  9578496 y=  9689088 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=178 st3=179 ta1=179 animend=225 st4=226
+    id11 slot4 b162  x=   655360 y=  6633920 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=162 ground=194 st3=163 ta1=163 animend=209 st4=210
+    id12 slot5 b178  x=  3164096 y=  2995648 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=210 st3=211 ta1=211 animend=257 st4=258
+    id13 slot6 b194  x= 11366752 y=  9646528 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=226 st3=227 ta1=227 animend=273 st4=274
+    id14 slot1 b226  x= 10329152 y= 10510976 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=258 st3=259 ta1=259 animend=305 st4=306
+    id15 slot2 b226  x=  6506560 y=  1648544 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=258 st3=259 ta1=259 animend=305 st4=306
+    id16 slot3 b242  x=  9517120 y= 11472800 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=274 st3=275 ta1=275 animend=321 st4=322
+  mid     
+    id 2 slot1 b 18  x= 37767104 y= 30376576 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=50 st3=51 ta1=51 animend=97 st4=98
+    id 3 slot2 b 34  x= 38897600 y= 33287808 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=66 st3=67 ta1=67 animend=113 st4=114
+    id 4 slot3 b 50  x= 36345920 y= 30722624 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=82 st3=83 ta1=83 animend=129 st4=130
+    id 5 slot4 b 66  x= 37309504 y= 29562432 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=98 st3=99 ta1=99 animend=145 st4=146
+    id 6 slot5 b 82  x= 36117440 y= 32843200 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=114 st3=115 ta1=115 animend=161 st4=162
+    id 7 slot6 b 98  x= 37047136 y= 29012608 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=130 st3=131 ta1=131 animend=177 st4=178
+    id 8 slot1 b114  x= 40345440 y= 28418432 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=146 st3=147 ta1=147 animend=193 st4=194
+    id 9 slot2 b130  x= 44333568 y= 30873600 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=162 st3=163 ta1=163 animend=209 st4=210
+    id10 slot3 b146  x= 42346496 y= 34592768 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=178 st3=179 ta1=179 animend=225 st4=226
+    id11 slot4 b162  x= 33399360 y= 31537600 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=194 st3=195 ta1=195 animend=241 st4=242
+    id12 slot5 b178  x= 35932096 y= 27899328 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=210 st3=211 ta1=211 animend=257 st4=258
+    id13 slot6 b194  x= 44134752 y= 34550208 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=226 st3=227 ta1=227 animend=273 st4=274
+    id14 slot1 b226  x= 43097152 y= 35414656 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=258 st3=259 ta1=259 animend=305 st4=306
+    id15 slot2 b226  x= 39274560 y= 26552224 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=258 st3=259 ta1=259 animend=305 st4=306
+    id16 slot3 b242  x= 42285120 y= 36376480 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=274 st3=275 ta1=275 animend=321 st4=322
+  fix     
+    id 2 slot1 b 18  x=  4999104 y=  5472896 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=50 st3=51 ta1=51 animend=97 st4=98
+    id 3 slot2 b 34  x=  6129600 y=  8384128 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=66 st3=67 ta1=67 animend=113 st4=114
+    id 4 slot3 b 50  x=  3577920 y=  5818944 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=82 st3=83 ta1=83 animend=129 st4=130
+    id 5 slot4 b 66  x=  4541504 y=  4658752 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=98 st3=99 ta1=99 animend=145 st4=146
+    id 6 slot5 b 82  x=  3349440 y=  7939520 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=114 st3=115 ta1=115 animend=161 st4=162
+    id 7 slot6 b 98  x=  4279136 y=  4108928 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=130 st3=131 ta1=131 animend=177 st4=178
+    id 8 slot1 b114  x=  7577440 y=  3514752 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=146 st3=147 ta1=147 animend=193 st4=194
+    id 9 slot2 b130  x= 11565568 y=  5969920 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=162 st3=163 ta1=163 animend=209 st4=210
+    id10 slot3 b146  x=  9578496 y=  9689088 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=178 st3=179 ta1=179 animend=225 st4=226
+    id11 slot4 b162  x=   655360 y=  6633920 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=162 ground=194 st3=195 ta1=195 animend=241 st4=242
+    id12 slot5 b178  x=  3164096 y=  2995648 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=210 st3=211 ta1=211 animend=257 st4=258
+    id13 slot6 b194  x= 11366752 y=  9646528 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=226 st3=227 ta1=227 animend=273 st4=274
+    id14 slot1 b226  x= 10329152 y= 10510976 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=258 st3=259 ta1=259 animend=305 st4=306
+    id15 slot2 b226  x=  6506560 y=  1648544 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=258 st3=259 ta1=259 animend=305 st4=306
+    id16 slot3 b242  x=  9517120 y= 11472800 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=274 st3=275 ta1=275 animend=321 st4=322
+  hb16fix 
+    id 2 slot1 b 18  x=  4999104 y=  5472896 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=50 st3=51 ta1=51 animend=97 st4=98
+    id 3 slot2 b 34  x=  6129600 y=  8384128 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=66 st3=67 ta1=67 animend=113 st4=114
+    id 4 slot3 b 50  x=  3577920 y=  5818944 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=82 st3=83 ta1=83 animend=129 st4=130
+    id 5 slot4 b 66  x=  4541504 y=  4658752 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=98 st3=99 ta1=99 animend=145 st4=146
+    id 6 slot5 b 82  x=  3349440 y=  7939520 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=114 st3=115 ta1=115 animend=161 st4=162
+    id 7 slot6 b 98  x=  4279136 y=  4108928 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=130 st3=131 ta1=131 animend=177 st4=178
+    id 8 slot1 b114  x=  7577440 y=  3514752 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=142 ground=146 st3=147 ta1=147 animend=193 st4=194
+    id 9 slot2 b130  x= 11565568 y=  5969920 z= 16777217 (DLL z= 16777216) st@b=2 t138= 16777216 fadj=None ground=130 st3=131 ta1=131 animend=177 st4=178
+    id10 slot3 b146  x=  9578496 y=  9689088 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=178 st3=179 ta1=179 animend=225 st4=226
+    id11 slot4 b162  x=   655360 y=  6633920 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=162 ground=194 st3=195 ta1=195 animend=241 st4=242
+    id12 slot5 b178  x=  3164096 y=  2995648 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=210 st3=211 ta1=211 animend=257 st4=258
+    id13 slot2 b194  x= 11366752 y=  9646528 z= 16777217 (DLL z= 16777216) st@b=2 t138= 16777216 fadj=None ground=194 st3=195 ta1=195 animend=241 st4=242
+    id14 slot1 b226  x= 10329152 y= 10510976 z= 16777217 (DLL z= 16777216) st@b=2 t138= 16777216 fadj=None ground=226 st3=227 ta1=227 animend=273 st4=274
+    id15 slot6 b226  x=  6506560 y=  1648544 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=258 st3=259 ta1=259 animend=305 st4=306
+    id16 slot3 b242  x=  9517120 y= 11472800 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=274 st3=275 ta1=275 animend=321 st4=322
+  hb17fix 
+    id 2 slot1 b 18  x=  4999104 y=  5472896 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=50 st3=51 ta1=51 animend=97 st4=98
+    id 3 slot2 b 34  x=  6129600 y=  8384128 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=66 st3=67 ta1=67 animend=113 st4=114
+    id 4 slot3 b 50  x=  3577920 y=  5818944 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=82 st3=83 ta1=83 animend=129 st4=130
+    id 5 slot4 b 66  x=  4541504 y=  4658752 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=98 st3=99 ta1=99 animend=145 st4=146
+    id 6 slot5 b 82  x=  3349440 y=  7939520 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=114 st3=115 ta1=115 animend=161 st4=162
+    id 7 slot6 b 98  x=  4279136 y=  4108928 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=130 st3=131 ta1=131 animend=177 st4=178
+    id 8 slot1 b114  x=  7577440 y=  3514752 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=142 ground=146 st3=147 ta1=147 animend=193 st4=194
+    id 9 slot2 b130  x= 11565568 y=  5888000 z= 17825793 (DLL z= 17825792) st@b=4 t138= 17825792 fadj=None ground=130 st3=None ta1=None animend=None st4=130
+    id10 slot2 b146  x=  9578496 y=  9689088 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=178 st3=179 ta1=179 animend=225 st4=226
+    id11 slot3 b162  x=   655360 y=  6633920 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=162 ground=194 st3=195 ta1=195 animend=241 st4=242
+    id12 slot4 b178  x=  3164096 y=  2995648 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=210 st3=211 ta1=211 animend=257 st4=258
+    id13 slot5 b194  x= 11279872 y=  9704448 z= 17825793 (DLL z= 17825792) st@b=4 t138= 17825792 fadj=None ground=194 st3=None ta1=None animend=None st4=194
+    id14 slot1 b226  x= 10442752 y= 10479616 z= 17825793 (DLL z= 17825792) st@b=4 t138= 17825792 fadj=None ground=226 st3=None ta1=None animend=None st4=226
+    id15 slot5 b226  x=  6506560 y=  1648544 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=258 st3=259 ta1=259 animend=305 st4=306
+    id16 slot1 b242  x=  9517120 y= 11472800 z= 16252930 (DLL z= 16252929) st@b=2 t138=        0 fadj=None ground=274 st3=275 ta1=275 animend=321 st4=322
+== (s4) the end of the animation 1: +0xAC - ta1 and st4 - ta1 (mid key, interior rocks)
+  (animend - ta1, st4 - ta1, ta1 - birth, ground - birth) over the 15 rocks: [(46, 47, 33, 32)]
+== (s5) the sounds (tick, id), ids 55 and 45
+  orig     30 sounds; 55 at [18, 34, 50, 66, 82, 98, 114, 130, 146, 162, 178, 194, 226, 226, 242] ; 45 at [51, 67, 83, 99, 115, 131, 147, 163, 163, 179, 211, 227, 259, 259, 275]
+           ids in the key: [45, 55]
+  mid      30 sounds; 55 at [18, 34, 50, 66, 82, 98, 114, 130, 146, 162, 178, 194, 226, 226, 242] ; 45 at [51, 67, 83, 99, 115, 131, 147, 163, 179, 195, 211, 227, 259, 259, 275]
+           ids in the key: [45, 55]
+  fix      30 sounds; 55 at [18, 34, 50, 66, 82, 98, 114, 130, 146, 162, 178, 194, 226, 226, 242] ; 45 at [51, 67, 83, 99, 115, 131, 147, 163, 179, 195, 211, 227, 259, 259, 275]
+           ids in the key: [45, 55]
+  hb16fix  30 sounds; 55 at [18, 34, 50, 66, 82, 98, 114, 130, 146, 162, 178, 194, 226, 226, 242] ; 45 at [51, 67, 83, 99, 115, 131, 131, 147, 179, 195, 195, 211, 227, 259, 275]
+           ids in the key: [45, 55]
+  hb17fix  27 sounds; 55 at [18, 34, 50, 66, 82, 98, 114, 130, 146, 162, 178, 194, 226, 226, 242] ; 45 at [51, 67, 83, 99, 115, 131, 147, 179, 195, 211, 259, 275]
+           ids in the key: [45, 55]
+== (s9a) the in-air ticks of the rocks 11 and 8 (IsOnGround 0 up to the tick before the ground tick; +0x13C set during the held ticks)
+  fix      id 8 birth 114: +0x144 first at 146 ; ticks with +0x144 == 0: 114..145 ; ticks with +0x13C != 0: None..None (0 ticks)
+  fix      id11 birth 162: +0x144 first at 194 ; ticks with +0x144 == 0: 162..193 ; ticks with +0x13C != 0: 162..194 (33 ticks)
+  hb16fix  id 8 birth 114: +0x144 first at 146 ; ticks with +0x144 == 0: 114..145 ; ticks with +0x13C != 0: 142..146 (5 ticks)
+  hb16fix  id11 birth 162: +0x144 first at 194 ; ticks with +0x144 == 0: 162..193 ; ticks with +0x13C != 0: 162..194 (33 ticks)
+  hb17fix  id 8 birth 114: +0x144 first at 146 ; ticks with +0x144 == 0: 114..145 ; ticks with +0x13C != 0: 142..146 (5 ticks)
+  hb17fix  id11 birth 162: +0x144 first at 194 ; ticks with +0x144 == 0: 162..193 ; ticks with +0x13C != 0: 162..194 (33 ticks)
+== (s10a) the position bounds: the steps per tick of the rocks 8 and 11 (raw words)
+  fix      id 8
+     tick 136  dx=  102240 dy=   45440 dz=  -524288 fadj=0 gnd=0
+     tick 137  dx=  102240 dy=   45440 dz=  -524288 fadj=0 gnd=0
+     tick 138  dx=  102240 dy=   45440 dz=  -524288 fadj=0 gnd=0
+     tick 139  dx=  102240 dy=   45440 dz=  -524288 fadj=0 gnd=0
+     tick 140  dx=  102240 dy=   45440 dz=  -524288 fadj=0 gnd=0
+     tick 141  dx=  102240 dy=   45440 dz=  -524288 fadj=0 gnd=0
+     tick 142  dx=  102240 dy=   45440 dz=  -524288 fadj=0 gnd=0
+     tick 143  dx=  102240 dy=   45440 dz=  -524288 fadj=0 gnd=0
+     tick 144  dx=  102240 dy=   45440 dz=  -524288 fadj=0 gnd=0
+     tick 145  dx=  102240 dy=   45440 dz=  -524288 fadj=0 gnd=0
+     tick 146  dx=  102240 dy=   45440 dz=       -1 fadj=0 gnd=1
+     tick 147  dx=       0 dy=       0 dz=        0 fadj=0 gnd=1
+     tick 148  dx=       0 dy=       0 dz=        0 fadj=0 gnd=1
+     at the ground tick 146: x=10849120 y=4968832 z=1
+  fix      id11
+     tick 163  dx=       0 dy=   80320 dz=  -524288 fadj=1 gnd=0
+     tick 164  dx=       0 dy=   80320 dz=  -524288 fadj=1 gnd=0
+     tick 165  dx=       0 dy=   80320 dz=  -524288 fadj=1 gnd=0
+     tick 192  dx=       0 dy=   80320 dz=  -524288 fadj=1 gnd=0
+     tick 193  dx=       0 dy=   80320 dz=  -524288 fadj=1 gnd=0
+     tick 194  dx=       0 dy=   80320 dz=       -1 fadj=1 gnd=1
+     tick 195  dx=       0 dy=       0 dz=        0 fadj=0 gnd=1
+     at the ground tick 194: x=655360 y=9204160 z=1
+  hb16fix  id 8
+     tick 136  dx=  102240 dy=   45440 dz=  -524288 fadj=0 gnd=0
+     tick 137  dx=  102240 dy=   45440 dz=  -524288 fadj=0 gnd=0
+     tick 138  dx=  102240 dy=   45440 dz=  -524288 fadj=0 gnd=0
+     tick 139  dx=  102240 dy=   45440 dz=  -524288 fadj=0 gnd=0
+     tick 140  dx=  102240 dy=   45440 dz=  -524288 fadj=0 gnd=0
+     tick 141  dx=   53472 dy=   23764 dz=  -524288 fadj=0 gnd=0
+     tick 142  dx=       0 dy=       0 dz=  -524288 fadj=1 gnd=0
+     tick 143  dx=       0 dy=       0 dz=  -524288 fadj=1 gnd=0
+     tick 144  dx=       0 dy=       0 dz=  -524288 fadj=1 gnd=0
+     tick 145  dx=       0 dy=       0 dz=  -524288 fadj=1 gnd=0
+     tick 146  dx=       0 dy=       0 dz=       -1 fadj=1 gnd=1
+     tick 147  dx=       0 dy=       0 dz=        0 fadj=0 gnd=1
+     tick 148  dx=       0 dy=       0 dz=        0 fadj=0 gnd=1
+     at the ground tick 146: x=10289152 y=4719956 z=1
+  hb16fix  id11
+     tick 163  dx=       0 dy=   80320 dz=  -524288 fadj=1 gnd=0
+     tick 164  dx=       0 dy=   80320 dz=  -524288 fadj=1 gnd=0
+     tick 165  dx=       0 dy=   80320 dz=  -524288 fadj=1 gnd=0
+     tick 192  dx=       0 dy=   80320 dz=  -524288 fadj=1 gnd=0
+     tick 193  dx=       0 dy=   80320 dz=  -524288 fadj=1 gnd=0
+     tick 194  dx=       0 dy=   80320 dz=       -1 fadj=1 gnd=1
+     tick 195  dx=       0 dy=       0 dz=        0 fadj=0 gnd=1
+     at the ground tick 194: x=655360 y=9204160 z=1
+  hb17fix  id 8
+     tick 136  dx=  102240 dy=   45440 dz=  -524288 fadj=0 gnd=0
+     tick 137  dx=  102240 dy=   45440 dz=  -524288 fadj=0 gnd=0
+     tick 138  dx=  102240 dy=   45440 dz=  -524288 fadj=0 gnd=0
+     tick 139  dx=  102240 dy=   45440 dz=  -524288 fadj=0 gnd=0
+     tick 140  dx=  102240 dy=   45440 dz=  -524288 fadj=0 gnd=0
+     tick 141  dx=   53472 dy=   23764 dz=  -524288 fadj=0 gnd=0
+     tick 142  dx=       0 dy=       0 dz=  -524288 fadj=1 gnd=0
+     tick 143  dx=       0 dy=       0 dz=  -524288 fadj=1 gnd=0
+     tick 144  dx=       0 dy=       0 dz=  -524288 fadj=1 gnd=0
+     tick 145  dx=       0 dy=       0 dz=  -524288 fadj=1 gnd=0
+     tick 146  dx=       0 dy=       0 dz=       -1 fadj=1 gnd=1
+     tick 147  dx=       0 dy=       0 dz=        0 fadj=0 gnd=1
+     tick 148  dx=       0 dy=       0 dz=        0 fadj=0 gnd=1
+     at the ground tick 146: x=10289152 y=4719956 z=1
+  hb17fix  id11
+     tick 163  dx=       0 dy=   80320 dz=  -524288 fadj=1 gnd=0
+     tick 164  dx=       0 dy=   80320 dz=  -524288 fadj=1 gnd=0
+     tick 165  dx=       0 dy=   80320 dz=  -524288 fadj=1 gnd=0
+     tick 192  dx=       0 dy=   80320 dz=  -524288 fadj=1 gnd=0
+     tick 193  dx=       0 dy=   80320 dz=  -524288 fadj=1 gnd=0
+     tick 194  dx=       0 dy=   80320 dz=       -1 fadj=1 gnd=1
+     tick 195  dx=       0 dy=       0 dz=        0 fadj=0 gnd=1
+     at the ground tick 194: x=655360 y=9204160 z=1
+== (s8) the draws of a hit: the key records a hit one tick after the pass that drew (the draws are at tick hit - 1): steps(rng0 -> rng1) at that tick minus 2 per birth, per hit
+  hit ticks (draw ticks): 32 ticks, 38 hits; draws per hit over them: [9.0] ; ticks where steps != 2*births + 9*hits: []
+== (s11) the interruption T = 100: hero animation (decimal: 49 = 0x31, 28 = 0x1C), item, sound 23
+  (tick, hero_ta, item) at each change: [[99, 51, 44], [100, 49, 0], [104, 28, 0], [115, 0, 0]]

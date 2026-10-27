@@ -1,0 +1,10 @@
+fire1_tgt_one_pf ok cd40f0461b6a61a7b3d982a16e1b3724 uninit 0
+fire1_tgt_one_qfix_pf ok 1b0a0897026de46ea5272b1f64a302fe uninit 0
+fire1_tgt_three_pf ok 7f974f20f63dc30bcb5536a895561fc2 uninit 0
+fire1_tgt_three_qfix_pf ok d8545f89ed26cfa8cf53a89920b42854 uninit 0
+fire1_tgt_vanish75_pf ok 77d953dafea6e35ffc9cd454753b5bd1 uninit 0
+fire1_tgt_vanish75_qfix_pf ok e7b8cbabdb192da001bd7b348ed66862 uninit 0
+fire1_col_hit_pf ok 40817a38cb5961996900ad6176662834 uninit 0
+fire1_col_hit_qfix_pf ok 3a948144b5a51cff997fb4e8279b6a5b uninit 0
+fire1_cast_pf ok 6f22aa8847adc047d74b7f4fd3e91bda uninit 0
+fire1_cast_pf_qfix ok 99449e088f9ce7078f9a78d7317883b1 uninit 0

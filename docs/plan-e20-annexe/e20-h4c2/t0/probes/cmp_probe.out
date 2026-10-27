@@ -1,0 +1,85 @@
+PROBE s1 HOLDS
+    mid    frames 330, mismatches 0 []
+    edge   frames 330, mismatches 0 []
+    s9a    frames 240, mismatches 0 []
+    hb16   frames 240, mismatches 0 []
+    hb17   frames 240, mismatches 0 []
+PROBE s2 DIFFERS
+    mid    births 15: differences by kind {'x/y': 13}
+             first x/y: id 2: x 37731264 y 30374528 (key 37767104 30376576; spawn 37653504 30345216)
+    edge   births 15: differences by kind {'x/y': 13}
+             first x/y: id 2: x 4963264 y 5470848 (key 4999104 5472896; spawn 4885504 5441536)
+    s9a    births 14: differences by kind {'x/y': 12}
+             first x/y: id 2: x 4963264 y 5470848 (key 4999104 5472896; spawn 4885504 5441536)
+    hb16   births 14: differences by kind {'x/y': 12}
+             first x/y: id 2: x 4963264 y 5470848 (key 4999104 5472896; spawn 4885504 5441536)
+    hb17   births 14: differences by kind {'x/y': 9}
+             first x/y: id 2: x 4963264 y 5470848 (key 4999104 5472896; spawn 4885504 5441536)
+    water  births 15: differences by kind {'x/y': 13}
+             first x/y: id 2: x 4963264 y 5470848 (key 4999104 5472896; spawn 4885504 5441536)
+PROBE s3 HOLDS
+    rock 11 at the birth tick 162: x 655360 (want 655360) y 6633920 (want 6633920) fadj 1 status 2
+PROBE s4 HOLDS
+    mid     lives 15  (E13 - birth, flag - E13, status4 - E13): {(33, 46, 47): 15} ; off the prediction: []
+    mid_t2  lives 15  (E13 - birth, flag - E13, status4 - E13): {(33, 46, 47): 15} ; off the prediction: []
+    mid_t3  lives 15  (E13 - birth, flag - E13, status4 - E13): {(33, 46, 47): 15} ; off the prediction: []
+PROBE s5 HOLDS
+    mid   55/45 sounds 30 (key 30) equal: True ; other ids played: []
+    edge  55/45 sounds 30 (key 30) equal: True ; other ids played: []
+PROBE s6 HOLDS
+    rows checked 1215 (statuses {2: 495, 3: 705, 4: 15}), off the prediction 0 []
+PROBE s7 HOLDS
+    mid    lives 15 slopes seen [0]
+    edge   lives 15 slopes seen [0]
+    water  lives 15 slopes seen [0]
+    water: last tick of each rock [98, 114, 130, 146, 162, 178, 194, 210, 226, 242, 258, 274, 306, 306, 322]
+    water: key (fix) st4          [98, 114, 130, 146, 162, 178, 194, 210, 226, 242, 258, 274, 306, 306, 322]
+PROBE s8 HOLDS
+    ticks 330, hits 30, ticks off the prediction 0 []
+PROBE s9a HOLDS
+    s9a   rock born 162: ticks 162..193 sampled 32, IsOnGround != 0 in the air: [] ; at the ground tick 194: 1
+           (info) ForceAdjusted != 0 at ticks [162, 163, 164, '...', 239, 240] ; status at the ground tick 3
+    hb16  rock born 114: ticks 114..145 sampled 32, IsOnGround != 0 in the air: [] ; at the ground tick 146: 1
+           (info) ForceAdjusted != 0 at ticks [142, 143, 144, '...', 239, 240] ; status at the ground tick 3
+    hb17  rock born 114: ticks 114..145 sampled 32, IsOnGround != 0 in the air: [] ; at the ground tick 146: 1
+           (info) ForceAdjusted != 0 at ticks [142, 143, 144, '...', 239, 240] ; status at the ground tick 3
+PROBE s10a HOLDS
+    rock 8 steps per tick (hb16fix == hb17fix): {'138': [102240, 45440], '139': [102240, 45440], '140': [102240, 45440], '141': [53472, 23764], '142': [0, 0], '146': [0, 0]}
+    rock 8 ground tick 146 at x 10289152 y 4719956 (plan: 146, 10289152, 4719956)
+    bound of the rock 8: 7 x 102240 = 715680 raw units = 10.92 px on each axis
+    rock 11: dx = 0 and dy = 80320 at ticks 163..165, 192..194: True ; ground [194, 655360, 9204160] (plan: 194, x 655360, y 9204160)
+    bound of the rock 11: 0 on each axis
+PROBE s11 HOLDS
+    tick 99: hero animation 0x33 item 44 phase 0 counter 98
+    tick 100: hero animation 0x31 item 0 phase 0 counter 99
+    cancel ticks: 100
+    sound 23: [(100, 23)]
+    (info) hero animation changes from 99: [(99, 51, 44), (100, 49, 0), (104, 28, 0), (115, 0, 0)] ; key: [[99, 51, 44], [100, 49, 0], [104, 28, 0], [115, 0, 0]]
+PROBE s12 HOLDS
+    real map 14: real14 hero vram flags OR = 0 (& 0x180 = 0) hero ta=0 ground=1 slope=0
+    mid       ticks 330, hero vram flags & 0x180 != 0 at [] ; hero in 0x31/0x3A/0x1C at []
+    edge      ticks 330, hero vram flags & 0x180 != 0 at [] ; hero in 0x31/0x3A/0x1C at []
+    water     ticks 330, hero vram flags & 0x180 != 0 at [] ; hero in 0x31/0x3A/0x1C at []
+    cancel100 ticks 140, hero vram flags & 0x180 != 0 at [] ; hero in 0x31/0x3A/0x1C at []
+== supplementary (information): the rocks with E13 against the key, tick by tick
+  mid    lives 15 (key 15): field differences {'x': 1053, 'y': 1053}
+      first x: (2, 18, 37731264, 37767104)
+      first y: (2, 18, 30374528, 30376576)
+  edge   lives 15 (key 15): field differences {'x': 1053, 'y': 1053}
+      first x: (2, 18, 4963264, 4999104)
+      first y: (2, 18, 5470848, 5472896)
+  water  lives 15 (key 15): field differences {'x': 1053, 'y': 1053}
+      first x: (2, 18, 4963264, 4999104)
+      first y: (2, 18, 5470848, 5472896)
+  mid_sub lives 15 (key 15): field differences {}
+  edge_sub lives 15 (key 15): field differences {}
+  hb16_sub lives 14 (key 15): field differences {'y': 54}
+      first y: (8, 141, 4741632, 4719956)
+  hb17_sub lives 14 (key 15): field differences {'y': 54, 'ground': 3}
+      first y: (8, 141, 4741632, 4719956)
+      first ground: (9, 130, 0, 1)
+== (s2) diagnostic: the position at the birth tick against floor(spawn position) + force of the tick
+  mid   births 15: sample == floor(spawn) + force: 15 ; == spawn + force: 0 (whole-pixel spawns) ; other: []
+  edge  births 15: sample == floor(spawn) + force: 14 ; == spawn + force: 0 (whole-pixel spawns) ; other: [(162, 655360, 6633920, 631360, 6633920)]
+
+SUMMARY s1=ok s2=DIFF s3=ok s4=ok s5=ok s6=ok s7=ok s8=ok s9a=ok s10a=ok s11=ok s12=ok

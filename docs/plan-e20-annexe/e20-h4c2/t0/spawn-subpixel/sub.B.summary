@@ -1,0 +1,4 @@
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+Message du collecteur de données 'Blame' : Tous les tests ont fini de s'exécuter. Le fichier de séquence ne sera pas généré.
+
+Échoué!  - échec :     3, réussite :  2008, ignorée(s) :     0, total :  2011, durée : 7 m 58 s - Alundra.Tests.dll (net9.0)

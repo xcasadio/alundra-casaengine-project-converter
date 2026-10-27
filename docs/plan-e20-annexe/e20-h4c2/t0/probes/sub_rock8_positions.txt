@@ -1,0 +1,8 @@
+information (s10b preview, NOT a stop of T0): rock 8 and rock 11 positions in the probe with the sub-pixel push (E13 port, mode Fix), against the rockfix keys
+  hb16_sub  rock  8: max |dx| 0, max |dy| 248876 raw units over the life ; at the ground tick 146: DLL (10289152, 4968832) key (10289152, 4719956) ; status 3 / E13 tick DLL 147 key 147
+  hb16_sub  rock 11: max |dx| 0, max |dy| 0 raw units over the life ; at the ground tick 194: DLL (655360, 9204160) key (655360, 9204160) ; status 3 / E13 tick DLL 195 key 195
+  hb17_sub  rock  8: max |dx| 0, max |dy| 248876 raw units over the life ; at the ground tick 146: DLL (10289152, 4968832) key (10289152, 4719956) ; status 3 / E13 tick DLL 147 key 147
+  hb17_sub  rock 11: max |dx| 0, max |dy| 0 raw units over the life ; at the ground tick 194: DLL (655360, 9204160) key (655360, 9204160) ; status 3 / E13 tick DLL 195 key 195
+  edge_sub  rock  8: max |dx| 0, max |dy| 0 raw units over the life ; at the ground tick 146: DLL (10849120, 4968832) key (10849120, 4968832) ; status 3 / E13 tick DLL 147 key 147
+  edge_sub  rock 11: max |dx| 0, max |dy| 0 raw units over the life ; at the ground tick 194: DLL (655360, 9204160) key (655360, 9204160) ; status 3 / E13 tick DLL 195 key 195
+  bounds of the plan: rock 8 715680 on each axis; rock 11 0 on each axis
