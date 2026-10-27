@@ -12225,13 +12225,230 @@ plan, l'index des ADR et un ADR.
 
 #### 1.30.4 E20.h3c, h3d, h3e — Les haricots, le pot magique, les arcs (esquisses, non détaillées)
 
-- **h3c — les haricots** (le départ `0x80034224`, son pilote et son annulation, C73, E21) et **h3d — le pot magique** (A20, C74, le type `0x199`) :
-  **reportées** par le défaut de Q-H3-3 (ensemble, quand une carte à pot deviendra atteignable). Un T0 de h3c vérifiera l'appui `+0x12C` d'une
-  entité née par l'interface (critique A7).
+- **h3c — les haricots** et **h3d — le pot magique** : **reprises par D-E20-88** (contre la réponse C de Q-H3-3) et détaillées le 2026-10-27
+  aux §1.30.4a et §1.30.4b (D-E20-90 : le préréglage `haricots-m144`, le reste comme l'original).
 - **h3e — les arcs** : la carte 10 (le don de la bombe et la roche secrète `0x95`) ; une bombe contre un Beannoïde (un coup) ; l'herbe coupée ; la
   blessure du héros par sa propre bombe (avec E20.c2b).
 
 **Questions de l'auteur** (défauts réversibles retenus en mode autonome ; §2) : Q-H3-1 à Q-H3-8.
+
+#### 1.30.4a E20.h3c — Les haricots dans les mains : le départ `0x80034224`, le pilote, l'annulation, C73 et E21 ⏳ (détaillée le 2026-10-27, révision 0 ; thème 2 ; D-E20-88, D-E20-90 ; après E20.e2)
+
+**Provenance.** Lecture seule du 2026-10-27 (HEAD `539d4cf4`) et sa critique fraîche, CONFIRMÉE avec trois corrections et sept ajouts repris
+ici (`scratchpad/t2-feedback/h3c-beans/` et `h3c-beans-critic/` : désassemblages, 6 000 vecteurs aléatoires rejoués contre le vrai code, les
+scénarios de h3 rejoués à l'identique, un scénario neuf du héros qui marche sur le pot), à verser par T0 à `docs/plan-e20-annexe/e20-h3cd-disc/`
+(sans les copies d'oracle ni les `__pycache__`) ; les clés de h3 déjà versées : `docs/plan-e20-annexe/e20-h3/bin/results/scenarios/beans_*.txt`,
+`docs/plan-e20-annexe/e20-h3/critic/results/beans_pot.txt`, `beans_nopot.txt`, `cancels_beans_death.txt`, `goldens_critic.json`.
+
+**Prérequis.** E20.h0a, g1a, g2a, h3b et g1d faites (le cadre de l'objet, le portage, le lancer, la bombe dont les haricots sont le jumeau,
+l'objet porté dessiné devant) ; les tranches du thème 2 s'exécutent une à la fois dans l'arbre de travail du dépôt, dans l'ordre de D-E20-89
+(après E20.e2 : les clés comptent la poussière d'atterrissage du héros) ; T0 nomme son HEAD de départ et y lance la suite entière (Release,
+copie neutralisée) : zéro échec exigé, sinon un arrêt avant la liste prédite.
+
+**But.** Comme l'original : Rond avec les haricots (l'objet `0x1F`) fait naître un haricot dans les mains d'Alundra (aucun plafond) ; Carré le
+lance (34,5 px à l'est et à l'ouest, 23 px au nord et au sud) ; il éclate 3 ticks après son atterrissage (l'effet 8), meurt dans l'eau
+profonde (l'effet 6), tombe des mains quand Alundra est blessée ; lancé sur un pot magique dormant, il le réveille (le pot joue son
+animation 1 et son son 31 ; ses étincelles et son grand saut sont h3d). Le menu Start reste fermé tant qu'elle tient les haricots, sans
+minuteur (Q-H3-4, D-E20-90 (3)). Aujourd'hui Rond avec les haricots ne fait rien.
+
+**Faits** (`h3c-beans/` et sa critique ; [FAIT] lu au binaire, aux données ou au code ; [MESURÉ] rejoué dans l'oracle).
+- **Le départ** `0x80034224` (aiguillé par la table `0x8002339C`, `UseItem` `0x8003499C`) : refus avec le son 3 et rend 1 si `H+0x2C != 0`
+  (déjà un objet en mains), `H+0x18C == 4` (eau profonde) ou un objet en cours ; `SpawnWarpEntity(H, page globale, indice 1, position du
+  héros)` ; une naissance nulle rend 1 sans son ; sinon le lien (`H+0x2C`, `objet+0x28`), `H+0x88 = 5` **au sol** (`+0x144 != 0`) et `0x0B`
+  en l'air (critique, la prose du rapport inversée), le décalage `+0x30/34/38`, rend 0 ; rien ne lit les PM ni l'inventaire ; pas de plafond
+  (la bombe en a un : trois entités de type 2).
+- **Le pilote** `0x80035204` : rend 1 si le lien est nul ou si le type n'est pas 1 ; 0 hors de la pente 4 ; sur la pente 4, l'annulation puis 1.
+- **L'annulation** `0x80034ACC` : sort si le lien est nul, si le type n'est pas 1 ou si `C+0x24 != 0` (la décompilation teste `+0x20` : le
+  binaire tranche) ; sinon `H+0x2C = 0`, l'effet global 8 à la position de l'objet, `DestroyEntity` à un argument (`0x8003A774`, qui pose aussi
+  le statut 4 et efface le lien du porteur) ; elle est atteinte par le verrou du contrôle, les états sans gestionnaire, la case de sortie, la
+  mort et la pente 4 du pilote.
+- **C73** `0x8007BB30` (27 instructions, 3 000 vecteurs, 0 écart) : porté sans code de lancer, `+0x88 = 0` ; porté avec un code de lancer, le
+  vol (`+0x88 = 2`, `+0x24 = 0`, `H+0x2C = 0`, `+0x6C |= 0x10` DeactivateOnImpact, `+0x28 = 0`) ; libre et au sol, le statut 3 ; ni rebond, ni
+  étincelle, ni tirage ; C73 **n'efface pas** `Collidable` au lancer (à la différence de C23).
+- **E21** `0x8007F7CC` (43 instructions, 0 écart) : `S = E+0x12C` (l'appui) ; si `S != 0`, `S.+0x68 == 0x199` et `S.+0x88 == 0` : `S.+0x88 = 1`
+  (le pot se réveille) et `DestroyEntity(E)` à un argument (le haricot disparaît sans effet) ; puis le chemin d'E12 : `+0x88 == 1` et
+  `+0xAC == 1` donnent `DestroyEntity(E, -1)` (l'effet de bris 8 de la fiche), sinon `+0x88 = 1` et `+0x6C = (+0x6C | 0x40) & ~0x30`. La
+  constante `0x199` n'apparaît qu'en `0x8007F7E8` dans toute l'image.
+- **La fiche du haricot** (le sprite global 1) : `0x332380` (Collidable, Gravity, NoObstacleSlide, ombre 3, DestroyOnSlidingSlope,
+  DestroyOnVramFlags), la boîte 21 × 15 × 16 en (-10, -7, 0), l'effet de bris 8, aucune attaque (`AttackCount` 0).
+- **Mesuré** (`beans_basic`, rejoué identique ; Rond au tick 4 = T, Carré au tick 50 = Ts) : T statut 1 et son 44, T+1 statut 2, levée de 36
+  ticks ; Ts lâché (animation 2, son 26) ; atterrissage à Ts+22, statut 3 à Ts+23, fin d'animation à Ts+24, Ts+25 statut 4 et l'effet 8, Ts+26
+  la case libre ; `beans_water` : détruit au tick de l'atterrissage, l'effet 6 ; `beans_hurt` : lâché au tick de la blessure ; `beans_pot` de la
+  critique (le vrai enregistrement 153 de la carte 12) : E21 voit un appui nul au tick L+1 de l'atterrissage et réveille le pot à L+2 (l'appui
+  du haricot se recalcule à la passe des listes, `0x800384F4`) ; un second haricot sur un pot réveillé éclate normalement.
+- **La DLL au HEAD** : `PlayerManager.StartItem`, `UpdateItemUseDriver` et `CancelItemMode` aiguillent `0x23` vers `BombAi`, le reste vers les
+  bouchons nommés ; le registre (`Alundra/Ai/NativeSpriteRegistry.cs`) n'a ni (C, 73) ni (E, 21) ; le modèle direct est
+  `Alundra/Ai/Items/BombAi.cs` (`Start`, `Drive`, `Cancel`, `Tick`, `Register` ; la naissance par `SpawnEntityBySpriteIndex`, `JoinsBirthTick =
+  false`, `PutInHands`, `PushLogicalPositionToRoot(keepSubPixel: true)`) ; l'appui d'une entité collidable à gravité est calculé par
+  `EntitySupport.UpdateRidingEntities` (le haricot y est), l'entité née par l'interface entre dans les collidables au tick suivant
+  (critique A7 : à confirmer par T0) ; la comparaison d'appui de `WaterDropAi.TargetOf` (`ReferenceEquals(support, x.LogicContextEntity)`) ;
+  les cinq épingles du registre (`NativeSpriteRegistryTests`, `LiftableAiRegistrationTests` R1, `BallFlamesTests` M3, `ChargedArrowAiTests`
+  C2, `WaveSwordLifeTests` V3) ; aucun préréglage n'a les haricots ; le menu Start est déjà refusé tant qu'un objet est en cours
+  (`InventoryDirector`).
+
+**Décisions.**
+- **D-H3C-1** — Un fichier neuf `Alundra/Ai/Items/BeansAi.cs` (nom contrôlé par `check_names.py`), sur le modèle de `BombAi` : `Start`,
+  `Drive`, `Cancel`, `Tick` (C73), `Deactivate` (E21), `Keys` = (C, 73) et (E, 21) pour le sprite global 1 seul, `Register` ; la constante du
+  type du pot (`0x199` = 409) vit dans `BeansAi` jusqu'à h3d.
+- **D-H3C-2** — La naissance comme celle de la bombe (la page globale, l'indice 1, `JoinsBirthTick = false`, `PutInHands`, la fraction de
+  pixel gardée) ; les refus du binaire seuls (pas de plafond).
+- **D-H3C-3** — C73 et E21 écrivent les drapeaux puis appellent `ResyncControllerFromFlags()`, comme `BombAi.Deactivate` ; l'appui d'E21 se
+  compare à l'entité logique du pot (`LogicContextEntity`), comme `WaterDropAi`.
+- **D-H3C-4** — Les effets naissent à `PosZ + 1` (ADR-0026), comme `BombAi.Cancel`.
+- **D-H3C-5** — Phase B : une constante de l'objet `0x1F` à côté de `BombItem`, les trois branches de `StartItem`, `UpdateItemUseDriver` et
+  `CancelItemMode`, `BeansAi.Register` dans `CreateForProduction` ; les cinq sommes du registre suivent par dérivation (+2 clés).
+- **D-H3C-6** (D-E20-90 (2)) — Le préréglage `haricots-m144` : la carte 144, la case (11, 16, 1) (le lancer vers le nord y tombe sur le pot ;
+  la position d'atterrissage depuis (11, 16) et (11, 17) se mesure à l'oracle en T0), `Loadout(31)`, `Item: 31`, aucun drapeau.
+
+**Périmètre.** `Alundra/Ai/Items/BeansAi.cs` (neuf) ; `Alundra/Hero/PlayerManager.cs` (les trois branches) ; `Alundra/Ai/NativeSpriteRegistry.cs`
+(l'inscription) ; `Alundra/SaveGames/TestSaves.cs` et `docs/test-saves.md` (le préréglage) ; `Alundra.Tests/` (dont `Ai/Items/BeansTests.cs`,
+`BeansWorldTests.cs`, le banc de la bombe réutilisé) ; l'annexe `docs/plan-e20-annexe/e20-h3c/` ; un ADR neuf ; ce plan. **Hors périmètre** : le
+pot (A20, C74 : h3d) ; les pots de la carte 60 ; les sons inconnus des effets (Q-H3-8) ; le moteur.
+
+**Tâches.**
+- ⏳ **T0 — Versement, oracle, sondes, liste prédite** (commit de docs). (a) Le HEAD de départ et la suite à zéro échec ; (b) verser la lecture
+  et sa critique ; (c) rejouer depuis des copies les vecteurs (`goldens_critic.json` : `start_beans`, `drv_beans`, `cancel_beans`, C73, E21,
+  et les vecteurs aléatoires de la critique) et les clés (`beans_basic`, `beans_hurt`, `beans_water`, `beans_carry_long`, `beans_throw_4dirs`,
+  `beans_pot` de la critique, `beans_nopot`, `cancels_beans_death`), deux exécutions au même manifeste ; (d) **sondes de la DLL** (tests jetables,
+  versés en `.txt` ; une sonde contredite est un arrêt) : P1 (critique A7) l'appui `RidingEntity` d'un haricot né par l'interface et posé sur
+  une entité collidable est calculé au tick qui suit sa naissance ; P2 l'atterrissage du haricot lancé vers le nord depuis (11, 16) et
+  (11, 17) de la carte 144 (D-H3C-6, mesuré aussi à l'oracle avec les vraies boîtes) ; P3 `InventoryDirector` refuse le menu tant que
+  `ItemInUse == 0x1F` ; (e) la liste prédite (les cinq épingles +2, `TestSavesTests` et les lignes d'`EveryPresetName`), recomptée au HEAD.
+- ⏳ **T1 — Phase A, tests d'abord** (rouges avant, puis `BeansAi` ; aucun appelant de production) : (c1) le départ : les trois refus avec le
+  son 3, chacun accolé au départ qui réussit (l'animation 5 au sol, `0x0B` en l'air ; le sprite né, l'indice 1 de la page globale ; un
+  départ qui réussit avec trois haricots déjà en jeu : aucun plafond), la naissance nulle (1, sans son), le lien ; (c2) le
+  pilote ; (c3) l'annulation (le test de `+0x24`, l'effet 8 à `PosZ + 1`, `DestroyEntity` à un argument) ; (c4) C73 contre les vecteurs ;
+  (c5) E21 contre les vecteurs : le réveil d'un pot dormant (le haricot détruit sans effet), un pot déjà réveillé (le chemin d'E12), un appui
+  d'un autre type ; puis les tests de monde par la couture de départ de h0a, sans tolérance : (w1) `beans_basic` tick par tick ; (w2)
+  `beans_throw_4dirs` ; (w3) `beans_water` ; (w4) `beans_hurt` ; (w5) `beans_carry_long` et le menu refusé tant que le haricot est tenu ; (w6)
+  `beans_pot` (le réveil à L+2 : `TargetAnimationId` et `+0x88` du pot, le haricot détruit sans effet 8 ; sans C74, ni étincelle ni
+  enfoncement) et `beans_nopot` ; (w7) `cancels_beans_death` (le verrou, la mort, la case de sortie).
+- ⏳ **T2 — Phase B et tests de production** (rouges avant) : (p1) Rond avec les haricots par le chemin de production : la clé de (w1) ; (p2)
+  l'inscription : (C, 73) et (E, 21) pour le sprite global 1 seul ; (p3) le préréglage `haricots-m144` se construit et ses épingles tiennent ; les
+  épingles du registre et des préréglages réécrites par dérivation ; la preuve de retrait : retirer les branches `0x1F` rend rouges (p1) et
+  (p3) seuls, retirer l'inscription rend rouges (p1) et (p2) seuls ; la suite entière en Release (copie neutralisée) puis en Debug en dernier,
+  zéro échec, partitions disjointes ; `cmp` ; `check_names.py --rules`.
+- ⏳ **T3 — Mutants, ADR.** Au moins 14 mutants réels, chacun tué par le test qu'il nomme : un plafond de trois ((c1)) ; l'indice de naissance 2
+  ((c1), (w1)) ; les animations 5 et `0x0B` échangées ((c1)) ; le pilote qui n'annule pas sur la pente 4 ((c2), (w3)) ; l'annulation sur `+0x20`
+  ((c3)) ; l'effet 12 au lieu de 8 ((c3), (w7)) ; C73 qui efface `Collidable` ((c4)) ; C73 sans `DeactivateOnImpact` ((c4), (w1)) ; E21 sans le
+  test du type `0x199` ((c5)) ; E21 qui réveille un pot déjà réveillé ((c5), (w6)) ; E21 qui détruit avec l'effet au réveil ((c5), (w6)) ;
+  `ResyncControllerFromFlags` omis (tué par le test que T0 nomme, ou déclaré équivalent avec sa preuve écrite) ; l'inscription pour un autre type ((p2)) ; la naissance qui joue son tick
+  ((w1)) ; chacun appliqué par script puis annulé ; un ADR neuf (numéro libre recompté sur toutes les branches).
+- ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+
+**Acceptation.** Les vecteurs et les clés rejoués à l'identique ; les sondes tenues ; (c1) à (c5) et (w1) à (w7) rouges avant et verts après ; (p1)
+à (p3) rouges avant la phase B et verts après ; la preuve de retrait exacte ; les mutants tous tués ; la suite en Release et en Debug, zéro
+échec ; les tests déplacés ⊂ la liste de T0 (e) ; le moteur, le convertisseur et les données sans diff. **Recette de l'auteur** (non
+bloquante) : `haricots-m144` : Rond, le haricot dans les mains (devant Alundra), le lancer, il éclate ; lancé sur le pot, le pot se réveille
+(son animation et son son ; le grand saut vient avec h3d).
+
+**Arrêts.** Une clé qui diffère d'une exécution à l'autre ; une sonde contredite ; une valeur de (w1) à (w7) qui diffère de sa clé (aucune
+tolérance) ; un test hors de la liste prédite qui bouge ; un besoin de toucher au moteur ; un nom refusé ; un test qui boucle.
+
+**Budget.** Un `executor` par phase ; deux tentatives. Un `plan-verifier` avant ; deux verifiers frais après.
+
+**Retour arrière.** Retirer les branches `0x1F` (Rond revient au bouchon silencieux) ; la phase A reste inerte.
+
+#### 1.30.4b E20.h3d — Le pot magique : A20 et C74 (le type `0x199`) ⏳ (détaillée le 2026-10-27, révision 0 ; thème 2 ; D-E20-88, D-E20-90 ; après h3c)
+
+**Provenance.** La même lecture et la même critique que h3c (`scratchpad/t2-feedback/h3c-beans/` et `h3c-beans-critic/`, versées par le T0 de
+h3c à `docs/plan-e20-annexe/e20-h3cd-disc/`) : les vecteurs neufs du pot (`out/goldens_pot.json`, 25 pour A20 et 25 pour C74, rejoués depuis une
+mémoire vide, 0 écart, 0 lecture hors liste ; 8 000 vecteurs aléatoires de la critique, 0 écart), les clés du grand saut (`out/potjump_wake.txt`,
+`potjump_early100.txt`, `potjump_early117.txt`, `potjump_nowake.txt`, `potjump_control.txt`) et celles de la critique, sans écriture de la
+position du héros (`h3c-beans-critic/out/walk_a.txt`, `walk_early135.txt`).
+
+**Prérequis.** E20.h3c faite (E21 réveille le pot) ; l'ordre du thème 2 (D-E20-89) ; T0 nomme son HEAD de départ et y lance la suite entière :
+zéro échec exigé.
+
+**But.** Comme l'original (D-E20-90 (3)) : un pot réveillé par un haricot joue son réveil (22 ticks, des étincelles tous les 4 ticks, le son
+31) puis se repose ; Alundra montée dessus l'enfonce (0,5 px par tick, 12 px) ; resté sur lui 28 ticks après le début de l'enfoncement, le pot
+la tient (le maintien) ; un saut depuis le maintien la renvoie très haut (99 px au-dessus du sol, environ 83 au-dessus du haut du pot, 38 ticks
+de vol) et le pot remonte par moitiés (le son 86) ; un saut pendant l'enfoncement est un saut normal ; un pot dormant est un bloc solide de
+16 px ; un pot se rendort à chaque entrée sur la carte. Sur la carte 144, le grand saut atteint le coffre de la corniche (48 px).
+
+**Faits.**
+- **La fiche du pot** (l'enregistrement 153, `data-extracted/data/map_12.json`) : `0x6080` (Collidable, NoObstacleSlide, NoRiders, sans Gravity),
+  les programmes 20 et 74 et aucun autre, la boîte 24 × 16 × 4 en (-12, -8, +12) (le haut à 16 px), le type `0x100 + 153 = 0x199` ; les sons
+  des animations 31 (1 et 3) et 86 (5) existent ; l'effet global 14 existe.
+- **A20** `0x800619DC` : `+0x274 = PosZ` (le Z de repos). **C74** `0x8007BB9C` agit selon `TargetAnimationId` (table `0x8002821C`) : 1 (réveil) :
+  si `+0x1C & 3 == 0`, l'effet 14 au pot et, s'il est obtenu, deux tirages et `+0x54`, `+0x58`, `+0x5C = 0x20000` ; 2 (repos) : `ForceZ =
+  (repos - Z) >> 1`, et si `H+0x12C == pot` : `ForceZ = -0x8000` et l'animation 3 ; 3 : le héros parti, l'animation 2 ; 4 (maintien) : le
+  héros parti, si `H.ForceZ > 0` alors `H.ForceZ = 0x98000` et l'animation 5, sinon 2 ; 5 : `ForceZ = (repos - Z) >> 1` ; hors de 1 à 5, rien.
+- **Mesuré** (critique, le héros qui marche sur le pot réveillé, sans écriture de sa position) : atterrissage sur le pot à z = 16,0 (t117), l'appui au
+  t118, l'animation 3 au t119 (son 31), le pot à -12,0 au t142, l'animation 4 au t147 (28 ticks après le début de l'animation 3), le saut au
+  t175, l'animation 5 au t177 (le héros monte de 9,0 px), l'apex à 99,0 (t194-t195), l'atterrissage au t213 ; un saut au t135 (pendant
+  l'animation 3) : un saut normal (apex 35,5) ; les chaînes du pot durent 22, 28 et 18 ticks (le préfabriqué et l'horloge logique,
+  `LogicTicksPerSecond = 50`) ; la direction tenue trop longtemps fait glisser Alundra sur le bord du pot.
+- **Les cartes** : 39 pots sur 16 cartes ; 33 natifs sur 15 cartes (12, 14, 15, 17, 77, 139, 144, 145, 342, 356, 380, 407, 431, 439, 447) ;
+  les 6 de la carte 60 portent des programmes de carte (des opcodes non portés, `0x6A` à `0x6C`) : hors tranche (D-E20-90 (3)) ; le pot de
+  l'enregistrement 3 de la carte 356 a son origine 4 px sous sa case (ramené au terrain au premier tick, le saut marche) ; la carte 144 :
+  le pot en (11, 15) niveau 1, la corniche (10..13, 14) à +48 px, le coffre (enregistrement 43) en (10, 14).
+- **La DLL au HEAD** : le seul couple A et C déjà porté est `Alundra/Ai/Objects/WaterDropAi.cs` (A19, C71) ; `BallAi` et `ChargedArrowAi` font
+  un effet périodique sur `FrameCounter & 3` ; `EffectStage.CreateNow` et `EffectSlot.ForceX/Y/Z` ; `Bytes[0..3]` sert déjà de mot `+0x274`
+  (`BombAi`) ; l'ordre des passes de `WorldProxy.RunEntityBlock` est celui du binaire (les programmes avant la physique) ; le pot suit le chemin
+  du contrôleur non marqué de l'ascenseur de la carte 22 (`PeekTickForceZ`, `CarrierTickForceZ`, `RunHeroVerticalTick` qui copie la force du
+  porteur) ; un porteur sans gravité qui descend sur le terrain est le cas d'`EntityScriptProxy.EvaluateEntitySupport` (E19.d, la caméra de la
+  391) ; la DLL atterrit à l'égalité, le binaire strictement (aucune lecture de C74 n'en dépend) ; les 16 cartes à pot ont la gravité 128 et la
+  viscosité 4096 (la chute plafonne à 16 px par tick, le grand saut part à 9,5 : jamais écrêté).
+
+**Décisions.**
+- **D-H3D-1** — Un fichier neuf `Alundra/Ai/Props/MagicPotAi.cs` (nom contrôlé) : A20, C74, `SpriteType = 0x199`, `Keys` = (A, 20) et (C, 74) pour
+  ce seul type, `Register` ; `BeansAi` lit le type du pot dans `MagicPotAi`.
+- **D-H3D-2** — L'étincelle du réveil naît par `CreateNow` (ses trois forces écrites au slot, deux tirages seulement si l'effet est obtenu),
+  comme l'étincelle de la bombe (h3b) ; son Z à `PosZ + 1` (ADR-0026).
+- **D-H3D-3** — Le pot écrit `ForceZ` du héros dans la passe des programmes, avant la physique (l'ordre du binaire) ; l'appui du héros se
+  compare à l'entité logique du pot.
+- **D-H3D-4** — Phase B : l'inscription de `MagicPotAi` dans `CreateForProduction` (les cinq sommes +2, par dérivation) ; les pots des arcs
+  des cartes 14 et 15 (A20 écrit un mot, C74 inerte à l'animation 0) entrent dans la liste prédite.
+
+**Périmètre.** `Alundra/Ai/Props/MagicPotAi.cs` (neuf) ; `Alundra/Ai/Items/BeansAi.cs` (le type du pot) ; `Alundra/Ai/NativeSpriteRegistry.cs` ;
+`Alundra.Tests/` ; l'annexe `docs/plan-e20-annexe/e20-h3d/` ; un ADR neuf ; ce plan. **Hors périmètre** : les pots de la carte 60 ; les sons
+inconnus des effets ; le moteur (un manque se consigne).
+
+**Tâches.**
+- ⏳ **T0 — Oracle, sondes, liste prédite** (commit de docs). (a) Le HEAD de départ et la suite à zéro échec ; (b) rejouer depuis des copies
+  `goldens_pot.json`, les clés du grand saut et celles de la critique, deux exécutions au même manifeste, versées à
+  `docs/plan-e20-annexe/e20-h3d/keys/` ; les refaire **avec le banc de la DLL** là où la clé dépend du tick où le héros se pose (la réserve
+  du rapport : une clé par écriture de la position est remplacée par celle de la critique, le héros qui marche) ; (c) **sondes de la DLL**
+  (jetables, versées en `.txt` ; une sonde contredite est un arrêt) : P1 les durées des chaînes 22, 28 et 18 ticks par l'horloge logique ;
+  P2 le pot sans gravité qui descend s'arrête quand le bas de sa boîte touche le sol (-12) ; P3 `ForceZ = 0x98000` écrit par le programme est
+  repris par `RunHeroVerticalTick` au tick suivant (9,0 px au premier pas) ; P4 l'appui du héros sur le pot (`RidingEntity`, le chemin non
+  marqué) ; (d) la liste prédite (les cinq épingles +2, les arcs des cartes 14 et 15), recomptée au HEAD.
+- ⏳ **T1 — Phase A, tests d'abord** (rouges avant, puis `MagicPotAi` ; aucun appelant de production) : (v1) A20 et C74 contre
+  `goldens_pot.json` (T0 y ajoute, s'il en manque, un vecteur à l'animation 0 et un hors de 1 à 5) ; (v2) l'étincelle : deux tirages seulement si l'effet est obtenu (le réservoir plein), ses trois forces ; puis les tests de
+  monde, le pot inscrit sur un registre neuf (le modèle de `WaterDropAi`), sans tolérance hors du `-1` de Z de l'ADR-0026 : (w1) le réveil par
+  un haricot (`beans_pot` de la critique : l'animation 1 du t64 au t86, l'effet 14 aux t65, 69, … 85, l'animation 2 au t86) ; (w2) le grand saut
+  contre `walk_a` de la critique (la chronologie du t117 au t213) ; (w3) le saut trop tôt contre `walk_early135` (un saut normal, apex 35,5) ;
+  (w4) le pot dormant contre `potjump_nowake` (un bloc de 16 px, apex 43,5) ; (w5) l'enfoncement jusqu'à -12 et le retour par moitiés ; (w6) la
+  carte 144 (le banc d'`ArcRun` sur la vraie carte si T0 montre qu'elle fait tourner le bloc des entités, sinon un champ synthétique des
+  cases de la 144 autour du pot) : depuis la case du préréglage, un haricot lancé sur le pot, le réveil, Alundra montée dessus, le maintien,
+  le saut qui la pose sur la corniche de 48 px.
+- ⏳ **T2 — Phase B et tests de production** (rouges avant) : (p1) l'inscription : (A, 20) et (C, 74) pour le type `0x199` seul ; (p2) le réveil
+  par le chemin de production (le haricot de h3c sur un pot né de sa carte) ; les épingles réécrites par dérivation ; la preuve de retrait :
+  retirer l'inscription rend rouges (p1), (p2) seuls ; la suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec,
+  partitions disjointes ; `cmp` ; `check_names.py --rules`.
+- ⏳ **T3 — Mutants, ADR.** Au moins 14 mutants réels, chacun tué par le test qu'il nomme : A20 qui n'écrit pas le repos ((v1)) ; le retour sans
+  le `>> 1` ((v1), (w5)) ; `-0x8000` en `-0x10000` ((v1), (w5)) ; le maintien sans la garde `H.ForceZ > 0` ((v1), (w3)) ; `0x98000` en
+  `0x90000` ((v1), (w2)) ; la cadence de l'étincelle `& 3` en `& 7` ((v1), (w1)) ; les tirages sans effet obtenu ((v2)) ; `+0x5C` de l'étincelle
+  omis ((v2)) ; l'animation 3 qui ne revient pas à 2 quand le héros part ((v1)) ; l'appui comparé au proxy au lieu de l'entité logique ((w2)) ;
+  l'animation 5 sans retour ((v1), (w2)) ; la table des animations décalée d'un cran ((v1)) ; l'inscription pour un autre type ((p1)) ; C74
+  qui agit à l'animation 0 ((v1), les arcs des cartes 14 et 15) ; chacun appliqué par script puis annulé ; un ADR neuf (numéro libre recompté).
+- ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+
+**Acceptation.** Les vecteurs et les clés rejoués à l'identique ; les sondes tenues ; (v1), (v2) et (w1) à (w6) rouges avant et verts après ;
+(p1) et (p2) rouges avant la phase B et verts après ; la preuve de retrait exacte ; les mutants tous tués ; la suite en Release et en Debug,
+zéro échec ; les tests déplacés ⊂ la liste de T0 (d) ; le moteur, le convertisseur et les données sans diff. **Recette de l'auteur** (non
+bloquante) : `haricots-m144` : ni le saut au sol ni le saut depuis le pot dormant n'atteignent la corniche ; un haricot lancé sur le pot le
+réveille ; monter dessus, lâcher la direction, attendre qu'il soit enfoncé (environ une demi-seconde), sauter : Alundra atterrit sur la
+corniche et ouvre le coffre.
+
+**Arrêts.** Une clé qui diffère d'une exécution à l'autre ; une sonde contredite ; une valeur de (w1) à (w5) qui diffère de sa clé (aucune
+tolérance hors du `-1` de Z) ; un test hors de la liste prédite qui bouge ; un besoin de toucher au moteur ou à l'ordre des passes (le manque
+se consigne ; l'ordre est partagé avec l'ascenseur de la carte 22) ; un nom refusé ; un test qui boucle.
+
+**Budget.** Un `executor` par phase ; deux tentatives. Un `plan-verifier` avant ; deux verifiers frais après.
+
+**Retour arrière.** Retirer l'inscription (le pot redevient un bloc inerte) ; la phase A reste inerte.
 
 #### 1.30.5 E20.h1 — Les cinq objets instantanés : l'herbe, les deux potions, l'extrait et le breuvage ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `31fc8b2` ; révision 3 du 2026-10-25 (D-E20-50, D-E20-78, e0c faite), relue à la clôture de la nouvelle époque : REVISE ; en pause de relecture jusqu'à D-E20-88 ; la révision 4 relue le 2026-10-26 (la relecture accordée par D-E20-81 après h0a) : REVISE ; révision 5 relue le 2026-10-27 (la reprise de D-E20-88, nouvelle époque) : REVISE ; révision 6 du 2026-10-27, **READY** à la deuxième relecture de l'époque, `plan-verifier` frais)
 
