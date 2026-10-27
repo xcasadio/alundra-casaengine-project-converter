@@ -1,0 +1,4 @@
+diff example: PosY=38600703 (588.999985 px) PosZ=2281424 pre=55400 post=55500
+diff example: PosY=44892159 (684.999985 px) PosZ=1726601 pre=65800 post=65900
+random (PosY, PosZ) pairs: 200000  coordinate differs between the h3b states: 2
+PosY=206.09375 px, Z=32 px: pre=17400 post=17400 (hero at Z=0: 20600)

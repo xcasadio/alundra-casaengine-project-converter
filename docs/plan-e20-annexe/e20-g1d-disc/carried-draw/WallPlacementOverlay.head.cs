@@ -1,0 +1,384 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
+using CasaEngine.Core.Logging;
+using CasaEngine.Framework.Assets.TileMap;
+using CasaEngine.Framework.Rendering.Depth;
+using CasaEngine.Framework.Scene.Entities.Components;
+using Alundra.Maps.Loop;
+using Alundra.Maps;
+
+namespace Alundra.Cells;
+
+/// <summary>
+/// Parses <see cref="WallPlacementRecords"/> from a <see cref="TileMapData"/>'s custom properties, and
+/// drives the wall/sprite depth interleave (strip the baked wall tiles from the flat layers, resubmit
+/// them through <see cref="TileMapComponent.AddSortedOverlayTile"/> so they order against Y-sorted
+/// entity sprites by <see cref="RenderSortKey2D"/> instead of always drawing flat) - see
+/// <see cref="WorldProxy.InitializeWithWorld"/> for the call site and
+/// <c>docs/formats/cells-companion.md</c> for the original PSX depth formula this ports
+/// (<c>GraphicManager.DepthWallBlock</c>/<c>DepthEntity</c>, AlundraTools/AlundraEngine/Graphics/GraphicManager.cs:313-346).
+/// </summary>
+public static class WallPlacementOverlay
+{
+    /// <summary>Key of the map-level custom property carrying the columnar wall placement JSON.</summary>
+    public const string CustomPropertyKey = "AlundraWallPlacements";
+
+    /// <summary>Key of the map-level custom property carrying the columnar floor placement JSON
+    /// (mostly elevated floors, plus Height-0 closure entries - see <see cref="FloorPlacementRecords"/>'s
+    /// class doc).</summary>
+    public const string FloorCustomPropertyKey = "AlundraFloorPlacements";
+
+    /// <summary>Every gid in the placement document is <c>firstgid + localTileId</c> with a single
+    /// tileset per map and <c>firstgid</c> fixed at 1 (see <c>TileSetGidMapReader</c>/
+    /// <c>docs/formats/cells-companion.md</c>) - so the local tile id <see cref="TileMapComponent"/>'s own
+    /// layers store is always <c>gid - 1</c>. Internal (not private) since E7.b's
+    /// <see cref="CellVisualSync"/> seeds its own live model off the SAME gid convention when it
+    /// bootstraps from these two records documents (docs/plan-e7-mutation-tuiles.md, slice E7.b).</summary>
+    internal const int FirstGid = 1;
+
+    /// <summary>
+    /// PSX depth stride: original code packs <c>otIndex = value &gt;&gt; 20</c>ish and multiplies the
+    /// tile row by 16 slots (<c>GraphicManager.cs</c>: <c>STRIDE = 16</c>). Floors occupy slots 0..6, walls
+    /// slots 7..12 (<c>WALL_BIAS = 7</c>), and Y-sorted entities land at slot 6 within their own row
+    /// (<c>ENTITY_SLOT = 6</c>) - one below the wall row of the very same tile row, and one at/above the
+    /// floor of that row, matching the original's z-buffer ordering.
+    /// </summary>
+    private const int RowStride = 16;
+
+    private const int WallDepthBias = 7;
+    private const int EntityDepthSlot = 6;
+
+    /// <summary>
+    /// Highest row bucket the original clamps an entity to before indexing its ordering table
+    /// (<c>GraphicManager.cs:344</c>, <c>if (otIndex &gt; 0x3B) otIndex = 0x3B;</c>). Beyond it the original
+    /// reuses the last row rather than indexing past the table, so an entity far enough down the map
+    /// stops sinking in depth.
+    /// </summary>
+    private const int EntityRowMax = 0x3B;
+
+    /// <summary>
+    /// Shared <see cref="RenderSortKey2D"/> bucket every wall-overlay tile and every spawned entity's
+    /// <see cref="DepthSortable2DComponent"/> lands in by default (<c>SpriteWriter</c> attaches a bare,
+    /// all-default <see cref="DepthSortable2DComponent"/> to every bank prefab): <see cref="RenderPass2D.YSortedWorld"/>
+    /// for both <c>RenderPass</c> and <c>SortingLayer</c>, order-in-layer 0. Only <c>Elevation</c> (and,
+    /// for entities, the component's own computed <c>SortCoordinate</c>) then decides draw order between
+    /// the two families of keyed sprites.
+    /// </summary>
+    private const int SharedSortingLayer = (int)RenderPass2D.YSortedWorld;
+
+    private static readonly JsonSerializerOptions SerializerOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+    };
+
+    /// <summary>
+    /// Best-effort parse of <see cref="CustomPropertyKey"/> off <paramref name="customProperties"/>.
+    /// Tolerant by design (see <see cref="WorldProxy.InitializeWithWorld"/>'s class doc): a
+    /// missing property, malformed JSON, or a document whose array lengths do not match its own
+    /// <c>Count</c> all return false with a single warning logged - the feature is simply disabled for
+    /// that world, spawned entities and the map's flat tile layers stay exactly as loaded.
+    /// </summary>
+    public static bool TryParse(
+        IReadOnlyDictionary<string, string> customProperties, string worldName, out WallPlacementRecords records)
+    {
+        records = null!;
+
+        if (!customProperties.TryGetValue(CustomPropertyKey, out var json) || string.IsNullOrEmpty(json))
+        {
+            Logs.WriteWarning(
+                $"WallPlacementOverlay: world '{worldName}' has no '{CustomPropertyKey}' custom property; "
+                + "wall/sprite depth interleave disabled.");
+            return false;
+        }
+
+        try
+        {
+            var parsed = JsonSerializer.Deserialize<WallPlacementRecords>(json, SerializerOptions);
+            if (parsed == null || !IsWellFormed(parsed))
+            {
+                Logs.WriteWarning(
+                    $"WallPlacementOverlay: world '{worldName}' - '{CustomPropertyKey}' parsed to a malformed "
+                    + "document (column length mismatch); wall/sprite depth interleave disabled.");
+                return false;
+            }
+
+            records = parsed;
+            return true;
+        }
+        catch (JsonException ex)
+        {
+            Logs.WriteWarning(
+                $"WallPlacementOverlay: world '{worldName}' - failed to parse '{CustomPropertyKey}' "
+                + $"({ex.Message}); wall/sprite depth interleave disabled.");
+            return false;
+        }
+    }
+
+    private static bool IsWellFormed(WallPlacementRecords records)
+    {
+        var count = records.Count;
+        return records.CellX.Length == count
+            && records.CellY.Length == count
+            && records.StackIndex.Length == count
+            && records.Plane.Length == count
+            && records.X.Length == count
+            && records.Y.Length == count
+            && records.Gid.Length == count
+            && records.DepthSlot.Length == count;
+    }
+
+    /// <summary>
+    /// Best-effort parse of <see cref="FloorCustomPropertyKey"/>, same tolerant shape as
+    /// <see cref="TryParse"/>: a missing property, malformed JSON, or a column-length mismatch all
+    /// return false with a single warning logged - elevated floors simply stay flat for that world.
+    /// </summary>
+    public static bool TryParseFloor(
+        IReadOnlyDictionary<string, string> customProperties, string worldName, out FloorPlacementRecords records)
+    {
+        records = null!;
+
+        if (!customProperties.TryGetValue(FloorCustomPropertyKey, out var json) || string.IsNullOrEmpty(json))
+        {
+            Logs.WriteWarning(
+                $"WallPlacementOverlay: world '{worldName}' has no '{FloorCustomPropertyKey}' custom property; "
+                + "elevated floor depth interleave disabled.");
+            return false;
+        }
+
+        try
+        {
+            var parsed = JsonSerializer.Deserialize<FloorPlacementRecords>(json, SerializerOptions);
+            if (parsed == null || !IsWellFormed(parsed))
+            {
+                Logs.WriteWarning(
+                    $"WallPlacementOverlay: world '{worldName}' - '{FloorCustomPropertyKey}' parsed to a malformed "
+                    + "document (column length mismatch); elevated floor depth interleave disabled.");
+                return false;
+            }
+
+            records = parsed;
+            return true;
+        }
+        catch (JsonException ex)
+        {
+            Logs.WriteWarning(
+                $"WallPlacementOverlay: world '{worldName}' - failed to parse '{FloorCustomPropertyKey}' "
+                + $"({ex.Message}); elevated floor depth interleave disabled.");
+            return false;
+        }
+    }
+
+    private static bool IsWellFormed(FloorPlacementRecords records)
+    {
+        var count = records.Count;
+        return records.CellX.Length == count
+            && records.CellY.Length == count
+            && records.Plane.Length == count
+            && records.X.Length == count
+            && records.Y.Length == count
+            && records.Gid.Length == count
+            && records.DepthSlot.Length == count;
+    }
+
+    /// <summary>
+    /// STRIP + RESUBMIT: for every placement, removes the baked tile from its flat layer
+    /// (<see cref="TileMapComponent.RemoveTile"/>) and immediately re-adds the identical tile reference to
+    /// the runtime sorted overlay (<see cref="TileMapComponent.AddSortedOverlayTile"/>) keyed by
+    /// <see cref="ComputeWallSortKey"/>. A placement whose (plane, x, y) no longer holds the exact gid the
+    /// document predicted (already stripped, hand-edited map, out-of-range plane/coordinates, ...) is
+    /// counted as a mismatch and skipped entirely (neither stripped nor resubmitted) rather than thrown -
+    /// this is expected to be rare/zero on a converter-produced map, but must never crash world load.
+    ///
+    /// Returns the indices into <paramref name="records"/> that were ACTUALLY resubmitted (plan fact 13,
+    /// docs/plan-e7-mutation-tuiles.md, slice E7.b): a mismatched entry above is a superset member of
+    /// <paramref name="records"/> that never reached the overlay, so a caller seeding a live model of the
+    /// overlay's real contents (<see cref="CellVisualSync"/>) must seed from this return value, not
+    /// from <paramref name="records"/> itself - resubmitting a mismatched entry at the first mutation-driven
+    /// reconstruction would double-draw a tile whose flat original was never stripped.
+    /// </summary>
+    public static IReadOnlyList<int> Apply(TileMapComponent tileMapComponent, WallPlacementRecords records, string worldName)
+    {
+        var submitted = new List<int>(records.Count);
+        var mismatchCount = 0;
+
+        for (var i = 0; i < records.Count; i++)
+        {
+            var plane = records.Plane[i];
+            var x = records.X[i];
+            var y = records.Y[i];
+            var expectedLocalTileId = records.Gid[i] - FirstGid;
+
+            TileMapTileReference tileReference;
+            try
+            {
+                tileReference = tileMapComponent.GetTileReference(plane, x, y);
+            }
+            catch (Exception)
+            {
+                mismatchCount++;
+                continue;
+            }
+
+            if (tileReference.IsEmpty || tileReference.TileId != expectedLocalTileId)
+            {
+                mismatchCount++;
+                continue;
+            }
+
+            tileMapComponent.RemoveTile(plane, x, y);
+
+            var sortKey = ComputeWallSortKey(records.CellY[i], records.DepthSlot[i], i);
+            tileMapComponent.AddSortedOverlayTile(tileReference, x, y, in sortKey);
+            submitted.Add(i);
+        }
+
+        if (mismatchCount > 0)
+        {
+            Logs.WriteError(
+                $"WallPlacementOverlay: world '{worldName}' - {mismatchCount} of {records.Count} wall "
+                + $"placements did not match the live tile map (removed {submitted.Count}); those tiles were "
+                + "left exactly as loaded, un-interleaved.");
+        }
+
+        return submitted;
+    }
+
+    /// <summary>
+    /// STRIP + RESUBMIT for floor tiles (elevated or Height-0 closure entries alike) - identical shape
+    /// to <see cref="Apply"/>, through the same overlay list (<see cref="ComputeFloorSortKey"/> keys
+    /// these low enough, slots 0..5, to never collide with a wall's slot 7+ bias on the same row - see
+    /// that method's doc). The strip accounting below (removedCount/mismatchCount vs records.Count)
+    /// covers closure entries the same way it covers elevated ones - there is nothing entry-kind-specific
+    /// here to account for separately. See <see cref="Apply"/>'s own doc for why the return value (the
+    /// indices actually resubmitted, not every index in <paramref name="records"/>) is what a live-model
+    /// seed must use.
+    /// </summary>
+    public static IReadOnlyList<int> ApplyFloor(TileMapComponent tileMapComponent, FloorPlacementRecords records, string worldName)
+    {
+        var submitted = new List<int>(records.Count);
+        var mismatchCount = 0;
+
+        for (var i = 0; i < records.Count; i++)
+        {
+            var plane = records.Plane[i];
+            var x = records.X[i];
+            var y = records.Y[i];
+            var expectedLocalTileId = records.Gid[i] - FirstGid;
+
+            TileMapTileReference tileReference;
+            try
+            {
+                tileReference = tileMapComponent.GetTileReference(plane, x, y);
+            }
+            catch (Exception)
+            {
+                mismatchCount++;
+                continue;
+            }
+
+            if (tileReference.IsEmpty || tileReference.TileId != expectedLocalTileId)
+            {
+                mismatchCount++;
+                continue;
+            }
+
+            tileMapComponent.RemoveTile(plane, x, y);
+
+            var sortKey = ComputeFloorSortKey(records.CellY[i], records.DepthSlot[i], i);
+            tileMapComponent.AddSortedOverlayTile(tileReference, x, y, in sortKey);
+            submitted.Add(i);
+        }
+
+        if (mismatchCount > 0)
+        {
+            Logs.WriteError(
+                $"WallPlacementOverlay: world '{worldName}' - {mismatchCount} of {records.Count} floor "
+                + $"placements did not match the live tile map (removed {submitted.Count}); those tiles were "
+                + "left exactly as loaded, un-interleaved.");
+        }
+
+        return submitted;
+    }
+
+    /// <summary>
+    /// Port of <c>GraphicManager.DepthFloor(tileY, floorSlot)</c>: <c>tileY * 16 + clamp(floorSlot, 0, 5)</c>
+    /// - no <see cref="WallDepthBias"/>. An elevated floor of row <paramref name="cellY"/> therefore always
+    /// sorts (slot 0..5) below that same row's Y-sorted entity slot (6) and its walls (slot 7+), and above
+    /// every tile of any northern row (whose highest slot is a wall's, still &lt; <c>(cellY-1)*16+16 &lt;=
+    /// cellY*16</c>) - exactly the "floor south of an entity draws over it" ordering the bug report
+    /// describes, reproduced here instead of the original's raw index-buffer compare.
+    /// </summary>
+    internal static RenderSortKey2D ComputeFloorSortKey(int cellY, int depthSlot, int stableId)
+    {
+        var elevation = cellY * RowStride + Math.Clamp(depthSlot, 0, 5);
+        return new RenderSortKey2D(
+            (int)RenderPass2D.YSortedWorld, SharedSortingLayer, 0, elevation, 0, 0, stableId);
+    }
+
+    /// <summary>
+    /// Port of <c>GraphicManager.DepthWallBlock(tileY, wallSlot)</c>: <c>tileY * 16 + 7 + clamp(wallSlot, 0, 6)</c>.
+    /// <paramref name="stableId"/> is this placement's index within its document - overlay tiles at the
+    /// exact same (row, depth slot) only ever occupy different, non-overlapping grid cells, so this tiebreak
+    /// never affects visible draw order; it only keeps <see cref="RenderSortKey2D.CompareTo"/> a strict,
+    /// deterministic ordering instead of a documentless tie.
+    /// </summary>
+    internal static RenderSortKey2D ComputeWallSortKey(int cellY, int depthSlot, int stableId)
+    {
+        var elevation = cellY * RowStride + WallDepthBias + Math.Clamp(depthSlot, 0, 6);
+        return new RenderSortKey2D(
+            (int)RenderPass2D.YSortedWorld, SharedSortingLayer, 0, elevation, 0, 0, stableId);
+    }
+
+    /// <summary>
+    /// Port of <c>GraphicManager.DepthEntity</c>'s row bucket only (<c>(depthSortValue &gt;&gt; 20) * 16 + 6</c>),
+    /// where the original's own <c>depthSortValue</c> is
+    /// <c>EntityManager.cs:1049</c>'s <c>PosY + (ImageDepthSortValue &lt;&lt; 16)</c> - <paramref name="idsv"/>
+    /// is that per-frame image-depth-sort bias (<c>Data/sprite-records.json</c>'s "IdsvAnimDirs", see
+    /// <c>SpriteWriter</c>'s class doc), 0 when the entity's current (anim, direction) has none. The
+    /// original's finer <c>depthSortValue &amp; 0xffff</c> tiebreak is a screen-projected z, which this 2D
+    /// engine has no equivalent input for at the proxy level - see <see cref="WorldProxy"/>'s class
+    /// doc and the deviation note on <c>ApplyEntitySortKey</c> below for how the fine order is handled
+    /// instead. <paramref name="posY"/> is the entity's logical Y (16.16 fixed, <c>EntityScriptProxy.PosY</c>).
+    /// </summary>
+    internal static int ComputeEntityElevation(int posY, int idsv)
+    {
+        var rowIndex = (posY + (idsv << 16)) >> 20;
+        if (rowIndex > EntityRowMax)
+        {
+            rowIndex = EntityRowMax;
+        }
+
+        return rowIndex * RowStride + EntityDepthSlot;
+    }
+
+    /// <summary>
+    /// Applies <see cref="ComputeEntityElevation"/> to a spawned entity's <see cref="DepthSortable2DComponent"/>.
+    /// Only <c>Elevation</c> is written: <c>RenderPass</c>/<c>SortingLayer</c>/<c>OrderInLayer</c> already carry
+    /// their bank-prefab defaults (see <see cref="SharedSortingLayer"/>'s doc), and <c>SortCoordinate</c> stays
+    /// entirely component-computed (<see cref="DepthSortMode2D.TopDownYUp"/>, from the entity's actual world
+    /// position) - not settable from gameplay code without either a new engine hook (out of scope, engine is
+    /// read-only for this slice) or re-deriving the world transform every frame (out of scope, a separate
+    /// follow-up per <see cref="WorldProxy"/>'s class doc). DEVIATION from the original: the fine order
+    /// within a row therefore comes from <c>-worldY</c> (which folds in <c>PosZ</c>'s elevation offset via
+    /// <c>WorldProxy.ResolveLogicalPosition</c> + the policy's render projection) instead of the original's <c>PosZ &gt;&gt; 16</c> screen-elevation low bits (<c>EntityManager.cs:1036</c>) -
+    /// both still order correctly by row (the coarse <c>Elevation</c> bucket this method sets), only the
+    /// tiebreak among entities sharing one row can diverge slightly from the original.
+    ///
+    /// SECOND DEVIATION: <paramref name="idsv"/> is only ever the CURRENT (CurrentAnimationId,
+    /// AnimationDirection) pair's frame-0 IDSV value (see <see cref="FrameSyncPasses.RunWallInterleaveSortKeyPass"/>),
+    /// not the currently-displayed frame's own value. The original's animation player owns exact frame
+    /// timing; this proxy does not track "which frame is currently showing" at all (see
+    /// <c>WorldProxy.RunAnimationSyncPass</c>'s class doc - frame-level state is CasaEngine's own
+    /// <c>Animation2dCompositionSampler</c>'s job). Measured across the full converted corpus (395 unique
+    /// banks), 2851 of 9620 (anim, direction) pairs with displayed frames (about 30%) have a non-constant
+    /// IDSV between frames, so this approximation can pick the wrong depth bucket mid-animation on almost a
+    /// third of animations; per-frame fidelity (reading the sampler's actual current frame index) is a
+    /// later refinement if this turns out to matter visually.
+    /// </summary>
+    public static void ApplyEntitySortKey(DepthSortable2DComponent depthSortable, int posY, int idsv)
+    {
+        depthSortable.Elevation = ComputeEntityElevation(posY, idsv);
+    }
+}

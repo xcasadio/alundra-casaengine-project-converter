@@ -1,0 +1,6 @@
+/Alundra/bankalundra_0_anim*.anim2d files 376 draw order min 0 max 13 track props {'Sprite': 1680, 'Position': 1680, 'Visible': 1680, 'FlipX': 743, 'Corners': 363, 'FlipY': 220}
+  top max files: [('Alundra\\bankalundra_0_anim72_left.anim2d', (0, 13)), ('Alundra\\bankalundra_0_anim72_right.anim2d', (0, 13)), ('Alundra\\bankalundra_0_anim72_up.anim2d', (0, 13)), ('Alundra\\bankalundra_0_anim25_down.anim2d', (0, 11)), ('Alundra\\bankalundra_0_anim25_left.anim2d', (0, 11))]
+  lowest min files: [('Alundra\\bankalundra_0_anim0_down.anim2d', (0, 2)), ('Alundra\\bankalundra_0_anim0_left.anim2d', (0, 2)), ('Alundra\\bankalundra_0_anim0_right.anim2d', (0, 2))]
+/Bombe/*.anim2d files 12 draw order min 0 max 6 track props {'Sprite': 84, 'Position': 84, 'Visible': 84, 'Corners': 40}
+  top max files: [('Bombe\\bankalundra_2_anim0_down.anim2d', (0, 6)), ('Bombe\\bankalundra_2_anim0_left.anim2d', (0, 6)), ('Bombe\\bankalundra_2_anim0_right.anim2d', (0, 6)), ('Bombe\\bankalundra_2_anim0_up.anim2d', (0, 6)), ('Bombe\\bankalundra_2_anim1_down.anim2d', (0, 6))]
+  lowest min files: [('Bombe\\bankalundra_2_anim0_down.anim2d', (0, 6)), ('Bombe\\bankalundra_2_anim0_left.anim2d', (0, 6)), ('Bombe\\bankalundra_2_anim0_right.anim2d', (0, 6))]

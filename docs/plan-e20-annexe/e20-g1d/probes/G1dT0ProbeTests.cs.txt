@@ -1,0 +1,190 @@
+#nullable enable
+// E20.g1d T0 (d): THROWAWAY probes P1 to P3 (never committed; the code is versioned as a .cs.txt in docs/plan-e20-annexe/e20-g1d/probes/). Output directory: the environment variable G1D_PROBE_OUT.
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using CasaEngine.Framework.Rendering.Depth;
+using CasaEngine.Framework.Scene.Entities;
+using CasaEngine.Framework.Scene.Entities.Components;
+using Xunit;
+using Alundra.Entities;
+using Alundra.Maps.Loop;
+using Alundra.Tests.Ai.Items;
+using Alundra.Tests.Audio;
+using Alundra.Tests.Support;
+
+namespace Alundra.Tests.Probes;
+
+[Collection(MusicPlayerSingletonCollection.Name)]
+public sealed class G1dT0ProbeTests
+{
+    private const uint Circle = BombHandsRun.Circle;
+    private const uint Square = BombHandsRun.Square;
+    private const uint Cross = BombHandsRun.Cross;
+
+    private static string Out(string name) => Path.Combine(Environment.GetEnvironmentVariable("G1D_PROBE_OUT")!, name);
+
+    private static string F(double v) => v.ToString("F5", CultureInfo.InvariantCulture);
+
+    private static RenderSortKey2D KeyOf(Entity entity)
+    {
+        var depth = entity.GetComponent<DepthSortable2DComponent>()!;
+        var projection = entity.GetComponent<RenderProjectionComponent>()!;
+        return depth.BuildSortKey(projection.WorldMatrixNoScale.Translation);
+    }
+
+    private static string Sign(int c) => c > 0 ? "FRONT" : c < 0 ? "BEHIND" : "EQUAL";
+
+    private static EntityScriptProxy? Bomb(BombHandsRun run) => run.Arc.Entities.FirstOrDefault(e => e.SpriteType == 2);
+
+    // ---------------------------------------------------------------------------------------------------------------------------------------------
+    // P1: the bomb in the hands of the real hero, 4 directions x the 16 rows of Y, standing, sampled at the end of the ticks 40 to 44.
+    // ---------------------------------------------------------------------------------------------------------------------------------------------
+    [Fact]
+    public void P1_BombInTheHands_16RowsOfY()
+    {
+        var lines = new List<string> { "dir | Y | tick | hero anim | hero idsv | bomb idsv | hero elev | bomb elev | hero coord | bomb coord | hero tz | bomb tz | bomb carried | sign" };
+        var summary = new List<string>();
+        foreach (var (name, dir) in new[] { ("down", 0u), ("left", 8u), ("up", 16u), ("right", 24u) })
+        {
+            var front = 0;
+            var behind = 0;
+            for (var y = 100; y <= 115; y++)
+            {
+                using var run = new BombHandsRun("p1-" + name + y, 100, y, null, dir);
+                var rows = new List<string>();
+                var signs = new List<string>();
+                var n = 0;
+                run.Arc.OnFrame = () =>
+                {
+                    n++;
+                    if (n is < 40 or > 44)
+                    {
+                        return;
+                    }
+
+                    var bomb = Bomb(run);
+                    var hero = run.Arc.Hero;
+                    if (bomb == null)
+                    {
+                        rows.Add($"{name} | {y} | {n} | no bomb");
+                        return;
+                    }
+
+                    var heroEntity = run.Arc.HeroEntity;
+                    var bombEntity = ArcRun.EntityOf(bomb)!;
+                    var hk = KeyOf(heroEntity);
+                    var bk = KeyOf(bombEntity);
+                    var sign = Sign(bk.CompareTo(hk));
+                    signs.Add(sign);
+                    rows.Add($"{name} | {y} | {n} | {hero.TargetAnimationId} | {FrameSyncPasses.ResolveIdsv(hero)} | {FrameSyncPasses.ResolveIdsv(bomb)} | {hk.Elevation} | {bk.Elevation} | {hk.SortCoordinate} | {bk.SortCoordinate} | {F(heroEntity.GetComponent<RenderProjectionComponent>()!.WorldMatrixNoScale.Translation.Y)} | {F(bombEntity.GetComponent<RenderProjectionComponent>()!.WorldMatrixNoScale.Translation.Y)} | {bomb.PlatformEntity != null} | {sign}");
+                };
+                run.Go(46, t => t == 4 ? Circle : 0u);
+                lines.AddRange(rows);
+                var distinct = signs.Distinct().ToList();
+                if (distinct.Count == 1 && distinct[0] == "FRONT")
+                {
+                    front++;
+                }
+                else if (distinct.Count == 1 && distinct[0] == "BEHIND")
+                {
+                    behind++;
+                }
+                else
+                {
+                    lines.Add($"# {name} Y={y}: mixed or other signs {string.Join(",", distinct)}");
+                }
+            }
+
+            summary.Add($"{name}: BEHIND in {behind} of 16 rows, FRONT in {front} of 16 rows");
+        }
+
+        File.WriteAllLines(Out("out_p1.txt"), summary.Concat(lines));
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------------------------------
+    // P2: the translations seen at the entry of the sort pass against the ones at the end of the frame (what the renderer reads), hero and bomb, carry + walk + jump.
+    // ---------------------------------------------------------------------------------------------------------------------------------------------
+    [Fact]
+    public void P2_PassOrder_TranslationsAtTheEntryOfTheSortPass()
+    {
+        using var run = new BombHandsRun("p2", 100, 100, null, 24);
+        var n = 0;
+        var lines = new List<string> { "tick | hero z (logical px) | hero T at the pass | hero T at the end of the frame | bomb T at the pass | bomb T at the end of the frame | equal" };
+        Microsoft.Xna.Framework.Vector3? heroPass = null;
+        Microsoft.Xna.Framework.Vector3? bombPass = null;
+        FrameSyncPasses.G1dProbeBeforeSortPass = _ =>
+        {
+            var bomb = Bomb(run);
+            heroPass = run.Arc.HeroEntity.GetComponent<RenderProjectionComponent>()!.WorldMatrixNoScale.Translation;
+            bombPass = bomb == null ? null : ArcRun.EntityOf(bomb)!.GetComponent<RenderProjectionComponent>()!.WorldMatrixNoScale.Translation;
+        };
+        var bad = 0;
+        var compared = 0;
+        run.Arc.OnFrame = () =>
+        {
+            n++;
+            var bomb = Bomb(run);
+            var heroEnd = run.Arc.HeroEntity.GetComponent<RenderProjectionComponent>()!.WorldMatrixNoScale.Translation;
+            Microsoft.Xna.Framework.Vector3? bombEnd = bomb == null ? null : ArcRun.EntityOf(bomb)!.GetComponent<RenderProjectionComponent>()!.WorldMatrixNoScale.Translation;
+            var equal = heroPass == heroEnd && bombPass == bombEnd;
+            if (bomb != null)
+            {
+                compared++;
+                if (!equal)
+                {
+                    bad++;
+                }
+            }
+
+            lines.Add($"{n} | {run.Arc.Hero.PosZ / 65536.0:F4} | {heroPass} | {heroEnd} | {bombPass} | {bombEnd} | {equal}");
+            heroPass = null;
+            bombPass = null;
+        };
+        try
+        {
+            // Circle at 4 (the bomb), the walk east 50 to 79, the jump (Cross) at 80 held 1 tick while walking, the walk goes on to 140.
+            run.Go(140, t => t == 4 ? Circle : t is >= 50 and < 80 ? BombHandsRun.Right : t == 80 ? BombHandsRun.Right | Cross : t is > 80 and < 140 ? BombHandsRun.Right : 0u);
+        }
+        finally
+        {
+            FrameSyncPasses.G1dProbeBeforeSortPass = null;
+        }
+
+        lines.Insert(0, $"frames with a bomb compared: {compared}; frames where the translations at the pass differ from the end of the frame: {bad}");
+        File.WriteAllLines(Out("out_p2.txt"), lines);
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------------------------------------
+    // P3: ThrowCarried then the program of the object: when the hands are free, IsOnGround, Status, per tick, the four directions.
+    // ---------------------------------------------------------------------------------------------------------------------------------------------
+    [Fact]
+    public void P3_Throw_FlagsPerTick()
+    {
+        var lines = new List<string> { "dir | tick | hero anim | hero carries | bomb present | bomb PlatformEntity!=null | bomb IsOnGround | bomb Status | bomb Flags2 | bomb z (px) | bomb y (px) | hero y (px)" };
+        foreach (var (name, dir, hold) in new[] { ("right", 24u, BombHandsRun.Right), ("left", 8u, BombHandsRun.Left), ("down", 0u, BombHandsRun.Down), ("up", 16u, BombHandsRun.Up) })
+        {
+            using var run = new BombHandsRun("p3-" + name, 200, 200, null, dir);
+            var n = 0;
+            run.Arc.OnFrame = () =>
+            {
+                n++;
+                if (n < 46 || n > 90)
+                {
+                    return;
+                }
+
+                var bomb = Bomb(run);
+                var hero = run.Arc.Hero;
+                lines.Add(bomb == null
+                    ? $"{name} | {n} | {hero.TargetAnimationId} | {hero.CarriedEntity != null} | False | | | | | | | {hero.PosY / 65536.0:F3}"
+                    : $"{name} | {n} | {hero.TargetAnimationId} | {hero.CarriedEntity != null} | True | {bomb.PlatformEntity != null} | {bomb.IsOnGround} | {(int)bomb.Status} | {bomb.Flags2} | {bomb.PosZ / 65536.0:F4} | {bomb.PosY / 65536.0:F3} | {hero.PosY / 65536.0:F3}");
+            };
+            run.Go(90, t => t <= 3 ? hold : t == 4 ? Circle : t == 50 ? Square : 0u);
+        }
+
+        File.WriteAllLines(Out("out_p3.txt"), lines);
+    }
+}

@@ -1,0 +1,11 @@
+sprite   1 flags 00332380 collidable=True afl80=False height 16.0 box 21.0x15.0 st 3
+sprite   2 flags 0013234E collidable=False afl80=False height 16.0 box 21.0x15.0 st 3
+sprite  16 flags 00132144 collidable=False afl80=False height 16.0 box 21.0x15.0 st 3
+sprite  17 flags 00132044 collidable=False afl80=False height 16.0 box 21.0x15.0 st 3
+sprite  19 flags 00032034 collidable=False afl80=False height 24.0 box 19.0x13.0 st 4
+sprite  20 flags 00002044 collidable=False afl80=True height 26.0 box 21.0x15.0 st 2
+sprite  21 flags 00002044 collidable=False afl80=True height 16.0 box 21.0x15.0 st 2
+sprite  22 flags 00002144 collidable=False afl80=False height 8.0 box 7.0x5.0 st 2
+sprite  23 flags 00102044 collidable=False afl80=False height 12.0 box 14.0x12.0 st 3
+sprite  24 flags 00006144 collidable=False afl80=False height 16.0 box 21.0x15.0 st 2
+sprite  25 flags 00006080 collidable=True afl80=False height 32.0 box 24.0x16.0 st 2

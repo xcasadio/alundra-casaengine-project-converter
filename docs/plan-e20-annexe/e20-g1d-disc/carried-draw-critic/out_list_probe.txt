@@ -1,0 +1,6 @@
+list A (draw list source) count 2
+   [ 0] 80127D30  st=2 type68=0 flags6C=0003118C afl=01 car28=00000000 idsv=5 y=200.00 z=0.00 1C0=0 1E0=1 1F8=2097151
+   [ 1] 80127FC4  st=2 type68=2 flags6C=0013234E afl=01 car28=80127D30 idsv=5 y=200.00 z=32.00 1C0=0 1E0=2097153 1F8=1048575
+list B (overlap loop) count 1
+   [ 0] 80127D30  st=2 type68=0 flags6C=0003118C afl=01 car28=00000000 idsv=5 y=200.00 z=0.00 1C0=0 1E0=1 1F8=2097151
+hero 0x80127d30

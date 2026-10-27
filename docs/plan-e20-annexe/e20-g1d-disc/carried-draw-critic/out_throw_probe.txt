@@ -1,0 +1,38 @@
+== facing right
+   t=48 carried=1 bomb offset (  +0.0,  +0.0) z= 32.0 hero key 00CD0000 (idsv 5) bomb key 00CD0020 (idsv 5 anim 0) -> FRONT
+   t=49 carried=1 bomb offset (  +0.0,  +0.0) z= 32.0 hero key 00CD0000 (idsv 5) bomb key 00CD0020 (idsv 5 anim 0) -> FRONT
+   t=50 carried=0 bomb offset (  +1.5,  +0.0) z= 36.0 hero key 00CD0000 (idsv 5) bomb key 00CD0024 (idsv 5 anim 2) -> FRONT
+   t=51 carried=0 bomb offset (  +3.0,  +0.0) z= 39.5 hero key 00CD0000 (idsv 5) bomb key 00CD0027 (idsv 5 anim 2) -> FRONT
+   t=52 carried=0 bomb offset (  +4.5,  +0.0) z= 42.5 hero key 00CD0000 (idsv 5) bomb key 00CD002A (idsv 5 anim 2) -> FRONT
+   t=53 carried=0 bomb offset (  +6.0,  +0.0) z= 45.0 hero key 00CD0000 (idsv 5) bomb key 00CD002D (idsv 5 anim 2) -> FRONT
+   t=54 carried=0 bomb offset (  +7.5,  +0.0) z= 47.0 hero key 00CD0000 (idsv 5) bomb key 00CD002F (idsv 5 anim 2) -> FRONT
+   t=55 carried=0 bomb offset (  +9.0,  +0.0) z= 48.5 hero key 00CD0000 (idsv 5) bomb key 00CD0030 (idsv 5 anim 2) -> FRONT
+   t=72 carried=0 bomb offset ( +34.5,  +0.0) z=  0.0 hero key 00CD0000 (idsv 5) bomb key 00CD0000 (idsv 5 anim 2) -> EQ
+== facing left
+   t=48 carried=1 bomb offset (  +0.0,  +0.0) z= 32.0 hero key 00CD0000 (idsv 5) bomb key 00CD0020 (idsv 5 anim 0) -> FRONT
+   t=49 carried=1 bomb offset (  +0.0,  +0.0) z= 32.0 hero key 00CD0000 (idsv 5) bomb key 00CD0020 (idsv 5 anim 0) -> FRONT
+   t=50 carried=0 bomb offset (  -1.5,  +0.0) z= 36.0 hero key 00CD0000 (idsv 5) bomb key 00CD0024 (idsv 5 anim 2) -> FRONT
+   t=51 carried=0 bomb offset (  -3.0,  +0.0) z= 39.5 hero key 00CD0000 (idsv 5) bomb key 00CD0027 (idsv 5 anim 2) -> FRONT
+   t=52 carried=0 bomb offset (  -4.5,  +0.0) z= 42.5 hero key 00CD0000 (idsv 5) bomb key 00CD002A (idsv 5 anim 2) -> FRONT
+   t=53 carried=0 bomb offset (  -6.0,  +0.0) z= 45.0 hero key 00CD0000 (idsv 5) bomb key 00CD002D (idsv 5 anim 2) -> FRONT
+   t=54 carried=0 bomb offset (  -7.5,  +0.0) z= 47.0 hero key 00CD0000 (idsv 5) bomb key 00CD002F (idsv 5 anim 2) -> FRONT
+   t=55 carried=0 bomb offset (  -9.0,  +0.0) z= 48.5 hero key 00CD0000 (idsv 5) bomb key 00CD0030 (idsv 5 anim 2) -> FRONT
+   t=72 carried=0 bomb offset ( -34.5,  +0.0) z=  0.0 hero key 00CD0000 (idsv 5) bomb key 00CD0000 (idsv 5 anim 2) -> EQ
+== facing down
+   t=48 carried=1 bomb offset (  +0.0,  +0.0) z= 32.0 hero key 00D00000 (idsv 4) bomb key 00D10020 (idsv 5 anim 0) -> FRONT
+   t=49 carried=1 bomb offset (  +0.0,  +0.0) z= 32.0 hero key 00D00000 (idsv 4) bomb key 00D10020 (idsv 5 anim 0) -> FRONT
+   t=50 carried=0 bomb offset (  +0.0,  +1.0) z= 36.0 hero key 00D00000 (idsv 4) bomb key 00D20024 (idsv 5 anim 2) -> FRONT
+   t=51 carried=0 bomb offset (  +0.0,  +2.0) z= 39.5 hero key 00D00000 (idsv 4) bomb key 00D30027 (idsv 5 anim 2) -> FRONT
+   t=52 carried=0 bomb offset (  +0.0,  +3.0) z= 42.5 hero key 00D00000 (idsv 4) bomb key 00D4002A (idsv 5 anim 2) -> FRONT
+   t=53 carried=0 bomb offset (  +0.0,  +4.0) z= 45.0 hero key 00D00000 (idsv 4) bomb key 00D5002D (idsv 5 anim 2) -> FRONT
+   t=54 carried=0 bomb offset (  +0.0,  +5.0) z= 47.0 hero key 00D00000 (idsv 4) bomb key 00D6002F (idsv 5 anim 2) -> FRONT
+   t=55 carried=0 bomb offset (  +0.0,  +6.0) z= 48.5 hero key 00D10000 (idsv 5) bomb key 00D70030 (idsv 5 anim 2) -> FRONT
+== facing up
+   t=48 carried=1 bomb offset (  +0.0,  +0.0) z= 32.0 hero key 00C50000 (idsv 2) bomb key 00C80020 (idsv 5 anim 0) -> FRONT
+   t=49 carried=1 bomb offset (  +0.0,  +0.0) z= 32.0 hero key 00C50000 (idsv 2) bomb key 00C80020 (idsv 5 anim 0) -> FRONT
+   t=50 carried=0 bomb offset (  +0.0,  -1.0) z= 36.0 hero key 00C50000 (idsv 2) bomb key 00C70024 (idsv 5 anim 2) -> FRONT
+   t=51 carried=0 bomb offset (  +0.0,  -2.0) z= 39.5 hero key 00C50000 (idsv 2) bomb key 00C60027 (idsv 5 anim 2) -> FRONT
+   t=52 carried=0 bomb offset (  +0.0,  -3.0) z= 42.5 hero key 00C50000 (idsv 2) bomb key 00C5002A (idsv 5 anim 2) -> FRONT
+   t=53 carried=0 bomb offset (  +0.0,  -4.0) z= 45.0 hero key 00C50000 (idsv 2) bomb key 00C4002D (idsv 5 anim 2) -> BEHIND
+   t=54 carried=0 bomb offset (  +0.0,  -5.0) z= 47.0 hero key 00C50000 (idsv 2) bomb key 00C3002F (idsv 5 anim 2) -> BEHIND
+   t=55 carried=0 bomb offset (  +0.0,  -6.0) z= 48.5 hero key 00C50000 (idsv 2) bomb key 00C20030 (idsv 5 anim 2) -> BEHIND

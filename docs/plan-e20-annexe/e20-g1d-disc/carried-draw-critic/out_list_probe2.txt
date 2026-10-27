@@ -1,0 +1,3 @@
+list B count 2 ['0x80127d30', '0x80127fc4']
+hero 80127d30 sprite25 80127fc4 (collidable) sprite16 80128258 (not collidable) bomb in B: False
+list A count 3

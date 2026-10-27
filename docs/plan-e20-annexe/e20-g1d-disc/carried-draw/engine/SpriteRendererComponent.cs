@@ -1,0 +1,1095 @@
+﻿using System.Runtime.CompilerServices;
+
+using CasaEngine.Framework.Assets.Sprites;
+using CasaEngine.Engine.Geometry;
+using CasaEngine.Framework.Rendering;
+using CasaEngine.Framework.Rendering.Depth;
+using CasaEngine.Framework.Scene.Entities.Components;
+using CasaEngine.Framework.Rendering.Shaders;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+
+namespace CasaEngine.Framework.Application.Components;
+
+public class SpriteRendererComponent : DrawableGameComponent, IViewFlushableRenderer
+{
+    private struct SpriteDisplayData
+    {
+        public VertexPositionTexture TopLeft;
+        public VertexPositionTexture TopRight;
+        public VertexPositionTexture BottomLeft;
+        public VertexPositionTexture BottomRight;
+        public Color Color;
+        public Texture2D Texture;
+        public Matrix WorldMatrix;
+        public Rectangle ScissorRectangle;
+        public RenderSortKey2D SortKey;
+        public bool HasSortKey;
+        public SpriteBlendMode BlendMode;
+
+        // Raw-alpha window of the texels this entry draws, (AlphaMin ; AlphaMax] (ADR-0051).
+        public float AlphaMin;
+        public float AlphaMax;
+
+        // ADR-0034: a full-screen overlay (screen fade/tint) must cover every pixel
+        // regardless of what has already been drawn at that pixel's depth. Default false so every
+        // other caller of DrawSprite keeps testing/writing depth exactly as before this field existed.
+        public bool IgnoresDepth;
+
+        // ADR-0068: an entry of a free PSX quad (DrawPsxQuad). NoCull draws it without face culling (a mirrored quad winds the
+        // other way); PsxQuad draws it with the PsxQuad effect instead of the sprite effect. Both are false for every sprite
+        // entry, so a pooled entry never keeps them from a previous use.
+        public bool NoCull;
+        public bool PsxQuad;
+    }
+
+    private const int NbSprites = 10000;
+
+    /// <summary>Lower bound of the neutral raw-alpha window: nothing is rejected by it.</summary>
+    internal const float NeutralAlphaMin = -1f;
+
+    /// <summary>Upper bound of the neutral raw-alpha window: nothing is rejected by it.</summary>
+    internal const float NeutralAlphaMax = 2f;
+
+    // ADR-0051: the two raw-alpha windows of a sprite that carries a PSX semi-transparency mode. The sheets hold only the
+    // alpha values 0 (transparent), 128 (STP texel) and 255 (opaque), so these windows are disjoint and each keeps one class.
+    private const float OpaqueTexelsAlphaMin = 0.75f;
+    private const float OpaqueTexelsAlphaMax = 1f;
+    private const float StpTexelsAlphaMin = 0.25f;
+    private const float StpTexelsAlphaMax = 0.75f;
+
+    // The PSX GPU's mode 3 draws the front colour at a quarter: the binary has no tint per entity, so this colour replaces
+    // the component's colour on the STP draw of a mode 3 sprite (add 64/255 of the texel).
+    private static readonly Color Mode3FrontColor = new(64, 64, 64, 255);
+
+    // ADR-0068: DrawPsxQuad adds this to the texture coordinates of the four corners, in texels: half a texel (the PS1 reads the texel
+    // floor(u + 1/2)) plus 1/4096 of a texel, so an exact tie is resolved upward whatever the rounding of the interpolation.
+    private const float PsxQuadTexelShift = 0.5f + 1f / 4096f;
+
+    /// <summary>Content name of the effect that draws the free PSX quads (ADR-0068), loaded on the first such entry.</summary>
+    internal const string PsxQuadContentName = "Shaders\\PsxQuad";
+
+    /// <summary>Test seam (ADR-0051): when set, receives the raw-alpha window instead of the effect parameter.</summary>
+    internal Action<float, float> AlphaWindowWriter;
+    private VertexPositionTexture[] _vertices = new VertexPositionTexture[NbSprites * 4];
+    private readonly List<SpriteDisplayData> _spriteDatas = new(NbSprites);
+    private readonly Stack<SpriteDisplayData> _freeSpriteDatas = new(NbSprites);
+    private VertexBuffer _vertexBuffer;
+    private IndexBuffer _indexBuffer;
+    private Effect _effect;
+    private Effect _alphaWindowEffect;
+    private Effect _psxQuadEffect;
+    private EffectParameter _alphaWindowParameter;
+    private readonly CasaEngineGame _game;
+
+    public bool IsDrawSpriteOriginEnabled = false;
+    public bool IsDrawSpriteBorderEnabled = false;
+    public bool IsDrawSpriteSheetEnabled = false;
+    public bool IsDrawCollisionsEnabled = false;
+    public int SpriteSheetTransparency = 124;
+    private Line3dRendererComponent _line3dRendererComponent;
+    private readonly DepthStencilState _depthStencilState;
+    private readonly BlendState _blendState;
+    private readonly Vector3 _vertexTopLeft;
+    private readonly Vector3 _vertexTopRight;
+    private readonly Vector3 _vertexBottomRight;
+    private readonly Vector3 _vertexBottomLeft;
+    private static readonly Comparison<SpriteDisplayData> SpriteDisplayDataComparison = CompareSpriteDisplayData;
+
+    // Cached once, never allocated per run/frame - see GetBlendState's doc. Exact PSX fusion formulas
+    // (screen fade/tint overlay, additive/subtractive backdrop layers): color channel saturates via
+    // One/One, alpha uses Add/Zero/One so the destination alpha is never touched.
+    private static readonly BlendState AdditiveBlendState = new()
+    {
+        ColorBlendFunction = BlendFunction.Add,
+        ColorSourceBlend = Blend.One,
+        ColorDestinationBlend = Blend.One,
+        AlphaBlendFunction = BlendFunction.Add,
+        AlphaSourceBlend = Blend.Zero,
+        AlphaDestinationBlend = Blend.One
+    };
+
+    // ReverseSubtract computes dst - src, which is what the PSX GPU's subtractive mode does.
+    // BlendFunction.Subtract would instead compute src - dst - wrong channel order.
+    private static readonly BlendState SubtractiveBlendState = new()
+    {
+        ColorBlendFunction = BlendFunction.ReverseSubtract,
+        ColorSourceBlend = Blend.One,
+        ColorDestinationBlend = Blend.One,
+        AlphaBlendFunction = BlendFunction.Add,
+        AlphaSourceBlend = Blend.Zero,
+        AlphaDestinationBlend = Blend.One
+    };
+
+    public SpriteRendererComponent(Game game) : base(game)
+    {
+        if (game == null)
+        {
+            throw new ArgumentNullException(nameof(game));
+        }
+
+        _game = Game as CasaEngineGame;
+        game.Components.Add(this);
+
+        UpdateOrder = (int)ComponentUpdateOrder.Line3dComponent;
+        DrawOrder = (int)ComponentDrawOrder.Line3dComponent;
+
+        _depthStencilState = new DepthStencilState
+        {
+            DepthBufferEnable = true,
+            DepthBufferWriteEnable = true,
+            DepthBufferFunction = CompareFunction.LessEqual,
+        };
+
+        _blendState = new BlendState
+        {
+            ColorBlendFunction = BlendFunction.Add,
+            AlphaBlendFunction = BlendFunction.Max,
+            ColorSourceBlend = Blend.One,
+            AlphaSourceBlend = Blend.SourceColor,
+            ColorDestinationBlend = Blend.Zero,
+            AlphaDestinationBlend = Blend.DestinationAlpha
+        };
+
+        _vertexTopLeft = new Vector3(-0.5f, 0.5f, 0);
+        _vertexTopRight = new Vector3(0.5f, 0.5f, 0);
+        _vertexBottomRight = new Vector3(0.5f, -0.5f, 0);
+        _vertexBottomLeft = new Vector3(-0.5f, -0.5f, 0);
+    }
+
+    protected override void LoadContent()
+    {
+        _vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionTexture), NbSprites * 4, BufferUsage.None);
+        _indexBuffer = new IndexBuffer(GraphicsDevice, typeof(short), 6, BufferUsage.None);
+        _indexBuffer.SetData(new short[] { 0, 1, 2, 0, 2, 3 });
+        _effect = _game.Content.Load<Effect>(BuiltInShaderCatalog.SpriteBatchContentName);
+
+        _line3dRendererComponent = _game.GetGameComponent<Line3dRendererComponent>();
+    }
+
+    public bool TryReloadBuiltInShader(string contentName, Effect effect)
+    {
+        ArgumentNullException.ThrowIfNull(effect);
+
+        if (!string.Equals(
+                BuiltInShaderCatalog.NormalizeContentName(contentName),
+                BuiltInShaderCatalog.SpriteBatchContentName,
+                StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        _effect.Dispose();
+        _effect = effect;
+        PoseAlphaWindow(NeutralAlphaMin, NeutralAlphaMax);
+        return true;
+    }
+
+    /// <inheritdoc/>
+    public void Flush(in RenderFrame frame, RenderStats stats = null)
+    {
+        if (_spriteDatas.Count == 0)
+        {
+            return;
+        }
+
+        // D4 (screen-effect-above-ui-tasks.md): Draw (below) sets its own DepthStencilState,
+        // RasterizerState, SamplerStates[0] and BlendState unconditionally and never restores them -
+        // only the scissor rectangle is already saved/restored by Draw itself. When Flush is called
+        // from the post-UI overlay hook (DefaultUICompositionService.Compose, right after
+        // Desktop.Draw() left the device in whatever state MGUI's own drawing used), leaving these
+        // states set would leak into whatever runs next. Reading them back is four cheap reference
+        // getters, no allocation, so this runs unconditionally for every caller of Flush.
+        var graphicsDevice = _effect.GraphicsDevice;
+        var previousDepthStencilState = graphicsDevice.DepthStencilState;
+        var previousRasterizerState = graphicsDevice.RasterizerState;
+        var previousSampler0 = graphicsDevice.SamplerStates[0];
+        var previousBlendState = graphicsDevice.BlendState;
+
+        UpdateBuffer();
+        Draw(frame.View, frame.Projection);
+
+        graphicsDevice.DepthStencilState = previousDepthStencilState;
+        graphicsDevice.RasterizerState = previousRasterizerState;
+        graphicsDevice.SamplerStates[0] = previousSampler0;
+        graphicsDevice.BlendState = previousBlendState;
+
+        Clear();
+    }
+
+    private void Draw(Matrix view, Matrix projection)
+    {
+        // The effect keeps its parameters from one draw to the next: start from the neutral window, whatever the last
+        // draw that used the effect left behind.
+        PoseAlphaWindow(NeutralAlphaMin, NeutralAlphaMax);
+        var currentAlphaMin = NeutralAlphaMin;
+        var currentAlphaMax = NeutralAlphaMax;
+
+        var graphicsDevice = _effect.GraphicsDevice;
+
+        // DepthStencilState is the normal depth-tested/written state by default for the sorted-sprite
+        // pass. It is safe to keep fixed for depth-testing sprites even though they may now blend
+        // rather than draw opaque: every sorted participant (TileMap sorted overlay + Y-sorted
+        // entities) shares a coplanar Z and draws in painter order under LessEqual, so an alpha sprite
+        // writing depth cannot clip a later same-Z draw. A sprite flagged IgnoresDepth (a full-screen
+        // overlay, ADR-0034) switches the device to DepthStencilState.None for its run,
+        // through the same per-run mechanism used below for BlendState.
+        graphicsDevice.DepthStencilState = _depthStencilState;
+        graphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
+        graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
+
+        graphicsDevice.SetVertexBuffer(_vertexBuffer);
+        graphicsDevice.Indices = _indexBuffer;
+
+        var scissorRectangle = graphicsDevice.ScissorRectangle;
+
+        _effect.Parameters["ViewProj"].SetValue(view * projection);
+
+        // The sorted list is ordered by SortKey/Z only and must never be reordered for blend state:
+        // BlendState is applied per contiguous RUN of sprites sharing the same blend mode, so a state
+        // change never costs more than one BlendState set per run, and correctness of the key order
+        // always prevails over minimizing state changes.
+        var currentBlendMode = SpriteBlendMode.Opaque;
+        graphicsDevice.BlendState = _blendState;
+
+        // Same per-run pattern as BlendState above: the sorted list is ordered by SortKey/Z only, so
+        // a depth-state change costs no more than one DepthStencilState set per contiguous run of
+        // sprites sharing the same IgnoresDepth flag (ADR-0034).
+        var currentIgnoresDepth = false;
+
+        // ADR-0068: the series of free-quad entries are drawn without face culling (a mirrored quad winds the other way) and with
+        // the PsxQuad effect; the frame parameters of that effect are set once, on the first quad entry.
+        var currentNoCull = false;
+        var psxQuadFramePosed = false;
+
+        for (var i = 0; i < _spriteDatas.Count; i++)
+        {
+            var spriteDisplayData = _spriteDatas[i];
+
+            if (spriteDisplayData.BlendMode != currentBlendMode)
+            {
+                currentBlendMode = spriteDisplayData.BlendMode;
+                graphicsDevice.BlendState = GetBlendState(currentBlendMode);
+            }
+
+            if (spriteDisplayData.IgnoresDepth != currentIgnoresDepth)
+            {
+                currentIgnoresDepth = spriteDisplayData.IgnoresDepth;
+                graphicsDevice.DepthStencilState = currentIgnoresDepth ? DepthStencilState.None : _depthStencilState;
+            }
+
+            if (spriteDisplayData.NoCull != currentNoCull)
+            {
+                currentNoCull = spriteDisplayData.NoCull;
+                graphicsDevice.RasterizerState = currentNoCull ? RasterizerState.CullNone : RasterizerState.CullCounterClockwise;
+            }
+
+            if (spriteDisplayData.PsxQuad)
+            {
+                var quadEffect = GetPsxQuadEffect();
+                if (!psxQuadFramePosed)
+                {
+                    PosePsxQuadFrame(quadEffect, view * projection, projection, graphicsDevice);
+                    psxQuadFramePosed = true;
+                }
+
+                DrawPsxQuadEntry(quadEffect, in spriteDisplayData, i, graphicsDevice);
+                continue;
+            }
+
+            if (spriteDisplayData.AlphaMin != currentAlphaMin || spriteDisplayData.AlphaMax != currentAlphaMax)
+            {
+                currentAlphaMin = spriteDisplayData.AlphaMin;
+                currentAlphaMax = spriteDisplayData.AlphaMax;
+                PoseAlphaWindow(currentAlphaMin, currentAlphaMax);
+            }
+
+            _effect.Parameters["Texture"].SetValue(spriteDisplayData.Texture);
+            _effect.Parameters["Color"].SetValue(spriteDisplayData.Color.ToVector4());
+            _effect.Parameters["World"].SetValue(spriteDisplayData.WorldMatrix);
+            graphicsDevice.ScissorRectangle = spriteDisplayData.ScissorRectangle;
+
+            for (var j = 0; j < _effect.CurrentTechnique.Passes.Count; j++)
+            {
+                _effect.CurrentTechnique.Passes[j].Apply();
+                graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, i * 4, 0, 2);
+            }
+        }
+
+        graphicsDevice.ScissorRectangle = scissorRectangle;
+
+        // Whatever is drawn next with the shared effect starts from the neutral window.
+        if (currentAlphaMin != NeutralAlphaMin || currentAlphaMax != NeutralAlphaMax)
+        {
+            PoseAlphaWindow(NeutralAlphaMin, NeutralAlphaMax);
+        }
+    }
+
+    /// <summary>
+    /// Sets the raw-alpha window of the sprite effect (ADR-0051). The shader of a project may predate the parameter
+    /// (<see cref="TryReloadBuiltInShader"/>): then there is nothing to set.
+    /// </summary>
+    private void PoseAlphaWindow(float alphaMin, float alphaMax)
+    {
+        if (AlphaWindowWriter != null)
+        {
+            AlphaWindowWriter(alphaMin, alphaMax);
+            return;
+        }
+
+        if (!ReferenceEquals(_alphaWindowEffect, _effect))
+        {
+            _alphaWindowEffect = _effect;
+            _alphaWindowParameter = _effect.Parameters["AlphaWindow"];
+        }
+
+        _alphaWindowParameter?.SetValue(new Vector2(alphaMin, alphaMax));
+    }
+
+    /// <summary>
+    /// Resolves a <see cref="SpriteBlendMode"/> to the <see cref="BlendState"/> instance to apply.
+    /// Both branches return a cached instance (the component's own fixed opaque state, or MonoGame's
+    /// static <see cref="BlendState.NonPremultiplied"/>) so the sorted draw loop never allocates a
+    /// <see cref="BlendState"/> per sprite or per run.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private BlendState GetBlendState(SpriteBlendMode blendMode)
+    {
+        return blendMode switch
+        {
+            SpriteBlendMode.AlphaBlend => BlendState.NonPremultiplied,
+            SpriteBlendMode.Additive => AdditiveBlendState,
+            SpriteBlendMode.Subtractive => SubtractiveBlendState,
+            _ => _blendState
+        };
+    }
+
+    // DrawDirectly reads the active view camera for ViewProjection. It is used for
+    // full-screen texture display and always applies to the primary (active) view.
+    public void DrawDirectly(Texture2D texture)
+    {
+        PoseAlphaWindow(NeutralAlphaMin, NeutralAlphaMax);
+
+        var graphicsDevice = _effect.GraphicsDevice;
+
+        graphicsDevice.DepthStencilState = DepthStencilState.None;
+        graphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
+        graphicsDevice.BlendState = BlendState.AlphaBlend; //BlendState.AlphaBlend; //_blendState
+
+        var camera = _game.GameManager.ViewManager.ActiveView?.Camera;
+        if (camera == null)
+        {
+            return;
+        }
+
+        _effect.Parameters["ViewProj"].SetValue(camera.ViewMatrix * camera.ProjectionMatrix);
+        _effect.Parameters["Texture"].SetValue(texture);
+        _effect.Parameters["Color"].SetValue(Color.White.ToVector4());
+        _effect.Parameters["World"].SetValue(Matrix.Identity);
+        var z = 0.0f;
+
+        var vertices = new VertexPositionColorTexture[]
+        {
+            new(new Vector3(0, 0, z), Color.White, Vector2.UnitY),
+            new(new Vector3(texture.Width, 0, z), Color.White, Vector2.One),
+            new(new Vector3(texture.Width, texture.Height, z), Color.White, Vector2.UnitX),
+            new(new Vector3(0, texture.Height, z), Color.White, Vector2.Zero)
+        };
+
+        for (var j = 0; j < _effect.CurrentTechnique.Passes.Count; j++)
+        {
+            _effect.CurrentTechnique.Passes[j].Apply();
+            graphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList,
+                vertices, 0, 4,
+                new short[] { 0, 2, 1, 0, 3, 2 }, 0,
+                2);
+        }
+    }
+
+    public bool DrawStaticBatch(
+        Texture2D texture,
+        VertexBuffer vertexBuffer,
+        IndexBuffer indexBuffer,
+        int primitiveCount,
+        in Matrix world,
+        in RenderFrame frame)
+    {
+        if (_effect == null
+            || texture == null
+            || vertexBuffer == null
+            || indexBuffer == null
+            || primitiveCount <= 0)
+        {
+            return false;
+        }
+
+        PoseAlphaWindow(NeutralAlphaMin, NeutralAlphaMax);
+
+        var graphicsDevice = _effect.GraphicsDevice;
+        var previousDepthStencilState = graphicsDevice.DepthStencilState;
+        var previousRasterizerState = graphicsDevice.RasterizerState;
+        var previousBlendState = graphicsDevice.BlendState;
+        var previousSamplerState = graphicsDevice.SamplerStates[0];
+        var previousScissorRectangle = graphicsDevice.ScissorRectangle;
+        var previousIndexBuffer = graphicsDevice.Indices;
+
+        try
+        {
+            graphicsDevice.DepthStencilState = _depthStencilState;
+            graphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
+            graphicsDevice.BlendState = _blendState;
+            graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
+            graphicsDevice.SetVertexBuffer(vertexBuffer);
+            graphicsDevice.Indices = indexBuffer;
+
+            _effect.Parameters["ViewProj"].SetValue(frame.ViewProjection);
+            _effect.Parameters["Texture"].SetValue(texture);
+            _effect.Parameters["Color"].SetValue(Color.White.ToVector4());
+            _effect.Parameters["World"].SetValue(world);
+
+            for (var passIndex = 0; passIndex < _effect.CurrentTechnique.Passes.Count; passIndex++)
+            {
+                _effect.CurrentTechnique.Passes[passIndex].Apply();
+                graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, primitiveCount);
+            }
+        }
+        finally
+        {
+            graphicsDevice.SetVertexBuffer(null);
+            graphicsDevice.Indices = previousIndexBuffer;
+            graphicsDevice.DepthStencilState = previousDepthStencilState;
+            graphicsDevice.RasterizerState = previousRasterizerState;
+            graphicsDevice.BlendState = previousBlendState;
+            graphicsDevice.SamplerStates[0] = previousSamplerState;
+            graphicsDevice.ScissorRectangle = previousScissorRectangle;
+        }
+
+        return true;
+    }
+
+    private void DrawDebug(Vector3 position, Vector2 scale, Vector2 origin, Texture2D texture2d, Rectangle sourceInTexture)
+    {
+        if (IsDrawSpriteOriginEnabled)
+        {
+            _line3dRendererComponent.DrawCross(
+                new Vector2(position.X + (origin.X - sourceInTexture.Width / 2f) * scale.X,
+                    position.Y - (origin.Y - sourceInTexture.Height / 2f) * scale.Y),
+                position.Z, 6, Color.Red);
+        }
+
+        if (IsDrawSpriteBorderEnabled)
+        {
+            var temp = new Rectangle
+            {
+                X = (int)(position.X - (sourceInTexture.Width / 2f) * scale.X),
+                Y = (int)(position.Y - (sourceInTexture.Height / 2f) * scale.Y),
+                Width = (int)(sourceInTexture.Width * scale.X),
+                Height = (int)(sourceInTexture.Height * scale.Y)
+            };
+            _line3dRendererComponent.DrawRectangle(ref temp, Color.BlueViolet, position.Z);
+        }
+
+        if (IsDrawSpriteSheetEnabled)
+        {
+            var texturePosition = new Vector2(
+                position.X - (sourceInTexture.X + sourceInTexture.Width / 2f) * scale.X,
+                position.Y + (sourceInTexture.Y + sourceInTexture.Height / 2f) * scale.Y);
+
+            DrawSprite(texture2d, texture2d.Bounds, Point.Zero, texturePosition, 0.0f, scale,
+                Color.FromNonPremultiplied(255, 255, 255, SpriteSheetTransparency),
+                position.Z, SpriteEffects.None, GraphicsDevice.ScissorRectangle, false);
+        }
+    }
+
+    private void UpdateBuffer()
+    {
+        var vertexCount = FillVertices();
+
+        // The queue can hold more than NbSprites entries (ADR-0051): the vertex buffer follows the staging array.
+        if (_vertices.Length > _vertexBuffer.VertexCount)
+        {
+            _vertexBuffer.Dispose();
+            _vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionTexture), _vertices.Length, BufferUsage.None);
+        }
+
+        _vertexBuffer.SetData(_vertices, 0, vertexCount);
+    }
+
+    /// <summary>
+    /// Sorts the queue and writes the four vertices of every entry into the staging array, which grows when the queue
+    /// outgrows it (ADR-0051). Returns the number of vertices written. The step of <see cref="UpdateBuffer"/> that needs no
+    /// graphics device.
+    /// </summary>
+    internal int FillVertices()
+    {
+        var nbVertices = 4;
+
+        _spriteDatas.Sort(SpriteDisplayDataComparison);
+
+        var vertexCount = _spriteDatas.Count * nbVertices;
+        if (vertexCount > _vertices.Length)
+        {
+            Array.Resize(ref _vertices, Math.Max(vertexCount, _vertices.Length * 2));
+        }
+
+        for (var i = 0; i < _spriteDatas.Count; i++)
+        {
+            var index = i * nbVertices;
+            var spriteDisplayData = _spriteDatas[i];
+
+            _vertices[index + 0].Position = spriteDisplayData.TopLeft.Position;
+            _vertices[index + 0].TextureCoordinate = spriteDisplayData.TopLeft.TextureCoordinate;
+            _vertices[index + 1].Position = spriteDisplayData.TopRight.Position;
+            _vertices[index + 1].TextureCoordinate = spriteDisplayData.TopRight.TextureCoordinate;
+            _vertices[index + 2].Position = spriteDisplayData.BottomRight.Position;
+            _vertices[index + 2].TextureCoordinate = spriteDisplayData.BottomRight.TextureCoordinate;
+            _vertices[index + 3].Position = spriteDisplayData.BottomLeft.Position;
+            _vertices[index + 3].TextureCoordinate = spriteDisplayData.BottomLeft.TextureCoordinate;
+        }
+
+        return _spriteDatas.Count * 4;
+    }
+
+    private static int CompareSpriteDisplayData(SpriteDisplayData x, SpriteDisplayData y)
+    {
+        if (x.HasSortKey || y.HasSortKey)
+        {
+            return x.SortKey.CompareTo(y.SortKey);
+        }
+
+        var xZ = x.WorldMatrix.Translation.Z;
+        var yZ = y.WorldMatrix.Translation.Z;
+
+        if (xZ == yZ)
+        {
+            return 0;
+        }
+
+        return xZ > yZ ? -1 : 1;
+    }
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawSprite(Sprite sprite, Vector2 pos, float rot, Vector2 scale, Color color, float zOrder, SpriteEffects effects = SpriteEffects.None)
+    {
+        DrawSprite(sprite, pos, rot, scale, color, zOrder, drawDebug: true, effects, GraphicsDevice.ScissorRectangle);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawSprite(Sprite sprite, Vector2 pos, float rot, Vector2 scale, Color color, float zOrder, bool drawDebug, SpriteEffects effects = SpriteEffects.None)
+    {
+        DrawSprite(sprite, pos, rot, scale, color, zOrder, drawDebug, effects, GraphicsDevice.ScissorRectangle);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawSprite(Sprite sprite, Vector2 pos, float rot, Vector2 scale, Color color, float zOrder, in RenderSortKey2D sortKey, SpriteEffects effects = SpriteEffects.None)
+    {
+        DrawSprite(sprite, pos, rot, scale, color, zOrder, sortKey, drawDebug: true, effects, GraphicsDevice.ScissorRectangle);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawSprite(Sprite sprite, Vector2 pos, float rot, Vector2 scale, Color color, float zOrder, in RenderSortKey2D sortKey, bool drawDebug, SpriteEffects effects = SpriteEffects.None)
+    {
+        DrawSprite(sprite, pos, rot, scale, color, zOrder, sortKey, drawDebug, effects, GraphicsDevice.ScissorRectangle);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawSprite(Sprite sprite, Vector2 pos, float rot, Vector2 scale, Color color, float zOrder, SpriteEffects effects, Rectangle scissorRectangle)
+    {
+        DrawSprite(sprite, pos, rot, scale, color, zOrder, drawDebug: true, effects, scissorRectangle);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawSprite(Sprite sprite, Vector2 pos, float rot, Vector2 scale, Color color, float zOrder, bool drawDebug, SpriteEffects effects, Rectangle scissorRectangle)
+    {
+        DrawSprite(sprite.Texture.Resource, sprite.SpriteData.PositionInTexture, sprite.SpriteData.Origin, pos, rot, scale, color, zOrder, effects, scissorRectangle, drawDebug);
+
+        if (drawDebug && IsDrawCollisionsEnabled)
+        {
+            foreach (var collision2d in sprite.SpriteData.CollisionShapes)
+            {
+                DrawCollision(collision2d, pos, zOrder, sprite.SpriteData.Origin, scale);
+            }
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawSprite(Sprite sprite, Vector2 pos, float rot, Vector2 scale, Color color, float zOrder, in RenderSortKey2D sortKey, SpriteEffects effects, Rectangle scissorRectangle)
+    {
+        DrawSprite(sprite, pos, rot, scale, color, zOrder, sortKey, drawDebug: true, effects, scissorRectangle);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawSprite(Sprite sprite, Vector2 pos, float rot, Vector2 scale, Color color, float zOrder, in RenderSortKey2D sortKey, bool drawDebug, SpriteEffects effects, Rectangle scissorRectangle)
+    {
+        DrawSprite(sprite.Texture.Resource, sprite.SpriteData.PositionInTexture, sprite.SpriteData.Origin, pos, rot, scale, color, zOrder, effects, scissorRectangle, drawDebug, true, sortKey);
+
+        if (drawDebug && IsDrawCollisionsEnabled)
+        {
+            foreach (var collision2d in sprite.SpriteData.CollisionShapes)
+            {
+                DrawCollision(collision2d, pos, zOrder, sprite.SpriteData.Origin, scale);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Same as <see cref="DrawSprite(Sprite,Vector2,float,Vector2,Color,float,in RenderSortKey2D,bool,SpriteEffects,Rectangle)"/>
+    /// but with an explicit <see cref="SpriteBlendMode"/> for the sorted draw loop's per-run blend state.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawSprite(Sprite sprite, Vector2 pos, float rot, Vector2 scale, Color color, float zOrder, in RenderSortKey2D sortKey, bool drawDebug, SpriteEffects effects, Rectangle scissorRectangle, SpriteBlendMode blendMode)
+    {
+        DrawSprite(sprite.Texture.Resource, sprite.SpriteData.PositionInTexture, sprite.SpriteData.Origin, pos, rot, scale, color, zOrder, effects,
+            scissorRectangle, drawDebug, true, sortKey, hasWorldTransform: false, worldTransform: default, blendMode: blendMode);
+
+        if (drawDebug && IsDrawCollisionsEnabled)
+        {
+            foreach (var collision2d in sprite.SpriteData.CollisionShapes)
+            {
+                DrawCollision(collision2d, pos, zOrder, sprite.SpriteData.Origin, scale);
+            }
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawSprite(Sprite sprite, Vector2 pos, float rot, Vector2 scale, Color color, float zOrder, in RenderSortKey2D sortKey, SpriteEffects effects, SpritePsxSemiTransparency psxSemiTransparency)
+    {
+        DrawSprite(sprite, pos, rot, scale, color, zOrder, in sortKey, true, effects, GraphicsDevice.ScissorRectangle, psxSemiTransparency);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawSprite(Sprite sprite, Vector2 pos, float rot, Vector2 scale, Color color, float zOrder, in RenderSortKey2D sortKey, bool drawDebug, SpriteEffects effects, Rectangle scissorRectangle, SpritePsxSemiTransparency psxSemiTransparency)
+    {
+        if (psxSemiTransparency == SpritePsxSemiTransparency.None)
+        {
+            DrawSprite(sprite, pos, rot, scale, color, zOrder, in sortKey, drawDebug, effects, scissorRectangle);
+            return;
+        }
+
+        // ADR-0051: two entries of the same sort key, one per raw-alpha window, so each pixel of the sprite is drawn by
+        // exactly one of them: the opaque texels with the opaque state, then the STP texels with the state of the mode.
+        var texture = sprite.Texture.Resource;
+        var spriteData = sprite.SpriteData;
+        var stpColor = psxSemiTransparency == SpritePsxSemiTransparency.Mode3 ? Mode3FrontColor : color;
+
+        DrawSprite(texture, spriteData.PositionInTexture, spriteData.Origin, pos, rot, scale, color, zOrder, effects,
+            scissorRectangle, drawDebug, true, sortKey, hasWorldTransform: false, worldTransform: default,
+            blendMode: SpriteBlendMode.Opaque, alphaMin: OpaqueTexelsAlphaMin, alphaMax: OpaqueTexelsAlphaMax);
+        DrawSprite(texture, spriteData.PositionInTexture, spriteData.Origin, pos, rot, scale, stpColor, zOrder, effects,
+            scissorRectangle, false, true, sortKey, hasWorldTransform: false, worldTransform: default,
+            blendMode: GetPsxBlendMode(psxSemiTransparency), alphaMin: StpTexelsAlphaMin, alphaMax: StpTexelsAlphaMax);
+
+        if (drawDebug && IsDrawCollisionsEnabled)
+        {
+            foreach (var collision2d in spriteData.CollisionShapes)
+            {
+                DrawCollision(collision2d, pos, zOrder, spriteData.Origin, scale);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Queues a free PSX quad (ADR-0068): the four vertices of a PS1 textured quad, in the order of the PS1 data (top-left,
+    /// top-right, bottom-left, bottom-right of the texture rectangle), anywhere in the world (units = PS1 pixels, y up), so a
+    /// scaled, mirrored, sheared or arbitrary quad is drawn as the PS1 draws it. <paramref name="sourceInTexture"/> is the raw
+    /// texture window of the PS1 data in texels (<c>u, v, w, h</c>): the texture coordinates are its corners, never flipped (the
+    /// mirror is in the corners), and a mirrored axis names its window one texel back, as the producer gives it. The quad is
+    /// drawn with the screen-resolution rule of ADR-0068 (exact at factor 1, one texel per PS1 pixel for a 1:1 quad at any
+    /// factor); the mode queues two entries of the same key on two disjoint raw-alpha windows (ADR-0051), like a sprite.
+    /// </summary>
+    public void DrawPsxQuad(Texture2D texture, Rectangle sourceInTexture, Vector2 topLeft, Vector2 topRight, Vector2 bottomLeft,
+        Vector2 bottomRight, Color color, float z, in RenderSortKey2D sortKey, SpritePsxSemiTransparency psxSemiTransparency,
+        Rectangle scissorRectangle)
+    {
+        DrawPsxQuadCore(texture, sourceInTexture, topLeft, topRight, bottomLeft, bottomRight, color, z, true, in sortKey,
+            psxSemiTransparency, scissorRectangle);
+    }
+
+    /// <summary>The overload with a sort key, on the device scissor.</summary>
+    public void DrawPsxQuad(Texture2D texture, Rectangle sourceInTexture, Vector2 topLeft, Vector2 topRight, Vector2 bottomLeft,
+        Vector2 bottomRight, Color color, float z, in RenderSortKey2D sortKey, SpritePsxSemiTransparency psxSemiTransparency)
+    {
+        DrawPsxQuadCore(texture, sourceInTexture, topLeft, topRight, bottomLeft, bottomRight, color, z, true, in sortKey,
+            psxSemiTransparency, GraphicsDevice.ScissorRectangle);
+    }
+
+    /// <summary>The path by <paramref name="z"/> (no sort key): the same quad as the overload with a sort key.</summary>
+    public void DrawPsxQuad(Texture2D texture, Rectangle sourceInTexture, Vector2 topLeft, Vector2 topRight, Vector2 bottomLeft,
+        Vector2 bottomRight, Color color, float z, SpritePsxSemiTransparency psxSemiTransparency, Rectangle scissorRectangle)
+    {
+        DrawPsxQuadCore(texture, sourceInTexture, topLeft, topRight, bottomLeft, bottomRight, color, z, false,
+            RenderSortKey2D.Default, psxSemiTransparency, scissorRectangle);
+    }
+
+    /// <summary>The path by <paramref name="z"/> (no sort key), on the device scissor.</summary>
+    public void DrawPsxQuad(Texture2D texture, Rectangle sourceInTexture, Vector2 topLeft, Vector2 topRight, Vector2 bottomLeft,
+        Vector2 bottomRight, Color color, float z, SpritePsxSemiTransparency psxSemiTransparency)
+    {
+        DrawPsxQuadCore(texture, sourceInTexture, topLeft, topRight, bottomLeft, bottomRight, color, z, false,
+            RenderSortKey2D.Default, psxSemiTransparency, GraphicsDevice.ScissorRectangle);
+    }
+
+    private void DrawPsxQuadCore(Texture2D texture, Rectangle sourceInTexture, Vector2 topLeft, Vector2 topRight, Vector2 bottomLeft,
+        Vector2 bottomRight, Color color, float z, bool hasSortKey, in RenderSortKey2D sortKey,
+        SpritePsxSemiTransparency psxSemiTransparency, Rectangle scissorRectangle)
+    {
+        ArgumentNullException.ThrowIfNull(texture);
+
+        if (texture.IsDisposed)
+        {
+            throw new ArgumentException($"{nameof(texture)} is disposed");
+        }
+
+        if (psxSemiTransparency == SpritePsxSemiTransparency.None)
+        {
+            QueuePsxQuad(texture, sourceInTexture, topLeft, topRight, bottomLeft, bottomRight, color, z, hasSortKey, in sortKey,
+                scissorRectangle, SpriteBlendMode.Opaque, NeutralAlphaMin, NeutralAlphaMax);
+            return;
+        }
+
+        // ADR-0051: the opaque texels, then the STP texels with the state of the mode, the same corners and key.
+        var stpColor = psxSemiTransparency == SpritePsxSemiTransparency.Mode3 ? Mode3FrontColor : color;
+        QueuePsxQuad(texture, sourceInTexture, topLeft, topRight, bottomLeft, bottomRight, color, z, hasSortKey, in sortKey,
+            scissorRectangle, SpriteBlendMode.Opaque, OpaqueTexelsAlphaMin, OpaqueTexelsAlphaMax);
+        QueuePsxQuad(texture, sourceInTexture, topLeft, topRight, bottomLeft, bottomRight, stpColor, z, hasSortKey, in sortKey,
+            scissorRectangle, GetPsxBlendMode(psxSemiTransparency), StpTexelsAlphaMin, StpTexelsAlphaMax);
+    }
+
+    /// <summary>
+    /// Writes one entry of a free quad. It does not use the core of the sprite (unit square and scale matrix): every field of
+    /// the entry is assigned, so an entry reused from the pool keeps nothing of its previous use. The corners go into the
+    /// vertex slots TR, BR, BL, TL so the index buffer {0, 1, 2, 0, 2, 3} draws the triangles (TR, BR, BL) and (TR, BL, TL):
+    /// the TR-BL diagonal of the PS1 split.
+    /// </summary>
+    private void QueuePsxQuad(Texture2D texture, Rectangle sourceInTexture, Vector2 topLeft, Vector2 topRight, Vector2 bottomLeft,
+        Vector2 bottomRight, Color color, float z, bool hasSortKey, in RenderSortKey2D sortKey, Rectangle scissorRectangle,
+        SpriteBlendMode blendMode, float alphaMin, float alphaMax)
+    {
+        var center = (topLeft + topRight + bottomLeft + bottomRight) * 0.25f;
+
+        var left = (sourceInTexture.Left + PsxQuadTexelShift) / texture.Width;
+        var right = (sourceInTexture.Right + PsxQuadTexelShift) / texture.Width;
+        var top = (sourceInTexture.Top + PsxQuadTexelShift) / texture.Height;
+        var bottom = (sourceInTexture.Bottom + PsxQuadTexelShift) / texture.Height;
+
+        GetSpriteDisplayData(out var spriteDisplayData);
+        spriteDisplayData.TopLeft = new VertexPositionTexture(new Vector3(topRight - center, 0f), new Vector2(right, top));
+        spriteDisplayData.TopRight = new VertexPositionTexture(new Vector3(bottomRight - center, 0f), new Vector2(right, bottom));
+        spriteDisplayData.BottomRight = new VertexPositionTexture(new Vector3(bottomLeft - center, 0f), new Vector2(left, bottom));
+        spriteDisplayData.BottomLeft = new VertexPositionTexture(new Vector3(topLeft - center, 0f), new Vector2(left, top));
+        spriteDisplayData.Color = color;
+        spriteDisplayData.Texture = texture;
+        spriteDisplayData.WorldMatrix = Matrix.CreateTranslation(center.X, center.Y, z);
+        spriteDisplayData.ScissorRectangle = scissorRectangle;
+        spriteDisplayData.SortKey = sortKey;
+        spriteDisplayData.HasSortKey = hasSortKey;
+        spriteDisplayData.BlendMode = blendMode;
+        spriteDisplayData.AlphaMin = alphaMin;
+        spriteDisplayData.AlphaMax = alphaMax;
+        spriteDisplayData.IgnoresDepth = false;
+        spriteDisplayData.NoCull = true;
+        spriteDisplayData.PsxQuad = true;
+        _spriteDatas.Add(spriteDisplayData);
+    }
+
+    private Effect GetPsxQuadEffect()
+    {
+        return _psxQuadEffect ??= _game.Content.Load<Effect>(PsxQuadContentName);
+    }
+
+    /// <summary>
+    /// Frame parameters of the PsxQuad effect (ADR-0068): the view-projection, the half screen pixel the geometry is shifted by
+    /// (right and down, in clip space) and the factor k, the screen pixels per world unit (PS1 pixel), read from the projection
+    /// and the viewport (an integer under ADR-0048).
+    /// </summary>
+    private static void PosePsxQuadFrame(Effect effect, Matrix viewProjection, Matrix projection, GraphicsDevice graphicsDevice)
+    {
+        var viewport = graphicsDevice.Viewport;
+        effect.Parameters["ViewProj"].SetValue(viewProjection);
+        effect.Parameters["HalfPixel"].SetValue(new Vector2(1f / viewport.Width, -1f / viewport.Height));
+        effect.Parameters["Scale"].SetValue(projection.M11 * viewport.Width * 0.5f);
+    }
+
+    private static void DrawPsxQuadEntry(Effect effect, in SpriteDisplayData entry, int index, GraphicsDevice graphicsDevice)
+    {
+        effect.Parameters["Texture"].SetValue(entry.Texture);
+        effect.Parameters["TextureSize"].SetValue(new Vector2(entry.Texture.Width, entry.Texture.Height));
+        effect.Parameters["Color"].SetValue(entry.Color.ToVector4());
+        effect.Parameters["World"].SetValue(entry.WorldMatrix);
+        effect.Parameters["AlphaWindow"].SetValue(new Vector2(entry.AlphaMin, entry.AlphaMax));
+        graphicsDevice.ScissorRectangle = entry.ScissorRectangle;
+
+        for (var j = 0; j < effect.CurrentTechnique.Passes.Count; j++)
+        {
+            effect.CurrentTechnique.Passes[j].Apply();
+            graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, index * 4, 0, 2);
+        }
+    }
+
+    private static SpriteBlendMode GetPsxBlendMode(SpritePsxSemiTransparency mode)
+    {
+        return mode switch
+        {
+            SpritePsxSemiTransparency.Mode0 => SpriteBlendMode.AlphaBlend,
+            SpritePsxSemiTransparency.Mode2 => SpriteBlendMode.Subtractive,
+            _ => SpriteBlendMode.Additive
+        };
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void DrawCollision(Collision2d collision2d, Vector2 position, float z, Point origin, Vector2 scale)
+    {
+        var color = SpriteCollisionHelper.GetDebugColor(collision2d);
+
+        switch (collision2d.Shape.Type)
+        {
+            case Shape2dType.Compound:
+                break;
+            case Shape2dType.Polygone:
+                break;
+            case Shape2dType.Rectangle:
+                var rectangle = collision2d.Shape as ShapeRectangle;
+                _line3dRendererComponent.DrawRectangle(
+                    position.X + (collision2d.LocalPosition.X - origin.X) * scale.X,
+                    position.Y - (collision2d.LocalPosition.Y - origin.Y + rectangle.Height) * scale.Y,
+                    rectangle.Width * scale.X,
+                    rectangle.Height * scale.Y,
+                    color,
+                    z - 0.001f);
+                break;
+            case Shape2dType.Circle:
+                break;
+            case Shape2dType.Line:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawSprite(Texture2D texture2d, Vector2 pos, float rot, Vector2 scale, Color color, float zOrder, SpriteEffects effects)
+    {
+        DrawSprite(texture2d, texture2d.Bounds, Point.Zero, pos, rot, scale, color, zOrder, effects, GraphicsDevice.ScissorRectangle);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawSprite(Texture2D texture2d, Vector2 pos, float rot, Vector2 scale, Color color, float zOrder, SpriteEffects effects, Rectangle scissorRectangle)
+    {
+        DrawSprite(texture2d, texture2d.Bounds, Point.Zero, pos, rot, scale, color, zOrder, effects, scissorRectangle);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawSprite(Texture2D texture2d, Rectangle sourceInTexture, Point origin, Vector2 position, float rotation,
+        Vector2 scale, Color color, float z, SpriteEffects effects)
+    {
+        DrawSprite(texture2d, sourceInTexture, origin, position, rotation, scale, color, z, effects, GraphicsDevice.ScissorRectangle);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawSprite(Texture2D texture2d, Rectangle sourceInTexture, Point origin, Vector2 position, float rotation,
+        Vector2 scale, Color color, float z, SpriteEffects effects, Rectangle scissorRectangle)
+    {
+        DrawSprite(texture2d, sourceInTexture, origin, position, rotation, scale, color, z, effects, scissorRectangle, true);
+    }
+
+    /// <summary>
+    /// Draws a raw texture sprite with an explicit <see cref="RenderSortKey2D"/>, sorting it against
+    /// every other keyed sprite in the scene instead of by depth. Used by non-<see cref="Sprite"/> asset
+    /// sources (e.g. the tile map sorted overlay) that need the keyed sprite path.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawSprite(Texture2D texture2d, Rectangle sourceInTexture, Point origin, Vector2 position, float rotation,
+        Vector2 scale, Color color, float z, in RenderSortKey2D sortKey, SpriteEffects effects)
+    {
+        DrawSprite(texture2d, sourceInTexture, origin, position, rotation, scale, color, z, effects,
+            GraphicsDevice.ScissorRectangle, drawDebug: false, hasSortKey: true, in sortKey);
+    }
+
+    /// <summary>
+    /// Same as <see cref="DrawSprite(Texture2D,Rectangle,Point,Vector2,float,Vector2,Color,float,in RenderSortKey2D,SpriteEffects)"/>
+    /// but with an explicit scissor rectangle instead of the device's current one, so callers that
+    /// submit many sprites per frame (e.g. the tile map sorted overlay) do not have to read
+    /// <see cref="GraphicsDevice"/> once per sprite.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawSprite(Texture2D texture2d, Rectangle sourceInTexture, Point origin, Vector2 position, float rotation,
+        Vector2 scale, Color color, float z, in RenderSortKey2D sortKey, SpriteEffects effects, Rectangle scissorRectangle)
+    {
+        DrawSprite(texture2d, sourceInTexture, origin, position, rotation, scale, color, z, effects,
+            scissorRectangle, drawDebug: false, hasSortKey: true, in sortKey);
+    }
+
+    /// <summary>
+    /// Same as <see cref="DrawSprite(Texture2D,Rectangle,Point,Vector2,float,Vector2,Color,float,in RenderSortKey2D,SpriteEffects)"/>
+    /// but with an explicit <see cref="SpriteBlendMode"/> for the sorted draw loop's per-run blend state.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawSprite(Texture2D texture2d, Rectangle sourceInTexture, Point origin, Vector2 position, float rotation,
+        Vector2 scale, Color color, float z, in RenderSortKey2D sortKey, SpriteEffects effects, SpriteBlendMode blendMode)
+    {
+        DrawSprite(texture2d, sourceInTexture, origin, position, rotation, scale, color, z, effects,
+            GraphicsDevice.ScissorRectangle, drawDebug: false, hasSortKey: true, in sortKey,
+            hasWorldTransform: false, worldTransform: default, blendMode: blendMode);
+    }
+
+    /// <summary>
+    /// Same as <see cref="DrawSprite(Texture2D,Rectangle,Point,Vector2,float,Vector2,Color,float,in RenderSortKey2D,SpriteEffects,Rectangle)"/>
+    /// but with an explicit <see cref="SpriteBlendMode"/> for the sorted draw loop's per-run blend state,
+    /// and an optional <paramref name="ignoresDepth"/> for a full-screen overlay that must cover every
+    /// pixel regardless of what has already been drawn at that pixel's depth (ADR-0034).
+    /// Defaults to <see langword="false"/> so every existing caller keeps testing/writing depth exactly
+    /// as before this parameter existed.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawSprite(Texture2D texture2d, Rectangle sourceInTexture, Point origin, Vector2 position, float rotation,
+        Vector2 scale, Color color, float z, in RenderSortKey2D sortKey, SpriteEffects effects, Rectangle scissorRectangle, SpriteBlendMode blendMode, bool ignoresDepth = false)
+    {
+        DrawSprite(texture2d, sourceInTexture, origin, position, rotation, scale, color, z, effects,
+            scissorRectangle, drawDebug: false, hasSortKey: true, in sortKey,
+            hasWorldTransform: false, worldTransform: default, blendMode: blendMode, ignoresDepth: ignoresDepth);
+    }
+
+    /// <summary>
+    /// Draws a raw texture with a PSX semi-transparency mode (ADR-0051, extended to the background layers: the quads of
+    /// <see cref="ScrollingLayerComponent"/> and the cells of <see cref="CellularLayerComponent"/>). <see cref="SpritePsxSemiTransparency.None"/>
+    /// queues one opaque entry on the neutral window, like the overload without a mode; any other mode queues two entries of the same
+    /// sort key and z on two disjoint raw-alpha windows: the opaque texels with the opaque state, then the STP texels with the state
+    /// of the mode (<see cref="SpritePsxSemiTransparency.Mode3"/> draws them with the colour (64, 64, 64) instead of
+    /// <paramref name="color"/>). Not redirected from the <see cref="Sprite"/> overloads, which keep their debug drawing.
+    /// </summary>
+    internal void DrawSprite(Texture2D texture2d, Rectangle sourceInTexture, Point origin, Vector2 position, float rotation,
+        Vector2 scale, Color color, float z, in RenderSortKey2D sortKey, SpriteEffects effects, Rectangle scissorRectangle,
+        SpritePsxSemiTransparency psxSemiTransparency)
+    {
+        if (psxSemiTransparency == SpritePsxSemiTransparency.None)
+        {
+            DrawSprite(texture2d, sourceInTexture, origin, position, rotation, scale, color, z, in sortKey, effects, scissorRectangle);
+            return;
+        }
+
+        var stpColor = psxSemiTransparency == SpritePsxSemiTransparency.Mode3 ? Mode3FrontColor : color;
+
+        DrawSprite(texture2d, sourceInTexture, origin, position, rotation, scale, color, z, effects, scissorRectangle,
+            false, true, sortKey, hasWorldTransform: false, worldTransform: default,
+            blendMode: SpriteBlendMode.Opaque, alphaMin: OpaqueTexelsAlphaMin, alphaMax: OpaqueTexelsAlphaMax);
+        DrawSprite(texture2d, sourceInTexture, origin, position, rotation, scale, stpColor, z, effects, scissorRectangle,
+            false, true, sortKey, hasWorldTransform: false, worldTransform: default,
+            blendMode: GetPsxBlendMode(psxSemiTransparency), alphaMin: StpTexelsAlphaMin, alphaMax: StpTexelsAlphaMax);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void DrawSprite(Texture2D texture2d, Rectangle sourceInTexture, Point origin, Vector2 position, float rotation,
+        Vector2 scale, Color color, float z, SpriteEffects effects, Rectangle scissorRectangle, bool drawDebug)
+    {
+        DrawSprite(texture2d, sourceInTexture, origin, position, rotation, scale, color, z, effects, scissorRectangle, drawDebug, false, RenderSortKey2D.Default);
+    }
+
+    /// <summary>
+    /// Draws a sprite whose quad is expressed in a local space, then transformed by <paramref name="worldTransform"/>.
+    /// Used by world-space objects (tile maps) that carry a full world matrix including rotation.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DrawSprite(Texture2D texture2d, Rectangle sourceInTexture, Point origin, Vector2 position, float rotation,
+        Vector2 scale, Color color, float z, SpriteEffects effects, in Matrix worldTransform)
+    {
+        DrawSprite(texture2d, sourceInTexture, origin, position, rotation, scale, color, z, effects,
+            GraphicsDevice.ScissorRectangle, drawDebug: false, hasSortKey: false, RenderSortKey2D.Default,
+            hasWorldTransform: true, in worldTransform);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void DrawSprite(Texture2D texture2d, Rectangle sourceInTexture, Point origin, Vector2 position, float rotation,
+        Vector2 scale, Color color, float z, SpriteEffects effects, Rectangle scissorRectangle, bool drawDebug, bool hasSortKey, in RenderSortKey2D sortKey,
+        bool hasWorldTransform = false, in Matrix worldTransform = default, SpriteBlendMode blendMode = SpriteBlendMode.Opaque, bool ignoresDepth = false,
+        float alphaMin = NeutralAlphaMin, float alphaMax = NeutralAlphaMax)
+    {
+        if (texture2d == null)
+        {
+            throw new ArgumentNullException(nameof(texture2d));
+        }
+
+        if (texture2d.IsDisposed)
+        {
+            throw new ArgumentException($"{nameof(texture2d)} is disposed");
+        }
+
+        bool flipHorizontally = (effects & SpriteEffects.FlipHorizontally) != 0;
+        bool flipVertically = (effects & SpriteEffects.FlipVertically) != 0;
+
+        var uvTopLeft = new Vector2(flipHorizontally ? sourceInTexture.Right : sourceInTexture.Left, flipVertically ? sourceInTexture.Bottom : sourceInTexture.Top);
+        var uvTopRight = new Vector2(flipHorizontally ? sourceInTexture.Left : sourceInTexture.Right, flipVertically ? sourceInTexture.Bottom : sourceInTexture.Top);
+        var uvBottomRight = new Vector2(flipHorizontally ? sourceInTexture.Left : sourceInTexture.Right, flipVertically ? sourceInTexture.Top : sourceInTexture.Bottom);
+        var uvBottomLeft = new Vector2(flipHorizontally ? sourceInTexture.Right : sourceInTexture.Left, flipVertically ? sourceInTexture.Top : sourceInTexture.Bottom);
+
+        var textureSize = new Vector2(texture2d.Width, texture2d.Height);
+        uvTopLeft /= textureSize;
+        uvTopRight /= textureSize;
+        uvBottomRight /= textureSize;
+        uvBottomLeft /= textureSize;
+
+        GetSpriteDisplayData(out var spriteDisplayData);
+        spriteDisplayData.TopLeft = new(_vertexTopLeft, uvTopLeft);
+        spriteDisplayData.TopRight = new(_vertexTopRight, uvTopRight);
+        spriteDisplayData.BottomRight = new(_vertexBottomRight, uvBottomRight);
+        spriteDisplayData.BottomLeft = new(_vertexBottomLeft, uvBottomLeft);
+        spriteDisplayData.Texture = texture2d;
+        spriteDisplayData.Color = color;
+        spriteDisplayData.WorldMatrix = MatrixExtensions.Transformation(
+            new Vector3(scale.X * sourceInTexture.Width, scale.Y * sourceInTexture.Height, 1.0f),
+            Quaternion.CreateFromAxisAngle(Vector3.UnitZ, rotation),
+            new Vector3(
+                position.X - origin.X * scale.X + (sourceInTexture.Width / 2f) * scale.X,
+                position.Y + origin.Y * scale.Y - (sourceInTexture.Height / 2f) * scale.Y,
+                z));
+        if (hasWorldTransform)
+        {
+            spriteDisplayData.WorldMatrix *= worldTransform;
+        }
+
+        spriteDisplayData.ScissorRectangle = scissorRectangle;
+            spriteDisplayData.SortKey = sortKey;
+            spriteDisplayData.HasSortKey = hasSortKey;
+            spriteDisplayData.BlendMode = blendMode;
+            spriteDisplayData.IgnoresDepth = ignoresDepth;
+        spriteDisplayData.AlphaMin = alphaMin;
+        spriteDisplayData.AlphaMax = alphaMax;
+        spriteDisplayData.NoCull = false;
+        spriteDisplayData.PsxQuad = false;
+        _spriteDatas.Add(spriteDisplayData);
+
+        if (drawDebug)
+        {
+            DrawDebug(spriteDisplayData.WorldMatrix.Translation, scale, origin.ToVector2(), texture2d, sourceInTexture);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void GetSpriteDisplayData(out SpriteDisplayData spriteDisplayData)
+    {
+        spriteDisplayData = _freeSpriteDatas.Count > 0 ? _freeSpriteDatas.Pop() : new SpriteDisplayData();
+    }
+
+    private void Clear()
+    {
+        foreach (var line in _spriteDatas)
+        {
+            _freeSpriteDatas.Push(line);
+        }
+
+        _spriteDatas.Clear();
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            lock (this)
+            {
+                Game.RemoveGameComponent<SpriteRendererComponent>();
+            }
+        }
+
+        base.Dispose(disposing);
+    }
+}

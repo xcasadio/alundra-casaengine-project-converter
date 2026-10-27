@@ -1,0 +1,15 @@
+diff --git a/Alundra/Maps/Loop/FrameSyncPasses.cs b/Alundra/Maps/Loop/FrameSyncPasses.cs
+index 78107943..0c9d967b 100644
+--- a/Alundra/Maps/Loop/FrameSyncPasses.cs
++++ b/Alundra/Maps/Loop/FrameSyncPasses.cs
+@@ -451,8 +451,10 @@ internal static class FrameSyncPasses
+     /// the first place. A <see cref="EntityStatus.FlagToDestroy"/> entity is skipped too, same as
+     /// <see cref="RunAnimationSyncPass"/> and <see cref="RunTransformSyncPass"/>.
+     /// </summary>
++    internal static Action<IReadOnlyList<Entity>>? G1dProbeBeforeSortPass; // TEMPORARY T0 probe, reverted
+     internal static void RunWallInterleaveSortKeyPass(IReadOnlyList<Entity> entities)
+     {
++        G1dProbeBeforeSortPass?.Invoke(entities);
+         // Indexed for, not foreach - see RunPendingEventTriggers's own doc on why an IReadOnlyList<T>
+         // foreach's boxed enumerator is no longer free to ignore on a per-frame pass.
+         for (var i = 0; i < entities.Count; i++)

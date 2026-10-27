@@ -1,0 +1,14 @@
+BankKey alundra_2 gid 4d0c2294-87b6-50da-99ca-d789281cc580
+  anim   0 dir 0 frames [5, 5, 5, 5] end Loop
+  anim   0 dir 1 frames [5, 5, 5, 5] end Loop
+  anim   0 dir 2 frames [5, 5, 5, 5] end Loop
+  anim   0 dir 3 frames [5, 5, 5, 5] end Loop
+  anim   1 dir 0 frames [5, 5, 4, 3, 19, 6, 6, 35, 35, 35, 35, 35, 32, 32, 32, 16] end Hold
+  anim   1 dir 1 frames [5, 5, 4, 3, 19, 6, 6, 35, 35, 35, 35, 35, 32, 32, 32, 16] end Hold
+  anim   1 dir 2 frames [5, 5, 4, 3, 19, 6, 6, 35, 35, 35, 35, 35, 32, 32, 32, 16] end Hold
+  anim   1 dir 3 frames [5, 5, 4, 3, 19, 6, 6, 35, 35, 35, 35, 35, 32, 32, 32, 16] end Hold
+  anim   2 dir 0 frames [5, 5, 5, 5] end Loop
+  anim   2 dir 1 frames [5, 5, 5, 5] end Loop
+  anim   2 dir 2 frames [5, 5, 5, 5] end Loop
+  anim   2 dir 3 frames [5, 5, 5, 5] end Loop
+  AnimSets: [(0, 0, 0), (1, 0, 0), (2, 4, 1024)]

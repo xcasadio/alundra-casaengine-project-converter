@@ -1,0 +1,21 @@
+BankKey, pickupKind, collidable, IDSV(anim0, frame0, per direction), SizeZ
+alundra_1      kind=1 collidable=True  idsv0={0: 3, 1: 3, 2: 3, 3: 3} sizeZ=16
+alundra_2      kind=1 collidable=False idsv0={0: 5, 1: 5, 2: 5, 3: 5} sizeZ=16
+alundra_234    kind=3 collidable=True  idsv0={0: 11, 1: 11, 2: 11, 3: 11} sizeZ=34
+107            kind=1 collidable=True  idsv0={0: 4, 1: 4, 2: 4, 3: 4} sizeZ=14
+111            kind=1 collidable=True  idsv0={0: 4, 1: 4, 2: 4, 3: 4} sizeZ=14
+112            kind=1 collidable=True  idsv0={0: 4, 1: 4, 2: 4, 3: 4} sizeZ=14
+113            kind=1 collidable=True  idsv0={0: 4, 1: 4, 2: 4, 3: 4} sizeZ=14
+117            kind=1 collidable=True  idsv0={0: 7, 1: 7, 2: 7, 3: 7} sizeZ=16
+137            kind=1 collidable=True  idsv0={0: 7, 1: 7, 2: 7, 3: 7} sizeZ=15
+182            kind=1 collidable=True  idsv0={0: 5, 1: 5, 2: 5, 3: 5} sizeZ=16
+34             kind=1 collidable=True  idsv0={0: 7, 1: 7, 2: 7, 3: 7} sizeZ=16
+35             kind=1 collidable=True  idsv0={0: 7, 1: 7, 2: 7, 3: 7} sizeZ=16
+36             kind=1 collidable=True  idsv0={0: 7, 1: 7, 2: 7, 3: 7} sizeZ=16
+37             kind=1 collidable=True  idsv0={0: 5, 1: 5, 2: 5, 3: 5} sizeZ=16
+38             kind=1 collidable=True  idsv0={0: 7, 1: 7, 2: 7, 3: 7} sizeZ=16
+41             kind=1 collidable=True  idsv0={0: 2, 1: 2, 2: 2, 3: 2} sizeZ=16
+48             kind=1 collidable=True  idsv0={0: 6, 1: 6, 2: 6, 3: 6} sizeZ=16
+
+liftable records: 17  collidable: 16  not collidable: 1
+max IDSV of anim 0 among the liftables: [(2, 1), (3, 1), (4, 4), (5, 3), (6, 1), (7, 6), (11, 1)]

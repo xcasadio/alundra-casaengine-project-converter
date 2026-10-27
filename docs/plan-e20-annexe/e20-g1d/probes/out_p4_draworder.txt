@@ -1,0 +1,19 @@
+hero: files 376 min 0 max 13 tracks ['Corners', 'FlipX', 'FlipY', 'Position', 'Sprite', 'Visible']
+liftable alundra_1    collidable=True  files  12 draw order min 0 max 0
+liftable alundra_2    collidable=False files  12 draw order min 0 max 6
+liftable alundra_234  collidable=True  files  20 draw order min 0 max 0
+liftable 107          collidable=True  files  20 draw order min 0 max 0
+liftable 111          collidable=True  files  20 draw order min 0 max 0
+liftable 112          collidable=True  files  20 draw order min 0 max 0
+liftable 113          collidable=True  files  20 draw order min 0 max 0
+liftable 117          collidable=True  files  32 draw order min 0 max 0
+liftable 137          collidable=True  files  20 draw order min 0 max 2
+liftable 182          collidable=True  files  20 draw order min 0 max 0
+liftable 34           collidable=True  files  20 draw order min 0 max 0
+liftable 35           collidable=True  files  20 draw order min 0 max 0
+liftable 36           collidable=True  files  20 draw order min 0 max 0
+liftable 37           collidable=True  files  20 draw order min 0 max 0
+liftable 38           collidable=True  files  20 draw order min 0 max 0
+liftable 41           collidable=True  files  20 draw order min 0 max 0
+liftable 48           collidable=True  files  20 draw order min 0 max 0
+liftable records: 17 ; maximum over them: 6 ; hero maximum: 13 ; K = max(14, 7) = 14

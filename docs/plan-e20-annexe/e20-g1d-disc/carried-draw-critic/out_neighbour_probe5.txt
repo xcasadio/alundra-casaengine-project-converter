@@ -1,0 +1,12 @@
+neighbour sprite 25 at hero+0,+8 height real 32px: ticks 66, bomb in front 66, BEHIND 0 (first/last behind tick: []/[])
+      last: hero key 00CD0000 bomb key 00CD0020 neighbour key 00D00000 bomb z 32.0
+neighbour sprite 25 at hero+0,+8 height 16px: ticks 66, bomb in front 0, BEHIND 66 (first/last behind tick: [5]/[70])
+      last: hero key 00D00000 bomb key 00CD0020 neighbour key 00D00000 bomb z 32.0
+neighbour sprite 25 at hero+0,+14 height 16px: ticks 66, bomb in front 0, BEHIND 66 (first/last behind tick: [5]/[70])
+      last: hero key 00D60000 bomb key 00CD0020 neighbour key 00D60000 bomb z 32.0
+neighbour sprite 25 at hero+0,-8 height 16px: ticks 66, bomb in front 66, BEHIND 0 (first/last behind tick: []/[])
+      last: hero key 00CD0000 bomb key 00CD0020 neighbour key 00C00000 bomb z 32.0
+neighbour sprite 25 at hero+0,+16 height 16px: ticks 66, bomb in front 66, BEHIND 0 (first/last behind tick: []/[])
+      last: hero key 00CD0000 bomb key 00CD0020 neighbour key 00D80000 bomb z 32.0
+neighbour sprite 25 at hero+0,+22 height 16px: ticks 66, bomb in front 66, BEHIND 0 (first/last behind tick: []/[])
+      last: hero key 00CD0000 bomb key 00CD0020 neighbour key 00DE0000 bomb z 32.0
