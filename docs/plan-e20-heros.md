@@ -3801,7 +3801,7 @@ d'histoire qui bouge ; un besoin de toucher au moteur ; un test qui boucle.
 **Retour arrière.** Retirer l'appel de la fonction du tick du héros (le bit n'est plus jamais posé : Alundra nage partout, l'état
 d'aujourd'hui) ; puis le pseudo-bit et la lecture de `BlockedCorners`.
 
-#### 1.14.3 E20.i2b — La fonction des forces : la table de glissement, le décalage `SlideEffectId` et la poussée (O-E19-31, Q-H4-3) ⏳ (détaillée le 2026-10-25 ; thème 2, après i2a, avant h4e2 et h4f1 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, REVISE à la relecture de clôture : **en pause de relecture** ; révision 3 écrite ; reprise sur ordre de l'auteur, Q-I2B-P, puis D-E20-88 ; la révision 3 relue le 2026-10-27 (nouvelle époque) : REVISE ; révision 4 relue : REVISE ; **révision 4.1** du 2026-10-27 après disposition, à la relecture de clôture)
+#### 1.14.3 E20.i2b — La fonction des forces : la table de glissement, le décalage `SlideEffectId` et la poussée (O-E19-31, Q-H4-3) ⏳ (détaillée le 2026-10-25 ; thème 2, après i2a, avant h4e2 et h4f1 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, REVISE à la relecture de clôture : **en pause de relecture** ; révision 3 écrite ; reprise sur ordre de l'auteur, Q-I2B-P, puis D-E20-88 ; la révision 3 relue le 2026-10-27 (nouvelle époque) : REVISE ; révision 4 relue : REVISE ; révision 4.1 du 2026-10-27 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais)
 
 **Révision 1 (2026-10-25).** La relecture de la révision 0 (REVISE) a relevé cinq blocages, corrigés (FIX) : (1) (f1) comparait une fonction
 sans serrage à des vecteurs pris après le serrage (163 sur 200) et ne disait pas d'où vient la force F des vecteurs de la passe : (f1) ne
