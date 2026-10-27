@@ -22,3 +22,9 @@
 - Pinned by 25 vectors per function, `BombHandsWorldTests` (w1 to w11, 26 cases, tick by tick against the keys with no tolerance), and by 34 real mutants, all killed except two equivalent ones that were replaced by their neighbours (`docs/plan-e20-annexe/e20-h3b/t4.md`).
 - Every object carried by the hero now keeps the hero's fraction (crates, barrels, torches): no existing test or key moved.
 - Added the preset `bombe-m14` for the recipe of the author.
+
+## Amendment (E20.e0a6, 2026-10-27)
+
+- `keepSubPixel` (introduced here for `FollowCarrier` and the birth of the bomb) is now also passed by `WorldProxy.SpawnEntityBySpriteIndex` (D-E20-92, D-E0A6-1): an entity born by the interface keeps the fraction of the pixel of its birth position at the root and in its logical position, like the original, whose birth routine `0x80039D04` stores the 16.16 position unshifted (the loot birth `0x80032B90` passes the 16.16 position of the crate).
+- The other call sites (map-load loop, record spawn) start from whole positions and are unchanged.
+- Pinned by `SpawnBySpriteIndexInterfaceTests.S1_...`, `WorldProxySpawnSubPixelTests.S2_...` (the rocks of the earth tome 2 against the key `cast_2c_pf_mid_x600y480`) and `LiftableBreakWorldTests.B5` (rewritten by derivation); the mutant `keepSubPixel: false` is killed by all three (5 red of 32). See `docs/plan-e20-annexe/e20-e0a6/t2/results.md`.

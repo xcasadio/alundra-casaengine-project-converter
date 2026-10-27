@@ -1,0 +1,6 @@
+  Échoué Alundra.Tests.Ai.Objects.LiftableBreakWorldTests.B5_TheContentsOfTheCrateAreDroppedAtItsBreak_WhereAContentOfZeroDropsNothing(ticksPerFrame: 3) [609 ms]
+  Échoué Alundra.Tests.Ai.Objects.LiftableBreakWorldTests.B5_TheContentsOfTheCrateAreDroppedAtItsBreak_WhereAContentOfZeroDropsNothing(ticksPerFrame: 1) [616 ms]
+  Échoué Alundra.Tests.Ai.Objects.LiftableBreakWorldTests.B5_TheContentsOfTheCrateAreDroppedAtItsBreak_WhereAContentOfZeroDropsNothing(ticksPerFrame: 2) [515 ms]
+  Échoué Alundra.Tests.Entities.SpawnBySpriteIndexInterfaceTests.S1_AnEntityBornAtAFractionalPosition_KeepsItAtTheRoot_AndInItsLogicalPositionAtTheNextTick [404 ms]
+  Échoué Alundra.Tests.Maps.WorldProxySpawnSubPixelTests.S2_TheRocksOfTheEarthTome2_BornByTheInterface_AreWhereTheKeyOfTheBinaryPutsThem_AtTheTickOfTheirBirthAndTheNext [596 ms]
+Échoué!  - échec :     5, réussite :    27, ignorée(s) :     0, total :    32, durée : 20 s - Alundra.Tests.dll (net9.0)
