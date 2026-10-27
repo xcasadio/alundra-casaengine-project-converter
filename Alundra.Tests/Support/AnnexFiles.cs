@@ -194,4 +194,7 @@ internal static class AnnexFiles
 
         throw new InvalidOperationException($"AnnexFiles: no 'docs/plan-e20-annexe/{relative}' found above '{AppContext.BaseDirectory}'.");
     }
+
+    /// <summary>E20.g1d T1: a file of the annex <c>docs/plan-e20-annexe/e20-g1d/keys/</c> (the keys of the sort driver of the binary, replayed twice in T0), found above the test binaries.</summary>
+    public static string DrawOrderKeys(string name) => WaterDropAnnex("e20-g1d/keys/" + name);
 }

@@ -40,4 +40,24 @@ internal static class EntityDepthKey
         var carrierKey = unchecked((int)Compute(carrier));
         return depthSortValue < carrierKey ? carrierKey : depthSortValue;
     }
+
+    /// <summary>STUB of E20.g1d T1 (tests first): the draw order of a held or thrown object is not written yet.</summary>
+    internal const int HeldDrawOffset = 0;
+
+    /// <summary>STUB of E20.g1d T1.</summary>
+    internal enum DrawRole
+    {
+        Plain,
+        Carried,
+        Thrown,
+    }
+
+    /// <summary>STUB of E20.g1d T1.</summary>
+    internal readonly record struct DrawTie(int? Coordinate, int LocalOffset);
+
+    /// <summary>STUB of E20.g1d T1.</summary>
+    internal static DrawTie ResolveDrawTie(DrawRole role, int? partnerCoordinate, uint objectKey, uint partnerKey) => default;
+
+    /// <summary>STUB of E20.g1d T1.</summary>
+    internal static float AnchorY(float renderY, int coordinate) => 0f;
 }

@@ -481,6 +481,12 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     // The sprite is drawn from the DLL's own PosZ (the render position of the root), not from the binary's.
     int IEffectAnchor.SortCoordinate => 100 * ((PosY >> 16) - (PosZ >> 16));
 
+    /// <summary>STUB of E20.g1d T1: the hero that threw this object while it flies.</summary>
+    internal EntityScriptProxy? ThrownBy;
+
+    /// <summary>STUB of E20.g1d T1: the sort coordinate the pass gave to this object while it is held or thrown.</summary>
+    internal int? DrawnSortCoordinate;
+
     /// <summary>E20.f2: the landing latch of <c>CreatePlayerAnimationEffects</c>, the binary's <c>0x800A8F30</c>: set when the landing part ran, cleared by every state that is not a landing state; the locked mode (1) does not land again while it is set. Hero only.</summary>
     internal int LandingLatch;
     public uint CombinedVramFlagsAND;
