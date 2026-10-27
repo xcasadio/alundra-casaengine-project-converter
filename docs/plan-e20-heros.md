@@ -381,6 +381,10 @@ ADR-0058) :
   - **D-E20-91** (2026-10-27, réponse de l'auteur à Q-E2-R) — E20.e2 « Reprendre sans relecture » : la révision 1.2 (le test de la
     direction au second tick d'une image de deux ticks) est exécutée sans nouvelle relecture ; les deux verifiers frais de fin de tranche
     restent.
+  - **D-E20-92** (2026-10-27, réponse de l'auteur à l'arrêt de T0 de h4c2, sonde (s2)) — « Corriger pour toutes » : une entité née par
+    l'interface d'apparition (`WorldProxy.SpawnEntityBySpriteIndex` : les rochers des tomes, l'objet lâché par une caisse brisée, les
+    projectiles nés par ce chemin) garde la fraction de pixel de sa position de naissance, comme le binaire (`SpawnWarpEntity` recopie la
+    position 16.16) ; aujourd'hui la DLL la pose au pixel entier. Une tranche dédiée, E20.e0a6 (§1.16.6), avant la reprise de h4c2.
 
 Règles reconduites : `ALUN_CD.EXE` (France) tranche sur la décompilation, qui se lit et ne se corrige
 pas ; un défaut avéré de l'original se corrige ; tout écart du port est documenté dans le code et ici.
@@ -5469,6 +5473,61 @@ hors de la fenêtre ; le tick noté seulement avec un sprite). **Reportés (P4)*
 **Corrections induites** (faites par la session principale à l'insertion, 2026-10-16) : §1.19.3 f3c exige E20.e0a5 et O-F3-7 est
 tranché (option A) ; enveloppe, révision 10 : e0a5 ajoutée aux prérequis des lignes 5 (f3c), 6, 7, 8 (f6b) et 11, et à la ligne 2 ;
 §1.16.4 : la mesure P-B d'e0a3b est à refaire après e0a5.
+
+#### 1.16.6 E20.e0a6 — La fraction de pixel à la naissance par l'interface (D-E20-92) ⏳ (détaillée le 2026-10-27, révision 0 ; thème 2 ; avant la reprise de h4c2)
+
+**Provenance.** L'arrêt de T0 de h4c2 sur la sonde (s2) (`docs/plan-e20-annexe/e20-h4c2/t0/results.md`, l'expérience
+`docs/plan-e20-annexe/e20-h4c2/t0/spawn-subpixel/`) : dans les clés `cast_2c_pf_mid_x600y480` et `cast_2c_pf_rockfix`, 13 naissances de
+rochers sur 15 ont X et Y qui diffèrent de la clé, d'un écart constant sur toute la vie du rocher ; les deux naissances à pixel entier sont
+exactes ; la DLL pose le rocher à `floor(position de naissance au pixel) + force du tick`, le binaire à `position de naissance + force`.
+
+**Prérequis.** L'ordre du thème 2 (D-E20-89) : après g1d, avant la reprise de h4c2 ; une tranche à la fois dans l'arbre de travail ; T0 nomme son
+HEAD de départ et y lance la suite entière (Release, copie neutralisée) : zéro échec exigé.
+
+**But.** Comme l'original (D-E20-92) : une entité née par `WorldProxy.SpawnEntityBySpriteIndex` garde la fraction de pixel de sa position de
+naissance, à la racine comme dans sa position logique. Rien d'autre ne change.
+
+**Faits.**
+- `WorldProxy.SpawnEntityBySpriteIndex` appelle `spawnedProxy?.PushLogicalPositionToRoot()` sans `keepSubPixel` : la racine prend des pixels
+  entiers, et la position logique en suit au tick suivant ; le paramètre `keepSubPixel` existe depuis E20.h3b (`FollowCarrier` et la
+  naissance de la bombe, `BombAi.Start`, l'ADR-0103).
+- L'expérience de T0 de h4c2 : avec `keepSubPixel: true` à ce site, les clés `mid` et `edge` sont reproduites sans aucun écart sur 330 ticks
+  (le rocher 8 au mur reste dans la borne de (s10a)) ; la suite entière ne perd que les trois lignes de
+  `LiftableBreakWorldTests.B5_TheContentsOfTheCrateAreDroppedAtItsBreak_WhereAContentOfZeroDropsNothing` (1, 2 et 3 ticks par image),
+  dont l'attendu pose le comportement de la DLL (« the interface of the apparition takes whole pixels: 143.5 becomes 143 ») et non une clé
+  du binaire.
+
+**Décisions.**
+- **D-E0A6-1** — Le site de `SpawnEntityBySpriteIndex` passe `keepSubPixel: true` ; aucun autre site ne change (la naissance par
+  enregistrement de carte part de positions entières).
+- **D-E0A6-2** — B5 se réécrit par dérivation : l'objet lâché naît à la position 16.16 de la caisse (143,5 px), après que T0 a lu au binaire que
+  la naissance du butin d'E2 passe la position 16.16 de la caisse (sinon un arrêt).
+- **D-E0A6-3** — Pas d'ADR neuf : un complément « Amendment (E20.e0a6) » à l'ADR-0103, qui a introduit `keepSubPixel`.
+
+**Périmètre.** `Alundra/Maps/WorldProxy.cs` (un argument) ; `Alundra.Tests/` (B5 et un test neuf) ; l'annexe `docs/plan-e20-annexe/e20-e0a6/` ;
+l'ADR-0103 (le complément) ; ce plan. **Hors périmètre** : les autres chemins de naissance ; le moteur.
+
+**Tâches.**
+- ⏳ **T0 — Relevés** (commit de docs) : le HEAD de départ et la suite à zéro échec ; la lecture au binaire de la naissance du butin d'E2
+  (la position passée à la création) ; la liste prédite : B5 seule (ses trois lignes) ; recomptée par un câblage temporaire et la suite entière.
+- ⏳ **T1 — Test d'abord, puis le code** : (s1) une entité née par l'interface à une position fractionnaire (143,5 px en X, une fraction en Y)
+  garde cette position à la racine et dans sa position logique au tick suivant, rouge avant ; (s2) la naissance d'un rocher du tome de terre
+  2 rejouée contre `cast_2c_pf_mid_x600y480` au tick de naissance et au suivant (X et Y égaux à la clé ; le banc de la sonde de h4c2, sans
+  le code de h4c2 : le rocher né par la couture de naissance), rouge avant ; puis l'argument ; B5 réécrite (D-E0A6-2).
+- ⏳ **T2 — Suites et mutant** : la suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ;
+  `cmp` ; `check_names.py --rules` ; le mutant « `keepSubPixel: false` » tué par (s1), (s2) et B5 ; le complément de l'ADR-0103 ; résultats
+  dans l'annexe.
+- ⏳ **T3 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+
+**Acceptation.** (s1) et (s2) rouges avant et verts après ; seule B5 a bougé, réécrite par dérivation ; la suite en Release et en Debug, zéro
+échec ; le moteur, le convertisseur et les données sans diff.
+
+**Arrêts.** La naissance du butin au binaire qui ne passe pas la position 16.16 ; un test hors de B5 qui bouge ; un besoin de toucher au
+moteur ; un test qui boucle.
+
+**Budget.** Un `executor` ; deux tentatives. Deux verifiers frais après.
+
+**Retour arrière.** Retirer l'argument (l'état d'aujourd'hui) et rendre B5.
 
 ### 1.17 E20.e0b — Le générateur pseudo-aléatoire : e0b1 (avance par tick), e0b2 (tirage du butin à la création) ✅ (détaillée le 2026-10-15 ; e0b1 faite et CONFIRMED le 2026-10-15 ; e0b2 faite et CONFIRMED le 2026-10-16)
 
@@ -13661,6 +13720,12 @@ une interruption fait retomber au sol les rochers en vol.
   `_effectFrozenOfTick` (`:2519`) (révision 2) ;
   `CameraDirector.UpdateCameraFollow` la reçoit et `CameraMath.AdvanceCameraSmoothing` prend un paramètre **optionnel** final, ajouté à `swayOffsetY`
   à chaque pas non calé (le signe de `CameraMath.cs:223`) ; aucun champ dans `CameraSway`.
+- **D-H4C2-5** (2026-10-27, disposition des deux arrêts de T0, `0ad67d19`) — (1) La sonde (s2) : x et y d'un rocher né par l'interface perdent
+  la fraction de pixel (13 naissances sur 15) : corrigé avant la reprise par E20.e0a6 (D-E20-92) ; T1 rejoue (s2) après E20.e0a6 (x et y
+  égaux à la clé) avant d'écrire ses tests ; une sonde encore contredite est un arrêt. (2) La table (b) : l'octet `[0x800DD870]` (le coup
+  de caméra en X) est lu avec ±3 par 22 des 100 vecteurs de `vec_camera_8002CDA0.json`, sans membre dans la DLL : E13 n'écrit que le coup
+  Y (`[0x800DD874]`) et aucun code porté n'écrit le coup X ; ces 22 vecteurs sont classés « binaire seul » et sautés par leur drapeau (la
+  règle de D-H4B1-3), les 78 autres comparés ; **O-H4C2-1** : les écrivains du coup X au binaire (à recenser) et son membre dans la DLL.
 
 **Périmètre.** `Alundra/Ai/Items/EarthTome2Ai.cs` (neuf) ; `NativeSpriteRegistry.cs` ; les entrées `0x2C` de h0a dans `PlayerManager.cs` ;
 `Alundra/Maps/IEntityWorldContext.cs`, `WorldProxy.cs`, `Alundra/Cameras/CameraDirector.cs`, `CameraMath.cs` ; `Alundra.Tests/` ; l'annexe
@@ -13671,7 +13736,8 @@ le manifeste, un `README`).
 
 ##### Tâches
 
-- ⏳ **T0 — Annexe, rejeux, sondes, liste prédite** (aucun code) : (a) rejouer depuis des copies les clés refaites (`e20-h4c2/disc/keys/`, avec leur
+- ✅ **T0 — Annexe, rejeux, sondes, liste prédite** (aucun code ; fait le 2026-10-27, `0ad67d19` : les rejeux identiques, (a2) versé, onze sondes
+  tenues, (s2) contredite et la table (b) incomplète : arrêts disposés par D-H4C2-5 ; cinq sommes du registre prédites) : (a) rejouer depuis des copies les clés refaites (`e20-h4c2/disc/keys/`, avec leur
   `MANIFEST.md5`) et celles de la critique (`e20-h4c2/critic/keys/` : `cast_2c_pf_mid_x600y480.json`, `cast_2c_pf_plateau_hb16.json`, `_hb17.json`,
   les sons de l'annulation `cancel_2c_pf_t100_sounds.txt` et `_t60_sounds.txt`), les 609 cas `disc/keys/driver_2c_cases.json`, et les vecteurs de h4b
   (`vec_e13`, `vec_camera`, `vec_sway`, `c9_replay.py` repointé vers l'annexe) : sorties identiques ; (a2) (révision 3) verser la lecture du
