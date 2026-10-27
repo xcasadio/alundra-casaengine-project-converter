@@ -11153,7 +11153,7 @@ Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ
 - **Recette de l'auteur, à faire** : la sauvegarde `herbe-m14` (carte 14, tuile (31, 43, 1), Steel Edge) ; couper un buisson à l'épée,
   puis avec la vague : le buisson disparaît, l'éclat, parfois un objet, les sons. Les pas et la poussière restent à E20.e2.
 
-### 1.27b E20.eC — Le nom de l'octet `0xA` de l'en-tête de carte : `DustEffectId` ⏳ (détaillée le 2026-10-27, révision 0 ; D-E20-89 (4), D-E20-90 (1) ; prérequis d'E20.e2 ; une tranche de données : relecture fraîche avant, verifiers frais après)
+### 1.27b E20.eC — Le nom de l'octet `0xA` de l'en-tête de carte : `DustEffectId` ⏳ (détaillée le 2026-10-27, révision 0, **READY** à la première relecture, `plan-verifier` frais ; D-E20-89 (4), D-E20-90 (1) ; prérequis d'E20.e2 ; une tranche de données : verifiers frais après)
 
 **Provenance.** Lecture seule et répétition à blanc complète du 2026-10-27 (HEAD `6db0e710`, rien écrit dans le dépôt, le sous-module, le
 remaster ni `data-extracted/`), et sa critique fraîche qui a refait l'extraction dans un second dossier neuf (`diff -rq` vide entre les
