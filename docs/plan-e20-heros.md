@@ -378,6 +378,9 @@ ADR-0058) :
     autres points des haricots et du pot sont **comme l'original** : le grand saut seulement depuis le pot enfoncé (environ 30 ticks sur lui,
     un saut plus tôt est un saut normal) ; le menu Start fermé tant que les haricots sont en main, sans minuteur ; le pot rendormi au retour
     sur la carte ; les six pots de la carte 60 hors tranche ; les sons inconnus des effets 8 et 14 laissés tels quels.
+  - **D-E20-91** (2026-10-27, réponse de l'auteur à Q-E2-R) — E20.e2 « Reprendre sans relecture » : la révision 1.2 (le test de la
+    direction au second tick d'une image de deux ticks) est exécutée sans nouvelle relecture ; les deux verifiers frais de fin de tranche
+    restent.
 
 Règles reconduites : `ALUN_CD.EXE` (France) tranche sur la décompilation, qui se lit et ne se corrige
 pas ; un défaut avéré de l'original se corrige ; tout écart du port est documenté dans le code et ici.
@@ -11149,7 +11152,7 @@ Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ
 - **Recette de l'auteur, à faire** : la sauvegarde `herbe-m14` (carte 14, tuile (31, 43, 1), Steel Edge) ; couper un buisson à l'épée,
   puis avec la vague : le buisson disparaît, l'éclat, parfois un objet, les sons. Les pas et la poussière restent à E20.e2.
 
-### 1.27c E20.e2 — Les pas et la poussière du héros : les trois bouchons de `CreatePlayerAnimationEffects` (D-E20-88 (2), D-E20-89 (3)) ⏳ (détaillée le 2026-10-27 ; thème 2 ; après E20.eC ; révision 0 relue : REVISE ; révision 1 relue : REVISE ; révision 1.1 du 2026-10-27 après disposition, relue à la clôture : REVISE (un point) ; **révision 1.2** du 2026-10-27, la correction de ce point ; ⚠️ **en pause de relecture**, Q-E2-R)
+### 1.27c E20.e2 — Les pas et la poussière du héros : les trois bouchons de `CreatePlayerAnimationEffects` (D-E20-88 (2), D-E20-89 (3)) ⏳ (détaillée le 2026-10-27 ; thème 2 ; après E20.eC ; révision 0 relue : REVISE ; révision 1 relue : REVISE ; révision 1.1 du 2026-10-27 après disposition, relue à la clôture : REVISE (un point) ; **révision 1.2** du 2026-10-27, la correction de ce point ; reprise sans nouvelle relecture sur décision de l'auteur, D-E20-91)
 
 **Provenance.** Lecture seule du 2026-10-27 (HEAD `539d4cf4`) et sa critique fraîche, CONFIRMÉE avec trois corrections, une citation d'ADR
 redressée et dix ajouts repris ici, dans le scratchpad de la session principale (`scratchpad/t2-feedback/e2-dust/` et `e2-dust-critic/` :
@@ -11177,7 +11180,8 @@ même direction, `PlayerManager.cs:204-213`, `FrameSyncPasses.cs`), y compris au
 diffèrent qu'au second tick d'une image de deux ticks. (f1) et sa ligne d'oracle deviennent ce cas : **deux ticks par image**, la
 direction passe de 3 à 0 au premier tick, un nuage de préparation naît au second ; ses forces suivent `TickFacing` (la direction neuve,
 comme le `+0x98` du binaire au tick 2) et non `AnimationDirection` (l'ancienne, écrite en fin d'image) ; une sonde (P3) confirme que les
-deux valeurs diffèrent à ce tick dans la DLL. La tranche est en pause de relecture (une clôture REVISE) : Q-E2-R à l'auteur.
+deux valeurs diffèrent à ce tick dans la DLL. Une clôture REVISE mettait la tranche en pause : l'auteur l'a reprise sans nouvelle relecture
+(D-E20-91).
 
 **Prérequis.** E20.e, E20.f2, E20.d1 et E20.i faites ; **E20.eC faite** (l'octet `0xA` exporté sous le nom `DustEffectId`, D-E20-90) ; les
 tranches du thème 2 s'exécutent une à la fois dans l'arbre de travail du dépôt, dans l'ordre de D-E20-89 ; T0 nomme son HEAD de départ et y
@@ -12265,7 +12269,7 @@ plan, l'index des ADR et un ADR.
 
 **Questions de l'auteur** (défauts réversibles retenus en mode autonome ; §2) : Q-H3-1 à Q-H3-8.
 
-#### 1.30.4a E20.h3c — Les haricots dans les mains : le départ `0x80034224`, le pilote, l'annulation, C73 et E21 ⏳ (détaillée le 2026-10-27 ; thème 2 ; D-E20-88, D-E20-90 ; après E20.e2 ; révision 0 relue : REVISE ; **révision 1** du 2026-10-27, non relue)
+#### 1.30.4a E20.h3c — Les haricots dans les mains : le départ `0x80034224`, le pilote, l'annulation, C73 et E21 ⏳ (détaillée le 2026-10-27 ; thème 2 ; D-E20-88, D-E20-90 ; après E20.e2 ; révision 0 relue : REVISE ; révision 1 du 2026-10-27, **READY** à la deuxième relecture, `plan-verifier` frais)
 
 **Provenance.** Lecture seule du 2026-10-27 (HEAD `539d4cf4`) et sa critique fraîche, CONFIRMÉE avec trois corrections et sept ajouts repris
 ici (`scratchpad/t2-feedback/h3c-beans/` et `h3c-beans-critic/` : désassemblages, 6 000 vecteurs aléatoires rejoués contre le vrai code, les
