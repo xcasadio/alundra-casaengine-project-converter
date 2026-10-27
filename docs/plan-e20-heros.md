@@ -349,6 +349,9 @@ ADR-0058) :
     s'y referment), les épingles réécrites d'un coup sur une liste mesurée ; (4) le bord de la carte comme l'original (O-E19-17, Q-I2-5) :
     toutes les entités bornées au bord, après un recensement en lecture seule des tests qui bougent ; ces réponses se versent au plan du
     thème 3.
+  - **D-E20-87** (2026-10-27, réponse de l'auteur) — E20.i2a, après la relecture de clôture REVISE de sa révision 3 : « Reprendre sans
+    relecture » : la révision 4 (deux bornes numériques de la trace diagonale, vérifiées par script sur la mesure) est exécutée sans nouvelle
+    relecture ; les deux verifiers frais de fin de tranche restent.
 
 Règles reconduites : `ALUN_CD.EXE` (France) tranche sur la décompilation, qui se lit et ne se corrige
 pas ; un défaut avéré de l'original se corrige ; tout écart du port est documenté dans le code et ici.
@@ -3653,7 +3656,7 @@ D-H2-6) ; i2b, la fonction des forces (§1.14.3), indépendante d'i2a, avant h4e
 (§1.14.4, esquisse), après i2b, E20.c2b et E20.h0a (elle touche la même zone de `PlayerManager.cs`). i2d (le serrage à la carte pour le héros et
 les entités placées, O-E19-17) reste hors de ces tranches (Q-I2-5, défaut A, D-E19-25).
 
-#### 1.14.2 E20.i2a — Le mur d'eau profonde sans bottes de nage (O-E19-22) ⏳ (détaillée le 2026-10-25 ; thème 2, avant i2b ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais ; T0 arrêté à (c) le 2026-10-27 ; révision 3 du 2026-10-27, nouvelle époque, relue à la clôture : REVISE ; **révision 4** du 2026-10-27, vérifiée par script sur la mesure)
+#### 1.14.2 E20.i2a — Le mur d'eau profonde sans bottes de nage (O-E19-22) ⏳ (détaillée le 2026-10-25 ; thème 2, avant i2b ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais ; T0 arrêté à (c) le 2026-10-27 ; révision 3 du 2026-10-27, nouvelle époque, relue à la clôture : REVISE ; **révision 4** du 2026-10-27, vérifiée par script sur la mesure ; reprise sans nouvelle relecture sur décision de l'auteur, D-E20-87)
 
 **Révision 1 (2026-10-25).** La relecture de la révision 0 (REVISE) a relevé deux blocages, corrigés (FIX) : (1) les traces vers l'est
 rejoignent l'écart connu du mur est (O-E19-42 : la DLL s'arrête au contact, le binaire une unité avant, le rebond un tick plus tôt) et la
