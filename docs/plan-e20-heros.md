@@ -3801,7 +3801,7 @@ d'histoire qui bouge ; un besoin de toucher au moteur ; un test qui boucle.
 **Retour arrière.** Retirer l'appel de la fonction du tick du héros (le bit n'est plus jamais posé : Alundra nage partout, l'état
 d'aujourd'hui) ; puis le pseudo-bit et la lecture de `BlockedCorners`.
 
-#### 1.14.3 E20.i2b — La fonction des forces : la table de glissement, le décalage `SlideEffectId` et la poussée (O-E19-31, Q-H4-3) ⏳ (détaillée le 2026-10-25 ; thème 2, après i2a, avant h4e2 et h4f1 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, REVISE à la relecture de clôture : **en pause de relecture** ; révision 3 écrite, non relue ; reprise sur ordre de l'auteur, Q-I2B-P)
+#### 1.14.3 E20.i2b — La fonction des forces : la table de glissement, le décalage `SlideEffectId` et la poussée (O-E19-31, Q-H4-3) ⏳ (détaillée le 2026-10-25 ; thème 2, après i2a, avant h4e2 et h4f1 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, REVISE à la relecture de clôture : **en pause de relecture** ; révision 3 écrite ; reprise sur ordre de l'auteur, Q-I2B-P, puis D-E20-88 ; la révision 3 relue le 2026-10-27 (nouvelle époque) : REVISE ; **révision 4** du 2026-10-27, non relue)
 
 **Révision 1 (2026-10-25).** La relecture de la révision 0 (REVISE) a relevé cinq blocages, corrigés (FIX) : (1) (f1) comparait une fonction
 sans serrage à des vecteurs pris après le serrage (163 sur 200) et ne disait pas d'où vient la force F des vecteurs de la passe : (f1) ne
@@ -3813,7 +3813,7 @@ avant le code : il devient un témoin ; (5) i2a et i2b partagent des fichiers : 
 **Révision 2 (2026-10-25, disposition de la session principale après deux REVISE : FIX).** La relecture de la révision 1 a relevé trois
 blocages, corrigés : (1) une entité portée n'atteint jamais `RunOneKinematicTick` (`TickMotion` la renvoie par `FollowCarrier`) : la garde
 est retirée, le témoin (w2b) et son mutant visent `FollowCarrier` ; (2) la lecture du mot de carte n'était prouvée par aucun test qui passe
-par les deux sites : (w1) charge la vraie 159 par le monde, un mutant par site ; (3) (w1) n'avait ni colonnes ni règle d'écart : elles sont
+par les deux sites : (w1) charge la vraie 159 par le monde, un mutant par site (voie abandonnée par la révision 3) ; (3) (w1) n'avait ni colonnes ni règle d'écart : elles sont
 écrites, la comparaison est exacte et un écart est un arrêt.
 
 **Révision 3 (2026-10-25, écrite après la clôture REVISE, non relue).** La relecture de clôture de la révision 2 a relevé que la vraie carte
@@ -3822,10 +3822,22 @@ tourne sur la carte 14 avec les mots de la 159 posés à la main ; `MapStateWorl
 (w1) suit la voie (b) du relecteur : (w1a) les mots de carte passent par les deux sites de production nourris de **l'export réel de la 159**
 (l'adoption du héros par `WorldProxy`, la naissance d'une entité par `EntitySpawnFactory`) : `SlideEffectId` 1 rangé, ainsi que la gravité 3
 et la viscosité 256 (le tueur des deux mutants du mot de carte, un par site) ; (w1b) les ticks tournent sur un monde qui fait tourner le
-bloc des entités (la carte 14, comme `PickupDropRun.OnMap14`, sur une case plate), le héros et l'entité recevant les mots rangés par (w1a) :
-par tick, `AdjustedForceX/Y` et le déplacement X/Y depuis le départ, comparés exactement à la clé de T0 (c) ; l'entité lancée est la caisse du
-kit de levage (le sprite, la position de naissance et le geste de lancer écrits par T0 (c) d'après le harnais, identiques dans la DLL). Un arrêt
-de plus : un écart de (w1b) à la clé sur ces colonnes.
+bloc des entités (la carte 14 dans la révision 3 ; `CarryRig` depuis la révision 4), le héros et l'entité recevant les mots rangés par (w1a) :
+par tick, `AdjustedForceX/Y` et le déplacement X/Y depuis le départ, comparés exactement à la clé de T0 (c) ; l'entité lancée et le banc sont
+ceux de la révision 4. Un arrêt de plus : un écart de (w1b) à la clé sur ces colonnes.
+
+**Révision 4 (2026-10-27, reprise de D-E20-88, nouvelle époque).** La relecture de la révision 3 (REVISE) a relevé deux blocages, corrigés
+(FIX) : (1) les corps des tâches gardaient un seul (w1) : T0 (c), T1, les mutants du mot de carte de T2, l'acceptation et les arrêts
+nomment maintenant (w1a) et (w1b), et chaque assertion de (w1a) est marquée « rouge avant » ou « verte avant et après » ; (2) (w1b)
+comparait à une clé sans condition d'équivalence, et « la caisse du kit de levage » n'était définie nulle part. Fait relevé : les oracles
+d'`e20-d` et d'`e20-g` ne chargent aucune vraie carte, ils tournent sur un champ synthétique plat (`docs/plan-e20-annexe/e20-d/run-binary.md`
+§1 ; `docs/plan-e20-annexe/e20-g/oracle/gl.py`, `world(cells=…)`, dont les écritures de harnais sont le pad, le champ et la pose des
+caisses) ; la clé de (w1b) est donc une clé sur un champ synthétique dont l'en-tête porte les trois mots de la 159 (`SlideEffectId` 1, la
+gravité 3, la viscosité 256 : `docs/plan-e20-annexe/e20-i2-disc/reading/out_census_belts.txt:46` ; la 159 n'a ni courant ni case
+verrouillée). L'entité lancée est **la caisse de l'oracle de g** (le sprite 36, le corps 21 × 15 × 16, celle des clés `g4-*` ; dans la DLL,
+celle de `CarryRig` : les drapeaux `0x3323E4` et le corps Kinetic du vrai préfabriqué), lancée au sol par le Carré sans direction tenue (le
+geste de `g4-throw-still` et de `CarryThrowWorldTests.V1_TheThrowOnTheGround_WithoutADirection_…`) ; le banc de (w1b) est `CarryRig` sur le
+même champ synthétique que la clé ; T0 (c) verse une preuve d'équivalence des deux côtés, dont un écart est un arrêt.
 
 **Prérequis.** E20.i2a faite (révision 1 : elles partagent `ScriptedMotion.cs`, `EntityScriptProxy.cs`, `WorldProxy.cs`, le dossier de
 versement `e20-i2-disc/`, que verse i2a, et le test de liste des préréglages). Avant h4e2 et h4f1 (D-E20-61). Jamais en même temps qu'une
@@ -3888,20 +3900,36 @@ est en place pour les courants (i2c), inerte tant que `+0x188` vaut 0.
   **37 vecteurs sans serrage** (ceux dont l'écriture de `+0x13C` ne vaut pas 1 : ids 12, 14, 15, 22, 27, 29, 30, 33, 37, 41, 44, 45, 48, 49,
   51, 56, 58, 60, 66, 71, 78, 85, 101, 102, 126, 127, 135, 140, 154, 167, 171, 174, 176, 180, 186, 192, 194) avec, pour chaque mutant de T2,
   les vecteurs nommés qui le tuent ; les 163 vecteurs serrés relèvent du serrage à la carte (i2d) et les 40 de `vec_physpass_80036828.json`
-  mêlent l'incrément de la force et la passe : ni les uns ni les autres ne sont rejoués par i2b ; (c) une clé neuve
-  sur le harnais d'`e20-d` (fichier neuf) : Alundra qui marche et une entité lancée sur la carte 159 (`SlideEffectId` 1, la gravité 3 et la
-  viscosité 256 de la carte), par tick `AdjustedForceX/Y` et X/Y (le héros sur sa marche ; l'entité lancée jusqu'au tick qui précède
-  son atterrissage, ni Z ni sol comparés), au manifeste, deux exécutions ; (d) le recensement de `SlideEffectId` (159 et 160 seules) ;
+  mêlent l'incrément de la force et la passe : ni les uns ni les autres ne sont rejoués par i2b ; (c) (révision 4) **la clé de (w1b)**,
+  neuve, sur une copie de l'oracle d'`e20-g` (`docs/plan-e20-annexe/e20-g/oracle/`, qui fait tourner `MovePlayer`, le lancer et les passes
+  physiques du binaire sur un champ synthétique plat), avec une écriture de harnais de plus : l'en-tête de carte du montage porte les trois
+  mots de la 159 (l'octet signé `SlideEffectId` = 1 à `[[0x800E4334] + 8]`, la gravité 3 et la viscosité 256 aux places que T0 relit dans le
+  binaire) ; deux scènes : (c1) Alundra qui marche à l'est, Droite tenue ; (c2) la caisse de l'oracle de g (le sprite 36) dans les mains
+  d'Alundra comme dans `g4-throw-still`, lancée au tick T par le Carré sans direction tenue ; par tick, `AdjustedForceX/Y` (`+0xDC/+0xE0`)
+  et le déplacement X/Y depuis le départ : le héros sur toute sa marche, la caisse de T jusqu'au tick qui précède son atterrissage ou
+  jusqu'à T + 64, le premier des deux (ni Z ni sol comparés) ; au manifeste, deux exécutions identiques ; **la preuve d'équivalence**
+  (révision 4, versée en `.txt`) : le champ de (w1b) est le même champ synthétique, case par case (l'`ICollisionField` donné à `CarryRig`,
+  construit depuis le fichier de champ de la clé) ; pour chaque tick comparé des deux scènes et des deux côtés, les cases sous les coins de la
+  boîte du héros et de la caisse, avec les bits que lit `PlanForce` (la glace `0x20`, l'eau `0x08` : `ScriptedMotion.cs:767-781`), la
+  hauteur, l'absence de mur, et la marge au serrage à la carte (les bornes `+0x108/+0x10C ; +0xFC/+0x100` du binaire, celles de
+  `ClampStepToMapEdge` dans la DLL) strictement positive ; un écart sur l'une de ces sorties est un arrêt ; **deux sondes de la DLL**
+  (tests jetables, jamais commités, versés en `.txt`) : le chargement de l'export réel de la 159, sans tick, adopte le héros par
+  `WorldProxy` et fait naître par `EntitySpawnFactory` au moins une entité, que T0 nomme pour (w1a) ; le héros et la caisse de `CarryRig`
+  passent par `RunOneKinematicTick` à chaque tick comparé (un compteur jetable) ; une sonde contredite est un arrêt ; (d) le recensement de `SlideEffectId` (159 et 160 seules) ;
   (e) l'inventaire par exécution (un câblage temporaire, la suite entière, versé en `.txt`) : la liste prédite (attendue : le test de liste des
   préréglages et, peut-être, aucun autre ; à surveiller : `HeroObjectTopsTests.cs:494-512`, les tests de dépôt sur la 159 qui posent la gravité à
   la main) ; (f) la case du préréglage.
 - ⏳ **T1 — Tests d'abord** (rouges avant) : (f1) la fonction pure contre les 37 vecteurs sans serrage de T0 (b), chaque mot
   tiré du vecteur : F = les mots lus `+0xC4/+0xC8`, la poussée `+0xCC/+0xD0`, l'indice `+0x188 & 0xF`, `sh` = `shift_byte & 31`, la table lue
   dans `0x80028B94`/`0x80028BD4` ; attendus : les mots écrits `+0xDC/+0xE0` et `+0xCC/+0xD0` remis à 0 ; (f2) les tables contre l'exécutable, mot à mot ; (f3) `sh` signé `& 31` : 1 divise par deux, la poussée non décalée
-  (vecteurs nommés) ; (w1) (révision 2) la vraie carte 159 chargée par le monde (le précédent : `PickupAiDropWorldTests`), Alundra adopté par `WorldProxy`
-  et l'entité lancée née par `EntitySpawnFactory`, contre la clé de T0 (c) sur ses seules colonnes (`AdjustedForceX/Y` et X/Y par tick, le
-  héros sur sa marche, l'entité jusqu'au tick qui précède son atterrissage), **comparaison exacte** : la marche d'Alundra à 79 872 par tick
-  pour `ForceX` 159 744, l'entité lancée ralentie de même ; (w2) une poussée de 131 072 posée sur le héros avant un tick : +2 px à ce tick, 0 au suivant ; (w3) un passager d'un porteur poussé,
+  (vecteurs nommés) ; (w1a) (révision 4 ; sans tick) l'export réel de la 159 chargé :
+  **rouges avant**, deux assertions, une par site : `SlideEffectId` 1 rangé sur le héros adopté par `WorldProxy` et sur l'entité née par
+  `EntitySpawnFactory` que nomme T0 (c) (le champ du décalage existe au squelette, jamais écrit) ; **vertes avant et après** (des appuis,
+  ce que rangent déjà `EntitySpawnFactory.cs:707` et `WorldProxy.cs:2254-2266`) : la gravité 3 et la viscosité 256 aux deux sites ; (w1b)
+  (révision 4 ; des ticks sur `CarryRig`, jamais sur la 159 chargée) le champ synthétique de la clé de T0 (c), le héros et la caisse
+  recevant les trois mots rangés par (w1a) (recopiés des deux proxys de (w1a)) ; les scènes (c1) et (c2) ; par tick, `AdjustedForceX/Y` et
+  le déplacement X/Y depuis le départ, **comparaison exacte** à la clé : la marche d'Alundra à 79 872 par tick pour `ForceX` 159 744, la
+  caisse ralentie de même ; rouge avant ; (w2) une poussée de 131 072 posée sur le héros avant un tick : +2 px à ce tick, 0 au suivant ; (w3) un passager d'un porteur poussé,
   le passager à un emplacement plus bas que le porteur (il passe avant lui dans la passe, la branche de `PeekAdjustedForce` qui calcule),
   suit la force ajustée du porteur ; témoins verts avant et après : (w2b) une entité portée par un porteur qui a un proxy, passée par `TickMotion`
   (`FollowCarrier`), garde sa poussée (ni consommée ni remise à zéro), tuée par le mutant « `FollowCarrier` remet la poussée à zéro » ; témoin vert avant et après :
@@ -3913,19 +3941,22 @@ est en place pour les courants (i2c), inerte tant que `+0x188` vaut 0.
   table pris sur 3 bits ((f1) : 19 des 37 vecteurs ont un indice ≥ 8) ; X et Y des tables échangés ((f2), (f1)) ; la table ajoutée après le
   décalage ((f1)) ; le décalage arithmétique remplacé par un décalage logique ((f1) : 18 vecteurs ont une force négative et un décalage non
   nul) ; les poussées X et Y échangées ((f1) : 33 vecteurs ont deux poussées différentes) ; `PeekAdjustedForce` sans la fonction ((w3)) ; le mot
-  de carte non rangé à l'adoption ((w1), le héros) ; le mot de carte non rangé à la naissance par `EntitySpawnFactory` ((w1), l'entité
-  lancée) ; un décalage de 1 partout (le témoin (w4)) ; **équivalents déclarés** (révision 1) : `sh` lu non
+  de carte non rangé à l'adoption ((w1a), l'assertion de l'adoption) ; le mot de carte non rangé à la naissance par `EntitySpawnFactory`
+  ((w1a), l'assertion de la naissance) ; `RunOneKinematicTick` qui prend un décalage 0 au lieu du champ de l'entité ((w1b), les deux
+  scènes) ; un décalage de 1 partout (le témoin (w4)) ; **équivalents déclarés** (révision 1) : `sh` lu non
   signé et `SlideEffectId` lu non signé (les 5 bits bas d'un octet sont les mêmes signé ou non), `sh` sans `& 31` (le décalage d'un `int` en
   C# masque déjà le compte par 31) ; un ADR neuf (numéro libre recompté).
 - ⏳ **T3 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
-**Acceptation.** Les sorties de T0 (b) et (c) identiques sur deux exécutions ; (f1) à (f3), (w1) à (w3) rouges avant et verts après ; (w2b) et
-(w4) verts avant et après, chacun tué par son mutant ; les mutants tous tués par le test qu'ils nomment ; la suite en Release et en Debug, zéro échec ; les tests
+**Acceptation.** Les sorties de T0 (b) et (c) identiques sur deux exécutions ; (f1) à (f3), les deux assertions rouges de (w1a), (w1b), (w2) et
+(w3) rouges avant et verts après ; les appuis de (w1a), (w2b) et (w4) verts avant et après, (w2b) et (w4) chacun tué par son mutant ;
+la preuve d'équivalence et les deux sondes de T0 (c) tenues ; les mutants tous tués par le test qu'ils nomment ; la suite en Release et en Debug, zéro échec ; les tests
 déplacés ⊂ la liste de T0 (e), chacun réécrit par dérivation ; le moteur, le convertisseur et les données sans diff. **Recette de l'auteur** (non
 bloquante) : `glissement-m159` (Alundra avance deux fois moins vite).
 
-**Arrêts.** Un vecteur qui diffère ; une clé de T0 (c) qui diffère d'une exécution à l'autre ; (révision 2) un écart de (w1) à la clé de T0 (c)
-sur ses colonnes (aucune tolérance) ; un test hors de la liste prédite qui bouge ; un arc
+**Arrêts.** Un vecteur qui diffère ; une clé de T0 (c) qui diffère d'une exécution à l'autre ; (révision 4) un écart de (w1b) à la clé de T0 (c)
+sur ses colonnes (aucune tolérance) ; la preuve d'équivalence de T0 (c) qui échoue ; une sonde de T0 (c) contredite (la 159 chargée qui
+n'atteint pas l'un des deux sites de (w1a), le héros ou la caisse de `CarryRig` qui ne passe pas par `RunOneKinematicTick`) ; un test hors de la liste prédite qui bouge ; un arc
 de la chaîne qui bouge ; un besoin de toucher au moteur ; un test qui boucle.
 
 **Budget.** Un `executor` par tâche (T0, T1, T2) ; deux tentatives chacun. Un `plan-verifier` avant ; deux verifiers frais après.
@@ -11866,7 +11897,7 @@ plan, l'index des ADR et un ADR.
 
 **Questions de l'auteur** (défauts réversibles retenus en mode autonome ; §2) : Q-H3-1 à Q-H3-8.
 
-#### 1.30.5 E20.h1 — Les cinq objets instantanés : l'herbe, les deux potions, l'extrait et le breuvage ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `31fc8b2` ; révision 3 du 2026-10-25 (D-E20-50, D-E20-78, e0c faite), relue à la clôture de la nouvelle époque : REVISE ; ⚠️ **en pause de relecture** ; la révision 4 relue le 2026-10-26 (la relecture accordée par D-E20-81 après h0a) : REVISE ; **révision 5** écrite, non relue ; une nouvelle relecture sur décision de l'auteur, Q-H1-P2)
+#### 1.30.5 E20.h1 — Les cinq objets instantanés : l'herbe, les deux potions, l'extrait et le breuvage ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `31fc8b2` ; révision 3 du 2026-10-25 (D-E20-50, D-E20-78, e0c faite), relue à la clôture de la nouvelle époque : REVISE ; en pause de relecture jusqu'à D-E20-88 ; la révision 4 relue le 2026-10-26 (la relecture accordée par D-E20-81 après h0a) : REVISE ; révision 5 relue le 2026-10-27 (la reprise de D-E20-88, nouvelle époque) : REVISE ; **révision 6** du 2026-10-27, non relue)
 
 **Révision 3 (2026-10-25).** Trois faits ont changé depuis la relecture de clôture du 2026-10-18 :
 - **D-E20-78** (Q-H1-3 rouverte, l'erratum de D-E20-51) : un soin donné par `0x82` s'ajoute au sac sans être bu, et un coffre refuse l'objet sac
@@ -11895,6 +11926,15 @@ omettait les tests existants d'e0c qui observent ces effets (`HeroHealsTests` co
 `NativeEffects.cs` sort du périmètre (aucun créateur neuf, aucune signature changée ; (e1) lit les effets dans le réservoir après `RunFrame`,
 comme les tests d'e0c, et recopie en littéraux les deux tables du binaire) ; l'épingle (lv) tombe ; l'eau 1 est `LargeHeart` ; T0 (e) nomme,
 pour chaque corps, les tests existants qui observent ses effets, et la preuve de retrait les compte dans son ensemble rouge.
+
+**Révision 6 (2026-10-27, reprise de D-E20-88, nouvelle époque).** La relecture de la révision 5 a relevé un blocage, corrigé (FIX) : (p7)
+et la preuve de retrait étaient écrits contre la table de h0a d'avant E20.h3b (onze bouchons, `0x23` compris), alors qu'au HEAD la phase B
+de h3b a câblé la bombe `0x23` en production (`PlayerManager.StartItem` : `item == BombItem ? BombAi.Start(player) : ItemStartStub(item)` ;
+`UpdateItemUseDriver` : `BombAi.Drive` ; `CancelItemMode` : `BombAi.Cancel`) et que les tranches h4 exécutées avant h1 (h4c1 en cours, puis
+h4c2, h4d1, h4d2, h4e1) câbleront des tomes de `0x2B` à `0x32`. (p7) s'écrit maintenant contre le HEAD de départ : les cinq entrées de h1
+sont les cinq départs ; les entrées déjà câblées (la bombe, et les tomes faits avant h1) restent celles de leur tranche, inchangées ; les
+autres restent des bouchons silencieux, **recensés par T0 (i)** sur les trois aiguillages au HEAD de départ (au HEAD du 2026-10-27,
+`539d4cf4` : dix, `0x1F`, `0x20` et `0x2B` à `0x32`) ; toucher l'entrée d'un autre objet est un arrêt.
 
 **Prérequis.** h0a (la table de départ, les mots de l'objet, la couture `ItemStartForTests`, le refus par le son 3) ; E20.c2a ✅ (les PV de
 l'entité du héros et leur miroir) ; la fin du chantier et Q-R-7 ; les réponses de l'auteur : Q-H1-1 (le défaut), Q-H1-2 (D-E20-50 : Start + Select non porté), Q-H1-3 (D-E20-78 : rien
@@ -11989,7 +12029,12 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
   `EveryPresetName` ; recomptée au HEAD de départ ; (f) h0a faite (la table, les trois coutures, `ItemInUse`) ; (g) les noms passent la garde ; (h) les traces
   d'oracle que h0a T0 (b) laisse « en attente de la tranche de leur objet » pour les cinq objets (`docs/plan-e20-annexe/e20-d/oracle/out*/w9/`,
   `W9-item24`, `-25`, `-26`, `-27`, `-29` ; `0x28` est un trou, déjà exact avec h0a) : pour chacune, la prédiction écrite avant (un soin, ou un
-  refus si la vie et la magie de la trace sont au maximum), comparée par (o1) de T2 ; un écart est un arrêt (révision 1).
+  refus si la vie et la magie de la trace sont au maximum), comparée par (o1) de T2 ; un écart est un arrêt (révision 1) ; (i) (révision 6)
+  le recensement des trois aiguillages au HEAD de départ (`PlayerManager.StartItem`, `UpdateItemUseDriver`, `CancelItemMode`) : pour
+  chaque objet de `0x1F` à `0x32` hors des quatre trous, son entrée (la tranche qui l'a câblée et ses membres, ou le bouchon nommé), versé
+  à l'annexe ; (p7) et la preuve de retrait s'écrivent d'après lui ; au HEAD du 2026-10-27, aucun test ne prend un soin pour exemple de
+  bouchon hors des coutures (`HeroItemUseTests.A3_…` passe par les coutures, `A4_…` prend la cape) ; un test qui en prendrait un entre
+  dans la liste prédite de (e).
 - ⏳ **T1 — Phase A** (tests d'abord ; chaque « sans effet » accolé à un positif ; tous les tests (r), (e1), (e2), (g1) appellent le départ ou le
   soin **directement**, jamais par la table) : (v1) un test par soin, six, sur son fichier de vecteurs moins les « binaire seul », par
   l'adaptateur (un écart sur un vecteur le rend rouge ; l'eau 1 par `LargeHeart`) ; (v2) un test par départ, cinq, de même ; (r-herbe+), (r-potionL+),
@@ -12017,8 +12062,10 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
   `elixir_hp3_mp4_refused`, `cureale_hp10_mp4_refused` ; les autres ont au moins un usage réussi (révision 1). Puis le code.
 - ⏳ **T2 — Phase B** : les cinq entrées de la table de h0a et le préréglage (Q-H1-1) ; (p1) à (p5) un test de production par objet, **une clé
   chacun** : `herb_hp3of10`, `lpotion_hp3of10`, `elixir_mp1of4`, `cureale_hp3_mp1`, `spotion_hp3of10`, sans couture ; (p6) le préréglage se
-  construit et ses épingles tiennent ; (p7) la table : les cinq entrées sont les cinq départs ; les onze autres (`0x1F`, `0x20`, `0x23`,
-  `0x2B`-`0x32`) restent des bouchons silencieux ; les quatre trous refusent avec le son 3, `0x2A` posé possédé **sans** `0x26` (sinon la
+  construit et ses épingles tiennent ; (p7) (révision 6) la table : les cinq entrées (`0x24` à `0x27`, `0x29`) sont les cinq
+  départs ; les entrées que T0 (i) recense câblées par une autre tranche (`0x23`, la bombe d'E20.h3b : `BombAi.Start`, `Drive` et `Cancel` ;
+  les tomes des tranches h4 faites avant h1) restent les leurs, inchangées ; les autres, que T0 (i) compte (dix au HEAD du 2026-10-27 :
+  `0x1F`, `0x20` et `0x2B` à `0x32`, moins les tomes câblés depuis), restent des bouchons silencieux ; les quatre trous refusent avec le son 3, `0x2A` posé possédé **sans** `0x26` (sinon la
   promotion l'échange avant le refus ; critique C-2) ; **(o1)** les cinq traces d'oracle de T0 (h) (`W9-item24`, `-25`, `-26`, `-27`, `-29`)
   rejouées et comparées à l'identique, le son 3 ou le soin compris, par le même mécanisme que (o1) de h0a (§1.30.1 T2) et que la comparaison des
   `W9-circle-*` (`Alundra.Tests/AlundraHeroSwimTests.cs:666-673`) : rouge avant la phase B (le bouchon est silencieux), vert après (révision 2).
@@ -12037,7 +12084,8 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
 - **DLL** : T1 vert en phase A ; (p1) à (p5), (p7) et (o1) rouges avant la phase B, verts après ; la suite en Release (copie neutralisée) et en
   Debug, zéro échec ; tests déplacés ⊂ liste prédite ; `cmp` ; les traces versionnées de la garde d'octets inchangées (les traces d'oracle W9 de
   T0 (h) sont des sorties de l'annexe d'E20.d, comparées par (o1), non réécrites) ; moteur, convertisseur et données sans diff (révision 2).
-- **Preuve de retrait** (critique C-3) : rendre les cinq entrées à leurs bouchons rend rouges exactement (p1) à (p5), (p7) et (o1) (révision 2), (v), (r), (e), (g),
+- **Preuve de retrait** (critique C-3) : rendre les cinq entrées à leurs bouchons (les entrées des autres tranches restant celles du HEAD de
+  départ, révision 6) rend rouges exactement (p1) à (p5), (p7) et (o1) (révision 2), (v), (r), (e), (g),
   les tests de monde et (p6) restant verts (ils appellent les départs directement ou par la couture) ; **retirer l'appel de `UseItem` du
   départ X** rend rouges exactement (v2) de X (l'écriture du compte), (r-X+), (r-ordre-X) (le compte final), les clés de monde de X qui ont un usage
   réussi et le (p) de X, et laisse verts (r-X−), (r-nu), (r-hud), les clés de refus de X et tout ce qui touche les autres objets ; **retirer l'appel
@@ -12056,11 +12104,12 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
 
 - **Arrêts** : un test hors de la liste prédite bouge ; un vecteur ou une clé diffère d'un octet ou d'un tick ; une sonde P1 à P5 contredite ; une
   adresse sans membre hors des vecteurs « binaire seul » ; une des six clés ajoutées de T0 (b) que la machine ne sait pas faire ; h0a sans ses trois coutures ; un
-  besoin de toucher au moteur ou à `NativeEffects.cs` (révision 5) ; un nom refusé ; une réponse de l'auteur autre que le défaut à Q-H1-1 (Q-H1-2 et Q-H1-3 sont tranchées : D-E20-50, D-E20-78).
+  besoin de toucher au moteur ou à `NativeEffects.cs` (révision 5) ; un besoin de toucher l'entrée d'un autre objet, dont celles de la bombe
+  (`BombAi`) et des tomes (révision 6) ; un nom refusé ; une réponse de l'auteur autre que le défaut à Q-H1-1 (Q-H1-2 et Q-H1-3 sont tranchées : D-E20-50, D-E20-78).
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : rendre les cinq entrées à leurs bouchons ; la phase A reste inerte.
 
-#### 1.30.6 E20.h2 — La cape de sable (objet `0x20`, états `0x20` à `0x24`) ⚠️ (détaillée le 2026-10-25 ; thème 2 ; ferme O-H-1 ; révisions 0 et 1 relues : REVISE ; révision 2 relue à la clôture : REVISE ; **en pause de relecture** ; la révision 3 relue le 2026-10-26 (la relecture accordée par D-E20-81 après h0a) : REVISE ; **révision 4** écrite, non relue ; une nouvelle relecture après E20.i2a et sur décision de l'auteur, Q-H2-P2)
+#### 1.30.6 E20.h2 — La cape de sable (objet `0x20`, états `0x20` à `0x24`) ⏳ (détaillée le 2026-10-25 ; thème 2 ; ferme O-H-1 ; révisions 0 et 1 relues : REVISE ; révision 2 relue à la clôture : REVISE ; en pause de relecture jusqu'à D-E20-88 ; la révision 3 relue le 2026-10-26 (la relecture accordée par D-E20-81 après h0a) : REVISE ; révision 4 relue le 2026-10-27 (la reprise de D-E20-88, nouvelle époque) : REVISE ; **révision 5** du 2026-10-27, non relue)
 
 **Provenance.** Lecture seule du 2026-10-24 (HEAD `86d421b5` ; `report-main.md` et le critique frais `critic-main.md`, CONFIRMÉ avec des
 corrections reprises ici, dans le scratchpad de la session principale `scratchpad/t2-cape/`, à verser par T0 à
@@ -12085,30 +12134,29 @@ réglage des PNJ dont la DLL mène le mouvement vertical) ; appelé chaque tick 
 n'existe pour le héros (elle n'est appelée que par les opcodes de drapeaux et `ArrowAi`). Correction : D-H2-6 nomme un chemin propre au héros,
 qui n'écrit que le masque, et son site dans le tick ; un test et un mutant gardent la gravité du héros.
 
-**Révision 4 (2026-10-26, non relue : la tranche reste en pause).** La relecture de la révision 3 (accordée par D-E20-81) a relevé trois
-blocages : (1) l'ordre et la propriété avec E20.i2a : h2 créait une fonction neuve alors que D-I2A-2 la partage (« la première des deux
-tranches la crée, l'autre l'étend ») et que les deux tranches touchent les mêmes fichiers ; (2) le site d'appel « juste après l'enveloppe de
-l'objet » n'est pas atteint par la branche verrouillée ni par `BlockedByEntity` (le bit resterait posé pendant tout un verrou), et un départ ou
-une annulation plus loin dans le tick donnait un bit en retard d'un tick ; (3) le glissement (`ScriptedMotion.BlockedCorners`) recalcule le
-masque depuis `Flags` et échantillonne à Z = 0 : il ne voit ni le bit de la cape ni la règle « plus bas est un mur ». Corrections :
-- **Prérequis** : E20.i2a faite (§1.14.2) ; h2 **étend** la fonction de masque de D-I2A-2 par un second pseudo-bit, à côté de celui de l'eau,
-  sur le même site d'appel ; elle reprend ses garanties (la resynchronisation et l'adoption gardent le bit ; `RunMontage` reçoit le bit par la
-  fonction de production ; la gravité gardée par le test (r6) d'i2a, que h2 complète pour le bit de la cape sans le dupliquer) ; jamais en
-  même temps qu'une tranche qui touche `TestSaves.cs`, `EntityScriptProxy.cs` ou `CellsCollisionField.cs` ; T0 relit au HEAD (après i2a)
-  `ApplyGravitySettingsToController` et O-H2-1.
-- **Le site d'appel** (D-H2-6, révision 4) : la fonction partagée est appelée à la fin commune du tick du héros (`EndOfMovePlayer`, que
-  passent la branche verrouillée, `BlockedByEntity`, le bloc de blessure et la sortie normale), donc après tout changement d'`ItemInUse`
-  du tick et avant la passe du contrôleur du moteur ; si i2a l'a posée ailleurs, h2 la déplace là, les tests d'i2a restant verts ; le bit
-  suit `ItemInUse` **au même tick**.
-- **Le glissement** : `BlockedCorners` lit le masque vivant du contrôleur (D-I2A-3) et applique la condition de niveau de la cape avec le
-  pied du héros au lieu de Z = 0 ; T0 (d) le sonde sur une diagonale (arrêt si la règle n'y est pas exprimable).
-- **Tests et mutants ajoutés** : en T2, un verrou posé sous le sable retire le bit au tick du verrou et un héros déplacé pendant ce verrou n'est
-  pas confiné ; une marche en diagonale contre le bord F1 et contre la marche descendante F2, sous le sable ; en T3, les mutants « appel
-  seulement après l'enveloppe du tick libre » (tué par le test du verrou) et « `BlockedCorners` sans la condition de niveau de la cape » (tué
-  par les tests de diagonale).
+**Révision 4 (2026-10-26).** La relecture de la révision 3 (accordée par D-E20-81) a relevé trois blocages : (1) l'ordre et la propriété
+avec E20.i2a : h2 écrivait sa propre fonction de masque alors que D-I2A-2 la partage (« la première des deux tranches la crée, l'autre
+l'étend ») ; (2) le site d'appel de la révision 3, placé après l'enveloppe de l'objet, n'était atteint ni par la branche verrouillée ni par
+`BlockedByEntity` ; (3) le glissement (`ScriptedMotion.BlockedCorners`) recalculait le masque depuis `Flags` et échantillonnait à Z = 0. La
+révision 4 y répondait par l'extension de la fonction d'i2a, un site à la fin commune du tick du héros et la condition de niveau dans
+`BlockedCorners` ; la révision 5 fixe le site d'après le HEAD et reporte ces corrections dans les sections de la tranche.
+
+**Révision 5 (2026-10-27, reprise de D-E20-88, nouvelle époque).** La relecture de la révision 4 a relevé deux blocages, corrigés (FIX) :
+(1) la tranche donnait trois sites et deux horloges pour le bit de la cape (la révision 4, D-H2-6, le périmètre et T2) ; (2) le déplacement
+vers `EndOfMovePlayer` reposait sur une prémisse que le HEAD ne soutient plus : E20.i2a (✅, ADR-0104) appelle
+`PlayerManager.RefreshHeroWalkabilityMask` en tête de `PlayerManager.Tick`, avant `ScriptedMotion.TickPlayer` (`PlayerManager.cs:2366-2370`),
+dans la passe physique, qui suit `MovePlayer` au même tick dans les deux pilotes (le bloc du monde : `MovePlayerOnTickPad` en tête,
+`WorldProxy.cs:2932-2937`, puis les programmes et la physique ; le chemin autopiloté : `MovePlayerOnTickPad`, l'horloge, puis la physique,
+`EntityScriptProxy.cs:1686-1688` et `:1815-1822`), quelle que soit la sortie de `MovePlayer` (la branche verrouillée, `BlockedByEntity`, le
+bloc de blessure, la sortie normale). Décision : **un seul site, celui d'i2a, inchangé** (D-I2A-2 n'est pas amendée, le bit de l'eau ne
+bouge pas) ; D-H2-6, le périmètre, T0, T2 et T3 sont réécrits en ce sens ; les tests et mutants de la révision 4 y sont intégrés, avec un
+mutant de site tuable.
 
 **Prérequis.** E20.h0a faite (le cadre de l'usage d'un objet : `ItemInUse`, le compteur, la table de départ, de pilote et d'annulation, la
-garde du menu Start, la branche verrouillée) ; même branche du thème 2. La tranche ne dépend ni de g1a ni de g1b (la cape ne porte rien), ni
+garde du menu Start, la branche verrouillée) ; E20.i2a faite (✅, ADR-0104 : la fonction de masque du héros que h2 étend, D-I2A-2, ses
+garanties (la resynchronisation et l'adoption gardent le pseudo-bit ; la gravité gardée par son test (r6), que h2 complète pour le bit de
+la cape sans le dupliquer), et le masque vivant que lit le glissement, D-I2A-3) ; même branche du thème 2 ; jamais en même temps qu'une
+tranche qui touche `TestSaves.cs`, `PlayerManager.cs`, `EntityScriptProxy.cs`, `ScriptedMotion.cs` ou `CellsCollisionField.cs`. La tranche ne dépend ni de g1a ni de g1b (la cape ne porte rien), ni
 d'E20.e0d : ses tests et sa recette passent par des préréglages. **Préférence d'ordre** (pas un prérequis) : après E20.e0d, pour que la cape
 s'obtienne aussi en jeu par le coffre de la carte 402.
 
@@ -12155,23 +12203,32 @@ avec la cape ne fait rien.
 - **D-H2-3** — L'ordre : après E20.e0d de préférence (le coffre de la 402) ; les tests et la recette passent par des préréglages.
 - **D-H2-4** (Q-H2-4) — Le sable à courant (cartes 403 à 405 et 19) ne dérive pas avant E20.i2 : hors tranche.
 - **D-H2-5** (Q-H2-5) — Un verrou du contrôle (un dialogue, une scène) remonte Alundra sans l'animation de sortie, comme l'original.
-- **D-H2-6** (révision 3) — La règle de terrain ne vaut **que pour le héros** et se lit **à chaque tick** dans `ItemInUse == 0x20` (comme le
-  binaire lit `[0x80127164]` dans le seul test de murs du héros) : un bit « cape » du masque de marche **du contrôleur du héros seul**, écrit par
-  une fonction neuve d'`Alundra/Hero/` qui ne touche que `Controller.Settings.WalkabilityMask` (le bit posé si `ItemInUse == 0x20`, retiré
-  sinon ; jamais la gravité ni la vitesse de chute), appelée dans le tick du héros (`PlayerManager`) juste après l'enveloppe de l'objet en cours
-  (l'équivalent de `0x8003634C`, qui peut libérer l'objet) et avant la passe du contrôleur du moteur ; `ResyncControllerFromFlags`, quand un
-  opcode de drapeaux (`0x16`/`0x17`, `0x62`/`0x63`) vise le héros, garde le bit tant que `ItemInUse == 0x20` (et T0 vérifie ce qu'elle fait
-  aujourd'hui de la gravité du héros : un écart préexistant se consigne, O-H2-1). Le bit tombe donc sur tous les chemins de libération (la sortie
-  normale, quand l'enveloppe libère l'objet ; l'annulation par un verrou ; `Skip` ; la reconstruction du héros au chargement d'une carte) ; le
-  champ de cases de la DLL l'interprète (« bloqué si pas du sable », « plus bas est un mur », avec le pied que donne le moteur, pied +
-  `StepHeight`). T0 prouve les trois points : le bit survit à la resynchronisation et n'atteint que le héros, le champ l'interprète, les autres
-  contrôleurs ne le voient pas. Si l'un des trois exige le moteur : le manque se consigne, et c'est un arrêt.
+- **D-H2-6** (révision 5) — La règle de terrain ne vaut **que pour le héros** et se lit **à chaque tick** dans `ItemInUse == 0x20` (comme le
+  binaire lit `[0x80127164]` dans le seul test de murs du héros) : h2 **étend `PlayerManager.RefreshHeroWalkabilityMask`** (D-I2A-2) d'un
+  second pseudo-bit, « cape », à côté de `CellsCollisionField.DeepWaterWallMaskBit` (un bit libre du masque, recompté par T0 au HEAD ; son
+  nom passe `check_names.py`) : posé si `ItemInUse == 0x20`, retiré sinon ; la fonction n'écrit toujours que
+  `Controller.Settings.WalkabilityMask` du héros (jamais la gravité ni la vitesse de chute). **Son site est celui d'i2a, inchangé** : l'appel
+  en tête de `PlayerManager.Tick`, avant `ScriptedMotion.TickPlayer`, et celui de l'adoption (`WorldProxy.cs:2272`) ; `PlayerManager.Tick`
+  tourne dans la passe physique, après `MovePlayer` du même tick dans les deux pilotes et quelle que soit sa sortie, donc après tout
+  changement d'`ItemInUse` que fait `MovePlayer` (le départ, la libération par l'enveloppe, l'annulation par la branche verrouillée) et avant
+  la passe du contrôleur du moteur : **le bit suit `ItemInUse` au même tick** (le mouvement du tick où l'objet est pris voit le bit, celui
+  du tick où il est libéré ne le voit plus), comme le test de murs du binaire lit l'objet en cours dans le mouvement du tick.
+  `ResyncControllerFromFlags`, quand un opcode de drapeaux (`0x16`/`0x17`, `0x62`/`0x63`) vise le héros, garde le bit de la cape comme il
+  garde celui de l'eau (`EntityScriptProxy.cs:693-694`) ; T0 relit au HEAD `ApplyGravitySettingsToController` et ce qu'elle fait de la
+  gravité du héros (un écart préexistant se consigne, O-H2-1). Le bit tombe sur tous les chemins de libération (la sortie normale, quand
+  l'enveloppe libère l'objet ; l'annulation par un verrou ; `Skip` ; la reconstruction du héros au chargement d'une carte, que l'adoption
+  recalcule) ; le champ de cases de la DLL l'interprète (« bloqué si pas du sable », « plus bas est un mur », avec le pied que donne le
+  moteur, pied + `StepHeight`). **Le glissement** : `ScriptedMotion.BlockedCorners` lit déjà le masque vivant (D-I2A-3) ; h2 y applique la
+  condition de niveau de la cape avec le pied du héros au lieu de Z = 0. T0 prouve les quatre points : le bit survit à la
+  resynchronisation et n'atteint que le héros, le champ l'interprète, les autres contrôleurs ne le voient pas, la condition s'exprime dans
+  `BlockedCorners` sur une diagonale. Si l'un exige le moteur : le manque se consigne, et c'est un arrêt.
 - **D-H2-7** — La boucle de la sortie est une fonction dédiée sur les entités du monde, avec les filtres du binaire et `HitAnimByte`.
 - **D-H2-8** — Les exemples « état non porté » de `PlayerManagerTests` et de h0a (a6) prennent un autre état non porté (recompté au HEAD).
 
 **Périmètre.** `Alundra/Hero/` (le départ à deux branches, la boucle de la sortie, les entrées de table de h0a pour `0x20`, les cinq états dans
-`MovePlayer`, la fonction du bit « cape » et son appel dans le tick du héros) ; `Alundra/Entities/EntityScriptProxy.cs` (`ResyncControllerFromFlags`
-qui garde le bit) ; le champ de cases de la DLL (`Alundra/Cells/` ou `Alundra/Physics/`, la règle de terrain) ; `Alundra/SaveGames/TestSaves.cs` et
+`MovePlayer`, le pseudo-bit de la cape ajouté à `PlayerManager.RefreshHeroWalkabilityMask`, sans site d'appel neuf) ;
+`Alundra/Entities/EntityScriptProxy.cs` (`ResyncControllerFromFlags` qui garde le bit) ; `Alundra/Physics/CellsCollisionField.cs` (le
+pseudo-bit et la règle de terrain) ; `Alundra/Physics/ScriptedMotion.cs` (`BlockedCorners`, la condition de niveau) ; `Alundra/SaveGames/TestSaves.cs` et
 ses tables, `docs/test-saves.md` ; les tests ; l'annexe `docs/plan-e20-annexe/e20-h2/` ; un ADR neuf ; ce plan (O-H-1 fermé).
 
 **Hors périmètre.** La poussière du pas (E20.e2) et l'ombre (aucun rendu) ; les courants (E20.i2) ; la blessure du héros (E20.c2b :
@@ -12183,18 +12240,26 @@ l'invulnérabilité se teste à la passe de coups) ; le moteur.
   sortie et ses bornes, le pilote, les chronologies C1 à C5, les vitesses, les terrains F1 à F4) ; plus : le coin mixte (un coin de sable contre
   de l'eau profonde au même niveau), le son 11 de chaque cycle de `0x23`, les deux escaliers de la carte 402 que la cape ne franchit pas ; (d)
   sondes de la DLL (tests jetables, jamais commités, versés en `.txt`) : la règle de terrain par le champ (D-H2-6) sur F1 à F4 et le coin mixte
-  (arrêt si elle n'est pas exprimable) ; le bit « cape » réservé au héros (D-H2-6 : il survit à la resynchronisation du masque, un PNJ et un ennemi
+  (arrêt si elle n'est pas exprimable) ; (révision 5) la condition de niveau de la cape dans `BlockedCorners` sur une diagonale contre F1 et
+  contre F2 (arrêt si elle n'y est pas exprimable) ; le moyen de déplacer le héros pendant le tick d'un verrou que la branche verrouillée
+  laisse passer (pour le test du verrou de T2 ; s'il n'y en a pas, le test et le mutant de site passent par le tick de la libération par
+  l'enveloppe, le héros au bord du sable, la direction tenue) ; le bit « cape » réservé au héros (D-H2-6 : il survit à la resynchronisation du masque, un PNJ et un ennemi
   sur le même sable ne le voient pas) ; l'horloge des animations (72, 72, 16, 32) ; la traversée d'une entité par le balayage du contrôleur
   (pas seulement la sonde de l'ADR-0047 du moteur) ; l'écart O-G3-2 au premier tick ; (e) les cases des préréglages : carte 402 (9, 16, 1),
   carte 450 (20, 46, 2), carte 19 (44, 40, 2 : un bloc sans courant ; pas (46, 30), qui est sur un courant), carte 26 (7, 34, 1), carte 406
-  (12, 10, 1) ; (f) la liste prédite des tests déplacés.
+  (12, 10, 1) ; (f) la liste prédite des tests déplacés (au moins `HeroItemUseTests.A4_…`, qui prend la cape `0x20` comme exemple de
+  bouchon et en prend un autre, recompté au HEAD).
 - ⏳ **T1 — Phase A, tests d'abord** (rouges avant, puis verts ; aucun changement de production) : le départ (la grille pente 0 à 7 × états 0, 1, 2,
   `0x2B`) ; la sortie (les 12 lignes d'état et de force ; la pente non testée) ; la boucle (les bornes de X, Y, Z ; les filtres ; les bornes de
   boucle) ; le pilote.
 - ⏳ **T2 — Phase B, tests de monde rouges avant** (le vrai contrôleur) : la gravité et la vitesse de chute du héros (`Settings.Gravity`,
   `MaxFallSpeed`) inchangées après plusieurs ticks sous le sable et après la sortie, au sol et juste après une escalade (vert avant et après,
-  une garde) ; le bit retiré au tick qui suit la libération de l'objet ; le plongeon (72 ticks, son 15) ; la marche et la ruée (vitesses, avec et
-  sans bottes) ; l'arrêt au bord du sable (F1), devant une marche descendante (F2) et montante (F3) ; la sortie (72 ticks, puis l'attente,
+  une garde) ; (révision 5) le bit suit `ItemInUse` au même tick : posé dans le mouvement du tick du départ, retiré dans celui du tick où
+  l'enveloppe libère l'objet ; **un verrou du contrôle posé avant un tick, sous le sable : à ce tick, la branche verrouillée de `MovePlayer`
+  annule l'objet, et le héros déplacé hors du sable pendant ce même tick (le moyen de T0 (d)) n'est pas confiné** ; **un opcode de drapeaux
+  (`0x16`) qui vise le héros sous le sable garde le confinement** ; le plongeon (72 ticks, son 15) ; la marche et la ruée (vitesses, avec et
+  sans bottes) ; l'arrêt au bord du sable (F1), devant une marche descendante (F2) et montante (F3) ; **(révision 5) la marche en diagonale
+  contre F1 et contre F2, sous le sable (le glissement de `BlockedCorners`)** ; la sortie (72 ticks, puis l'attente,
   l'objet libéré au tick suivant) ; **après la sortie, Alundra marche du sable sur l'herbe sans être arrêtée** ; **après un changement de carte
   sous le sable, aucun confinement** ; **pendant qu'Alundra est sous le sable, un PNJ (ou un ennemi) qui a un contrôleur, sur le même sable,
   passe du sable à une case qui n'en est pas et descend une marche sans être arrêté**, et Alundra reste arrêtée aux bords F1 à F3 ; le refus (Rond
@@ -12206,7 +12271,11 @@ l'invulnérabilité se teste à la passe de coups) ; le moteur.
   tous tués (la pente 3 en 2 ; l'état < 2 en ≤ 2 ; la sortie qui teste la pente ; un filtre de la boucle retiré ; `AnimFlags` au lieu de
   `HitAnimByte` ; le recouvrement symétrique ; le pilote qui n'annule pas en l'air ; la règle de terrain attachée à l'état au lieu de l'objet ;
   « plus bas » accepté ; la règle levée seulement à l'annulation (tué par le test « après la sortie, sur l'herbe ») ; la règle appliquée à toute entité (tué par le test
-  du PNJ sur le même sable) ; le recalcul par `ResyncControllerFromFlags` qui met à zéro la gravité du héros (tué par la garde de la gravité) ; la ruée sans le front ; la vitesse sans la division par deux ; le son 3 oublié) ; un ADR neuf ; O-H-1 fermé.
+  du PNJ sur le même sable) ; le recalcul par `ResyncControllerFromFlags` qui met à zéro la gravité du héros (tué par la garde de la gravité) ; la ruée sans le front ; la vitesse sans la division par deux ; le son 3 oublié ; (révision 5) l'appel de
+  `RefreshHeroWalkabilityMask` déplacé après `ScriptedMotion.TickPlayer` dans `PlayerManager.Tick` (le bit en retard d'un tick : tué par le
+  test du verrou, le héros déplacé hors du sable au tick même de l'annulation, ou par celui de la libération au bord du sable si T0 (d) l'a
+  choisi) ; `ResyncControllerFromFlags` qui ne garde pas le bit de la cape (tué par le test de l'opcode de drapeaux) ; `BlockedCorners` sans
+  la condition de niveau de la cape (tué par les tests de diagonale)) ; un ADR neuf ; O-H-1 fermé.
 - ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
 **Acceptation.** Les sorties de T0 (c) identiques ; les tests de T1 et T2 rouges avant leur phase et verts après (nommés) ; la suite en Release et
