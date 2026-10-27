@@ -1,0 +1,6 @@
+vectors 130 binary model != real code: 0
+bound distinguishes (inclusive_only != binary): [('vec_extra', 0)]
+threshold distinguishes (sort2_only != binary): [('vec_query', 15), ('vec_query', 26), ('vec_query', 41), ('vec_query', 42), ('vec_extra', 2), ('vec_extra', 3), ('vec_extra', 9)]
+corrected != binary: 8
+n==2 vectors: [('vec_query', 6), ('vec_query', 15), ('vec_query', 26), ('vec_query', 41), ('vec_query', 42), ('vec_query', 64), ('vec_query', 89), ('vec_extra', 2), ('vec_extra', 3), ('vec_extra', 7), ('vec_extra', 9)] of which threshold-distinguishing: 7
+corrected != inclusive_only+sort2 composition? []

@@ -1,0 +1,4 @@
+vectors 4000 with tied keys 211
+vectors where the model differs from the real code (None = my model must be 0): {None: 0, 'inclusive': 234, 'status2only': 832, 'ign20': 533, 'sort_from2': 157, 'corrected': 379}
+coverage query 94/94, sort 91/91
+uncovered: []
