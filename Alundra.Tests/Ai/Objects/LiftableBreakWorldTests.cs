@@ -268,7 +268,7 @@ public sealed class LiftableBreakWorldTests : IDisposable
         // derived from the contents the creation drew (the world's roll): the object of the item at the crate, one raw unit up, the sound 84 at the tick of the destruction and no other.
         var drop = Assert.Single(born);
         Assert.Equal(Gildas + TypeOfItemZero, drop.SpriteType);
-        Assert.Equal(((broken.X >> 16) << 16, broken.Y), (drop.PosX, drop.PosY)); // the interface of the apparition takes whole pixels: 143.5 becomes 143.
+        Assert.Equal((broken.X, broken.Y), (drop.PosX, drop.PosY)); // E20.e0a6 (D-E0A6-2): the binary passes the 16.16 position of the crate to the birth of the loot (0x80032B90 to 0x80039D04) and keeps the fraction: 143.5 stays 143.5.
         Assert.Equal(new[] { (1, 26), (24, 27), (26, DropSound) }, full.Heard.Played.ToArray());
         Assert.Equal((uint)Gildas, full.Crate.ContentsItemId);
 

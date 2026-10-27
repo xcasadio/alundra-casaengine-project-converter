@@ -3626,7 +3626,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             InsertBySlot(entity, slot);
             CreationFaultHookForTests?.Invoke("sprite-index", entity);
             RequestAppearanceSound(spawnedProxy); // E19.t T-R2: at the tick of the call.
-            spawnedProxy?.PushLogicalPositionToRoot();
+            spawnedProxy?.PushLogicalPositionToRoot(keepSubPixel: true); // E20.e0a6 (D-E20-92, D-E0A6-1): the binary stores the 16.16 position unshifted (0x80039D04), the fraction of the pixel stays at the root and in the logical position.
 
             // E20.e0b2 (D-E0B-6): the loot roll comes right before the marker block below (which cannot fail and stays the last write of the creation, ADR-0065); a creation that aborted never reaches it.
             RollLootAtCreation(spawnedProxy, hasRecord: false, 0);

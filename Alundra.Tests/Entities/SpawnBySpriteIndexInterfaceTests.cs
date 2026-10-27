@@ -323,18 +323,18 @@ public sealed class SpawnBySpriteIndexInterfaceTests
     {
         using var arc = Arc("subpixel");
         const int RockIndex = 17;
-        var x = (143 << 16) + 0x8000; // 143.5 px
-        var y = (101 << 16) + 0x4000; // 101.25 px
+        var x = (230 << 16) + 0x8000; // 230.5 px
+        var y = (160 << 16) + 0x4000; // 160.25 px
         var born = Context(arc).SpawnEntityBySpriteIndex(arc.Hero, false, RockIndex, x, y, 40 << 16, 0x10)!;
         Assert.NotNull(born);
         Assert.Equal((x, y), (born.PosX, born.PosY));
 
         var root = ArcRun.EntityOf(born)!.RootComponent!.LocalTransform.Position;
-        Assert.Equal((143.5f, 101.25f), (root.X, root.Y));
+        Assert.Equal((230.5f, 160.25f), (root.X, root.Y));
 
         arc.OneFrame();
         Assert.Equal((x, y), (born.PosX, born.PosY));
         root = ArcRun.EntityOf(born)!.RootComponent!.LocalTransform.Position;
-        Assert.Equal((143.5f, 101.25f), (root.X, root.Y));
+        Assert.Equal((230.5f, 160.25f), (root.X, root.Y));
     }
 }
