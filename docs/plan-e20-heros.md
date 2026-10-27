@@ -11149,12 +11149,20 @@ Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ
 - **Recette de l'auteur, à faire** : la sauvegarde `herbe-m14` (carte 14, tuile (31, 43, 1), Steel Edge) ; couper un buisson à l'épée,
   puis avec la vague : le buisson disparaît, l'éclat, parfois un objet, les sons. Les pas et la poussière restent à E20.e2.
 
-### 1.27c E20.e2 — Les pas et la poussière du héros : les trois bouchons de `CreatePlayerAnimationEffects` (D-E20-88 (2), D-E20-89 (3)) ⏳ (détaillée le 2026-10-27, révision 0 ; thème 2 ; après E20.eC)
+### 1.27c E20.e2 — Les pas et la poussière du héros : les trois bouchons de `CreatePlayerAnimationEffects` (D-E20-88 (2), D-E20-89 (3)) ⏳ (détaillée le 2026-10-27 ; thème 2 ; après E20.eC ; révision 0 relue : REVISE ; **révision 1** du 2026-10-27, non relue)
 
 **Provenance.** Lecture seule du 2026-10-27 (HEAD `539d4cf4`) et sa critique fraîche, CONFIRMÉE avec trois corrections, une citation d'ADR
 redressée et dix ajouts repris ici, dans le scratchpad de la session principale (`scratchpad/t2-feedback/e2-dust/` et `e2-dust-critic/` :
 désassemblage entier de la fonction, tables, sondes `dust_probe.py` et `sand_probe.py` sur une copie du harnais d'E20.d, 22 scénarios
 rejoués deux fois à l'identique), à verser par T0 à `docs/plan-e20-annexe/e20-e2-disc/` (sans les copies d'oracle ni les `__pycache__`).
+
+**Révision 1 (2026-10-27).** La relecture de la révision 0 (REVISE) a relevé trois mutants que leur test ne pouvait pas tuer, corrigés
+(FIX) : (1) « `DustEffectIndex` ignoré (7 en dur) » : l'octet vaut 7 sur les 483 cartes, et (d1) ne testait que le lecteur : (d1) fait
+maintenant courir et atterrir Alundra par les vrais corps sur un hôte dont l'effet de poussière vaut 9, et vérifie l'id des effets créés ;
+(2) « `CreateNow` au lieu de la file » : sur un réservoir nu, la création immédiate et la file donnent les mêmes tirages : un test commité
+(c2) vérifie que les tirages sont différés (le générateur ne bouge pas entre l'appel du corps et l'application de la file) ; (3) « les
+créateurs qui notifient `CreatedForTests` » : (g1) devient une assertion directe (la couture dédiée reçoit les nuages, `CreatedForTests`
+aucun).
 
 **Prérequis.** E20.e, E20.f2, E20.d1 et E20.i faites ; **E20.eC faite** (l'octet `0xA` exporté sous le nom `DustEffectId`, D-E20-90) ; les
 tranches du thème 2 s'exécutent une à la fois dans l'arbre de travail du dépôt, dans l'ordre de D-E20-89 ; T0 nomme son HEAD de départ et y
@@ -11272,14 +11280,18 @@ natifs qui lisent l'octet ; le moteur ; le convertisseur et les données (le nom
   (les clés de générateur `0xAFBE9EAC`, `0x24D2C78A`, `0xC81B4C37`) ; chacun réécrit par dérivation de l'oracle (D-E0B-8), jamais collé.
 - ⏳ **T1 — Tests d'abord** (rouges avant, puis le code) : (t1) les tables contre l'exécutable, mot à mot ; (c1) les créateurs purs sur un
   réservoir nu, graines fixées, contre les lignes de l'oracle (course, glissade et charge, éclaboussure des pentes 1 et 2, préparation,
-  plongeon, sable, atterrissage à trois nuages et à éclaboussure), dont le réservoir plein (ni création ni tirage) ; (s1) les sons par pente
-  et leur cadence, l'id 0 jamais demandé ; (d1) `DustEffectIndex` : 7 par défaut, la valeur de la carte quand elle en a une autre (une
-  carte synthétique) ; (f1) la direction du début du tick ; (z1) le Z du sol + 1 sur un sol nu, la valeur du support sur une entité ;
+  plongeon, sable, atterrissage à trois nuages et à éclaboussure), dont le réservoir plein (ni création ni tirage) ; (c2) (révision 1) **les tirages
+  différés** : sur un banc à scène d'effets, l'appel du corps de la course et de l'atterrissage ne fait bouger ni le générateur ni le
+  réservoir ; l'application de la file fait les tirages et crée les nuages ; (s1) les sons par pente et leur cadence, l'id 0 jamais
+  demandé ; (d1) `DustEffectIndex` : 7 par défaut, la valeur de la carte quand elle en a une autre (une carte synthétique), et (révision 1)
+  **par les vrais corps** : sur un hôte dont l'effet de poussière vaut 9, la course crée des effets 9 et l'atterrissage trois effets 9
+  (l'éclaboussure 6 des pentes 1, 2 et 4 ne change pas) ; (f1) la direction du début du tick ; (z1) le Z du sol + 1 sur un sol nu, la valeur du support sur une entité ;
   (m1) `RunMontage` contre les clés G1 à G10 et W1 à W10 avec les effets 6 et 7 et les sons 11, 12 et 21 (les exclusions levées) ; (w1) le
   monde, la course sur la carte 14 (`herbe-m14`) : un nuage tous les 4 ticks derrière, le son 12 tous les 8 ; (w2) l'atterrissage après un
   saut : le son 11, trois nuages, 6 tirages ; (w3) le mode verrouillé : les pas et l'atterrissage (le verrou) ; (w4) le plongeon dans
-  l'eau profonde (`swim-m14`) ; (w5) le sable par un état forcé (`0x23`, `0x24`) et, si E20.h2 est faite, sous la cape ; (g1) les
-  consommateurs de `CreatedForTests` inchangés (D-E2-8) ; puis le code.
+  l'eau profonde (`swim-m14`) ; (w5) le sable par un état forcé (`0x23`, `0x24`) et, si E20.h2 est faite, sous la cape ; (g1) (révision 1) la
+  couture dédiée (D-E2-8), directement : Alundra court puis atterrit avec une scène ; la couture dédiée reçoit les nuages et les
+  éclaboussures, `NativeEffects.CreatedForTests` n'en reçoit aucun ; puis le code.
 - ⏳ **T2 — Le code, trois commits** : (T2a) la course : la préparation (le son, la poussière), `0x03`, `0x04`, `0x2A`, les sons de marche
   (`0x01`, `0x07`), le lecteur, la garde de l'id, la direction ; (T2b) l'atterrissage ; (T2c) le plongeon et le sable. Les tests de T0 (e)
   réécrits par dérivation au commit qui les fait bouger.
@@ -11289,9 +11301,9 @@ natifs qui lisent l'octet ; le moteur ; le convertisseur et les données (le nom
   `FZ` omise ((c1)) ; la table d'eau non choisie sur les pentes 1, 2 et 4 ((c1), (m1)) ; `n = +0xB0` au lieu de `+0xB0 - 1` ((c1)) ; deux
   nuages au lieu de trois ((c1), (w2)) ; les tirages de l'atterrissage sans création ((c1), le réservoir plein) ; le réservoir plein qui
   tire ((c1)) ; l'id 0 demandé ((s1)) ; les tables de sons de marche et de course échangées ((s1), (m1)) ; `AnimationDirection` au lieu de
-  `TickFacing` ((f1)) ; le `+1` du Z omis ((z1)) ; `DustEffectIndex` ignoré (7 en dur) ((d1)) ; le plongeon `/ 4` en `/ 2` ((c1), (w4)) ;
+  `TickFacing` ((f1)) ; le `+1` du Z omis ((z1)) ; `DustEffectIndex` ignoré (7 en dur) ((d1), par les vrais corps, l'id 9) ; le plongeon `/ 4` en `/ 2` ((c1), (w4)) ;
   le signe du décalage X du sable ((c1)) ; le mode 1 sans les pas ((w3)) ; le verrou d'atterrissage ignoré ((w3)) ; les créateurs qui
-  notifient `CreatedForTests` ((g1)) ; `CreateNow` au lieu de la file ((c1) l'ordre des tirages, P4) ; un ADR neuf (numéro libre recompté
+  notifient `CreatedForTests` ((g1), un nuage trouvé dans `CreatedForTests`) ; `CreateNow` au lieu de la file ((c2), les tirages différés) ; un ADR neuf (numéro libre recompté
   sur toutes les branches) ; la ligne d'enveloppe et la doc de classe de `PlayerAnimationEffects` à jour.
 - ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
