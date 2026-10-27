@@ -746,6 +746,7 @@ venu du binaire a été recalculé par un second agent ; les corrections de ces 
 | E20.e0 | Apparition d'entités et butin (D-E20-17 ; **E20.e0c faite le 2026-10-23**, §1.26) : `SpawnWarpEntity` (`0x80039F58`, 102 appelants) par indice de sprite global, tirage du butin à l'apparition (`0x80032A40`), lâcher à la mort (`0x80032B90`) avec son veto, objet ramassable (gestionnaire C255), avance du générateur pseudo-aléatoire une fois par tick après la mise à jour du monde (`0x8002BD14`) | oracle ; arcs | Rien de visible seul ; recette avec E20.e |
 | E20.eR | (2026-10-22, D-E20-60 ; détaillée au §1.27a ; **faite et CONFIRMED le 2026-10-22**, analyseur `d687972`, parent `ce7e1ac7`) Renommage de `BalanceLevel` (l'octet 9 de l'en-tête de carte) en `TileCutEffectId` à la source : l'exporteur Tiled de l'analyseur et sa doc, la ré-extraction des cartes, la copie `data-extracted/`, le convertisseur et l'export | export complet, preuve par manifeste | aucune (rien ne change en jeu) |
 | E20.e | Herbe coupée : `CheckAndTriggerTileEffect`, butin tiré par E20.e0 (les pas et la poussière passent à E20.e2, révision 3 ; **faite et CONFIRMED le 2026-10-23**, §1.27) | oracle ; arcs | L'herbe se coupe à l'épée et à la vague ; argent et cœurs tombent et se ramassent |
+| E20.eC | (2026-10-27, D-E20-89 (4), D-E20-90 (1) ; **détaillée au §1.27b** ; avant E20.e2) Renommage de la propriété de carte `C` (l'octet `0xA` de l'en-tête, l'effet de poussière, 7 sur les 483 cartes) en `DustEffectId`, à la source : l'analyseur, la ré-extraction, le miroir, l'export complet ; une garde sur le projet réel | répétition à blanc ; manifeste | Rien en jeu (le nom seulement) |
 | E20.e2 | (2026-10-22, révision 3 d'E20.e ; prérequis E20.e ; **détaillée le 2026-10-27 au §1.27c**, après E20.eC, D-E20-89 (3)) Effets du héros sortis d'E20.e : `CreatePlayerAnimationEffects` (la poussière et le bruit de la course, l'atterrissage, les bruits de pas des sols qui en ont, le plongeon, la poussière de la cape ; la poussière de marche du sable va au thème 3) ; les bouchons « Stub (E20.e) » de `PlayerAnimationEffects` y renvoient | oracle ; arcs | Pas et poussière |
 | E20.f | Autres armes (D-E20-7) : charge et aura, fléau et rebond, baguettes, arcs, projectiles par l'apparition d'E20.e0 et les gestionnaires propres au héros, vague de l'épée C61 et flèches chargées C94 (D-E20-18), `0xC0`/`0xC1` | oracle ; arcs | Sauvegarde de test avec les armes (à créer) |
 | E20.g | Porter, poser, lancer (`PlayerTryAction`, `UpdatePlayerCarriedEntity`) ; caisses et jarres redeviennent des obstacles (fin de l'écart D-E19-28/D-E19-46) ; barricade de la 392 (O-E20-5) | oracle ; arcs | Soulever et lancer une caisse ; la 392 |
@@ -11151,6 +11152,173 @@ Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ
   théories existantes de `TestSavesTests` sans changer leurs corps.
 - **Recette de l'auteur, à faire** : la sauvegarde `herbe-m14` (carte 14, tuile (31, 43, 1), Steel Edge) ; couper un buisson à l'épée,
   puis avec la vague : le buisson disparaît, l'éclat, parfois un objet, les sons. Les pas et la poussière restent à E20.e2.
+
+### 1.27b E20.eC — Le nom de l'octet `0xA` de l'en-tête de carte : `DustEffectId` ⏳ (détaillée le 2026-10-27, révision 0 ; D-E20-89 (4), D-E20-90 (1) ; prérequis d'E20.e2 ; une tranche de données : relecture fraîche avant, verifiers frais après)
+
+**Provenance.** Lecture seule et répétition à blanc complète du 2026-10-27 (HEAD `6db0e710`, rien écrit dans le dépôt, le sous-module, le
+remaster ni `data-extracted/`), et sa critique fraîche qui a refait l'extraction dans un second dossier neuf (`diff -rq` vide entre les
+deux : l'extracteur est déterministe, audio rendu compris) et recalculé la prédiction de l'export sans réutiliser les scripts (0 écart sur
+966 lignes). Scratchpad de la session principale : `scratchpad/eC-dry/` (`reports-all.md`, les scripts, les listes, `SHA1SUMS.txt`) et
+`scratchpad/eC-dry-critic/`, à verser par T0 à `docs/plan-e20-annexe/e20-ec/` (sans `dry/`, `run/` ni les extractions de 4 Go). Le modèle
+exact est E20.eR (§1.27a, ADR-0079, `docs/plan-e20-annexe/e20-er/`).
+
+**Prérequis.** Les tranches du thème 2 s'exécutent une à la fois dans l'arbre de travail du dépôt, dans l'ordre de D-E20-89 : E20.eC après
+E20.i2b, avant E20.e2 ; aucun jeu, Launcher, éditeur ni suite de tests sur `alundra-project/` pendant T1, T3, T4 et T6 ; D: avec au moins 20
+Go libres (72 mesurés le 2026-10-27) ; `data-extracted/` égal à `D:/development/repo/Alundra Remake/remaster-data-extracted` (`diff -rq` vide
+mesuré le 2026-10-27, à refaire en T0) ; l'analyseur à `d687972` (= `master` local, en avance d'un commit sur `origin/master` `fc16872`, non
+poussé : E20.eR) ; le manifeste du projet à `d1a66b34ffc5e910bb2bf6bb8bec34ff43f8d8cb` (24 104 fichiers), sinon la prédiction se refait (T0).
+
+**But.** L'octet `0xA` de l'en-tête de carte porte, de l'exporteur Tiled de l'analyseur jusqu'au `.tileMap` du projet, le nom
+`DustEffectId` au lieu du nom brut `C`. Rien ne change en jeu : les 483 cartes valent 7 et aucune ligne de la DLL ne lit encore cet octet.
+Après la tranche, E20.e2 lit `DustEffectId`.
+
+**Faits porteurs** (tous relus au HEAD ; [MESURÉ] par la répétition à blanc, confirmés par la critique).
+- [analyseur] Le nom exporté est écrit en un seul lieu : `AlundraTools/AlundraDataExtractor/TiledMapExporter.cs:276`,
+  `TiledProperty.Int("C", gameMap.Info.C),` (blob `e4cfa8f8`, 38 909 o en LF ; copie de travail 39 981 o en CRLF, `core.autocrlf=true`) ;
+  après la tranche, `TiledProperty.Int("DustEffectId", gameMap.Info.C),` (blob prédit `a64c9ac1`, +11 o ; copie de travail 39 992 o). Le
+  champ de la décompilation `GameMapInfo.C` (`GameMapInfo.cs:15`, lu à `:42`) et le JSON natif `data/map_N.json` (`Info.C`) ne changent
+  pas. La décompilation lit `Info.C` six fois comme identifiant d'effet passé à `CreateEffectEntity` (`PlayerManager.cs:3588`, `:3680`,
+  `:3823-3829`, `EntityManager.cs:747`, `FunctionTypeC.cs:818`, `:11346`) ; elle hésite (`//slideEffectId ?` à `:3588`) et nomme `_10` le
+  champ lu au sable (le binaire tranche, §1.27c).
+- [analyseur] La doc `AlundraTools/docs/datas-bin-structure.md` (blob `42ba23e3`, 9 109 o, ISO-8859-1, 6 octets `0xD7` sur les lignes 57,
+  85, 87, 95, 120 ; copie de travail 9 273 o en CRLF, 164 lignes) : la ligne 79 est ``| 10 | `byte` | `C` | Unknown / reserved |``. La règle
+  du plan d'agent de l'analyseur (`docs/alundra-tiled-map-exporter-agent-plan.md:64`) garde les noms bruts « sauf si un fichier source
+  prouve déjà un meilleur nom » : ici la décision de l'auteur (D-E20-90 (1)) et la lecture du binaire (§1.27c).
+- [analyseur] L'état : la branche courante du sous-module est `chantier/e20er-tilecuteffectid` (fusionnée dans `master`) ; la copie de
+  travail porte les modifications locales de l'auteur (` M MGUI`, `?? AlundraTools/log.txt`), jamais indexées.
+- [données] `data-extracted/` porte la propriété `"name": "C"` dans les 483 `data/tiled/map_N.tmj`, une fois chacun, valeur 7 ; le projet
+  dans ses 483 `.tmj` (copies octet pour octet des sources) et ses 483 `.tileMap` (ligne `    "C": "7",`), rien d'autre ; `DustEffectId`
+  n'existe nulle part.
+- [DLL, convertisseur, moteur, tests] Aucun lecteur de la propriété `C` : les accès aux propriétés de carte sont par nom (`Gravity`,
+  `ZViscosity`, `D`, `TileCutEffectId`) ; `TiledMapImporter.CopyCustomProperties` du moteur recopie toutes les clés sans les nommer ; aucun
+  test ni fixture ne pose `C`. Seuls le commentaire `alundra-casaengine-project-converter/Writers/CellMetadataWriter.cs:11-14` et
+  `docs/formats/cells-companion.md:73-74` listent les champs de carte portés (sans `C`). Le modèle de garde existe :
+  `Alundra.Tests/ExportGuards/TileCutEffectIdExportGuardTests.cs` (cartes 10, 14, 16 ; un fichier manquant fait échouer le test ;
+  `ExportGuards` exempt du miroir de la DLL, ADR-0080).
+- [répétition à blanc] L'extraction du HEAD de l'analyseur avec le renommage : 4 536 fichiers ; `diff -rq` contre `data-extracted/` =
+  exactement 483 lignes `data/tiled/map_N.tmj` (`expected_extract_changes.txt`, SHA-1 `1ae6a9cb`, le même ensemble qu'E20.eR), chacune égale
+  à l'ancienne une fois le nom remis (+11 o, valeur 7 partout), aucun « Only in » ; la console égale à celle d'E20.eR (hors chemin de
+  sortie). Export prédit : 966 fichiers changés (483 `.tmj`, 483 `.tileMap`, +11 o chacun, +10 626 o ; `predicted_export_changes.tsv`, SHA-1
+  `98132aeb`) plus `report.json` ; le manifeste sans `report.json` passe de `3d878b74` à `5d3dc03a` (prédit) ; `AssetInfos.json` inchangé.
+
+**Décisions de la session** (D-E20-90 (1) appliquée, sur le modèle des R1 à R8 d'E20.eR).
+- **C1** L'extraction complète se relance (pas de mode « cartes seules ») ; le code de l'extracteur ne change que la ligne 276.
+- **C2** L'extraction va dans un **dossier neuf** (`D:/development/repo/Alundra Remake/remaster-data-extracted-ec`), jamais par-dessus le
+  remaster ; depuis le sous-module seulement, après une construction Release fraîche, `EntityNames.csv` copié dans le dossier courant.
+- **C3** Le miroir est celui d'E20.eR (sauvegardes hors dépôt `data-extracted.bak-ec` et `remaster-data-extracted.bak-ec`, renommage,
+  `robocopy /MIR` depuis PowerShell, `diff -rq` final vide) ; sa limite tient à la preuve faite **avant** le miroir (exactement les 483
+  lignes, chaque écart n'étant que la propriété renommée).
+- **C4** `GameMapInfo.C`, ses lecteurs de la décompilation, le JSON natif et le serveur MCP ne changent pas.
+- **C5** La ligne 79 de la doc devient ``| 10 | `byte` | `C` | Dust effect id (exported as the Tiled map property `DustEffectId`) |``
+  (le nom du champ gardé, la description « Unknown / reserved » remplacée, puisque le binaire établit l'usage ; blob prédit `5582795`,
+  copie de travail 9 321 o), par un remplacement d'**octets** (aucun outil qui réencode ; les 6 octets `0xD7` gardés).
+- **C6** Une garde sur le projet réel, `Alundra.Tests/ExportGuards/DustEffectIdExportGuardTests.cs` (nom contrôlé par `check_names.py`), sur le
+  modèle de `TileCutEffectIdExportGuardTests` : les cartes 10, 14 et 16, la propriété `DustEffectId` vaut `"7"` et `C` est absente, un
+  fichier manquant fait échouer ; le nom en littéral (la DLL n'a pas encore de constante : E20.e2 pourra la reprendre). Rouge avant
+  l'export, vert après.
+- **C7** Les listes vivantes suivent : `DustEffectId` ajouté au commentaire `CellMetadataWriter.cs:11-14` et à `docs/formats/cells-companion.md:73-74`
+  (comme E20.eR) ; les docs historiques et les annexes d'oracles figées ne sont pas touchées (D-R-6 ; elles lisent le JSON natif `Info`).
+- **C8** Branches : analyseur `chantier/e20ec-dusteffectid` depuis le `master` local (`d687972`), pas depuis `origin/master` ; parent sur la
+  branche courante. Le sous-module n'est pas fusionné dans son `master` avant la fin du thème ; l'auteur pousse et récupère lui-même.
+- **C9** Un ADR neuf et court (numéro libre recompté sur toutes les branches) cite D-E20-90 (1), ADR-0079 comme précédent, la règle de nommage
+  de l'analyseur et la lecture du binaire ; l'ADR-0079 ne change pas.
+
+**Périmètre.**
+- Analyseur : `TiledMapExporter.cs:276` ; `AlundraTools/docs/datas-bin-structure.md:79`.
+- Dossiers hors dépôt : une extraction neuve, deux sauvegardes, le remaster et `data-extracted/` mis à jour.
+- Parent : le pointeur du sous-module ; `Alundra.Tests/ExportGuards/DustEffectIdExportGuardTests.cs` (neuf) ;
+  `alundra-casaengine-project-converter/Writers/CellMetadataWriter.cs` (le commentaire) ; `docs/formats/cells-companion.md` ; l'annexe
+  `docs/plan-e20-annexe/e20-ec/` ; un ADR ; ce plan.
+- L'export complet en place et sa preuve par manifeste.
+
+**Hors périmètre.** `GameMapInfo`, la décompilation, le serveur MCP ; la lecture de `DustEffectId` par la DLL (E20.e2) ; tout changement du
+convertisseur autre que son commentaire ; le moteur ; les modifications locales de l'auteur dans l'analyseur (`MGUI`, `log.txt`) et
+`tools/Convert-*.ps1`, `tools/Saves/` ; toute suppression de sauvegarde (les dix précédentes, 35,2 Go, restent).
+
+**Commandes** (celles d'E20.eR, §1.27a, avec ces noms).
+- Export, fenêtre calme : `dotnet run --project alundra-casaengine-project-converter -c Release -- data-extracted alundra-project`.
+- Construction de l'extracteur : `dotnet build alundra-datas-analyser/AlundraTools/AlundraDataExtractor/AlundraDataExtractor.csproj -c Release -nologo`.
+- Extraction, depuis un dossier neuf du scratchpad `<scratch>/eC-run/` où `EntityNames.csv` est copié : `dotnet
+  "D:/development/repo/alundra-casaengine-project-converter/alundra-datas-analyser/AlundraTools/AlundraDataExtractor/bin/Release/net9.0-windows/AlundraDataExtractor.dll"
+  "D:/development/repo/Alundra Remake/Alundra (France)/Alundra (France)_extracted" "D:/development/repo/Alundra Remake/remaster-data-extracted-ec"
+  > <scratch>/eC-run/extract-stdout.log 2>&1`, sans option.
+- `Alundra.Tests` en Release toujours avec la copie de la DLL neutralisée, sur `dotnet build` comme sur `dotnet test` ; suites au premier plan
+  avec `--blame-hang-timeout 60s` ; la seule construction qui dépose la DLL est la dernière (Debug, T7) ; `alundra-project/Alundra.dll` et
+  `Alundra.pdb` sont hors du manifeste, leurs SHA-1 relevés à T0 et revérifiés à T6.
+- Les éditions de l'exporteur et de la doc se font par **remplacement d'octets** (Python binaire, comme `edit_doc.py` et
+  `rename_exporter.py` de la répétition et de sa critique) ; jamais `sed -i` (il convertit un fichier CRLF en LF, mesuré). Tout `rg` sur
+  `alundra-project/` ou `data-extracted/` porte `--no-ignore` ; les comptes de fins de ligne par Python ou `rg` (le `grep` de Git Bash masque
+  les CR).
+
+##### Tâches
+
+- ⏳ **T0 — Relevés de départ** (commit de docs, avant tout changement). Verser l'annexe `docs/plan-e20-annexe/e20-ec/` (la lecture, la
+  critique, `dry_run.sh`, `edit_doc.py`, `verify_extraction_diff.py`, `predict_export.py`, `make_lists.py`, `manifest.py`, `diff_manifests.py`,
+  `rename_exporter.py`, `expected_extract_changes.txt`, `predicted_export_changes.tsv`, `predicted_export_paths.txt`,
+  `predicted_manifest_without_report.txt`, les consoles de référence, un `SHA1SUMS.txt`) ; `state-T0.md` : `git status` du parent et de
+  l'analyseur, `diff -rq` remaster/`data-extracted/` vide (4 536), le manifeste `m0` (attendu `d1a66b34`, sinon `predict_export.py` et
+  `diff_manifests.py` refaits et l'écart expliqué avant de continuer), les SHA-1 de la DLL et du PDB du projet, `report.json`, les comptes de
+  tests du convertisseur et d'`Alundra.Tests` (Release, copie neutralisée) à zéro échec, la place libre sur D: ; la répétition à blanc
+  rejouée depuis une copie de `dry_run.sh` dans un dossier neuf du scratchpad : les mêmes 483 lignes.
+- ⏳ **T1 — Export de référence au HEAD**, avant tout changement, fenêtre calme : sortie 0, `Verification: PASSED` ; `m1` contre `m0` :
+  `report.json` seul (sinon l'écart s'explique et la prédiction se refait).
+- ⏳ **T2 — L'analyseur** (un appel Bash par commande git, `git -C <chemin absolu>`) : `git switch master` puis `git switch -c
+  chantier/e20ec-dusteffectid` ; la ligne 276 et la ligne 79 par remplacement d'octets ; contrôles : `git diff --stat` = ces deux fichiers,
+  une ligne chacun ; la copie de travail de l'exporteur à 39 992 o en CRLF ; la doc garde ses 6 octets `0xD7` ; les blobs indexés égaux aux
+  prédits (`a64c9ac1`, `5582795`) ; construction Release de l'extracteur, 0 erreur ; dans `TiledMapExporter.cs`, `rg -c '"C"'` ne trouve
+  rien et `rg -c '"DustEffectId"'` trouve 1 ; indexation fichier par fichier, un commit (`fix(extractor): export the map header byte 0xA as
+  the DustEffectId Tiled property (E20.eC, D-E20-90)`) ; `MGUI` et `log.txt` toujours non indexés.
+- ⏳ **T3 — Ré-extraction en dossier neuf** (commande ci-dessus) : 4 536 fichiers ; console égale à celle de la répétition (hors chemin de
+  sortie) ; `diff -rq` contre `data-extracted/` = exactement `expected_extract_changes.txt` (483 lignes, aucun « Only in ») ;
+  `verify_extraction_diff.py` = 483 sur 483 égaux une fois le nom remis, valeur 7 ; `diff -rq` contre le dossier de la répétition rejouée
+  vide. Tout autre écart arrête la tranche.
+- ⏳ **T4 — Miroir** (hors dépôt, rien n'est supprimé, depuis PowerShell pour `robocopy`) : `robocopy /E` de `data-extracted/` vers
+  `…/Alundra Remake/data-extracted.bak-ec` ; l'ancien remaster renommé `remaster-data-extracted.bak-ec` (égal à `data-extracted/` avant :
+  `diff -rq` vide) ; `remaster-data-extracted-ec` renommé `remaster-data-extracted` ; `robocopy … /MIR` vers `data-extracted/` ; `diff -rq`
+  final vide (4 536) ; les dix sauvegardes antérieures intactes.
+- ⏳ **T5 — Pointeur du sous-module** : `git add alundra-datas-analyser` seul ; `git diff --cached --submodule=short` ne montre que `d687972`
+  vers le nouveau commit ; ni `CasaEngineMonogame` ni `tools/` indexés ; commit (`chore(analyser): export the map header byte 0xA as
+  DustEffectId (E20.eC)`).
+- ⏳ **T6 — La garde rouge, puis l'export** : `DustEffectIdExportGuardTests` écrit (C6), `Alundra.Tests` en Release (copie neutralisée) : la
+  garde rouge (export périmé) et rien d'autre ; le commentaire de `CellMetadataWriter.cs` et `cells-companion.md` (C7) ; `check_names.py
+  --rules` vert ; puis, fenêtre calme, l'export 1 et tout de suite l'export 2 : `m2` contre `m1` : CHANGED = exactement les 966 chemins de
+  `predicted_export_changes.tsv` plus `report.json`, ADDED et REMOVED vides, chaque SHA-1 égal à sa prédiction (un script compare
+  l'ensemble), le manifeste sans `report.json` = `5d3dc03a` ; `AssetInfos.json` identique ; `report.json` : `Errors` 0, mêmes `Warnings`,
+  `OutputFileCount` inchangé ; la DLL et le PDB du projet ceux de T0 ; `rg -l --no-ignore '"name": "C"' alundra-project` vide et `rg -l
+  --no-ignore DustEffectId alundra-project` = les 966 fichiers ; `m3` contre `m2` : `report.json` seul.
+- ⏳ **T7 — Suites et commit du parent** : `Alundra.Tests` en Release (copie neutralisée) puis en Debug en dernier, la garde verte, zéro
+  échec ; le convertisseur vert ; `cmp` de la DLL Debug avec `alundra-project/Alundra.dll` ; la garde des traces de la 389 ; un commit pour la
+  garde, le commentaire et la doc de format ; l'ADR (C9).
+- ⏳ **T8 — Plan et vérification** (la session principale) : la ligne d'enveloppe, les résultats mesurés ici, l'annexe ; deux verifiers
+  frais (le rejeu : un export de plus, `report.json` seul, les 966 SHA-1, `diff -rq` vide, la garde ; l'adversarial : les octets de la doc,
+  le sens des écarts, les sauvegardes, les suites complètes).
+
+##### Acceptation
+- Le commit de l'analyseur ne change que `TiledMapExporter.cs:276` et la ligne 79 de la doc, octets de la doc préservés, blobs égaux aux
+  prédits.
+- La ré-extraction diffère de `data-extracted/` par exactement les 483 `map_N.tmj`, chacun par la seule propriété renommée.
+- Après le miroir, `diff -rq` remaster/`data-extracted/` est vide (4 536 fichiers) ; les sauvegardes existent, rien n'est supprimé.
+- L'export change exactement les 966 fichiers prédits, au SHA-1 prédit, plus `report.json` ; le second export ne change que `report.json` ;
+  `AssetInfos.json` identique.
+- `Alundra.Tests` vert en Release et en Debug avec la garde, le convertisseur vert, la garde de structure verte.
+- Deux verifiers frais : CONFIRMED.
+
+##### Arrêts, budget, retour arrière
+- **Arrêts** : T1 change autre chose que `report.json` ; la ré-extraction diffère par autre chose que les 483 lignes, un « Only in », ou un
+  `.tmj` dont l'écart n'est pas la propriété ; le sens d'un écart douteux, ou une extraction lancée depuis un autre checkout que le
+  sous-module ; un `diff -rq` final non vide, ou moins de 20 Go libres ; l'export change un autre chemin que les 966, ou un SHA-1 diffère de
+  sa prédiction ; un second export diffère hors `report.json` ; un processus sur l'arbre pendant l'export ; toute idée de supprimer
+  `alundra-project/` ou une sauvegarde ; toute tentative d'indexer `CasaEngineMonogame/`, `MGUI`, `log.txt` ou `tools/` ; la DLL ou le PDB du
+  projet changent avant T7 ; un outil qui réencode `datas-bin-structure.md`.
+- **Budget** : un `executor`, deux tentatives au plus ; `plan-verifier` avant ; deux verifiers frais après.
+- **Retour arrière**, dans l'ordre d'E20.eR (les données d'abord, l'export en dernier, pour qu'il relise les anciennes données ; seules les
+  étapes atteintes se défont) : (1) hors dépôt, depuis PowerShell, rien n'est supprimé : `remaster-data-extracted` renommé
+  `remaster-data-extracted-ec`, `remaster-data-extracted.bak-ec` renommé `remaster-data-extracted`, `robocopy /MIR` vers `data-extracted/`,
+  `diff -rq` vide et `rg -l --no-ignore DustEffectId data-extracted` vide ; (2) `git revert` des commits du parent (la garde et les docs, puis
+  le pointeur, revenu à `d687972`) ; dans l'analyseur, `git -C <chemin absolu> switch master` (les modifications locales de l'auteur suivent,
+  intactes ; la branche n'est pas supprimée sans accord) ; (3) `Alundra.Tests` en Debug (la DLL du code d'avant ; en Release, toujours la
+  copie neutralisée) ; (4) en dernier, un export complet en place, en fenêtre calme : `m` contre `m1` : `report.json` seul, et `rg -l
+  --no-ignore DustEffectId alundra-project` vide.
 
 ### 1.27c E20.e2 — Les pas et la poussière du héros : les trois bouchons de `CreatePlayerAnimationEffects` (D-E20-88 (2), D-E20-89 (3)) ⏳ (détaillée le 2026-10-27 ; thème 2 ; après E20.eC ; révision 0 relue : REVISE ; révision 1 relue : REVISE ; révision 1.1 du 2026-10-27 après disposition, relue à la clôture : REVISE (un point) ; **révision 1.2** du 2026-10-27, la correction de ce point ; reprise sans nouvelle relecture sur décision de l'auteur, D-E20-91)
 
