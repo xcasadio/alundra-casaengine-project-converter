@@ -3801,7 +3801,7 @@ d'histoire qui bouge ; un besoin de toucher au moteur ; un test qui boucle.
 **Retour arrière.** Retirer l'appel de la fonction du tick du héros (le bit n'est plus jamais posé : Alundra nage partout, l'état
 d'aujourd'hui) ; puis le pseudo-bit et la lecture de `BlockedCorners`.
 
-#### 1.14.3 E20.i2b — La fonction des forces : la table de glissement, le décalage `SlideEffectId` et la poussée (O-E19-31, Q-H4-3) ⏳ (détaillée le 2026-10-25 ; thème 2, après i2a, avant h4e2 et h4f1 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, REVISE à la relecture de clôture : **en pause de relecture** ; révision 3 écrite ; reprise sur ordre de l'auteur, Q-I2B-P, puis D-E20-88 ; la révision 3 relue le 2026-10-27 (nouvelle époque) : REVISE ; **révision 4** du 2026-10-27, non relue)
+#### 1.14.3 E20.i2b — La fonction des forces : la table de glissement, le décalage `SlideEffectId` et la poussée (O-E19-31, Q-H4-3) ⏳ (détaillée le 2026-10-25 ; thème 2, après i2a, avant h4e2 et h4f1 ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, REVISE à la relecture de clôture : **en pause de relecture** ; révision 3 écrite ; reprise sur ordre de l'auteur, Q-I2B-P, puis D-E20-88 ; la révision 3 relue le 2026-10-27 (nouvelle époque) : REVISE ; révision 4 relue : REVISE ; **révision 4.1** du 2026-10-27 après disposition, à la relecture de clôture)
 
 **Révision 1 (2026-10-25).** La relecture de la révision 0 (REVISE) a relevé cinq blocages, corrigés (FIX) : (1) (f1) comparait une fonction
 sans serrage à des vecteurs pris après le serrage (163 sur 200) et ne disait pas d'où vient la force F des vecteurs de la passe : (f1) ne
@@ -3839,9 +3839,18 @@ celle de `CarryRig` : les drapeaux `0x3323E4` et le corps Kinetic du vrai préfa
 geste de `g4-throw-still` et de `CarryThrowWorldTests.V1_TheThrowOnTheGround_WithoutADirection_…`) ; le banc de (w1b) est `CarryRig` sur le
 même champ synthétique que la clé ; T0 (c) verse une preuve d'équivalence des deux côtés, dont un écart est un arrêt.
 
+**Révision 4.1 (2026-10-27, disposition de la session principale après deux REVISE de l'époque : FIX).** La relecture de la révision 4 a
+relevé que la tranche ne s'ordonnait pas contre E20.h4c1, qui s'exécute dans le même arbre de travail avec 38 tests rouges exprès (sa phase
+A, `ad17de6f`) : l'inventaire de T0 (e) et le « zéro échec » de T2 ne se jugent que sur une suite dont aucun échec ne vient d'une autre
+tranche. Correction : un prérequis d'ordre et un HEAD de départ vérifié à zéro échec (ci-dessous).
+
 **Prérequis.** E20.i2a faite (révision 1 : elles partagent `ScriptedMotion.cs`, `EntityScriptProxy.cs`, `WorldProxy.cs`, le dossier de
 versement `e20-i2-disc/`, que verse i2a, et le test de liste des préréglages). Avant h4e2 et h4f1 (D-E20-61). Jamais en même temps qu'une
-autre tranche qui touche `TestSaves.cs`.
+autre tranche qui touche `TestSaves.cs`. **(révision 4.1) L'ordre et l'arbre partagé** : les tranches du thème 2 s'exécutent une à la fois
+dans l'arbre de travail du dépôt ; i2b ne commence qu'après E20.h4c1 et les tranches que D-E20-88 ordonne avant elle (au 2026-10-27 :
+h4c1, le correctif de l'ordre de dessin de l'objet porté, h4c2, h4d1, h4d2, h4e1, h1, h2), chacune finie et commitée, et aucune autre ne
+tourne dans l'arbre pendant i2b ; T0 nomme son HEAD de départ et y lance la suite entière (Release, copie neutralisée) avant l'inventaire
+de (e) : zéro échec exigé, sinon un arrêt avant (e).
 
 **But.** Comme l'original : sur les cartes 159 et 160 (`SlideEffectId` = 1, les seules), tout ce qui est intégré par la physique (Alundra, les
 ennemis, les objets lancés, les projectiles, les plateformes) avance deux fois moins vite à l'horizontale ; une poussée écrite dans
@@ -3916,7 +3925,8 @@ est en place pour les courants (i2c), inerte tant que `+0x188` vaut 0.
   (tests jetables, jamais commités, versés en `.txt`) : le chargement de l'export réel de la 159, sans tick, adopte le héros par
   `WorldProxy` et fait naître par `EntitySpawnFactory` au moins une entité, que T0 nomme pour (w1a) ; le héros et la caisse de `CarryRig`
   passent par `RunOneKinematicTick` à chaque tick comparé (un compteur jetable) ; une sonde contredite est un arrêt ; (d) le recensement de `SlideEffectId` (159 et 160 seules) ;
-  (e) l'inventaire par exécution (un câblage temporaire, la suite entière, versé en `.txt`) : la liste prédite (attendue : le test de liste des
+  (e) l'inventaire par exécution (un câblage temporaire, la suite entière, depuis le HEAD de départ vérifié à zéro échec, révision 4.1,
+  versé en `.txt`) : la liste prédite (attendue : le test de liste des
   préréglages et, peut-être, aucun autre ; à surveiller : `HeroObjectTopsTests.cs:494-512`, les tests de dépôt sur la 159 qui posent la gravité à
   la main) ; (f) la case du préréglage.
 - ⏳ **T1 — Tests d'abord** (rouges avant) : (f1) la fonction pure contre les 37 vecteurs sans serrage de T0 (b), chaque mot
@@ -11897,7 +11907,7 @@ plan, l'index des ADR et un ADR.
 
 **Questions de l'auteur** (défauts réversibles retenus en mode autonome ; §2) : Q-H3-1 à Q-H3-8.
 
-#### 1.30.5 E20.h1 — Les cinq objets instantanés : l'herbe, les deux potions, l'extrait et le breuvage ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `31fc8b2` ; révision 3 du 2026-10-25 (D-E20-50, D-E20-78, e0c faite), relue à la clôture de la nouvelle époque : REVISE ; en pause de relecture jusqu'à D-E20-88 ; la révision 4 relue le 2026-10-26 (la relecture accordée par D-E20-81 après h0a) : REVISE ; révision 5 relue le 2026-10-27 (la reprise de D-E20-88, nouvelle époque) : REVISE ; **révision 6** du 2026-10-27, non relue)
+#### 1.30.5 E20.h1 — Les cinq objets instantanés : l'herbe, les deux potions, l'extrait et le breuvage ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `31fc8b2` ; révision 3 du 2026-10-25 (D-E20-50, D-E20-78, e0c faite), relue à la clôture de la nouvelle époque : REVISE ; en pause de relecture jusqu'à D-E20-88 ; la révision 4 relue le 2026-10-26 (la relecture accordée par D-E20-81 après h0a) : REVISE ; révision 5 relue le 2026-10-27 (la reprise de D-E20-88, nouvelle époque) : REVISE ; révision 6 du 2026-10-27, **READY** à la deuxième relecture de l'époque, `plan-verifier` frais)
 
 **Révision 3 (2026-10-25).** Trois faits ont changé depuis la relecture de clôture du 2026-10-18 :
 - **D-E20-78** (Q-H1-3 rouverte, l'erratum de D-E20-51) : un soin donné par `0x82` s'ajoute au sac sans être bu, et un coffre refuse l'objet sac
@@ -12109,7 +12119,7 @@ verts. B (T2) : les cinq entrées ; les tests de production, sans couture, rouge
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : rendre les cinq entrées à leurs bouchons ; la phase A reste inerte.
 
-#### 1.30.6 E20.h2 — La cape de sable (objet `0x20`, états `0x20` à `0x24`) ⏳ (détaillée le 2026-10-25 ; thème 2 ; ferme O-H-1 ; révisions 0 et 1 relues : REVISE ; révision 2 relue à la clôture : REVISE ; en pause de relecture jusqu'à D-E20-88 ; la révision 3 relue le 2026-10-26 (la relecture accordée par D-E20-81 après h0a) : REVISE ; révision 4 relue le 2026-10-27 (la reprise de D-E20-88, nouvelle époque) : REVISE ; **révision 5** du 2026-10-27, non relue)
+#### 1.30.6 E20.h2 — La cape de sable (objet `0x20`, états `0x20` à `0x24`) ⏳ (détaillée le 2026-10-25 ; thème 2 ; ferme O-H-1 ; révisions 0 et 1 relues : REVISE ; révision 2 relue à la clôture : REVISE ; en pause de relecture jusqu'à D-E20-88 ; la révision 3 relue le 2026-10-26 (la relecture accordée par D-E20-81 après h0a) : REVISE ; révision 4 relue le 2026-10-27 (la reprise de D-E20-88, nouvelle époque) : REVISE ; révision 5 du 2026-10-27, **READY** à la deuxième relecture de l'époque, `plan-verifier` frais)
 
 **Provenance.** Lecture seule du 2026-10-24 (HEAD `86d421b5` ; `report-main.md` et le critique frais `critic-main.md`, CONFIRMÉ avec des
 corrections reprises ici, dans le scratchpad de la session principale `scratchpad/t2-cape/`, à verser par T0 à
