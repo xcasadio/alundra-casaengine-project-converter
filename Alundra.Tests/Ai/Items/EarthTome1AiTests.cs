@@ -35,6 +35,8 @@ public sealed class EarthTome1AiTests : IDisposable
 
     private static void Reset()
     {
+        PlayerManager.ItemStartForTests = null;
+        PlayerManager.ItemDriverForTests = null;
         PlayerManager.ItemCancelForTests = null;
         PlayerManager.ItemStubCallsForTests = null;
         GameState.Instance.ResetForTests();
