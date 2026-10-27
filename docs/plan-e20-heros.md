@@ -12571,6 +12571,15 @@ que les naissances ; l'eau profonde détruit les rochers qui y tombent.
 `SpawnEntityBySpriteIndex(héros, false, 16, PosX, PosY, PosZ, (TargetDirection + delta) & 31)`, une naissance nulle n'écrit rien.
 **D-H4C1-2** — Phase B : les trois entrées `0x2B` des tables de h0a (départ = la fonction de départ des tomes de h4a, pilote = `Driver`,
 annulation = un no-op nommé) et l'appel de `Register` dans `CreateForProduction`.
+**D-H4C1-3** (2026-10-27, disposition de l'arrêt de T0 sur la sonde P2) — La rangée d'animation (`AnimationDirection`) et l'animation
+courante (`CurrentAnimationId`) d'un rocher égalent la clé **à partir du tick qui suit sa naissance** (au tick de naissance, la DLL les laisse à
+0 et `0xFFFFFFFF` : elle valide le changement d'animation en fin d'image, `FrameSyncPasses.TryResolveAnimationTarget`, alors que
+`UpdateAnimation` du binaire tourne au tick de naissance) : le retard d'une image de l'animation courante qu'acceptent déjà D-E19-13
+(ADR-0018) et h3a (son écart (5)) ; 112 vies sur 192 sont touchées (celles dont la rangée n'est pas 0), et rien de ce qui dépend de la rangée
+ne l'est (la boîte, le son 46, `+0xAC`, la mort) ; sur les 5 908 lignes de rochers, tout le reste est égal à la clé. (w1) à (w6) comparent ces
+deux champs dès le tick suivant la naissance, tout le reste sans tolérance (`docs/plan-e20-annexe/e20-h4c1/t0/results.md`). Les « tables de h0a »
+sont au HEAD trois aiguillages (`PlayerManager.StartItem`, `UpdateItemUseDriver`, `CancelItemMode`) : les entrées `0x2B` y sont trois
+branches de plus.
 
 **Périmètre.** `Alundra/Ai/Items/EarthTome1Ai.cs` (neuf) ; `NativeSpriteRegistry.cs` (un appel) ; `Alundra/Hero/PlayerManager.cs` (les entrées
 `0x2B`) ; `Alundra.Tests/` ; l'annexe `docs/plan-e20-annexe/e20-h4c1/` ; ce plan, l'index des ADR et un ADR. **Hors périmètre** : le départ, les
@@ -12578,7 +12587,8 @@ PM, la piste XA, les états `0x32` à `0x34`, la garde (h4a) ; E3 pour le type 2
 
 ##### Tâches
 
-- ⏳ **T0 — Annexe, oracle, liste prédite** (aucun code) : (a) rejouer depuis des copies la machine à index écrits de la découverte
+- ✅ **T0 — Annexe, oracle, liste prédite** (aucun code ; fait le 2026-10-27, `46cb8dec` : les rejeux identiques, 384 vecteurs de plus pour
+  les directions de base, les sondes P1 et P3 à P9 tenues, P2 disposée par D-H4C1-3, cinq sommes du registre prédites) : (a) rejouer depuis des copies la machine à index écrits de la découverte
   (`e20-h4c1/disc/fcopy/` : `c1_make_keys.py`, deux exécutions au manifeste identique) et les vecteurs de h4 (`h4_vec_drivers.py`,
   `h4_vec_handlers.py`, 0 écart) ; (b) les clés versées : `earth1_flat_east`, `_south`, `_west`, `_north`, `_east_x200`, `earth1_wall_col9`,
   `earth1_deepwater_cols7_9`, les huit `earth1_vs_beannoid_*` (`_84_104` coupée au tick 128 : le Beannoïde blesse ensuite le héros),
