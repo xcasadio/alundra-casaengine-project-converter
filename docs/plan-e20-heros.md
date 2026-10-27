@@ -5474,7 +5474,7 @@ hors de la fenêtre ; le tick noté seulement avec un sprite). **Reportés (P4)*
 tranché (option A) ; enveloppe, révision 10 : e0a5 ajoutée aux prérequis des lignes 5 (f3c), 6, 7, 8 (f6b) et 11, et à la ligne 2 ;
 §1.16.4 : la mesure P-B d'e0a3b est à refaire après e0a5.
 
-#### 1.16.6 E20.e0a6 — La fraction de pixel à la naissance par l'interface (D-E20-92) ⏳ (détaillée le 2026-10-27, révision 0 ; thème 2 ; avant la reprise de h4c2)
+#### 1.16.6 E20.e0a6 — La fraction de pixel à la naissance par l'interface (D-E20-92) ⏳ (détaillée le 2026-10-27, révision 0, **READY** à la première relecture, `plan-verifier` frais ; thème 2 ; avant la reprise de h4c2)
 
 **Provenance.** L'arrêt de T0 de h4c2 sur la sonde (s2) (`docs/plan-e20-annexe/e20-h4c2/t0/results.md`, l'expérience
 `docs/plan-e20-annexe/e20-h4c2/t0/spawn-subpixel/`) : dans les clés `cast_2c_pf_mid_x600y480` et `cast_2c_pf_rockfix`, 13 naissances de
