@@ -12365,7 +12365,7 @@ banc relâche un tick entre deux appuis. (5) Les durées des animations 50 à 52
 
 ---
 
-#### 1.31.2 E20.h4b1 — La requête de cibles des sorts ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `a50c877` ; Q-H4-2b (B, D-E20-62) : inchangée)
+#### 1.31.2 E20.h4b1 — La requête de cibles des sorts ✅ (**faite et CONFIRMED le 2026-10-27**, `c0d14e1e` à `5b46589d`, ADR-0106 ; inerte en production ; détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `a50c877` ; Q-H4-2b (B, D-E20-62) : inchangée)
 
 **Prérequis.** h4a ; la fin du chantier de restructuration et Q-R-7.
 
@@ -12412,6 +12412,16 @@ prête ; rien ne l'appelle encore en production.
   des champs publics : une lecture non listée ne peut pas être détectée à l'exécution). Le résultat (la liste des emplacements, dans l'ordre) est
   comparé tel quel.
 
+**Écarts de l'exécution (2026-10-27, acceptés par la session principale, `docs/plan-e20-annexe/e20-h4b1/`).** (1) Les réglages sont deux
+paramètres par défaut constants de `Find` (`InclusiveBound = true`, `SortThreshold = 2`), pas un type ; le mode binaire des vecteurs est
+`(false, 3)`. (2) Chaque cas de (q3) accole un candidat gardé et un écarté dans le même monde : les 14 sont rouges contre un corps vide
+(plus strict que la preuve de retrait du plan, qui laissait verts les cas « écarté » seuls). (3) L'enroulement du pivot `(K[lo] + K[hi]) mod
+2^32` n'est pas testé (il demande deux clés à 2^31, où le binaire lit avant le tableau : aucun oracle) ; le code garde l'addition non signée.
+(4) Le mutant « pivot recalculé » survivait (aucun des 130 vecteurs ne l'atteint) : un test ajouté le tue (les clés 4, 4, 1, 5 :
+`[3, 2, 1, 4]` contre `[3, 1, 2, 4]`). (5) Trois mutants sont tués par l'arrêt de l'hôte de test (une boucle ou une récursion non bornée),
+sans assertion propre. (6) Le mode corrigé diffère du binaire sur 8 des 130 vecteurs : la sentinelle pour la borne, 7 vecteurs à deux
+résultats pour le seuil du tri.
+
 **Périmètre.** `Alundra/Combat/TargetQuery.cs` (neuf) ; `Alundra.Tests/` (l'adaptateur et les tests) ; l'annexe `docs/plan-e20-annexe/e20-h4b1/` ;
 ce plan, l'index des ADR et un ADR. **Hors périmètre** : le champ stocké du plus haut emplacement (h4b1b) ; les appelants (h4d2, h4e1, h4e2, h4f1) ;
 `EntitySearchService`.
@@ -12420,7 +12430,8 @@ ce plan, l'index des ADR et un ADR. **Hors périmètre** : le champ stocké du p
 
 ##### Tâches
 
-- ⏳ **T0 — Annexe et correspondance** (aucun code) : (a) rejouer depuis une copie `e20-h4b/critic/c3_query.py` (4 000 mondes, 0 écart) et
+- ✅ **T0 — Annexe et correspondance** (aucun code ; fait le 2026-10-27, `c0d14e1e` : les rejeux identiques, 770 vecteurs sans échec, neuf
+  champs d'entité et les octets de fiche, tous avec un membre de la DLL ; `vec_query_corrected.json`) : (a) rejouer depuis une copie `e20-h4b/critic/c3_query.py` (4 000 mondes, 0 écart) et
   `c9_replay.py` (les 770 vecteurs de la lecture, dont les 120 de `bin/vec/vec_query_8003AF70.json`, depuis une mémoire vide), **la copie repointant
   `VEC`** (`critic/c9_replay.py:11`, que `c9b_vecpower.py:7` importe) vers `docs/plan-e20-annexe/e20-h4b/bin/vec/` au lieu du scratchpad, et rejouant
   aussi `critic/vec_extra/vec_extra_query.json` : sorties identiques, 120 sur 120 sans échec, le chemin absolu lu écrit au README (révision 1) ;
@@ -12430,7 +12441,8 @@ ce plan, l'index des ADR et un ADR. **Hors périmètre** : le champ stocké du p
   vecteurs et du vecteur sentinelle avec la règle nommée « un octet absent vaut 0 » (pour ce seul oracle : le vrai code ne lit jamais l'emplacement
   `compte`), sorties versées (`e20-h4b1/vec_query_corrected.json`) ; le README nomme les vecteurs qui distinguent chaque réglage : la borne, le seul
   vecteur sentinelle (un candidat à l'emplacement `compte`, `critic/c10_extra_vectors.py:105`) ; le seuil du tri, les vecteurs à exactement deux résultats ; (d) la liste prédite : aucun test existant (aucun appelant) ; recomptée.
-- ⏳ **T1 — Tests puis code.** (q1) le mode binaire contre les 120 vecteurs et les vecteurs complémentaires de la critique, dont le vecteur sentinelle
+- ✅ **T1 — Tests puis code** (fait le 2026-10-27, `175e99d1`, `cfe61bab`, `9ea900bf` : 27 tests, 26 rouges avant, tous verts après ; Release et
+  Debug 7 632 verts ; la preuve de retrait). (q1) le mode binaire contre les 120 vecteurs et les vecteurs complémentaires de la critique, dont le vecteur sentinelle
   (le candidat de l'emplacement `compte`, listé mais jamais lu, est exclu) : la liste et son ordre, à l'identique, **en un seul test sur l'ensemble
   des vecteurs** (un écart sur un vecteur suffit à le rendre rouge ; révision 2) ; (q2) le mode corrigé contre `vec_query_corrected.json`, de même en
   un seul test ; (q3) chaque filtre accolé
@@ -12440,7 +12452,8 @@ ce plan, l'index des ADR et un ADR. **Hors périmètre** : le champ stocké du p
   absent du résultat (révision 1) ; (q4) le tri : n = 2 dans le mauvais ordre (non trié en mode binaire, trié en mode corrigé),
   n = 3 à clés égales (l'ordre de Hoare `[3, 2, 1]` de la critique), 4 résultats avec égalités (`[2, 3, 4, 1]`) ; (q5) la clé modulo 2³² et la
   différence 32 bits ; (q6) les valeurs de production des réglages (D-H4B1-2). Puis le code.
-- ⏳ **T2 — ADR, plan, verifiers frais** (deux). Mutants, au moins 12, tous tués : borne inclusive en mode binaire ; statut 2 seul ; statuts 1 à 3
+- ✅ **T2 — ADR, plan, verifiers frais** (deux ; fait le 2026-10-27, `7332cd95`, `5b46589d`, `wf_34e63b06-771` : 25 mutants réels, le survivant
+  tué par un test ajouté ; ADR-0106 ; les deux verifiers CONFIRMED, 7 633 verts en Release, les 28 tests de la requête verts en Debug). Mutants, au moins 12, tous tués : borne inclusive en mode binaire ; statut 2 seul ; statuts 1 à 3
   (`IsLoadedNormalOrDeactivated`) ; `BlockedByEntity` ignoré ; `AnimFlags` au lieu de `HitAnimByte` ; réponse `0xC0` écartée ; fiche absente gardée ;
   tri dès 2 en mode binaire ; tri stable ; pivot recalculé ; échange sur `i <= j` ; clé en 64 bits ; héros candidat (tué par le héros éligible de
   (q3)) ; balayage par l'indice de la liste (tué par la case libre de (q3)).
