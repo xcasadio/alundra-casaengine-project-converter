@@ -74,4 +74,23 @@ public sealed class HeroDeepWaterWallWorldTests : IDisposable
         Assert.Equal(0, ScriptedMotion.BlockedCorners(target, 0, 0));
         Assert.Equal(0u, target.Controller!.Settings.WalkabilityMask & Bit);
     }
+
+    /// <summary>
+    /// (r8) The slide along the edge (<see cref="ScriptedMotion.BlockedCorners"/>, D-I2A-3) reads the LIVE mask of the controller, so the corners it judges are the mover's: with the bit, the four corners of a box over the deep
+    /// water are blocked; without it (the same mask rebuilt from the flags) none is. Kills the mutant that rebuilds the mask from the flags.
+    /// </summary>
+    [Fact]
+    public void R8_TheBlockedCornersOfTheSlide_ReadTheLiveMaskOfTheController_WithTheBit()
+    {
+        using var arena = new HitArena("i2a-corners", 40 * 24 + 12, 48 * 16 + 8, targetPixels: null, heroDirection: 0, heroPixelZ: 16, naturalTargetCount: 1);
+        var box = arena.Targets[0];
+        Assert.NotNull(box.Controller);
+        HitArena.Place(box, 42 * 24 + 12, 52 * 16 + 8); // the middle of the pond of the map 14: deep water (0x18)
+        box.ResyncControllerFromFlags();
+        Assert.Equal(0, ScriptedMotion.BlockedCorners(box, 0, 0)); // the mask of its flags: no wall
+
+        PlayerManager.RefreshHeroWalkabilityMask(box, GameState.Instance); // no boots: the bit
+        Assert.NotEqual(0u, box.Controller!.Settings.WalkabilityMask & Bit);
+        Assert.Equal(15, ScriptedMotion.BlockedCorners(box, 0, 0));
+    }
 }
