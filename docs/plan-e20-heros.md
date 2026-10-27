@@ -13409,7 +13409,29 @@ découverte d'h4e1, RÉFUTÉE par sa critique (§1.31.7).
 
 ---
 
-#### 1.31.3 E20.h4c1 — La terre 1 : le pilote `0x80035320` et E3 pour le type 16 ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `ae1fe95`)
+#### 1.31.3 E20.h4c1 — La terre 1 : le pilote `0x80035320` et E3 pour le type 16 ✅ (**faite et CONFIRMED le 2026-10-27**, `46cb8dec` à `0a454432`, ADR-0107 ; le tome de terre jouable en production par le Rond ; recette de l'auteur à faire ; détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `ae1fe95`)
+
+**Écarts de l'exécution (2026-10-27, acceptés par la session principale, `docs/plan-e20-annexe/e20-h4c1/t1/`, `t2/`, `t3/`).**
+- **D-H4C1-4** (la tolérance de (w3), P3) — Contre un mur et une marche, le binaire cherche le pas par moitiés sur les deux axes, la DLL
+  va au contact sur l'axe bloqué et garde le pas entier sur l'axe libre : la famille d'écarts que garde D-E20-80 (postérieure au texte de
+  (w3)). (w3) compare donc avec une borne tirée de la mesure : le statut 3 au tick de la clé ou un tick plus tôt (10 vies sur 32 contre le
+  mur à bout portant, 2 dans la marche de 16 px, 4 dans celle de 32 px, aucune en colonne 9 ; jamais en retard), les positions égales
+  jusqu'à S - 2 (S le statut 3 observé), puis au plus 5 unités brutes en X (borne 8) et deux fois la force de vol libre en Y ; la
+  hauteur, la force et le contact au sol suivent le tick. La borne se resserrera quand la recherche du pas suivra le binaire (E20.g1c, en
+  pause).
+- **O-H4C1-1** (P3) — Les quatre rochers de la carte 388 (enregistrements 18 à 21) ne naissent pas au chargement : leur octet
+  `SpriteDirection` a le bit `0x40` à zéro et `EntitySpawnFactory.ShouldSpawnRecord` les saute ; (p3) les crée par l'opcode `0x2D`
+  (`SpawnEntityByRecordId`) et vérifie E3 (statuts 3 puis 4, quatre sons 46, pas de `HasLogicalZ`) ; qu'un script de l'histoire les active
+  n'est pas établi : la prémisse « posés par la carte » de Q-H4C1-2 est à relire. (p3) n'était rouge avant la phase B que par le son 46 (les
+  statuts venaient déjà de l'ancienne règle de chute).
+- Les trois étincelles d'un coup (w5) naissent sans couture de création : (w5) compare le centre du coup, les 9 tirages, le délai 25, le
+  tireur et la cible, pas les neuf vitesses (P4) ; la clé `_84_104` est comparée jusqu'au tick 127 (au 128 son Beannoïde blesse le héros) ;
+  les « deux épingles » du plan sont les cinq sommes du registre de production, recomptées par T0 ; les « tables de h0a » sont trois
+  aiguillages, et `EarthTome1Ai.Cancel` (le no-op nommé) vit dès la phase A ; le mutant de l'annulation au bouchon est équivalent
+  (l'annulation est neutre), deux mutants survivants (une naissance refusée qui toucherait `ForceZ` du héros ; une annulation qui l'écrirait)
+  ont reçu un test (D2 complété, D5 neuf) ; le `cmp` de la DLL avec `alundra-project/` ne diffère que par l'empreinte du commit (138 octets).
+- **Mesures** : la suite 7 676 tests verts en Release (copie neutralisée) et en Debug ; 29 mutants réels tous tués ; la preuve de retrait
+  exacte (sans l'inscription : (p1), (p3), (p4) et les cinq sommes ; le pilote au bouchon : (p1) et (p2)) ; deux verifiers frais CONFIRMED.
 
 **Prérequis.** h0a et h4a (les coutures, la fonction de départ des tomes, les états, la garde) ; f4 (D-F4-7, l'ensemble de types qui laisse les
 Beannoïdes inertes, pour (w5)) ; f5 (D-F5-5 : sans elle, un rocher fait un pas XY de trop au tick d'E3) ; f6a (l'eau profonde d'une entité marquée
@@ -13481,7 +13503,7 @@ PM, la piste XA, les états `0x32` à `0x34`, la garde (h4a) ; E3 pour le type 2
   des trois rochers aux ticks 94, 103 et 109 ; P6, le son 46 au tick d'E3 ; P7, `+0xAC` à L+13 et la mort à L+14 ; P8, les rochers des cases de
   première utilisation (1 à 14) agissent au tick de leur naissance ; P9, la case morte au tick 51 est reprise au tick 52 ; (d) la liste prédite : les
   deux épingles du registre ; recomptée au HEAD de départ.
-- ⏳ **T1 — Phase A** (tests d'abord ; R-EL-4) : (t1) la table lue en `u16, s16, s16` contre l'exécutable, sentinelle comprise ; (d1) le pilote contre
+- ✅ **T1 — Phase A** (fait le 2026-10-27, `ad17de6f`, `6db0e710` : 38 tests rouges avant, verts après ; tests d'abord ; R-EL-4) : (t1) la table lue en `u16, s16, s16` contre l'exécutable, sentinelle comprise ; (d1) le pilote contre
   `vec_driver_2B.json` en un seul test (retour, phase, animation du héros, naissances, `ForceZ` ; le compteur et la libération par le chemin du tick) ;
   (d2) une naissance nulle n'écrit rien ; (d3) la garde (pente 4, ou une animation hors `0x32`/`0x33`) : annulation neutre, libération, 1 ; `0x33` :
   rien ; (d4) la phase 2 rend 0 tant que `0x34` ; (e1) E3 contre `vec_e3.json` en un seul test ; (e2) l'inscription `(E, 3)` pour le type 16 seul
@@ -13491,12 +13513,14 @@ PM, la piste XA, les états `0x32` à `0x34`, la garde (h4a) ; E3 pour le type 2
   par R-EL-5, le bord ouest par P5 ; (w4) l'eau profonde : la mort à L+1 avec l'effet 6, sans son 46 ; (w5) les touches contre un Beannoïde posé
   sur le banc de (w1), natifs éteints sauf l'ensemble {16} de D-F4-7 : le tick, le tireur, les 9 tirages (règle du point 3), `+0x1D0 = 25`, le rocher
   continue ; (w6) les interruptions 30, 60, 98 et 101.
-- ⏳ **T2 — Phase B et tests de production, rouges avant** : (p1) Rond avec le seul tome 43 possédé, PM 4/4 : le type 16 naît au tick 22 et la clé de
+- ✅ **T2 — Phase B et tests de production, rouges avant** (fait le 2026-10-27, `e62fb900`, `1f45b1d0`, `5c5e6bc0` : 9 rouges avant ; la suite
+  7 675 verte en Release et en Debug) : (p1) Rond avec le seul tome 43 possédé, PM 4/4 : le type 16 naît au tick 22 et la clé de
   (w1) tient par le chemin de production ; (p2) la table des cases pleine : aucune entité, aucune exception, et l'objet libéré au tick 129 (le pilote
   tourne) ; (p3) les quatre rochers posés de la carte 388 : E3 a tourné (statut 3 puis 4, son 46, aucune exception), sans tick exact (D-E20-37 : ils
   suivent l'ancienne règle de chute) ; ils ne sont pas marqués `HasLogicalZ` ; (p4) l'invariant de D-F3-4 : `UnhandledWeaponSpriteCodes({16},
   catalogue, registre de production)` vide après la phase B, `[(E, 3)]` avant ; les deux épingles réécrites par dérivation.
-- ⏳ **T3 — ADR, plan, verifiers frais** (deux). Mutants, au moins 18, tous tués : vitesse du second groupe à 1024 ; frontière 60 à 65 ; une seule
+- ✅ **T3 — ADR, plan, verifiers frais** (deux ; fait le 2026-10-27, `abed9330`, `0a454432` : 29 mutants tués, ADR-0107 ; les deux verifiers
+  CONFIRMED). Mutants, au moins 18, tous tués : vitesse du second groupe à 1024 ; frontière 60 à 65 ; une seule
   naissance par tick ; tick 20 à 25 ou 95 à 90 ; delta de signe contraire ou permuté ; base `BoxDirection` au lieu de `TargetDirection` ; `& 31`
   retiré ; `<< 8` à `<< 7` ; parent nul ; `ForceZ` écrit sur une naissance nulle ; une naissance nulle déréférencée ; seuil de phase 99 ou 101 ;
   garde qui accepte `0x34` ou ignore la pente ; garde de la phase 1 retirée (tué par les interruptions 98 et 101) ; phase 2 qui ne finit pas ou
