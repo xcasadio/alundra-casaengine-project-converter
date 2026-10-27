@@ -12278,7 +12278,7 @@ la contre-vérification faisant foi). Le cadre (h0a, §1.30.1) est un prérequis
 
 ---
 
-#### 1.31.1 E20.h4a — Le départ et la pose des tomes ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `31af999`)
+#### 1.31.1 E20.h4a — Le départ et la pose des tomes ✅ (**faite et CONFIRMED le 2026-10-27**, `0fec1feb` à `25c8ea63`, ADR-0105 ; inerte en production ; détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `31af999`)
 
 **Prérequis.** h0a (§1.30.1 : le cadre, ses coutures D-H-4 et le test du défaut D-H-5) ; la fin du chantier de restructuration et Q-R-7.
 
@@ -12293,9 +12293,18 @@ l'annexe `docs/plan-e20-annexe/e20-h4a/` ; ce plan, l'index des ADR et un ADR. *
 **Partage des phases.** Une seule phase, **inerte en production** : les entrées des tomes `0x2B` à `0x32` de la table de h0a restent des bouchons
 (D-H-3) ; rien ne pose `0x32` à `0x34` en production. Les tests installent la fonction de départ des tomes par `ItemStartForTests` (D-H-4).
 
+**Écarts de l'exécution (2026-10-27, acceptés par la session principale, `docs/plan-e20-annexe/e20-h4a/`).** (1) `DecreaseMp`
+(`0x8004DF3C`) n'existait pas : écrit par la tranche, par `SetPlayerMp`. (2) Le commit des tests porte des signatures inertes pour
+compiler ; le rouge est mesuré sur cet état (59 rouges, les 10 témoins négatifs verts). (3) Dans (t3a), l'état posé avant le premier tick
+donne `0x33` au tick 33 et le repos après `0x34` au tick 27 : les mêmes durées que l'oracle ((o3) avec le vrai départ donne `0x33` au tick 33,
+compteur 32, comme `trace_cast_2B.txt`). (4) Le banc : deux Rond sur deux images consécutives ne font qu'un front pour le contrôleur ; le
+banc relâche un tick entre deux appuis. (5) Les durées des animations 50 à 52 se lisent à la dernière clé de l'`anim2d` de l'export (le champ
+`Frames` compte des images) : 32 ticks puis 51, 36 en boucle, 26 puis 0, égales à l'oracle. (6) Les deux sentinelles de T0
+(`HeroItemUseTests.A6_` avec l'état `0x32`, les listes d'`A7`) n'ont pas bougé.
+
 ##### Tâches
 
-- ⏳ **T0 — Annexe, oracle, liste prédite** (aucun code) : (a) rejouer depuis une copie `e20-h4/work/oracle/h4_start.py` (5 000 vecteurs),
+- ✅ **T0 — Annexe, oracle, liste prédite** (aucun code ; fait le 2026-10-27, `0fec1feb`) : (a) rejouer depuis une copie `e20-h4/work/oracle/h4_start.py` (5 000 vecteurs),
   `staff_check.py` et `trace_cast.py` pour `0x2B` (le début seulement : départ, `0x32`, `0x33` à T0+32) : sorties identiques à celles versées ; (b)
   les clés des tests : les quatre cas du bâton (`e20-h4/work/results/staff_check.txt` : bâton à 0 PM part, PM restent 0 ; épée à 0 PM, son 3 ; épée à 2
   PM, PM 1 ; bâton à 2 PM, PM 2) ; la chronologie du début du sort (PM 4 → 3 et `0x32` au tick du départ, `0x33` à T0+32) ; les huit traces
@@ -12303,7 +12312,8 @@ l'annexe `docs/plan-e20-annexe/e20-h4a/` ; ce plan, l'index des ADR et un ADR. *
   10) ; (c) la liste prédite : aucun test existant attendu (`0x32` à `0x34` ne sont dans aucun test d'état, `state-f81304b/dll/state.md` §4.4) ;
   recomptée au HEAD de départ ; (d) **les animations du héros dans la DLL** (révision 1) : les enregistrements 50, 51 et 52 de l'export (durée, fin,
   cible d'enchaînement) relus contre l'oracle (32 ticks puis `0x33` ; boucle ; 26 ticks puis 0), les valeurs de la DLL écrites au README à côté.
-- ⏳ **T1 — Tests puis code.** Chaque cas « sans effet » est accolé à un positif. **Banc** des tests d'états et d'oracle (révision 1) : le monde
+- ✅ **T1 — Tests puis code** (fait le 2026-10-27, `609d7495`, `c8e436ec`, `bc59d2e7` : 69 tests, 59 rouges avant, tous verts après ; Release et
+  Debug 7 605 verts ; les deux preuves de retrait exactes). Chaque cas « sans effet » est accolé à un positif. **Banc** des tests d'états et d'oracle (révision 1) : le monde
   d'`ArcRun` de la carte 14 (vrai contrôleur, préfabs exportés, les animations du héros de l'export), à **un tick par image** ; les tests du départ
   sur le héros de ce banc ou d'un hôte de test :
   - (t1) le départ des tomes, dans l'ordre du binaire : un objet porté (`CarriedEntity` posé par le test), une animation hors Idle et Moving, un objet
@@ -12325,10 +12335,11 @@ l'annexe `docs/plan-e20-annexe/e20-h4a/` ; ce plan, l'index des ADR et un ADR. *
   - (t6) le calendrier, avec la fonction de départ des tomes (révision 1) : après un départ réel, `ItemDriverForTests` est appelé la première fois au tick
     qui suit, compteur 0.
   Puis le code.
-- ⏳ **T2 — Tests d'oracle** : (o1) les huit traces `W9-item2B` à `W9-item32` à l'identique, la fonction de départ des tomes installée par la couture ;
+- ✅ **T2 — Tests d'oracle** (faits avec T1, `f58beccb`) : (o1) les huit traces `W9-item2B` à `W9-item32` à l'identique, la fonction de départ des tomes installée par la couture ;
   (o2) les quatre cas du bâton ; (o3) le début de `trace_cast` pour `0x2B` (PM, `0x32`, `0x33` à T0+32), un pilote de test qui rend 0, sur le banc de
   T1.
-- ⏳ **T3 — ADR, plan, verifiers frais** (deux). Mutants, au moins 12, tous tués : test du bâton retiré ; PM exigés avec le bâton ; PM consommés avec le
+- ✅ **T3 — ADR, plan, verifiers frais** (deux ; fait le 2026-10-27, `25c8ea63`, `wf_432d489e-f99` : 20 mutants réels tous tués, ADR-0105, les
+  deux verifiers CONFIRMED). Mutants, au moins 12, tous tués : test du bâton retiré ; PM exigés avec le bâton ; PM consommés avec le
   bâton ; PM non consommés ; refus à 0 PM retiré (D1) ; borne d'animation à 3 ; objet porté ignoré ; objet en cours ignoré ; octets XA décalés ;
   `0x33` quitté pendant un tome en cours ; sortie vers Idle en l'air ; `0x34` qui lit le pad ; garde à 0 en eau profonde ; garde qui accepte `0x34`.
 
