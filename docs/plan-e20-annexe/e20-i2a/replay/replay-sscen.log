@@ -1,0 +1,68 @@
+== W1 entering deep water (word 0x0800 from col 14 = x 336, same height as the shore).  Hero box = pos +- 10 px, so slope 4 needs pos_x >= 346 ==
+walk / run into the lake, per boots level (timelines of anim_cur; slope timeline):
+  walk L0  anim 0:00 1-100:01 | slope 0-100:00 | ForceAdjusted first 12 | x@100 325.00
+  run  L0  anim 0:00 1-25:29 26-86:03 87-97:3E 98:01 99-103:2C 104-128:29 129-130:03 | slope 0-130:00 | ForceAdjusted first 86 | x@130 304.87
+  walk L1  anim 0:00 1-100:01 | slope 0-100:00 | ForceAdjusted first 12 | x@100 325.00
+  run  L1  anim 0:00 1-25:29 26-86:03 87-97:3E 98:01 99-103:2C 104-128:29 129-130:03 | slope 0-130:00 | ForceAdjusted first 86 | x@130 304.87
+  walk L2  anim 0:00 1-20:01 21:1D 22-100:0F | slope 0-19:00 20-100:04 | ForceAdjusted first None | x@100 486.32
+  run  L2  anim 0:00 1-25:29 26-89:03 90:1D 91-130:0F | slope 0-88:00 89-130:04 | ForceAdjusted first None | x@130 430.22
+  walk L3  anim 0:00 1-20:01 21:1D 22-100:0F | slope 0-19:00 20-100:04 | ForceAdjusted first None | x@100 486.32
+  run  L3  anim 0:00 1-25:29 26-89:03 90:1D 91-130:0F | slope 0-88:00 89-130:04 | ForceAdjusted first None | x@130 430.22
+jump over the shore (boots level 2): Right held from 1, Cross pressed for 1 tick at tick s, hero from (300,100), 90 ticks
+  s=3  anim 0:00 1-2:01 3:02 4-23:2C 24:1D 25-90:0F | slope 0-22:00 23-90:04 | ground 0-2:01 3-22:00 23-90:01 | z max 27.50 | x@90 467.90
+  s=6  anim 0:00 1-5:01 6:02 7-26:2C 27:1D 28-90:0F | slope 0-25:00 26-90:04 | ground 0-5:01 6-25:00 26-90:01 | z max 27.50 | x@90 470.15
+  s=9  anim 0:00 1-8:01 9:02 10-29:2C 30:1D 31-90:0F | slope 0-28:00 29-90:04 | ground 0-8:01 9-28:00 29-90:01 | z max 27.50 | x@90 472.40
+  s=12 anim 0:00 1-11:01 12:02 13-32:2C 33:1D 34-90:0F | slope 0-31:00 32-90:04 | ground 0-11:01 12-31:00 32-90:01 | z max 27.50 | x@90 474.65
+  s=15 anim 0:00 1-14:01 15:02 16-35:2C 36:1D 37-90:0F | slope 0-34:00 35-90:04 | ground 0-14:01 15-34:00 35-90:01 | z max 27.50 | x@90 476.90
+  fall-walk-L0 anim 0:00 1-120:01 | slope 0-120:00 | ground 0-120:01 | x@end 325.00 | ForceAdjusted first 12
+  jump-L0      anim 0:00 1-5:01 6:02 7-26:2C 27-90:01 | slope 0-90:00 | ground 0-5:01 6-25:00 26-90:01 | x@end 325.00 | ForceAdjusted first 13
+  fall-walk-L1 anim 0:00 1-120:01 | slope 0-120:00 | ground 0-120:01 | x@end 325.00 | ForceAdjusted first 12
+  jump-L1      anim 0:00 1-5:01 6:02 7-26:2C 27-90:01 | slope 0-90:00 | ground 0-5:01 6-25:00 26-90:01 | x@end 325.00 | ForceAdjusted first 13
+  fall-walk  anim 0:00 1-20:01 21-31:2C 32:1D 33-120:0F | slope 0-30:00 31-120:04 | ground 0-19:01 20-30:00 31-120:01 | z 32.00 -> 0.00
+  fall-run   anim 0:00 1-25:29 26-89:03 90:2D 91-100:2C 101:1D 102-160:0F | slope 0-99:00 100-160:04 | ground 0-88:01 89-99:00 100-160:01 | z 32.00 -> 0.00
+  fall1-walk anim 0:00 1-20:01 21-28:2C 29:1D 30-120:0F | slope 0-27:00 28-120:04 | ground 0-19:01 20-27:00 28-120:01 | z 16.00 -> 0.00
+
+== W2 swimming (the whole field is deep water, boots level 2 unless said; the hero starts in swim idle 0x1D after 4 idle ticks) ==
+swim idle from Idle: anim 0:00 1-120:1D | b0 at 40/80/120 [1, 2, 3] | sounds [(1, 0)] | effects []
+  dir U  anim 0-4:1D 5-70:0F 71-130:1D | dir_target@10 10 facing@10 1 | Force@6/10/30/60 [(0, -9216), (0, -27648), (0, -73728), (0, -73728)] | speed 1.1250 px/tick @60 | after release F@72/80/90/129 [(0, -55296), (0, 0), (0, 0), (0, 0)]
+  dir R  anim 0-4:1D 5-70:0F 71-130:1D | dir_target@10 18 facing@10 3 | Force@6/10/30/60 [(13824, 0), (41472, 0), (110592, 0), (110592, 0)] | speed 1.6875 px/tick @60 | after release F@72/80/90/129 [(82944, 0), (0, 0), (0, 0), (0, 0)]
+  dir D  anim 0-4:1D 5-70:0F 71-130:1D | dir_target@10 00 facing@10 0 | Force@6/10/30/60 [(0, 9216), (0, 27648), (0, 73728), (0, 73728)] | speed 1.1250 px/tick @60 | after release F@72/80/90/129 [(0, 55296), (0, 0), (0, 0), (0, 0)]
+  dir L  anim 0-4:1D 5-70:0F 71-130:1D | dir_target@10 08 facing@10 2 | Force@6/10/30/60 [(-13824, 0), (-41472, 0), (-110592, 0), (-110592, 0)] | speed 1.6875 px/tick @60 | after release F@72/80/90/129 [(-82944, 0), (0, 0), (0, 0), (0, 0)]
+  dir UR anim 0-4:1D 5-70:0F 71-130:1D | dir_target@10 14 facing@10 3 | Force@6/10/30/60 [(9774, -6516), (29322, -19548), (78192, -52128), (78192, -52128)] | speed 1.4339 px/tick @60 | after release F@72/80/90/129 [(58644, -39096), (0, 0), (0, 0), (0, 0)]
+  dir DR anim 0-4:1D 5-70:0F 71-130:1D | dir_target@10 1C facing@10 3 | Force@6/10/30/60 [(9774, 6516), (29322, 19548), (78192, 52128), (78192, 52128)] | speed 1.4339 px/tick @60 | after release F@72/80/90/129 [(58644, 39096), (0, 0), (0, 0), (0, 0)]
+  dir DL anim 0-4:1D 5-70:0F 71-130:1D | dir_target@10 04 facing@10 2 | Force@6/10/30/60 [(-9774, 6516), (-29322, 19548), (-78192, 52128), (-78192, 52128)] | speed 1.4339 px/tick @60 | after release F@72/80/90/129 [(-58644, 39096), (0, 0), (0, 0), (0, 0)]
+  dir UL anim 0-4:1D 5-70:0F 71-130:1D | dir_target@10 0C facing@10 2 | Force@6/10/30/60 [(-9774, -6516), (-29322, -19548), (-78192, -52128), (-78192, -52128)] | speed 1.4339 px/tick @60 | after release F@72/80/90/129 [(-58644, -39096), (0, 0), (0, 0), (0, 0)]
+turn: anim 0-4:1D 5-170:0F | facing 0-40:03 41-90:02 91-130:01 131-170:00 | dir_target 0-40:18 41-90:08 91-130:10 131-170:00
+   t39  0F>0F dir 18/18 f3 F(110592,0,0) pos(670.41,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t40  0F>0F dir 18/18 f3 F(110592,0,0) pos(672.09,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t41  0F>0F dir 08/08 f2 F(96768,0,0) pos(673.57,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[22] fx[]
+   t42  0F>0F dir 08/08 f2 F(82944,0,0) pos(674.84,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t43  0F>0F dir 08/08 f2 F(69120,0,0) pos(675.89,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t44  0F>0F dir 08/08 f2 F(55296,0,0) pos(676.73,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t45  0F>0F dir 08/08 f2 F(41472,0,0) pos(677.37,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t46  0F>0F dir 08/08 f2 F(27648,0,0) pos(677.79,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t47  0F>0F dir 08/08 f2 F(13824,0,0) pos(678.00,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+   t48  0F>0F dir 08/08 f2 F(0,0,0) pos(678.00,480.00,0.00) g1 adj0 sl4 b0=0 ch0 snd[] fx[]
+boots level 3 vs 2 (Right 5-70): hero columns identical over 90 ticks: True
+  level 0 inside the lake, Right: anim 0-4:1D 5-60:0F | x 5 -> 60: 624.00 -> 624.00 | ForceAdjusted first 5
+  level 1 inside the lake, Right: anim 0-4:1D 5-60:0F | x 5 -> 60: 624.00 -> 624.00 | ForceAdjusted first 5
+long swim: anim 0-4:1D 5-200:0F | b0 at 50/100/150/200 [1, 2, 3, 4] | sounds [(5, 22), (47, 22), (89, 22), (131, 22), (173, 22)] | effects []
+
+== W5 walls and edges in the water (all water, boots level 2, wall word 0x0040 at cols 30-31 (x 720..767) overlaid on the water) ==
+wall: anim 0-4:1D 5-140:0F | ForceAdjusted first 78 | x final 709.00 | F(x) at end 110592
+wall diagonal: anim 0-4:1D 5-200:0F | pos at 60/100/140 [(657.87, 441.42), (705.59, 409.61), (709.0, 377.9), (709.0, 330.18)] | ForceAdjusted first None
+wall dive: anim 0-4:1D 5-19:0F 20-61:28 62:1D 63-120:0F | ForceAdjusted first 91 | x@120 709.00
+east map edge: anim 0-4:1D 5-100:0F | x final 1237.00 | ForceAdjusted first 64
+north map edge: anim 0-4:1D 5-100:0F | y final 7.00 | ForceAdjusted first 59
+level 0 walk into the lake: anim 0:00 1-100:01 | x final 325.00 | ForceAdjusted first 12 | slope 0-100:00
+level 1 walk into the lake: anim 0:00 1-100:01 | x final 325.00 | ForceAdjusted first 12 | slope 0-100:00
+level 0 diagonal into the lake edge: anim 0:00 1-140:01 | pos at 60/100/140 [(325.0, 126.08), (325.0, 172.04), (325.0, 218.0)]
+
+== W10 extras: invalid direction nibbles in the water, the first tick after a land state, the hero on a one-cell-wide channel, shallow water next to deep water ==
+invalid nibbles: anim 0-4:1D 5-120:0F 121-140:1D | dir_target 0-140:18 | F(x) at 40/41/60/80 [110592, 110592, 110592, 110592] | F(y) at 81/100/120 [0, 0, 0]
+dive with an invalid nibble: anim 0-9:1D 10-51:28 52-80:1D | dir_target 0-80:18 | F(x) at 10/20 [135168, 135168]
+channel: anim 0-4:1D 5-80:0F | slope 0-80:04 | pos y end 177.06
+channel straddle: anim 0-4:00 5-40:01 | slope 0-40:00
+shallow -> deep: anim 0:00 1-20:01 21:1D 22-100:0F | slope 0-19:00 20-100:04 | F(x) [159744, 159744, 159744, 137952, 123360, 110592]
+shallow -> deep, level 0: anim 0:00 1-100:01 | x end 325.00 | ForceAdjusted first 22
+

@@ -1,0 +1,58 @@
+diff --git a/Alundra/Hero/PlayerManager.cs b/Alundra/Hero/PlayerManager.cs
+index 8e9d4c87..bfab32fd 100644
+--- a/Alundra/Hero/PlayerManager.cs
++++ b/Alundra/Hero/PlayerManager.cs
+@@ -2249,7 +2249,16 @@ public static class PlayerManager
+     }
+ 
+     public static void Tick(EntityScriptProxy player, int ticks)
+-        => ScriptedMotion.TickPlayer(player, ticks);
++    {
++        // TEMPORARY T0 wiring (never committed).
++        if (Environment.GetEnvironmentVariable("I2A_OFF") == null && player.Controller != null && player.ScriptHost?.GameState is { } gs)
++        {
++            var settings = player.Controller.Settings;
++            settings.WalkabilityMask = BootsLevelOf(gs) < 2 ? settings.WalkabilityMask | CellsCollisionField.DeepWaterWallMaskBit : settings.WalkabilityMask & ~CellsCollisionField.DeepWaterWallMaskBit;
++        }
++
++        ScriptedMotion.TickPlayer(player, ticks);
++    }
+ 
+     // ---------------------------------------------------------------------------------------------
+     // E13 C0 (docs/plan-e13-hud.md): the five player-stat setters, ported from PlayerManager.cs's own
+diff --git a/Alundra/Physics/CellsCollisionField.cs b/Alundra/Physics/CellsCollisionField.cs
+index 5c8b215f..87d73b1f 100644
+--- a/Alundra/Physics/CellsCollisionField.cs
++++ b/Alundra/Physics/CellsCollisionField.cs
+@@ -54,6 +54,9 @@ public sealed class CellsCollisionField : ICollisionField
+     /// </summary>
+     public const uint BaseWalkabilityMask = 0x40;
+ 
++    /// <summary>TEMPORARY T0 wiring (never committed).</summary>
++    public const uint DeepWaterWallMaskBit = 0x10000;
++
+     // StaticVariables.MapTileWidth/MapTileHeight (StaticVariables.cs:57-58).
+     private const int CellWidthPx = 24;
+     private const int CellHeightPx = 16;
+@@ -181,7 +184,7 @@ public sealed class CellsCollisionField : ICollisionField
+         var walkability = (uint)_walkability[cellIndex];
+         var groundProperty = _groundProperty[cellIndex];
+         var tileFlags = walkability | ((uint)groundProperty << 8);
+-        var isWalkable = (tileFlags & walkabilityMask) == 0;
++        var isWalkable = (tileFlags & walkabilityMask) == 0 && !((walkabilityMask & DeepWaterWallMaskBit) != 0 && (tileFlags & 0xE00) == 0x800);
+         var surfaceTag = _surfaceTagCache[groundProperty & 0xFF];
+ 
+         sample = new GroundSample(groundHeight, Vector3.UnitZ, isWalkable, surfaceTag ?? string.Empty);
+diff --git a/Alundra/Physics/ScriptedMotion.cs b/Alundra/Physics/ScriptedMotion.cs
+index 02042ee7..fa37d1d7 100644
+--- a/Alundra/Physics/ScriptedMotion.cs
++++ b/Alundra/Physics/ScriptedMotion.cs
+@@ -991,7 +991,7 @@ internal static class ScriptedMotion
+         var top = entity.PosY + advanceY + entity.ModY;
+         var xs = new[] { left >> 16, (left + entity.Width) >> 16 };
+         var ys = new[] { top >> 16, (top + entity.Height) >> 16 };
+-        var mask = CellsCollisionField.WalkabilityMaskFor(entity.Flags);
++        var mask = entity.Controller.Settings.WalkabilityMask; // TEMPORARY T0 wiring
+         var reach = entity.PosZ / 65536f + entity.Controller.Settings.StepHeight;
+         var blocked = 0;
+         for (var i = 0; i < 4; i++)

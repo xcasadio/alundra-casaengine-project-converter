@@ -1,0 +1,428 @@
+== g9/R9-deepwater-noboots ticks=110 dllBounce=86 oracleBounce=87 dllForceAdjFirst=85 oracleForceAdjFirst=86
+   tol     0 no shift: 77 diffs; first: g9/R9-deepwater-noboots tick 84 pos_x: dll 14745600, oracle 14745599
+   tol     1 no shift: 76 diffs; first: g9/R9-deepwater-noboots tick 85 force_adj: dll 1, oracle 0
+   tol    16 no shift: 76 diffs; first: g9/R9-deepwater-noboots tick 85 force_adj: dll 1, oracle 0
+   tol  7424 no shift: 76 diffs; first: g9/R9-deepwater-noboots tick 85 force_adj: dll 1, oracle 0
+   SHIFT from 85 by 1; tol     0: 1 diffs; first: g9/R9-deepwater-noboots tick 84 pos_x: dll 14745600, oracle 14745599
+   SHIFT from 85 by 1; tol     1: 0 diffs
+   SHIFT from 85 by 1; tol    16: 0 diffs
+      g9/R9-deepwater-noboots tick 85 force_adj: dll 1, oracle 0
+      g9/R9-deepwater-noboots tick 86 anim_target: dll 62, oracle 3
+      g9/R9-deepwater-noboots tick 86 anim_cur: dll 62, oracle 3
+      g9/R9-deepwater-noboots tick 86 facing: dll 2, oracle 3
+      g9/R9-deepwater-noboots tick 86 dir_target: dll 8, oracle 24
+      g9/R9-deepwater-noboots tick 86 force_x: dll -196608, oracle 258048
+      g9/R9-deepwater-noboots tick 86 force_z: dll 262144, oracle 0
+      g9/R9-deepwater-noboots tick 86 pos_x: dll 14548992, oracle 14745600
+      g9/R9-deepwater-noboots tick 86 pos_z: dll 262144, oracle 0
+      g9/R9-deepwater-noboots tick 86 on_ground: dll 0, oracle 1
+      g9/R9-deepwater-noboots tick 86 force_adj: dll 0, oracle 1
+      g9/R9-deepwater-noboots tick 86 sounds: dll [28], oracle []
+      g9/R9-deepwater-noboots tick 86 effects 9: dll [(14745600,0,1048577)], oracle []
+      g9/R9-deepwater-noboots tick 87 force_z: dll 229376, oracle 262144
+      g9/R9-deepwater-noboots tick 87 pos_x: dll 14352384, oracle 14548992
+      g9/R9-deepwater-noboots tick 87 pos_z: dll 491520, oracle 262144
+      g9/R9-deepwater-noboots tick 87 sounds: dll [], oracle [28]
+      g9/R9-deepwater-noboots tick 87 effects 9: dll [], oracle [(14745600,0,1048577)]
+      g9/R9-deepwater-noboots tick 88 force_z: dll 196608, oracle 229376
+      g9/R9-deepwater-noboots tick 88 pos_x: dll 14155776, oracle 14352384
+      g9/R9-deepwater-noboots tick 88 pos_z: dll 688128, oracle 491520
+      g9/R9-deepwater-noboots tick 89 force_z: dll 163840, oracle 196608
+      g9/R9-deepwater-noboots tick 89 pos_x: dll 13959168, oracle 14155776
+      g9/R9-deepwater-noboots tick 89 pos_z: dll 851968, oracle 688128
+      g9/R9-deepwater-noboots tick 90 force_z: dll 131072, oracle 163840
+      g9/R9-deepwater-noboots tick 90 pos_x: dll 13762560, oracle 13959168
+      g9/R9-deepwater-noboots tick 90 pos_z: dll 983040, oracle 851968
+      g9/R9-deepwater-noboots tick 91 force_z: dll 98304, oracle 131072
+      g9/R9-deepwater-noboots tick 91 pos_x: dll 13565952, oracle 13762560
+      g9/R9-deepwater-noboots tick 91 pos_z: dll 1081344, oracle 983040
+      g9/R9-deepwater-noboots tick 92 force_z: dll 65536, oracle 98304
+      g9/R9-deepwater-noboots tick 92 pos_x: dll 13369344, oracle 13565952
+      g9/R9-deepwater-noboots tick 92 pos_z: dll 1146880, oracle 1081344
+      g9/R9-deepwater-noboots tick 93 force_z: dll 32768, oracle 65536
+      g9/R9-deepwater-noboots tick 93 pos_x: dll 13172736, oracle 13369344
+      g9/R9-deepwater-noboots tick 93 pos_z: dll 1179648, oracle 1146880
+      g9/R9-deepwater-noboots tick 94 force_z: dll 0, oracle 32768
+      g9/R9-deepwater-noboots tick 94 pos_x: dll 12976128, oracle 13172736
+      g9/R9-deepwater-noboots tick 95 force_z: dll -32768, oracle 0
+      g9/R9-deepwater-noboots tick 95 pos_x: dll 12779520, oracle 12976128
+      g9/R9-deepwater-noboots tick 95 pos_z: dll 1146880, oracle 1179648
+      g9/R9-deepwater-noboots tick 96 force_z: dll -65536, oracle -32768
+      g9/R9-deepwater-noboots tick 96 pos_x: dll 12582912, oracle 12779520
+      g9/R9-deepwater-noboots tick 96 pos_z: dll 1081344, oracle 1146880
+      g9/R9-deepwater-noboots tick 97 anim_target: dll 1, oracle 62
+      g9/R9-deepwater-noboots tick 97 anim_cur: dll 1, oracle 62
+      g9/R9-deepwater-noboots tick 97 facing: dll 3, oracle 2
+      g9/R9-deepwater-noboots tick 97 dir_target: dll 24, oracle 8
+      g9/R9-deepwater-noboots tick 97 force_x: dll -18432, oracle -196608
+      g9/R9-deepwater-noboots tick 97 force_z: dll -98304, oracle -65536
+      g9/R9-deepwater-noboots tick 97 pos_x: dll 12564480, oracle 12582912
+      g9/R9-deepwater-noboots tick 97 pos_z: dll 983040, oracle 1081344
+      g9/R9-deepwater-noboots tick 98 anim_target: dll 44, oracle 1
+      g9/R9-deepwater-noboots tick 98 anim_cur: dll 44, oracle 1
+      g9/R9-deepwater-noboots tick 98 force_x: dll 66048, oracle -18432
+      g9/R9-deepwater-noboots tick 98 force_z: dll -131072, oracle -98304
+      g9/R9-deepwater-noboots tick 98 pos_x: dll 12630528, oracle 12564480
+      g9/R9-deepwater-noboots tick 98 pos_z: dll 851968, oracle 983040
+      g9/R9-deepwater-noboots tick 99 force_x: dll 150528, oracle 66048
+      g9/R9-deepwater-noboots tick 99 force_z: dll -163840, oracle -131072
+      g9/R9-deepwater-noboots tick 99 pos_x: dll 12781056, oracle 12630528
+      g9/R9-deepwater-noboots tick 99 pos_z: dll 688128, oracle 851968
+      g9/R9-deepwater-noboots tick 100 force_z: dll -196608, oracle -163840
+      g9/R9-deepwater-noboots tick 100 pos_x: dll 12931584, oracle 12781056
+      g9/R9-deepwater-noboots tick 100 pos_z: dll 491520, oracle 688128
+      g9/R9-deepwater-noboots tick 101 force_z: dll -229376, oracle -196608
+      g9/R9-deepwater-noboots tick 101 pos_x: dll 13082112, oracle 12931584
+      g9/R9-deepwater-noboots tick 101 pos_z: dll 262144, oracle 491520
+      g9/R9-deepwater-noboots tick 102 force_z: dll -262144, oracle -229376
+      g9/R9-deepwater-noboots tick 102 pos_x: dll 13232640, oracle 13082112
+      g9/R9-deepwater-noboots tick 102 pos_z: dll 0, oracle 262144
+      g9/R9-deepwater-noboots tick 102 on_ground: dll 1, oracle 0
+      g9/R9-deepwater-noboots tick 103 anim_target: dll 41, oracle 44
+      g9/R9-deepwater-noboots tick 103 anim_cur: dll 41, oracle 44
+      g9/R9-deepwater-noboots tick 103 force_x: dll 0, oracle 150528
+      g9/R9-deepwater-noboots tick 103 force_z: dll 0, oracle -262144
+== w1/W1-walk-L0 ticks=100 dllBounce=0 oracleBounce=0 dllForceAdjFirst=12 oracleForceAdjFirst=12
+   tol     0 no shift: 0 diffs
+   tol     1 no shift: 0 diffs
+   tol    16 no shift: 0 diffs
+   tol  7424 no shift: 0 diffs
+== w1/W1-walk-L1 ticks=100 dllBounce=0 oracleBounce=0 dllForceAdjFirst=12 oracleForceAdjFirst=12
+   tol     0 no shift: 0 diffs
+   tol     1 no shift: 0 diffs
+   tol    16 no shift: 0 diffs
+   tol  7424 no shift: 0 diffs
+== w1/W1-run-L0 ticks=130 dllBounce=86 oracleBounce=87 dllForceAdjFirst=85 oracleForceAdjFirst=86
+   tol     0 no shift: 87 diffs; first: w1/W1-run-L0 tick 84 pos_x: dll 14745600, oracle 14745599
+   tol     1 no shift: 86 diffs; first: w1/W1-run-L0 tick 85 force_adj: dll 1, oracle 0
+   tol    16 no shift: 86 diffs; first: w1/W1-run-L0 tick 85 force_adj: dll 1, oracle 0
+   tol  7424 no shift: 86 diffs; first: w1/W1-run-L0 tick 85 force_adj: dll 1, oracle 0
+   SHIFT from 85 by 1; tol     0: 1 diffs; first: w1/W1-run-L0 tick 84 pos_x: dll 14745600, oracle 14745599
+   SHIFT from 85 by 1; tol     1: 0 diffs
+   SHIFT from 85 by 1; tol    16: 0 diffs
+      w1/W1-run-L0 tick 85 force_adj: dll 1, oracle 0
+      w1/W1-run-L0 tick 86 anim_target: dll 62, oracle 3
+      w1/W1-run-L0 tick 86 anim_cur: dll 62, oracle 3
+      w1/W1-run-L0 tick 86 facing: dll 2, oracle 3
+      w1/W1-run-L0 tick 86 dir_target: dll 8, oracle 24
+      w1/W1-run-L0 tick 86 force_x: dll -196608, oracle 258048
+      w1/W1-run-L0 tick 86 force_z: dll 262144, oracle 0
+      w1/W1-run-L0 tick 86 pos_x: dll 14548992, oracle 14745600
+      w1/W1-run-L0 tick 86 pos_z: dll 262144, oracle 0
+      w1/W1-run-L0 tick 86 on_ground: dll 0, oracle 1
+      w1/W1-run-L0 tick 86 force_adj: dll 0, oracle 1
+      w1/W1-run-L0 tick 86 sounds: dll [28], oracle []
+      w1/W1-run-L0 tick 86 effects 9: dll [(14745600,0,1048577)], oracle []
+      w1/W1-run-L0 tick 87 force_z: dll 229376, oracle 262144
+      w1/W1-run-L0 tick 87 pos_x: dll 14352384, oracle 14548992
+      w1/W1-run-L0 tick 87 pos_z: dll 491520, oracle 262144
+      w1/W1-run-L0 tick 87 sounds: dll [], oracle [28]
+      w1/W1-run-L0 tick 87 effects 9: dll [], oracle [(14745600,0,1048577)]
+      w1/W1-run-L0 tick 88 force_z: dll 196608, oracle 229376
+      w1/W1-run-L0 tick 88 pos_x: dll 14155776, oracle 14352384
+      w1/W1-run-L0 tick 88 pos_z: dll 688128, oracle 491520
+      w1/W1-run-L0 tick 89 force_z: dll 163840, oracle 196608
+      w1/W1-run-L0 tick 89 pos_x: dll 13959168, oracle 14155776
+      w1/W1-run-L0 tick 89 pos_z: dll 851968, oracle 688128
+      w1/W1-run-L0 tick 90 force_z: dll 131072, oracle 163840
+      w1/W1-run-L0 tick 90 pos_x: dll 13762560, oracle 13959168
+      w1/W1-run-L0 tick 90 pos_z: dll 983040, oracle 851968
+      w1/W1-run-L0 tick 91 force_z: dll 98304, oracle 131072
+      w1/W1-run-L0 tick 91 pos_x: dll 13565952, oracle 13762560
+      w1/W1-run-L0 tick 91 pos_z: dll 1081344, oracle 983040
+      w1/W1-run-L0 tick 92 force_z: dll 65536, oracle 98304
+      w1/W1-run-L0 tick 92 pos_x: dll 13369344, oracle 13565952
+      w1/W1-run-L0 tick 92 pos_z: dll 1146880, oracle 1081344
+      w1/W1-run-L0 tick 93 force_z: dll 32768, oracle 65536
+      w1/W1-run-L0 tick 93 pos_x: dll 13172736, oracle 13369344
+      w1/W1-run-L0 tick 93 pos_z: dll 1179648, oracle 1146880
+      w1/W1-run-L0 tick 94 force_z: dll 0, oracle 32768
+      w1/W1-run-L0 tick 94 pos_x: dll 12976128, oracle 13172736
+      w1/W1-run-L0 tick 95 force_z: dll -32768, oracle 0
+      w1/W1-run-L0 tick 95 pos_x: dll 12779520, oracle 12976128
+      w1/W1-run-L0 tick 95 pos_z: dll 1146880, oracle 1179648
+      w1/W1-run-L0 tick 96 force_z: dll -65536, oracle -32768
+      w1/W1-run-L0 tick 96 pos_x: dll 12582912, oracle 12779520
+      w1/W1-run-L0 tick 96 pos_z: dll 1081344, oracle 1146880
+      w1/W1-run-L0 tick 97 anim_target: dll 1, oracle 62
+      w1/W1-run-L0 tick 97 anim_cur: dll 1, oracle 62
+      w1/W1-run-L0 tick 97 facing: dll 3, oracle 2
+      w1/W1-run-L0 tick 97 dir_target: dll 24, oracle 8
+      w1/W1-run-L0 tick 97 force_x: dll -18432, oracle -196608
+      w1/W1-run-L0 tick 97 force_z: dll -98304, oracle -65536
+      w1/W1-run-L0 tick 97 pos_x: dll 12564480, oracle 12582912
+      w1/W1-run-L0 tick 97 pos_z: dll 983040, oracle 1081344
+      w1/W1-run-L0 tick 98 anim_target: dll 44, oracle 1
+      w1/W1-run-L0 tick 98 anim_cur: dll 44, oracle 1
+      w1/W1-run-L0 tick 98 force_x: dll 66048, oracle -18432
+      w1/W1-run-L0 tick 98 force_z: dll -131072, oracle -98304
+      w1/W1-run-L0 tick 98 pos_x: dll 12630528, oracle 12564480
+      w1/W1-run-L0 tick 98 pos_z: dll 851968, oracle 983040
+      w1/W1-run-L0 tick 99 force_x: dll 150528, oracle 66048
+      w1/W1-run-L0 tick 99 force_z: dll -163840, oracle -131072
+      w1/W1-run-L0 tick 99 pos_x: dll 12781056, oracle 12630528
+      w1/W1-run-L0 tick 99 pos_z: dll 688128, oracle 851968
+      w1/W1-run-L0 tick 100 force_z: dll -196608, oracle -163840
+      w1/W1-run-L0 tick 100 pos_x: dll 12931584, oracle 12781056
+      w1/W1-run-L0 tick 100 pos_z: dll 491520, oracle 688128
+      w1/W1-run-L0 tick 101 force_z: dll -229376, oracle -196608
+      w1/W1-run-L0 tick 101 pos_x: dll 13082112, oracle 12931584
+      w1/W1-run-L0 tick 101 pos_z: dll 262144, oracle 491520
+      w1/W1-run-L0 tick 102 force_z: dll -262144, oracle -229376
+      w1/W1-run-L0 tick 102 pos_x: dll 13232640, oracle 13082112
+      w1/W1-run-L0 tick 102 pos_z: dll 0, oracle 262144
+      w1/W1-run-L0 tick 102 on_ground: dll 1, oracle 0
+      w1/W1-run-L0 tick 103 anim_target: dll 41, oracle 44
+      w1/W1-run-L0 tick 103 anim_cur: dll 41, oracle 44
+      w1/W1-run-L0 tick 103 force_x: dll 0, oracle 150528
+      w1/W1-run-L0 tick 103 force_z: dll 0, oracle -262144
+      w1/W1-run-L0 tick 128 anim_target: dll 3, oracle 41
+      w1/W1-run-L0 tick 128 anim_cur: dll 3, oracle 41
+      w1/W1-run-L0 tick 128 force_x: dll 64512, oracle 0
+      w1/W1-run-L0 tick 128 pos_x: dll 13297152, oracle 13232640
+      w1/W1-run-L0 tick 128 sounds: dll [13], oracle []
+      w1/W1-run-L0 tick 129 force_x: dll 129024, oracle 64512
+      w1/W1-run-L0 tick 129 pos_x: dll 13426176, oracle 13297152
+      w1/W1-run-L0 tick 129 sounds: dll [], oracle [13]
+      w1/W1-run-L0 tick 130 force_x: dll 193536, oracle 129024
+      w1/W1-run-L0 tick 130 pos_x: dll 13619712, oracle 13426176
+== w1/W1-run-L1 ticks=130 dllBounce=86 oracleBounce=87 dllForceAdjFirst=85 oracleForceAdjFirst=86
+   tol     0 no shift: 87 diffs; first: w1/W1-run-L1 tick 84 pos_x: dll 14745600, oracle 14745599
+   tol     1 no shift: 86 diffs; first: w1/W1-run-L1 tick 85 force_adj: dll 1, oracle 0
+   tol    16 no shift: 86 diffs; first: w1/W1-run-L1 tick 85 force_adj: dll 1, oracle 0
+   tol  7424 no shift: 86 diffs; first: w1/W1-run-L1 tick 85 force_adj: dll 1, oracle 0
+   SHIFT from 85 by 1; tol     0: 1 diffs; first: w1/W1-run-L1 tick 84 pos_x: dll 14745600, oracle 14745599
+   SHIFT from 85 by 1; tol     1: 0 diffs
+   SHIFT from 85 by 1; tol    16: 0 diffs
+      w1/W1-run-L1 tick 85 force_adj: dll 1, oracle 0
+      w1/W1-run-L1 tick 86 anim_target: dll 62, oracle 3
+      w1/W1-run-L1 tick 86 anim_cur: dll 62, oracle 3
+      w1/W1-run-L1 tick 86 facing: dll 2, oracle 3
+      w1/W1-run-L1 tick 86 dir_target: dll 8, oracle 24
+      w1/W1-run-L1 tick 86 force_x: dll -196608, oracle 258048
+      w1/W1-run-L1 tick 86 force_z: dll 262144, oracle 0
+      w1/W1-run-L1 tick 86 pos_x: dll 14548992, oracle 14745600
+      w1/W1-run-L1 tick 86 pos_z: dll 262144, oracle 0
+      w1/W1-run-L1 tick 86 on_ground: dll 0, oracle 1
+      w1/W1-run-L1 tick 86 force_adj: dll 0, oracle 1
+      w1/W1-run-L1 tick 86 sounds: dll [28], oracle []
+      w1/W1-run-L1 tick 86 effects 9: dll [(14745600,0,1048577)], oracle []
+      w1/W1-run-L1 tick 87 force_z: dll 229376, oracle 262144
+      w1/W1-run-L1 tick 87 pos_x: dll 14352384, oracle 14548992
+      w1/W1-run-L1 tick 87 pos_z: dll 491520, oracle 262144
+      w1/W1-run-L1 tick 87 sounds: dll [], oracle [28]
+      w1/W1-run-L1 tick 87 effects 9: dll [], oracle [(14745600,0,1048577)]
+      w1/W1-run-L1 tick 88 force_z: dll 196608, oracle 229376
+      w1/W1-run-L1 tick 88 pos_x: dll 14155776, oracle 14352384
+      w1/W1-run-L1 tick 88 pos_z: dll 688128, oracle 491520
+      w1/W1-run-L1 tick 89 force_z: dll 163840, oracle 196608
+      w1/W1-run-L1 tick 89 pos_x: dll 13959168, oracle 14155776
+      w1/W1-run-L1 tick 89 pos_z: dll 851968, oracle 688128
+      w1/W1-run-L1 tick 90 force_z: dll 131072, oracle 163840
+      w1/W1-run-L1 tick 90 pos_x: dll 13762560, oracle 13959168
+      w1/W1-run-L1 tick 90 pos_z: dll 983040, oracle 851968
+      w1/W1-run-L1 tick 91 force_z: dll 98304, oracle 131072
+      w1/W1-run-L1 tick 91 pos_x: dll 13565952, oracle 13762560
+      w1/W1-run-L1 tick 91 pos_z: dll 1081344, oracle 983040
+      w1/W1-run-L1 tick 92 force_z: dll 65536, oracle 98304
+      w1/W1-run-L1 tick 92 pos_x: dll 13369344, oracle 13565952
+      w1/W1-run-L1 tick 92 pos_z: dll 1146880, oracle 1081344
+      w1/W1-run-L1 tick 93 force_z: dll 32768, oracle 65536
+      w1/W1-run-L1 tick 93 pos_x: dll 13172736, oracle 13369344
+      w1/W1-run-L1 tick 93 pos_z: dll 1179648, oracle 1146880
+      w1/W1-run-L1 tick 94 force_z: dll 0, oracle 32768
+      w1/W1-run-L1 tick 94 pos_x: dll 12976128, oracle 13172736
+      w1/W1-run-L1 tick 95 force_z: dll -32768, oracle 0
+      w1/W1-run-L1 tick 95 pos_x: dll 12779520, oracle 12976128
+      w1/W1-run-L1 tick 95 pos_z: dll 1146880, oracle 1179648
+      w1/W1-run-L1 tick 96 force_z: dll -65536, oracle -32768
+      w1/W1-run-L1 tick 96 pos_x: dll 12582912, oracle 12779520
+      w1/W1-run-L1 tick 96 pos_z: dll 1081344, oracle 1146880
+      w1/W1-run-L1 tick 97 anim_target: dll 1, oracle 62
+      w1/W1-run-L1 tick 97 anim_cur: dll 1, oracle 62
+      w1/W1-run-L1 tick 97 facing: dll 3, oracle 2
+      w1/W1-run-L1 tick 97 dir_target: dll 24, oracle 8
+      w1/W1-run-L1 tick 97 force_x: dll -18432, oracle -196608
+      w1/W1-run-L1 tick 97 force_z: dll -98304, oracle -65536
+      w1/W1-run-L1 tick 97 pos_x: dll 12564480, oracle 12582912
+      w1/W1-run-L1 tick 97 pos_z: dll 983040, oracle 1081344
+      w1/W1-run-L1 tick 98 anim_target: dll 44, oracle 1
+      w1/W1-run-L1 tick 98 anim_cur: dll 44, oracle 1
+      w1/W1-run-L1 tick 98 force_x: dll 66048, oracle -18432
+      w1/W1-run-L1 tick 98 force_z: dll -131072, oracle -98304
+      w1/W1-run-L1 tick 98 pos_x: dll 12630528, oracle 12564480
+      w1/W1-run-L1 tick 98 pos_z: dll 851968, oracle 983040
+      w1/W1-run-L1 tick 99 force_x: dll 150528, oracle 66048
+      w1/W1-run-L1 tick 99 force_z: dll -163840, oracle -131072
+      w1/W1-run-L1 tick 99 pos_x: dll 12781056, oracle 12630528
+      w1/W1-run-L1 tick 99 pos_z: dll 688128, oracle 851968
+      w1/W1-run-L1 tick 100 force_z: dll -196608, oracle -163840
+      w1/W1-run-L1 tick 100 pos_x: dll 12931584, oracle 12781056
+      w1/W1-run-L1 tick 100 pos_z: dll 491520, oracle 688128
+      w1/W1-run-L1 tick 101 force_z: dll -229376, oracle -196608
+      w1/W1-run-L1 tick 101 pos_x: dll 13082112, oracle 12931584
+      w1/W1-run-L1 tick 101 pos_z: dll 262144, oracle 491520
+      w1/W1-run-L1 tick 102 force_z: dll -262144, oracle -229376
+      w1/W1-run-L1 tick 102 pos_x: dll 13232640, oracle 13082112
+      w1/W1-run-L1 tick 102 pos_z: dll 0, oracle 262144
+      w1/W1-run-L1 tick 102 on_ground: dll 1, oracle 0
+      w1/W1-run-L1 tick 103 anim_target: dll 41, oracle 44
+      w1/W1-run-L1 tick 103 anim_cur: dll 41, oracle 44
+      w1/W1-run-L1 tick 103 force_x: dll 0, oracle 150528
+      w1/W1-run-L1 tick 103 force_z: dll 0, oracle -262144
+      w1/W1-run-L1 tick 128 anim_target: dll 3, oracle 41
+      w1/W1-run-L1 tick 128 anim_cur: dll 3, oracle 41
+      w1/W1-run-L1 tick 128 force_x: dll 64512, oracle 0
+      w1/W1-run-L1 tick 128 pos_x: dll 13297152, oracle 13232640
+      w1/W1-run-L1 tick 128 sounds: dll [13], oracle []
+      w1/W1-run-L1 tick 129 force_x: dll 129024, oracle 64512
+      w1/W1-run-L1 tick 129 pos_x: dll 13426176, oracle 13297152
+      w1/W1-run-L1 tick 129 sounds: dll [], oracle [13]
+      w1/W1-run-L1 tick 130 force_x: dll 193536, oracle 129024
+      w1/W1-run-L1 tick 130 pos_x: dll 13619712, oracle 13426176
+== w1/W1-jump-L0 ticks=90 dllBounce=0 oracleBounce=0 dllForceAdjFirst=13 oracleForceAdjFirst=13
+   tol     0 no shift: 0 diffs
+   tol     1 no shift: 0 diffs
+   tol    16 no shift: 0 diffs
+   tol  7424 no shift: 0 diffs
+== w1/W1-jump-L1 ticks=90 dllBounce=0 oracleBounce=0 dllForceAdjFirst=13 oracleForceAdjFirst=13
+   tol     0 no shift: 0 diffs
+   tol     1 no shift: 0 diffs
+   tol    16 no shift: 0 diffs
+   tol  7424 no shift: 0 diffs
+== w1/W1-fall-walk-L0 ticks=120 dllBounce=0 oracleBounce=0 dllForceAdjFirst=12 oracleForceAdjFirst=12
+   tol     0 no shift: 0 diffs
+   tol     1 no shift: 0 diffs
+   tol    16 no shift: 0 diffs
+   tol  7424 no shift: 0 diffs
+== w1/W1-fall-walk-L1 ticks=120 dllBounce=0 oracleBounce=0 dllForceAdjFirst=12 oracleForceAdjFirst=12
+   tol     0 no shift: 0 diffs
+   tol     1 no shift: 0 diffs
+   tol    16 no shift: 0 diffs
+   tol  7424 no shift: 0 diffs
+== w2/W2-L0-inside-R ticks=60 dllBounce=0 oracleBounce=0 dllForceAdjFirst=5 oracleForceAdjFirst=5
+   tol     0 no shift: 0 diffs
+   tol     1 no shift: 0 diffs
+   tol    16 no shift: 0 diffs
+   tol  7424 no shift: 0 diffs
+== w2/W2-L1-inside-R ticks=60 dllBounce=0 oracleBounce=0 dllForceAdjFirst=5 oracleForceAdjFirst=5
+   tol     0 no shift: 0 diffs
+   tol     1 no shift: 0 diffs
+   tol    16 no shift: 0 diffs
+   tol  7424 no shift: 0 diffs
+== w5/W5-L0-wall-walk ticks=100 dllBounce=0 oracleBounce=0 dllForceAdjFirst=12 oracleForceAdjFirst=12
+   tol     0 no shift: 0 diffs
+   tol     1 no shift: 0 diffs
+   tol    16 no shift: 0 diffs
+   tol  7424 no shift: 0 diffs
+== w5/W5-L1-wall-walk ticks=100 dllBounce=0 oracleBounce=0 dllForceAdjFirst=12 oracleForceAdjFirst=12
+   tol     0 no shift: 0 diffs
+   tol     1 no shift: 0 diffs
+   tol    16 no shift: 0 diffs
+   tol  7424 no shift: 0 diffs
+== w5/W5-L0-wall-diag ticks=140 dllBounce=0 oracleBounce=0 dllForceAdjFirst=0 oracleForceAdjFirst=0
+   tol     0 no shift: 97 diffs; first: w5/W5-L0-wall-diag tick 45 pos_x: dll 4915200, oracle 4915199
+   tol     1 no shift: 96 diffs; first: w5/W5-L0-wall-diag tick 45 pos_y: dll 3350672, oracle 3276800
+   tol    16 no shift: 96 diffs; first: w5/W5-L0-wall-diag tick 45 pos_y: dll 3350672, oracle 3276800
+   tol  7424 no shift: 96 diffs; first: w5/W5-L0-wall-diag tick 45 pos_y: dll 3350672, oracle 3276800
+      w5/W5-L0-wall-diag tick 45 pos_y: dll 3350672, oracle 3276800
+      w5/W5-L0-wall-diag tick 46 pos_y: dll 3425968, oracle 3276801
+      w5/W5-L0-wall-diag tick 47 pos_y: dll 3501264, oracle 3352097
+      w5/W5-L0-wall-diag tick 48 pos_y: dll 3576560, oracle 3427393
+      w5/W5-L0-wall-diag tick 49 pos_y: dll 3651856, oracle 3502689
+      w5/W5-L0-wall-diag tick 50 pos_y: dll 3727152, oracle 3577985
+      w5/W5-L0-wall-diag tick 51 pos_y: dll 3802448, oracle 3653281
+      w5/W5-L0-wall-diag tick 52 pos_y: dll 3877744, oracle 3728577
+      w5/W5-L0-wall-diag tick 53 pos_y: dll 3953040, oracle 3803873
+      w5/W5-L0-wall-diag tick 54 pos_y: dll 4028336, oracle 3879169
+      w5/W5-L0-wall-diag tick 55 pos_y: dll 4103632, oracle 3954465
+      w5/W5-L0-wall-diag tick 56 pos_y: dll 4178928, oracle 4029761
+      w5/W5-L0-wall-diag tick 57 pos_y: dll 4254224, oracle 4105057
+      w5/W5-L0-wall-diag tick 58 pos_y: dll 4329520, oracle 4180353
+      w5/W5-L0-wall-diag tick 59 pos_y: dll 4404816, oracle 4255649
+      w5/W5-L0-wall-diag tick 60 pos_y: dll 4480112, oracle 4330945
+      w5/W5-L0-wall-diag tick 61 pos_y: dll 4555408, oracle 4406241
+      w5/W5-L0-wall-diag tick 62 pos_y: dll 4630704, oracle 4481537
+      w5/W5-L0-wall-diag tick 63 pos_y: dll 4706000, oracle 4556833
+      w5/W5-L0-wall-diag tick 64 pos_y: dll 4781296, oracle 4632129
+      w5/W5-L0-wall-diag tick 65 pos_y: dll 4856592, oracle 4707425
+      w5/W5-L0-wall-diag tick 66 pos_y: dll 4931888, oracle 4782721
+      w5/W5-L0-wall-diag tick 67 pos_y: dll 5007184, oracle 4858017
+      w5/W5-L0-wall-diag tick 68 pos_y: dll 5082480, oracle 4933313
+      w5/W5-L0-wall-diag tick 69 pos_y: dll 5157776, oracle 5008609
+      w5/W5-L0-wall-diag tick 70 pos_y: dll 5233072, oracle 5083905
+      w5/W5-L0-wall-diag tick 71 pos_y: dll 5308368, oracle 5159201
+      w5/W5-L0-wall-diag tick 72 pos_y: dll 5383664, oracle 5234497
+      w5/W5-L0-wall-diag tick 73 pos_y: dll 5458960, oracle 5309793
+      w5/W5-L0-wall-diag tick 74 pos_y: dll 5534256, oracle 5385089
+      w5/W5-L0-wall-diag tick 75 pos_y: dll 5609552, oracle 5460385
+      w5/W5-L0-wall-diag tick 76 pos_y: dll 5684848, oracle 5535681
+      w5/W5-L0-wall-diag tick 77 pos_y: dll 5760144, oracle 5610977
+      w5/W5-L0-wall-diag tick 78 pos_y: dll 5835440, oracle 5686273
+      w5/W5-L0-wall-diag tick 79 pos_y: dll 5910736, oracle 5761569
+      w5/W5-L0-wall-diag tick 80 pos_y: dll 5986032, oracle 5836865
+      w5/W5-L0-wall-diag tick 81 pos_y: dll 6061328, oracle 5912161
+      w5/W5-L0-wall-diag tick 82 pos_y: dll 6136624, oracle 5987457
+      w5/W5-L0-wall-diag tick 83 pos_y: dll 6211920, oracle 6062753
+      w5/W5-L0-wall-diag tick 84 pos_y: dll 6287216, oracle 6138049
+      w5/W5-L0-wall-diag tick 85 pos_y: dll 6362512, oracle 6213345
+      w5/W5-L0-wall-diag tick 86 pos_y: dll 6437808, oracle 6288641
+      w5/W5-L0-wall-diag tick 87 pos_y: dll 6513104, oracle 6363937
+      w5/W5-L0-wall-diag tick 88 pos_y: dll 6588400, oracle 6439233
+      w5/W5-L0-wall-diag tick 89 pos_y: dll 6663696, oracle 6514529
+      w5/W5-L0-wall-diag tick 90 pos_y: dll 6738992, oracle 6589825
+      w5/W5-L0-wall-diag tick 91 pos_y: dll 6814288, oracle 6665121
+      w5/W5-L0-wall-diag tick 92 pos_y: dll 6889584, oracle 6740417
+      w5/W5-L0-wall-diag tick 93 pos_y: dll 6964880, oracle 6815713
+      w5/W5-L0-wall-diag tick 94 pos_y: dll 7040176, oracle 6891009
+      w5/W5-L0-wall-diag tick 95 pos_y: dll 7115472, oracle 6966305
+      w5/W5-L0-wall-diag tick 96 pos_y: dll 7190768, oracle 7041601
+      w5/W5-L0-wall-diag tick 97 pos_y: dll 7266064, oracle 7116897
+      w5/W5-L0-wall-diag tick 98 pos_y: dll 7341360, oracle 7192193
+      w5/W5-L0-wall-diag tick 99 pos_y: dll 7416656, oracle 7267489
+      w5/W5-L0-wall-diag tick 100 pos_y: dll 7491952, oracle 7342785
+      w5/W5-L0-wall-diag tick 101 pos_y: dll 7567248, oracle 7418081
+      w5/W5-L0-wall-diag tick 102 pos_y: dll 7642544, oracle 7493377
+      w5/W5-L0-wall-diag tick 103 pos_y: dll 7717840, oracle 7568673
+      w5/W5-L0-wall-diag tick 104 pos_y: dll 7793136, oracle 7643969
+      w5/W5-L0-wall-diag tick 105 pos_y: dll 7868432, oracle 7719265
+      w5/W5-L0-wall-diag tick 106 pos_y: dll 7943728, oracle 7794561
+      w5/W5-L0-wall-diag tick 107 pos_y: dll 8019024, oracle 7869857
+      w5/W5-L0-wall-diag tick 108 pos_y: dll 8094320, oracle 7945153
+      w5/W5-L0-wall-diag tick 109 pos_y: dll 8169616, oracle 8020449
+      w5/W5-L0-wall-diag tick 110 pos_y: dll 8244912, oracle 8095745
+      w5/W5-L0-wall-diag tick 111 pos_y: dll 8320208, oracle 8171041
+      w5/W5-L0-wall-diag tick 112 pos_y: dll 8395504, oracle 8246337
+      w5/W5-L0-wall-diag tick 113 pos_y: dll 8470800, oracle 8321633
+      w5/W5-L0-wall-diag tick 114 pos_y: dll 8546096, oracle 8396929
+      w5/W5-L0-wall-diag tick 115 pos_y: dll 8621392, oracle 8472225
+      w5/W5-L0-wall-diag tick 116 pos_y: dll 8696688, oracle 8547521
+      w5/W5-L0-wall-diag tick 117 pos_y: dll 8771984, oracle 8622817
+      w5/W5-L0-wall-diag tick 118 pos_y: dll 8847280, oracle 8698113
+      w5/W5-L0-wall-diag tick 119 pos_y: dll 8922576, oracle 8773409
+      w5/W5-L0-wall-diag tick 120 pos_y: dll 8997872, oracle 8848705
+      w5/W5-L0-wall-diag tick 121 pos_y: dll 9073168, oracle 8924001
+      w5/W5-L0-wall-diag tick 122 pos_y: dll 9148464, oracle 8999297
+      w5/W5-L0-wall-diag tick 123 pos_y: dll 9223760, oracle 9074593
+      w5/W5-L0-wall-diag tick 124 pos_y: dll 9299056, oracle 9149889
+      w5/W5-L0-wall-diag tick 125 pos_y: dll 9374352, oracle 9225185
+      w5/W5-L0-wall-diag tick 126 pos_y: dll 9449648, oracle 9300481
+      w5/W5-L0-wall-diag tick 127 pos_y: dll 9524944, oracle 9375777
+      w5/W5-L0-wall-diag tick 128 pos_y: dll 9600240, oracle 9451073
+      w5/W5-L0-wall-diag tick 129 pos_y: dll 9675536, oracle 9526369
+      w5/W5-L0-wall-diag tick 130 pos_y: dll 9750832, oracle 9601665
+      w5/W5-L0-wall-diag tick 131 pos_y: dll 9826128, oracle 9676961
+      w5/W5-L0-wall-diag tick 132 pos_y: dll 9901424, oracle 9752257
+      w5/W5-L0-wall-diag tick 133 pos_y: dll 9976720, oracle 9827553
+      w5/W5-L0-wall-diag tick 134 pos_y: dll 10052016, oracle 9902849
+      w5/W5-L0-wall-diag tick 135 pos_y: dll 10127312, oracle 9978145
+      w5/W5-L0-wall-diag tick 136 pos_y: dll 10202608, oracle 10053441
+      w5/W5-L0-wall-diag tick 137 pos_y: dll 10277904, oracle 10128737
+      w5/W5-L0-wall-diag tick 138 pos_y: dll 10353200, oracle 10204033
+      w5/W5-L0-wall-diag tick 139 pos_y: dll 10428496, oracle 10279329
+      w5/W5-L0-wall-diag tick 140 pos_y: dll 10503792, oracle 10354625
+== w10/W10-shallow-to-deep-L0 ticks=100 dllBounce=0 oracleBounce=0 dllForceAdjFirst=22 oracleForceAdjFirst=22
+   tol     0 no shift: 0 diffs
+   tol     1 no shift: 0 diffs
+   tol    16 no shift: 0 diffs
+   tol  7424 no shift: 0 diffs

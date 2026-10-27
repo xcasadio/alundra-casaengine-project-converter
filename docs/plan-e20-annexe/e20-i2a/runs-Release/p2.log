@@ -1,0 +1,15 @@
+Série de tests pour D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\bin\Release\net9.0-windows\Alundra.Tests.dll (.NETCoreApp,Version=v9.0)
+Au total, 1 fichiers de test ont correspondu au modèle spécifié.
+[xUnit.net 00:00:09.05]     Alundra.Tests.Hero.HeroSwimArenaTests.WithoutTheBoots_TheHeroSwimsToo_AnAcceptedDeviation_O_E19_22 [FAIL]
+  Échoué Alundra.Tests.Hero.HeroSwimArenaTests.WithoutTheBoots_TheHeroSwimsToo_AnAcceptedDeviation_O_E19_22 [2 s]
+  Message d'erreur :
+   Assert.Contains() Failure: Filter not matched in collection
+Collection: [Tick { Number = 1, Anim = 1, Dir = 0, ForceX = 0, ForceY = 53248, PosX = 63700992, PosY = 50855936, PosZ = 1048576, Slope = 0, Adjusted = True, OnGround = 1 }, Tick { Number = 2, Anim = 1, Dir = 0, ForceX = 0, ForceY = 106496, PosX = 63700992, PosY = 50855936, PosZ = 1048576, Slope = 0, Adjusted = True, OnGround = 1 }, Tick { Number = 3, Anim = 1, Dir = 0, ForceX = 0, ForceY = 106496, PosX = 63700992, PosY = 50855936, PosZ = 1048576, Slope = 0, Adjusted = True, OnGround = 1 }, Tick { Number = 4, Anim = 1, Dir = 0, ForceX = 0, ForceY = 106496, PosX = 63700992, PosY = 50855936, PosZ = 1048576, Slope = 0, Adjusted = True, OnGround = 1 }, Tick { Number = 5, Anim = 1, Dir = 0, ForceX = 0, ForceY = 106496, PosX = 63700992, PosY = 50855936, PosZ = 1048576, Slope = 0, Adjusted = True, OnGround = 1 }, ···]
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Hero.HeroSwimArenaTests.WithoutTheBoots_TheHeroSwimsToo_AnAcceptedDeviation_O_E19_22() in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroSwimArenaTests.cs:line 147
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+Message du collecteur de données 'Blame' : Tous les tests ont fini de s'exécuter. Le fichier de séquence ne sera pas généré.
+Fichier de résultats : C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/i2a-t0b/runs-Release/p2.trx
+
+Échoué!  - échec :     1, réussite :  1298, ignorée(s) :     0, total :  1299, durée : 1 m 10 s - Alundra.Tests.dll (net9.0)

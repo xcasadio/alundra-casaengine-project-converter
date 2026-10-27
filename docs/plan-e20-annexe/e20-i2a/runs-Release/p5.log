@@ -1,0 +1,16 @@
+Série de tests pour D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\bin\Release\net9.0-windows\Alundra.Tests.dll (.NETCoreApp,Version=v9.0)
+Au total, 1 fichiers de test ont correspondu au modèle spécifié.
+[xUnit.net 00:01:17.46]     Alundra.Tests.Support.PrefabArcSupportTests.PrefabMode_OnMap478_TheHeroIsTheRealPrefabOfTheHero [FAIL]
+  Échoué Alundra.Tests.Support.PrefabArcSupportTests.PrefabMode_OnMap478_TheHeroIsTheRealPrefabOfTheHero [644 ms]
+  Message d'erreur :
+   Assert.Equal() Failure: Values differ
+Expected: 65
+Actual:   65601
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Support.PrefabArcSupportTests.PrefabMode_OnMap478_TheHeroIsTheRealPrefabOfTheHero() in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Support\PrefabArcSupportTests.cs:line 126
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+Message du collecteur de données 'Blame' : Tous les tests ont fini de s'exécuter. Le fichier de séquence ne sera pas généré.
+Fichier de résultats : C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/i2a-t0b/runs-Release/p5.trx
+
+Échoué!  - échec :     1, réussite :  2190, ignorée(s) :     0, total :  2191, durée : 1 m 30 s - Alundra.Tests.dll (net9.0)

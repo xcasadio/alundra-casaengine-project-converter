@@ -1,0 +1,64 @@
+#nullable enable
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Xunit;
+using Alundra.Session;
+using Alundra.Tests.Support;
+using Alundra.Tests.Rng;
+
+namespace Alundra.Tests.Hero;
+
+// TEMPORARY T0 probe (never committed): the gap of the 15 traces of the wall to the DLL.
+[Collection(RandomStaticStateCollection.Name)]
+public sealed class I2aT0TempProbe
+{
+    [Fact]
+    public void Dump15()
+    {
+        GameState.Instance.ResetForTests();
+        var names = new[]
+        {
+            "g9/R9-deepwater-noboots",
+            "w1/W1-walk-L0", "w1/W1-walk-L1", "w1/W1-run-L0", "w1/W1-run-L1", "w1/W1-jump-L0", "w1/W1-jump-L1", "w1/W1-fall-walk-L0", "w1/W1-fall-walk-L1",
+            "w2/W2-L0-inside-R", "w2/W2-L1-inside-R", "w5/W5-L0-wall-walk", "w5/W5-L1-wall-walk", "w5/W5-L0-wall-diag", "w10/W10-shallow-to-deep-L0",
+        };
+        var sb = new StringBuilder();
+        foreach (var name in names)
+        {
+            var trace = RunOracleTrace.Load(name);
+            Func<int, int, bool> stub = (tick, id) => (id is 21 or 6 && tick >= 1 && trace.Col("anim_cur", tick - 1) is 0x2C or 0x2D or 0x02 or 0x2B);
+            var m = RunMontage.Start(trace);
+            m.Play();
+            var dllBounce = Enumerable.Range(1, m.Rows.Count - 1).FirstOrDefault(t => m.Rows[t].AnimTarget == 0x3E);
+            var oraBounce = Enumerable.Range(1, trace.Ticks).FirstOrDefault(t => trace.Col("anim_target", t) == 0x3E);
+            var oraAdj = Enumerable.Range(1, trace.Ticks).FirstOrDefault(t => trace.Col("force_adj", t) != 0);
+            var dllAdj = Enumerable.Range(1, m.Rows.Count - 1).FirstOrDefault(t => m.Rows[t].ForceAdjusted);
+            sb.AppendLine($"== {name} ticks={trace.Ticks} dllBounce={dllBounce} oracleBounce={oraBounce} dllForceAdjFirst={dllAdj} oracleForceAdjFirst={oraAdj}");
+            foreach (var tol in new[] { 0, 1, 16, 7424 })
+            {
+                var d = m.CompareRows(int.MaxValue, 1, null, null, tol, 0, 0, stub);
+                sb.AppendLine($"   tol {tol,5} no shift: {d.Count} diffs" + (d.Count > 0 ? "; first: " + d[0] : ""));
+            }
+            if (dllBounce > 0 && oraBounce > 0)
+            {
+                var shift = oraBounce - dllBounce;
+                var m2 = RunMontage.Start(trace);
+                m2.Play(int.MaxValue, dllBounce - 1, shift);
+                foreach (var tol in new[] { 0, 1, 16 })
+                {
+                    var d = m2.CompareRows(int.MaxValue, 1, null, null, tol, dllBounce - 1, shift, stub);
+                    sb.AppendLine($"   SHIFT from {dllBounce - 1} by {shift}; tol {tol,5}: {d.Count} diffs" + (d.Count > 0 ? "; first: " + d[0] : ""));
+                    if (tol == 1) foreach (var x in d.Take(40)) sb.AppendLine("      " + x);
+                }
+            }
+            if (Environment.GetEnvironmentVariable("I2A_FULL") != null)
+            {
+                var d = m.CompareRows(int.MaxValue, 1, null, null, 16, 0, 0, stub);
+                foreach (var x in d.Take(200)) sb.AppendLine("      " + x);
+            }
+        }
+        File.WriteAllText(Environment.GetEnvironmentVariable("I2A_OUT") ?? "i2a-dump.txt", sb.ToString());
+    }
+}

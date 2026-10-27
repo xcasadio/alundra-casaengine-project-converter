@@ -1,0 +1,4 @@
+distinct diff entries: 97 ticks 45 .. 140
+pos_x entries: [((45, 'pos_x'), 1)]
+max |dy| from 46: 149167
+out of the revision 4 bounds: []

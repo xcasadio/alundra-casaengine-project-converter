@@ -1,0 +1,3 @@
+portals scanned 3316 ; destination tile on a deep-water cell: 76 (2.3 %)
+by destination map: {3: 4, 4: 6, 5: 2, 6: 3, 7: 8, 8: 3, 14: 1, 15: 2, 17: 1, 18: 1, 19: 1, 20: 1, 70: 3, 72: 1, 77: 6, 78: 3, 79: 2, 80: 1, 90: 11, 146: 4, 158: 8, 314: 1, 433: 1, 479: 2}
+  map 317 Portal_7 -> map 314 tile (26,31) height 0

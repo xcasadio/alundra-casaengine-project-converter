@@ -1,0 +1,4 @@
+maps with belt 44 total {'belt': 5539, 'dry': 3772, 'gate2': 735, 'gate3': 141, 'deep': 1767, 'lock': 704, 'gate1': 4663}
+maps with deep belt [3, 4, 5, 6, 8, 15, 19, 20, 49, 77, 78, 79, 335, 416, 435, 479] 16
+maps with lock [3, 4, 5, 8, 19, 20, 23, 49, 100, 125, 151, 271, 289, 293, 297, 301, 351, 357, 416, 434, 435, 479, 481] 23
+gate0 belt cells (never active under gravity): 0

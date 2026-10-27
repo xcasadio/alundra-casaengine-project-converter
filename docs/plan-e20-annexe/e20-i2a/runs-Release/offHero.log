@@ -1,0 +1,6 @@
+Série de tests pour D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\bin\Release\net9.0-windows\Alundra.Tests.dll (.NETCoreApp,Version=v9.0)
+Au total, 1 fichiers de test ont correspondu au modèle spécifié.
+Message du collecteur de données 'Blame' : Tous les tests ont fini de s'exécuter. Le fichier de séquence ne sera pas généré.
+Fichier de résultats : C:/Users/casad/AppData/Local/Temp/claude/D--development-repo-alundra-casaengine-project-converter/b00d1a72-420d-4acc-ab34-0c25fbdad3a1/scratchpad/i2a-t0b/runs-Release/offHero.trx
+
+Réussi!  - échec :     0, réussite :   417, ignorée(s) :     0, total :   417, durée : 8 s - Alundra.Tests.dll (net9.0)

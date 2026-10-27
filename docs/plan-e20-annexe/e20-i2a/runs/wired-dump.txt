@@ -1,0 +1,84 @@
+== g9/R9-deepwater-noboots ticks=110 dllBounce=86 oracleBounce=87 dllForceAdjFirst=85 oracleForceAdjFirst=86
+   tol     0 no shift: 77 diffs; first: g9/R9-deepwater-noboots tick 84 pos_x: dll 14745600, oracle 14745599
+   tol     1 no shift: 76 diffs; first: g9/R9-deepwater-noboots tick 85 force_adj: dll 1, oracle 0
+   tol    16 no shift: 76 diffs; first: g9/R9-deepwater-noboots tick 85 force_adj: dll 1, oracle 0
+   tol  7424 no shift: 76 diffs; first: g9/R9-deepwater-noboots tick 85 force_adj: dll 1, oracle 0
+   SHIFT from 85 by 1; tol     0: 1 diffs; first: g9/R9-deepwater-noboots tick 84 pos_x: dll 14745600, oracle 14745599
+   SHIFT from 85 by 1; tol     1: 0 diffs
+   SHIFT from 85 by 1; tol    16: 0 diffs
+== w1/W1-walk-L0 ticks=100 dllBounce=0 oracleBounce=0 dllForceAdjFirst=12 oracleForceAdjFirst=12
+   tol     0 no shift: 0 diffs
+   tol     1 no shift: 0 diffs
+   tol    16 no shift: 0 diffs
+   tol  7424 no shift: 0 diffs
+== w1/W1-walk-L1 ticks=100 dllBounce=0 oracleBounce=0 dllForceAdjFirst=12 oracleForceAdjFirst=12
+   tol     0 no shift: 0 diffs
+   tol     1 no shift: 0 diffs
+   tol    16 no shift: 0 diffs
+   tol  7424 no shift: 0 diffs
+== w1/W1-run-L0 ticks=130 dllBounce=86 oracleBounce=87 dllForceAdjFirst=85 oracleForceAdjFirst=86
+   tol     0 no shift: 87 diffs; first: w1/W1-run-L0 tick 84 pos_x: dll 14745600, oracle 14745599
+   tol     1 no shift: 86 diffs; first: w1/W1-run-L0 tick 85 force_adj: dll 1, oracle 0
+   tol    16 no shift: 86 diffs; first: w1/W1-run-L0 tick 85 force_adj: dll 1, oracle 0
+   tol  7424 no shift: 86 diffs; first: w1/W1-run-L0 tick 85 force_adj: dll 1, oracle 0
+   SHIFT from 85 by 1; tol     0: 1 diffs; first: w1/W1-run-L0 tick 84 pos_x: dll 14745600, oracle 14745599
+   SHIFT from 85 by 1; tol     1: 0 diffs
+   SHIFT from 85 by 1; tol    16: 0 diffs
+== w1/W1-run-L1 ticks=130 dllBounce=86 oracleBounce=87 dllForceAdjFirst=85 oracleForceAdjFirst=86
+   tol     0 no shift: 87 diffs; first: w1/W1-run-L1 tick 84 pos_x: dll 14745600, oracle 14745599
+   tol     1 no shift: 86 diffs; first: w1/W1-run-L1 tick 85 force_adj: dll 1, oracle 0
+   tol    16 no shift: 86 diffs; first: w1/W1-run-L1 tick 85 force_adj: dll 1, oracle 0
+   tol  7424 no shift: 86 diffs; first: w1/W1-run-L1 tick 85 force_adj: dll 1, oracle 0
+   SHIFT from 85 by 1; tol     0: 1 diffs; first: w1/W1-run-L1 tick 84 pos_x: dll 14745600, oracle 14745599
+   SHIFT from 85 by 1; tol     1: 0 diffs
+   SHIFT from 85 by 1; tol    16: 0 diffs
+== w1/W1-jump-L0 ticks=90 dllBounce=0 oracleBounce=0 dllForceAdjFirst=13 oracleForceAdjFirst=13
+   tol     0 no shift: 0 diffs
+   tol     1 no shift: 0 diffs
+   tol    16 no shift: 0 diffs
+   tol  7424 no shift: 0 diffs
+== w1/W1-jump-L1 ticks=90 dllBounce=0 oracleBounce=0 dllForceAdjFirst=13 oracleForceAdjFirst=13
+   tol     0 no shift: 0 diffs
+   tol     1 no shift: 0 diffs
+   tol    16 no shift: 0 diffs
+   tol  7424 no shift: 0 diffs
+== w1/W1-fall-walk-L0 ticks=120 dllBounce=0 oracleBounce=0 dllForceAdjFirst=12 oracleForceAdjFirst=12
+   tol     0 no shift: 0 diffs
+   tol     1 no shift: 0 diffs
+   tol    16 no shift: 0 diffs
+   tol  7424 no shift: 0 diffs
+== w1/W1-fall-walk-L1 ticks=120 dllBounce=0 oracleBounce=0 dllForceAdjFirst=12 oracleForceAdjFirst=12
+   tol     0 no shift: 0 diffs
+   tol     1 no shift: 0 diffs
+   tol    16 no shift: 0 diffs
+   tol  7424 no shift: 0 diffs
+== w2/W2-L0-inside-R ticks=60 dllBounce=0 oracleBounce=0 dllForceAdjFirst=5 oracleForceAdjFirst=5
+   tol     0 no shift: 0 diffs
+   tol     1 no shift: 0 diffs
+   tol    16 no shift: 0 diffs
+   tol  7424 no shift: 0 diffs
+== w2/W2-L1-inside-R ticks=60 dllBounce=0 oracleBounce=0 dllForceAdjFirst=5 oracleForceAdjFirst=5
+   tol     0 no shift: 0 diffs
+   tol     1 no shift: 0 diffs
+   tol    16 no shift: 0 diffs
+   tol  7424 no shift: 0 diffs
+== w5/W5-L0-wall-walk ticks=100 dllBounce=0 oracleBounce=0 dllForceAdjFirst=12 oracleForceAdjFirst=12
+   tol     0 no shift: 0 diffs
+   tol     1 no shift: 0 diffs
+   tol    16 no shift: 0 diffs
+   tol  7424 no shift: 0 diffs
+== w5/W5-L1-wall-walk ticks=100 dllBounce=0 oracleBounce=0 dllForceAdjFirst=12 oracleForceAdjFirst=12
+   tol     0 no shift: 0 diffs
+   tol     1 no shift: 0 diffs
+   tol    16 no shift: 0 diffs
+   tol  7424 no shift: 0 diffs
+== w5/W5-L0-wall-diag ticks=140 dllBounce=0 oracleBounce=0 dllForceAdjFirst=0 oracleForceAdjFirst=0
+   tol     0 no shift: 97 diffs; first: w5/W5-L0-wall-diag tick 45 pos_x: dll 4915200, oracle 4915199
+   tol     1 no shift: 96 diffs; first: w5/W5-L0-wall-diag tick 45 pos_y: dll 3350672, oracle 3276800
+   tol    16 no shift: 96 diffs; first: w5/W5-L0-wall-diag tick 45 pos_y: dll 3350672, oracle 3276800
+   tol  7424 no shift: 96 diffs; first: w5/W5-L0-wall-diag tick 45 pos_y: dll 3350672, oracle 3276800
+== w10/W10-shallow-to-deep-L0 ticks=100 dllBounce=0 oracleBounce=0 dllForceAdjFirst=22 oracleForceAdjFirst=22
+   tol     0 no shift: 0 diffs
+   tol     1 no shift: 0 diffs
+   tol    16 no shift: 0 diffs
+   tol  7424 no shift: 0 diffs

@@ -1,0 +1,16 @@
+x=14 y=35 h= 4 walk=00 gp=  8 slope=54 lock=0 dir=1 gates=01  deep=1
+x=15 y=35 h= 4 walk=00 gp=  8 slope=54 lock=0 dir=1 gates=01  deep=1
+x=14 y=36 h= 4 walk=00 gp=  8 slope=9c lock=1 dir=1 gates=11  deep=1
+x=15 y=36 h= 4 walk=00 gp=  8 slope=9c lock=1 dir=1 gates=11  deep=1
+x=14 y=37 h= 3 walk=00 gp=  8 slope=5c lock=0 dir=1 gates=11  deep=1
+x=15 y=37 h= 3 walk=00 gp=  8 slope=5c lock=0 dir=1 gates=11  deep=1
+x=14 y=38 h= 3 walk=00 gp=  8 slope=54 lock=0 dir=1 gates=01  deep=1
+x=15 y=38 h= 3 walk=00 gp=  8 slope=54 lock=0 dir=1 gates=01  deep=1
+x=14 y=39 h= 3 walk=00 gp=  8 slope=9c lock=1 dir=1 gates=11  deep=1
+x=15 y=39 h= 3 walk=00 gp=  8 slope=9c lock=1 dir=1 gates=11  deep=1
+x=14 y=40 h= 2 walk=00 gp=  8 slope=5c lock=0 dir=1 gates=11  deep=1
+x=15 y=40 h= 2 walk=00 gp=  8 slope=5c lock=0 dir=1 gates=11  deep=1
+x=14 y=41 h= 2 walk=00 gp=  8 slope=9c lock=1 dir=1 gates=11  deep=1
+x=15 y=41 h= 2 walk=00 gp=  8 slope=9c lock=1 dir=1 gates=11  deep=1
+x=14 y=42 h= 1 walk=00 gp=  8 slope=5c lock=0 dir=1 gates=11  deep=1
+x=15 y=42 h= 1 walk=00 gp=  8 slope=5c lock=0 dir=1 gates=11  deep=1

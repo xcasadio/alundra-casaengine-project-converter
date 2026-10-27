@@ -1,0 +1,49 @@
+map   0  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=75 dir0=25 dir2=25 dir3=25 dry=75 gate2=50 gate3=25 gp0=75 nolock=75
+map   3  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=9 deep=5 deep_lock=3 deep_nolock=2 dir1=4 dir3=5 dry=4 dry_lock=4 gate1=5 gate3=4 gp18=2 gp2=2 gp8=5 lock=7 nolock=2
+map   4  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=12 deep=12 deep_lock=8 deep_nolock=4 dir1=12 gate3=12 gp24=12 lock=8 nolock=4
+map   5  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=313 deep=296 deep_lock=92 deep_nolock=204 dir0=47 dir1=145 dir2=71 dir3=50 dry=17 dry_lock=7 gate1=308 gate3=5 gp0=7 gp144=4 gp152=3 gp16=6 gp24=64 gp8=229 lock=99 nolock=214
+map   6  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=20 deep=20 deep_nolock=20 dir1=20 gate1=6 gate3=14 gp24=4 gp8=16 nolock=20
+map   8  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=16 deep=16 deep_lock=6 deep_nolock=10 dir1=16 gate1=4 gate3=12 gp8=16 lock=6 nolock=10
+map  10  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=8 dir2=4 dir3=4 dry=8 gate1=8 gp16=8 nolock=8
+map  15  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=20 deep=20 deep_nolock=20 dir1=20 gate1=20 gp152=5 gp8=15 nolock=20
+map  19  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=180 deep=28 deep_lock=3 deep_nolock=25 dir1=169 dir3=11 dry=152 dry_lock=2 gate1=180 gp144=2 gp152=1 gp16=10 gp22=4 gp24=13 gp6=136 gp8=14 lock=5 nolock=175
+map  20  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=46 deep=46 deep_lock=12 deep_nolock=34 dir1=37 dir2=4 dir3=5 gate1=34 gate2=12 gp24=10 gp8=36 lock=12 nolock=34
+map  23  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=56 dir1=41 dir2=6 dir3=9 dry=56 dry_lock=44 gate1=56 gp0=56 lock=44 nolock=12
+map  49  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=204 deep=174 deep_lock=48 deep_nolock=126 dir1=141 dir2=32 dir3=31 dry=30 dry_lock=28 gate1=204 gp16=10 gp2=20 gp24=6 gp8=168 lock=76 nolock=128
+map  77  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=619 deep=487 deep_nolock=487 dir0=1 dir1=406 dir2=88 dir3=124 dry=132 gate1=602 gate3=17 gp136=2 gp152=14 gp18=16 gp2=116 gp24=82 gp8=389 nolock=619
+map  78  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=119 deep=44 deep_nolock=44 dir1=119 dry=75 gate1=111 gate3=8 gp146=2 gp16=4 gp18=40 gp2=29 gp24=34 gp8=10 nolock=119
+map  79  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=126 deep=126 deep_nolock=126 dir1=126 gate1=126 gp24=24 gp8=102 nolock=126
+map  97  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=104 dir1=104 dry=104 gate1=104 gp0=12 gp18=4 gp2=88 nolock=104
+map 100  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=36 dir2=36 dry=36 dry_lock=22 gate1=36 gp0=36 lock=22 nolock=14
+map 116  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=46 dir1=46 dry=46 gate1=46 gp2=46 nolock=46
+map 117  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=32 dir1=9 dir2=8 dir3=15 dry=32 gate1=32 gp18=6 gp2=26 nolock=32
+map 118  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=32 dir1=9 dir2=8 dir3=15 dry=32 gate1=32 gp18=6 gp2=26 nolock=32
+map 124  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=82 dir2=48 dir3=34 dry=82 gate1=82 gp0=82 nolock=82
+map 125  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=217 dir0=25 dir1=85 dir2=58 dir3=49 dry=217 dry_lock=217 gate1=217 gp16=217 lock=217
+map 127  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=190 dir1=86 dir2=58 dir3=46 dry=190 gate1=190 gp0=190 nolock=190
+map 128  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=22 dir1=20 dir2=1 dir3=1 dry=22 gate1=22 gp16=22 nolock=22
+map 151  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=1 dir1=1 dry=1 dry_lock=1 gate1=1 gp16=1 lock=1
+map 157  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=6 dir2=6 dry=6 gate1=6 gp0=6 nolock=6
+map 271  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=219 dir0=2 dir1=6 dir2=104 dir3=107 dry=219 dry_lock=1 gate1=219 gp0=70 gp16=149 lock=1 nolock=218
+map 289  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=219 dir0=2 dir1=6 dir2=104 dir3=107 dry=219 dry_lock=1 gate1=219 gp0=70 gp16=149 lock=1 nolock=218
+map 293  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=219 dir0=2 dir1=6 dir2=104 dir3=107 dry=219 dry_lock=1 gate1=219 gp0=70 gp16=149 lock=1 nolock=218
+map 297  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=215 dir0=2 dir1=6 dir2=104 dir3=103 dry=215 dry_lock=1 gate1=215 gp0=70 gp16=145 lock=1 nolock=214
+map 301  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=215 dir0=2 dir1=6 dir2=104 dir3=103 dry=215 dry_lock=1 gate1=215 gp0=70 gp16=145 lock=1 nolock=214
+map 324  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=180 dir0=180 dry=180 gate1=180 gp0=180 nolock=180
+map 331  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=8 dir2=4 dir3=4 dry=8 gate1=8 gp16=8 nolock=8
+map 335  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=20 deep=20 deep_nolock=20 dir1=20 gate1=6 gate3=14 gp24=4 gp8=16 nolock=20
+map 351  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=4 dir0=2 dir1=2 dry=4 dry_lock=4 gate1=4 gp80=4 lock=4
+map 357  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=219 dir0=2 dir1=6 dir2=104 dir3=107 dry=219 dry_lock=1 gate1=219 gp0=70 gp16=149 lock=1 nolock=218
+map 403  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=224 dir0=224 dry=224 gate2=224 gp0=41 gp128=4 gp134=22 gp150=2 gp6=155 nolock=224
+map 404  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=225 dir2=225 dry=225 gate2=225 gp0=12 gp128=5 gp134=22 gp16=6 gp22=13 gp6=167 nolock=225
+map 405  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=224 dir1=224 dry=224 gate2=224 gp0=47 gp128=28 gp22=14 gp6=135 nolock=224
+map 416  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=16 deep=16 deep_lock=6 deep_nolock=10 dir1=16 gate1=4 gate3=12 gp8=16 lock=6 nolock=10
+map 434  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=14 dir0=7 dir1=4 dir2=3 dry=14 dry_lock=14 gate3=14 gp0=1 gp16=13 lock=14
+map 435  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=204 deep=174 deep_lock=48 deep_nolock=126 dir1=141 dir2=32 dir3=31 dry=30 dry_lock=28 gate1=204 gp16=10 gp2=20 gp24=6 gp8=168 lock=76 nolock=128
+map 479  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=304 deep=283 deep_lock=93 deep_nolock=190 dir0=47 dir1=144 dir2=62 dir3=51 dry=21 dry_lock=7 gate1=300 gate3=4 gp0=10 gp144=4 gp152=3 gp16=7 gp24=58 gp8=222 lock=100 nolock=204
+map 481  {"Gravity": 128, "ZViscosity": 4096, "SlideEffectId": 0, "BalanceLevel": 2}  belt=219 dir0=2 dir1=6 dir2=104 dir3=107 dry=219 dry_lock=1 gate1=219 gp0=70 gp16=149 lock=1 nolock=218
+
+SlideEffectId != 0: {"159": {"Gravity": 3, "ZViscosity": 256, "SlideEffectId": 1, "BalanceLevel": 2}, "160": {"Gravity": 3, "ZViscosity": 256, "SlideEffectId": 1, "BalanceLevel": 2}}
+
+belt maps: 44  [0, 3, 4, 5, 6, 8, 10, 15, 19, 20, 23, 49, 77, 78, 79, 97, 100, 116, 117, 118, 124, 125, 127, 128, 151, 157, 271, 289, 293, 297, 301, 324, 331, 335, 351, 357, 403, 404, 405, 416, 434, 435, 479, 481]
+totals: {'belt': 5539, 'dry': 3772, 'nolock': 4835, 'dir2': 1507, 'gate2': 735, 'gp0': 1245, 'dir0': 572, 'gate3': 141, 'dir3': 1251, 'deep': 1767, 'lock': 704, 'gate1': 4663, 'deep_lock': 319, 'gp8': 1422, 'deep_nolock': 1448, 'dir1': 2209, 'dry_lock': 385, 'gp2': 373, 'gp18': 74, 'gp24': 317, 'gp16': 1357, 'gp152': 26, 'gp144': 10, 'gp6': 593, 'gp22': 31, 'gp136': 2, 'gp146': 2, 'gp80': 4, 'gp134': 44, 'gp128': 37, 'gp150': 2}
