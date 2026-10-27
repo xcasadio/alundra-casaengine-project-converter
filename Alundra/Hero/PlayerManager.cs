@@ -1135,6 +1135,22 @@ public static class PlayerManager
     /// <summary>E20.h0a (D-H-3): the cancellation of an item that another slice carries: nothing.</summary>
     private static void ItemCancelStub(uint item) => ItemStubCallsForTests?.Add($"cancel 0x{item:X2}");
 
+    /// <summary>E20.h4a SKELETON (replaced by the code of the slice).</summary>
+    internal const uint TomeCastAnimationId = 0x32;
+
+    internal const uint TomeHoldAnimationId = 0x33;
+
+    internal const uint TomeEndAnimationId = 0x34;
+
+    [ThreadStatic]
+    internal static System.Collections.Generic.List<(uint Item, byte Track)>? TomeTrackCallsForTests;
+
+    internal static int TomeStart(EntityScriptProxy player, uint item) => 1;
+
+    public static int DecreaseMp(GameState state, short amount) => state.PlayerStats.Mp;
+
+    internal static int TomeSlopeGuard(EntityScriptProxy player) => 0;
+
     /// <summary>E20.c2b test seam, per thread: the number of calls of the stub of <see cref="TryUseItem"/> (the state 0x31 calls it once a tick, <see cref="HurtAnimationId"/>).</summary>
     [ThreadStatic]
     internal static int TryUseItemCallCountForTests;
