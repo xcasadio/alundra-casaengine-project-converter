@@ -84,7 +84,8 @@ internal sealed class EarthTome2Run : IDisposable
     /// <param name="heroY">The pixel Y of the hero.</param>
     /// <param name="cell">The field (default: flat, all zero).</param>
     /// <param name="targets">The pixels (X, Y) of the Beannoids put on the bench (inert).</param>
-    internal EarthTome2Run(string name, int heroX = 100, int heroY = 100, Func<int, int, CutBench.Cell>? cell = null, IReadOnlyList<int[]>? targets = null)
+    /// <param name="production">The phase B (T2): no seam and no registration of the test, the item runs through the entries of the object in <see cref="PlayerManager"/> and the registry of production alone.</param>
+    internal EarthTome2Run(string name, int heroX = 100, int heroY = 100, Func<int, int, CutBench.Cell>? cell = null, IReadOnlyList<int[]>? targets = null, bool production = false)
     {
         Arena = new HitArena("h4c2-" + name, 100, 100, targets?.ToList() ?? new List<int[]>(), 24, 0);
         try
@@ -112,13 +113,16 @@ internal sealed class EarthTome2Run : IDisposable
             Arena.Hero.TouchingEntity = null;
 
             EventProgramRunner.NativeSpriteTypeFilterForTests = new HashSet<int> { Rock };
-            PlayerManager.ItemStartForTests = PlayerManager.TomeStart;
-            PlayerManager.ItemDriverForTests = (hero, _) => EarthTome2Ai.Driver(hero);
-            PlayerManager.ItemCancelForTests = (hero, _) => EarthTome2Ai.Cancel(hero);
-            var registry = Arena.Arc.Runner.NativeSprites;
-            if (!registry.TryGet(ScriptHelper.ProgramEDeactivate, EarthTome2Ai.ImpactCode, Rock, out _))
+            if (!production)
             {
-                _registration = EarthTome2Ai.Register(registry);
+                PlayerManager.ItemStartForTests = PlayerManager.TomeStart;
+                PlayerManager.ItemDriverForTests = (hero, _) => EarthTome2Ai.Driver(hero);
+                PlayerManager.ItemCancelForTests = (hero, _) => EarthTome2Ai.Cancel(hero);
+                var registry = Arena.Arc.Runner.NativeSprites;
+                if (!registry.TryGet(ScriptHelper.ProgramEDeactivate, EarthTome2Ai.ImpactCode, Rock, out _))
+                {
+                    _registration = EarthTome2Ai.Register(registry);
+                }
             }
         }
         catch

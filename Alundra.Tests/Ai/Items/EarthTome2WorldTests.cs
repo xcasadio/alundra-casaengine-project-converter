@@ -51,12 +51,12 @@ public sealed class EarthTome2WorldTests : IDisposable
 
     private static Func<int, int, CutBench.Cell> From(int column, CutBench.Cell cell) => (c, _) => c >= column ? cell : default;
 
-    private static EarthTome2Key Mid() => EarthTome2Key.Load("critic/keys", "cast_2c_pf_mid_x600y480");
+    internal static EarthTome2Key Mid() => EarthTome2Key.Load("critic/keys", "cast_2c_pf_mid_x600y480");
 
     private static EarthTome2Key Edge() => EarthTome2Key.Load("rockfix", "cast_2c_pf_rockfix");
 
     /// <summary>Everything the key holds, tick by tick: the rocks, the words of the tick (generator, kick, hero, item, magic), the sounds.</summary>
-    private static List<string> Everything(EarthTome2Key key, EarthTome2Run run, int last, int ticksPerFrame = 1, Func<EarthTome2Key.KeyRock, int>? positionBound = null)
+    internal static List<string> Everything(EarthTome2Key key, EarthTome2Run run, int last, int ticksPerFrame = 1, Func<EarthTome2Key.KeyRock, int>? positionBound = null)
     {
         var all = new List<string>();
         all.AddRange(EarthTome2Compare.Rocks(key, run, last, positionBound));
@@ -65,9 +65,9 @@ public sealed class EarthTome2WorldTests : IDisposable
         return all;
     }
 
-    private static List<int> SoundTicks(EarthTome2Run run, int sfx) => run.Heard.Played.Where(p => p.Sfx == sfx).Select(p => p.Tick).Order().ToList();
+    internal static List<int> SoundTicks(EarthTome2Run run, int sfx) => run.Heard.Played.Where(p => p.Sfx == sfx).Select(p => p.Tick).Order().ToList();
 
-    private static List<int> KickTicks(EarthTome2Run run) => run.Kicks.Where(k => k.Value != 0).Select(k => k.Key).Order().ToList();
+    internal static List<int> KickTicks(EarthTome2Run run) => run.Kicks.Where(k => k.Value != 0).Select(k => k.Key).Order().ToList();
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     // (w1) the mid-map cast, fifteen interior rocks: the whole key without tolerance.

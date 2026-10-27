@@ -232,6 +232,7 @@ public sealed class BallFlamesTests : IDisposable
         BrambleAi.Register(sum); // E20.g2c2: (D, 34)
         WaterDropAi.Register(sum); // E20.g2c3: (A, 19) and (C, 71)
         EarthTome1Ai.Register(sum); // E20.h4c1: (E, 3) for the type 16
+        EarthTome2Ai.Register(sum); // E20.h4c2: (E, 13) for the type 17
         return sum;
     }
 
@@ -244,7 +245,7 @@ public sealed class BallFlamesTests : IDisposable
         Assert.Equal(2, BallAi.Keys.Count);
         Assert.Equal(Sum().Count, production.Count);
         Assert.Equal(Sum().Count, runner.Count);
-        Assert.Equal(6 + 1 + PickupAi.Keys.Count + ChestAi.Keys.Count + ChargedArrowAi.Keys.Count + ArrowAi.Keys.Count + PillarAi.Keys.Count + LiftableAi.Keys.Count + LiftableAi.BreakKeys.Count + LiftableAi.C4Keys.Count + BallAi.Keys.Count + BombAi.Keys.Count + BombLidAi.Keys.Count + TorchAi.Keys.Count + BrambleAi.Keys.Count + WaterDropAi.Keys.Count + EarthTome1Ai.Keys.Count, production.Count);
+        Assert.Equal(6 + 1 + PickupAi.Keys.Count + ChestAi.Keys.Count + ChargedArrowAi.Keys.Count + ArrowAi.Keys.Count + PillarAi.Keys.Count + LiftableAi.Keys.Count + LiftableAi.BreakKeys.Count + LiftableAi.C4Keys.Count + BallAi.Keys.Count + BombAi.Keys.Count + BombLidAi.Keys.Count + TorchAi.Keys.Count + BrambleAi.Keys.Count + WaterDropAi.Keys.Count + EarthTome1Ai.Keys.Count + EarthTome2Ai.Keys.Count, production.Count);
         foreach (var registry in new[] { production, runner })
         {
             foreach (var (slot, code) in BallAi.Keys)
