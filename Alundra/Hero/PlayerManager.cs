@@ -673,6 +673,17 @@ public static class PlayerManager
             CarryGroupTick(player, in pad, buttonsHold, dir);
         }
 
+        // E20.h4a, binary 0x800325A4 and 0x80032680 (the jump table 0x80022D3C): the cast of a tome, 0x32 and 0x33 (TryUseItem, then the exit to Idle or 0x2D once no tome is in progress) and its end 0x34 (TryUseItem only). Nothing in
+        // production puts the hero in them yet (the starts of the tomes are the stubs of h0a, D-H-3). They sit before the default of the states without handler below, which they are not.
+        else if (player.TargetAnimationId is TomeCastAnimationId or TomeHoldAnimationId)
+        {
+            TomeCastTick(player, in pad);
+        }
+        else if (player.TargetAnimationId == TomeEndAnimationId)
+        {
+            TryUseItem(player, in pad);
+        }
+
         // E20.h0a (D-H-5, fact 3), binary 0x80032758: the states the jump table 0x80022D3C sends to the default handler cancel the item in use. They are the 15 states of the swim table's Skip group and every state from 0x50: a
         // test of that table, never a final else (which would also catch 21 states that have a handler of their own and are not ported yet).
         else if (SwimHandlerOf(player.TargetAnimationId) == SwimHandler.Skip)
@@ -1135,21 +1146,109 @@ public static class PlayerManager
     /// <summary>E20.h0a (D-H-3): the cancellation of an item that another slice carries: nothing.</summary>
     private static void ItemCancelStub(uint item) => ItemStubCallsForTests?.Add($"cancel 0x{item:X2}");
 
-    /// <summary>E20.h4a SKELETON (replaced by the code of the slice).</summary>
+    /// <summary>PlayerAnimation 0x32 (E20.h4a): the cast of a tome, the first 32 ticks (the animation chains to <see cref="TomeHoldAnimationId"/>); its tick is <c>0x800325A4</c> (<see cref="TomeCastTick"/>).</summary>
     internal const uint TomeCastAnimationId = 0x32;
 
+    /// <summary>PlayerAnimation 0x33 (E20.h4a): the cast held (a 36-tick loop) as long as a tome is in progress; it shares its tick with <see cref="TomeCastAnimationId"/> (<c>0x800325A4</c>).</summary>
     internal const uint TomeHoldAnimationId = 0x33;
 
+    /// <summary>PlayerAnimation 0x34 (E20.h4a): the end of the cast (26 ticks, chained to 0), set by the drivers of the tomes; its tick is <c>0x80032680</c> (<c>TryUseItem</c> only, the handler of <see cref="HurtAnimationId"/>).</summary>
     internal const uint TomeEndAnimationId = 0x34;
 
+    /// <summary>The first of the eight tomes, <c>0x2B</c> to <c>0x32</c> (E20.h4a): the objects the cast tick keeps the hero in the cast for (<c>[0x80127164] - 0x2B &lt; 8</c>).</summary>
+    private const uint FirstTomeItem = 0x2B;
+
+    private const uint TomeItemCount = 8;
+
+    /// <summary>The object 7, the staff: the weapon that casts a tome with no magic and no cost (<c>0x800348E0</c>, <c>0x8004E030 == 7</c>).</summary>
+    private const uint StaffItem = 7;
+
+    /// <summary>The octet <c>0x80023365 + object</c> of the start of the tomes, the track of music the cast asks for (<c>0x8005A9E0</c>), for <c>0x2B</c> to <c>0x32</c>.</summary>
+    private static readonly byte[] TomeTracks = { 0, 1, 6, 6, 2, 3, 4, 5 };
+
+    /// <summary>E20.h4a test seam, per thread: when not null, the (object, track) the stub of the music (<c>0x8005A9E0</c>) was asked for, in order. The tracks are not played yet (Q-H4-1: they will be, D-E20-53; the stub stays until E19.sm7).</summary>
     [ThreadStatic]
     internal static System.Collections.Generic.List<(uint Item, byte Track)>? TomeTrackCallsForTests;
 
-    internal static int TomeStart(EntityScriptProxy player, uint item) => 1;
+    /// <summary>
+    /// E20.h4a: the start of the tomes, <c>0x800348E0</c>, in the binary's order. A refusal (the sound 3, answer 1) when an object is in the hands, when the animation is not Idle or Moving, when an item is in use (the same one included) or,
+    /// unless the weapon is the staff, when the magic is 0; the staff asks no magic and takes none, any other weapon pays one (<see cref="DecreaseMp"/>). The cast then asks for the track of the tome, <see cref="TomeCastAnimationId"/> is
+    /// the state and the answer is 0 (the frame puts the tome in use). The tome is not consumed. The decompilation starts the spell at 0 magic (D1): the binary decides. Inert in production: the entries of the tomes in the table of the
+    /// starts are the stubs of h0a until each element's slice wires its own (D-H-3); the tests install this function by <see cref="ItemStartForTests"/>.
+    /// </summary>
+    internal static int TomeStart(EntityScriptProxy player, uint item)
+    {
+        var host = player.ScriptHost;
+        if (host is not null
+            && player.CarriedEntity == null
+            && player.TargetAnimationId < 2
+            && player.ItemInUse == 0
+            && PayForTome(host))
+        {
+            StartTomeTrack(item);
+            player.TargetAnimationId = TomeCastAnimationId;
+            return 0;
+        }
 
-    public static int DecreaseMp(GameState state, short amount) => state.PlayerStats.Mp;
+        host?.SoundPlayer?.PlaySfx(ItemRefusalSoundId);
+        return 1;
+    }
 
-    internal static int TomeSlopeGuard(EntityScriptProxy player) => 0;
+    /// <summary>E20.h4a, the magic of the start of the tomes: none for the staff; otherwise the magic must not be 0 (<c>0x8004DEA4</c>) and one is taken (<c>0x8004DF3C(1)</c>).</summary>
+    private static bool PayForTome(IScriptHost host)
+    {
+        var state = host.GameState;
+        var weapon = host.ItemTables is { } tables ? GetItemIdFromCurrentWeapon(state, tables) : NoItem;
+        if (weapon == StaffItem)
+        {
+            return true;
+        }
+
+        if (state.PlayerStats.Mp == 0)
+        {
+            return false;
+        }
+
+        DecreaseMp(state, 1);
+        return true;
+    }
+
+    /// <summary>E20.h4a: the stub of the call <c>0x8005A9E0(byte[0x80023365 + object])</c>, the track of music of a tome: journalled, not played (Q-H4-1).</summary>
+    private static void StartTomeTrack(uint item) => TomeTrackCallsForTests?.Add((item, TomeTracks[item - FirstTomeItem]));
+
+    /// <summary>
+    /// E20.h4a: <c>0x8004DF3C</c>, the magic reduced by <paramref name="amount"/> (a negative amount raises it), through <see cref="SetPlayerMp"/> so that it stays in <c>[0, MpMax]</c>. Returns the magic left.
+    /// </summary>
+    public static int DecreaseMp(GameState state, short amount) => SetPlayerMp(state, (short)(state.PlayerStats.Mp - amount));
+
+    /// <summary>
+    /// E20.h4a: the tick of the states 0x32 and 0x33, <c>0x800325A4</c>. <c>TryUseItem</c> at 0 ends the tick. The hero then stays in the state as long as a tome is in progress (<c>[0x80127164] - 0x2B &lt; 8</c>, unsigned);
+    /// otherwise Idle on the ground and <see cref="AirStillAnimationId"/> in the air. The hero does not move and the pad is not read.
+    /// </summary>
+    private static void TomeCastTick(EntityScriptProxy player, in PadState pad)
+    {
+        if (TryUseItem(player, in pad) == 0 || unchecked(player.ItemInUse - FirstTomeItem) < TomeItemCount)
+        {
+            return;
+        }
+
+        player.TargetAnimationId = IsHeroInTheAir(player) ? AirStillAnimationId : IdleAnimationId;
+    }
+
+    /// <summary>
+    /// E20.h4a: the guard at the head of the phases 0 and 1 of the eight drivers of the tomes, <c>0x800351B8</c> (the decompilation calls it <c>IsFadeActive</c>, which it is not). In deep water (<c>Slope_18c</c> 4) the spell is cancelled and the
+    /// answer is 1; otherwise the animation 0x32 or 0x33 answers 0; any other animation cancels the item (<see cref="CancelItemMode"/>) and answers 1. A change of animation during the cast ends the spell at the next tick.
+    /// </summary>
+    internal static int TomeSlopeGuard(EntityScriptProxy player)
+    {
+        if (player.Slope_18c != DeepWaterSlope && player.TargetAnimationId is TomeCastAnimationId or TomeHoldAnimationId)
+        {
+            return 0;
+        }
+
+        CancelItemMode(player);
+        return 1;
+    }
 
     /// <summary>E20.c2b test seam, per thread: the number of calls of the stub of <see cref="TryUseItem"/> (the state 0x31 calls it once a tick, <see cref="HurtAnimationId"/>).</summary>
     [ThreadStatic]

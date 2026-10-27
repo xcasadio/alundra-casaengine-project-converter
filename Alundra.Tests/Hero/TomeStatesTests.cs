@@ -241,6 +241,7 @@ public sealed class TomeStatesTests : IDisposable
         // the control: nothing in progress, in Idle, the same Circle starts the tome.
         bench.Sounds.Requests.Clear();
         Enter(bench, 0, 0);
+        bench.Tick(); // the Circle is let go: the next press is a new edge.
         bench.Tick(TomeBench.Circle);
         Assert.Equal(2, reached.Count);
         Assert.Empty(bench.Sounds.Requests);
