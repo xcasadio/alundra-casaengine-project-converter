@@ -119,3 +119,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0103 | The bomb is born in the hands by the Circle and runs C62, with a start, a driver and a cancellation registered in production | Accepted | 2026-10-26 |
 | ADR-0104 | The deep water is a wall for a hero without the swim boots, through a pseudo-bit of the walkability mask | Accepted | 2026-10-27 |
 | ADR-0105 | The tomes start and are cast through a start function, the states 0x32 to 0x34 and a slope guard, inert in production | Accepted | 2026-10-27 |
+| ADR-0106 | The spell target query is a pure function with the corrected bound and sort threshold, inert in production | Accepted | 2026-10-27 |
