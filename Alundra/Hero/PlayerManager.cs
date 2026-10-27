@@ -864,6 +864,10 @@ public static class PlayerManager
         {
             EarthTome1Ai.Cancel(player);
         }
+        else if (item == EarthTome2Item)
+        {
+            EarthTome2Ai.Cancel(player);
+        }
         else
         {
             ItemCancelStub(item);
@@ -1102,6 +1106,9 @@ public static class PlayerManager
     /// <summary>E20.h4c1 (phase B): the earth tome 1, the item <c>0x2B</c>; its start is the start of the tomes of h4a (<see cref="TomeStart"/>), its driver and its neutral cancellation are <see cref="EarthTome1Ai"/>'s (the other tomes stay named stubs).</summary>
     private const uint EarthTome1Item = 0x2B;
 
+    /// <summary>E20.h4c2 (phase B): the earth tome 2, the item <c>0x2C</c>; its start is the start of the tomes of h4a (<see cref="TomeStart"/>), its driver and its cancellation are <see cref="EarthTome2Ai"/>'s (the other tomes stay named stubs).</summary>
+    private const uint EarthTome2Item = 0x2C;
+
     /// <summary>
     /// E20.h0a, the start <c>0x8003499C</c>: the item of the Circle is promoted by <see cref="SetItemIdFromCurrentItemId"/> (<c>0x8004E0F8</c>, -1 without tables or without the item); a refusal (sound 3, answer 1) when it is
     /// <c>&gt;= 0x62</c>, when another item is in use, outside <c>0x1F</c> to <c>0x32</c> or in a hole of the table <c>0x8002339C</c> (<c>0x21</c>, <c>0x22</c>, <c>0x28</c>, <c>0x2A</c>). The same item in use is no refusal: its start runs again.
@@ -1119,7 +1126,7 @@ public static class PlayerManager
             return 1;
         }
 
-        var answer = ItemStartForTests is { } start ? start(player, item) : item == BombItem ? BombAi.Start(player) : item == EarthTome1Item ? TomeStart(player, item) : ItemStartStub(item);
+        var answer = ItemStartForTests is { } start ? start(player, item) : item == BombItem ? BombAi.Start(player) : item == EarthTome1Item || item == EarthTome2Item ? TomeStart(player, item) : ItemStartStub(item);
         if (answer == 0)
         {
             player.ItemInUse = item;
@@ -1180,8 +1187,8 @@ public static class PlayerManager
     /// <summary>
     /// E20.h4a: the start of the tomes, <c>0x800348E0</c>, in the binary's order. A refusal (the sound 3, answer 1) when an object is in the hands, when the animation is not Idle or Moving, when an item is in use (the same one included) or,
     /// unless the weapon is the staff, when the magic is 0; the staff asks no magic and takes none, any other weapon pays one (<see cref="DecreaseMp"/>). The cast then asks for the track of the tome, <see cref="TomeCastAnimationId"/> is
-    /// the state and the answer is 0 (the frame puts the tome in use). The tome is not consumed. The decompilation starts the spell at 0 magic (D1): the binary decides. The entry of the earth tome 1 (<c>0x2B</c>, E20.h4c1) in the table of the
-    /// starts is this function; the other tomes are the stubs of h0a until each element's slice wires its own (D-H-3); the tests install this function by <see cref="ItemStartForTests"/> for them.
+    /// the state and the answer is 0 (the frame puts the tome in use). The tome is not consumed. The decompilation starts the spell at 0 magic (D1): the binary decides. The entries of the earth tomes 1 and 2 (<c>0x2B</c>, E20.h4c1, and <c>0x2C</c>, E20.h4c2) in the table of the
+    /// starts are this function; the other tomes are the stubs of h0a until each element's slice wires its own (D-H-3); the tests install this function by <see cref="ItemStartForTests"/> for them.
     /// </summary>
     internal static int TomeStart(EntityScriptProxy player, uint item)
     {
@@ -2030,7 +2037,7 @@ public static class PlayerManager
             return;
         }
 
-        var answer = ItemDriverForTests is { } driver ? driver(player, item) : item == BombItem ? BombAi.Drive(player) : item == EarthTome1Item ? EarthTome1Ai.Driver(player) : ItemDriverStub(item);
+        var answer = ItemDriverForTests is { } driver ? driver(player, item) : item == BombItem ? BombAi.Drive(player) : item == EarthTome1Item ? EarthTome1Ai.Driver(player) : item == EarthTome2Item ? EarthTome2Ai.Driver(player) : ItemDriverStub(item);
         if (player.ItemUseCounter < int.MaxValue)
         {
             player.ItemUseCounter++;
