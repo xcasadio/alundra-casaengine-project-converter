@@ -157,6 +157,11 @@ internal static class CameraMath
     /// (<see cref="CameraSway.Step"/>), then follows with that tick's offset
     /// (<see cref="ComputeSmoothedCameraTarget"/>). A null <paramref name="sway"/> adds nothing.</para>
     ///
+    /// <para><paramref name="cameraKickOfTick"/> (E20.h4c2, D-H4C2-2): the camera kick of E13 (the byte <c>[0x800DD874]</c> the earth tome 2 assigns 2 at the impact of a rock) of each tick of the FRAME, by the
+    /// index of the tick in the frame (the snap tick included, which is index 0 of a snap frame). The binary adds it to the scroll Y of the step, with the sway offset (<c>scrollY += ((targetY - (scrollY + 0x88)) &gt;&gt; 4) + OffsetY +
+    /// kick</c>, so render <c>Y -= kick</c>, the sign of the sway), clears it at every step, and does NOT apply it at the first step after a load: the kick of the snap tick is lost. It is not a bump that comes back (the follow
+    /// step's dead zone keeps part of it) and successive kicks add up. A null list, a list shorter than the ticks (the ticks it does not cover have no kick) or zeros: the step of today. A tick past the list has none; a list longer than the frame is cut.</para>
+    ///
     /// <para><b>Integer invariant.</b> The state is always whole-numbered: the target is built from ints
     /// (<see cref="ComputeCameraLookAtRenderPosition"/>), <see cref="StepCameraScroll"/> adds an integer,
     /// and <see cref="ClampCameraTargetToMap"/>'s bounds are integers too (half of the whole 320/240
@@ -170,6 +175,7 @@ internal static class CameraMath
     {
         var smoothed = previousSmoothedTarget;
         var fullTicks = ticksThisFrame;
+        var firstFullTick = 0; // the index in the frame of the first full tick: 1 after a snap tick.
 
         if (needsSnap)
         {
@@ -179,15 +185,18 @@ internal static class CameraMath
                 // The snap tick: its sway step, no offset, no follow step.
                 sway?.Step();
                 fullTicks = ticksThisFrame - 1;
+                firstFullTick = 1;
             }
         }
 
         for (var tick = 0; tick < fullTicks; tick++)
         {
             sway?.Step();
+            var kickIndex = firstFullTick + tick;
+            var kick = cameraKickOfTick is not null && kickIndex < cameraKickOfTick.Count ? cameraKickOfTick[kickIndex] : 0;
             smoothed = ComputeSmoothedCameraTarget(
                 smoothed, false, lookAtRenderTarget, mapWidthPx, mapHeightPx,
-                sway?.OffsetX ?? 0, sway?.OffsetY ?? 0);
+                sway?.OffsetX ?? 0, (sway?.OffsetY ?? 0) + kick);
         }
 
         return smoothed;

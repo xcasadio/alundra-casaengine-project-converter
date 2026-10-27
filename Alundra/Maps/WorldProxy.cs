@@ -780,8 +780,28 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <summary>Test-only seam (E19.u, docs/plan-e19-u-annexe/): the effect gate of each logic tick of the last <see cref="Update"/> (see <see cref="_effectFrozenOfTick"/>).</summary>
     internal IReadOnlyList<bool> EffectFrozenOfTickForTests => _effectFrozenOfTick;
 
-    /// <summary>E20.h4c2 T1 (SKELETON of the tests commit): the camera kick of each logic tick of the frame; always empty here.</summary>
-    internal IReadOnlyList<int> CameraKickOfTickForTests => System.Array.Empty<int>();
+    /// <summary>
+    /// E20.h4c2 (D-H4C2-2): the camera kick of each logic tick of the frame (the byte <c>[0x800DD874]</c> the binary's E13 assigns 2), at the index of the tick that wrote it, padded with zeros up to the last tick that wrote one. It is consumed by the camera step of the same frame
+    /// (<see cref="CameraDirector.UpdateCameraFollow"/>) and emptied AFTER it, never at the head of the frame (an entity that ticked before <see cref="Update"/> in a world with no driver wrote at the index 0, and its kick belongs to this very frame's camera step).
+    /// </summary>
+    private readonly List<int> _cameraKickOfTick = new();
+
+    /// <summary>The index of the logic tick whose entity block runs: set at the head of <see cref="RunEntityBlock"/>, 0 outside it (a world with no driver: the entities ticked by themselves before <see cref="Update"/>, their kick goes to the index 0 of the image).</summary>
+    private int _cameraKickTick;
+
+    /// <summary>E20.h4c2 (D-H4C2-2): the camera kick of E13, ASSIGNED at the index of the tick in progress (two impacts at the same tick give <paramref name="scrollY"/>, as the binary's byte).</summary>
+    public void SetCameraKick(int scrollY)
+    {
+        while (_cameraKickOfTick.Count <= _cameraKickTick)
+        {
+            _cameraKickOfTick.Add(0);
+        }
+
+        _cameraKickOfTick[_cameraKickTick] = scrollY;
+    }
+
+    /// <summary>Test-only seam (E20.h4c2): the camera kick of each logic tick of the frame being built, see <see cref="_cameraKickOfTick"/>.</summary>
+    internal IReadOnlyList<int> CameraKickOfTickForTests => _cameraKickOfTick;
 
     private bool _pendingTriggersGate;
 
@@ -2633,6 +2653,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
         }
 
         _effectStage.EndSource();
+        _cameraKickTick = 0;
 
         if (ticksThisFrame > 0)
         {
@@ -2730,7 +2751,9 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             ticksThisFrame,
             EntityFollowedByCamera,
             _tileMapData != null ? _tileMapData.MapSize.Width * TileWidth : null,
-            _tileMapData != null ? _tileMapData.MapSize.Height * TileHeight : null);
+            _tileMapData != null ? _tileMapData.MapSize.Height * TileHeight : null,
+            _cameraKickOfTick);
+        _cameraKickOfTick.Clear(); // E20.h4c2 (D-H4C2-2): AFTER the camera step of the frame, driven world or not, camera or not.
         _cameraDirector.UpdateDebugCameraPan(elapsedTime, _world);
 
         // Rendering-only passes - per rendered frame, same reasoning. C1: moved down with the camera
@@ -2928,6 +2951,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             return;
         }
 
+        _cameraKickTick = tick; // E20.h4c2 (D-H4C2-2): the camera kick of E13 is filed at the index of this tick.
         CollectTickEntities();
         _birthSpawnsThisTick = 0;
         _effectStage.BeginSource(tick, 1); // E19.g G3b (G3B-R3): the effect operations of the entities of this tick carry its tick (rank 1), the pending triggers rank 2.

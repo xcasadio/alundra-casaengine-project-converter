@@ -210,6 +210,9 @@ internal sealed class CameraDirector
     /// from <c>WorldProxy</c>'s own <c>_tileMapData</c>, which is only assigned in
     /// <c>InitializeWithWorld</c> AFTER two early returns, so capturing it any earlier would hold null
     /// forever and silently drop the map-bounds clamp below.
+    ///
+    /// <paramref name="cameraKickOfTick"/> (E20.h4c2, D-H4C2-2): the camera kick of each tick of the frame (<see cref="WorldProxy.SetCameraKick"/>), read at use time and applied by
+    /// <see cref="CameraMath.AdvanceCameraSmoothing"/> with the sway: none during a warp transition (the binary leaves its frame loop as soon as the departure is armed).
     /// </summary>
     internal void UpdateCameraFollow(int ticksThisFrame, EntityScriptProxy? followedByCamera, int? mapWidthPx, int? mapHeightPx, IReadOnlyList<int>? cameraKickOfTick = null)
     {
@@ -267,7 +270,7 @@ internal sealed class CameraDirector
         // g_cameraScrollingX/Y assignment (fresh verifier of cc1fc60).
         _cameraSmoothedTarget = CameraMath.AdvanceCameraSmoothing(
             _cameraSmoothedTarget, snapsThisFrame, target, ticksThisFrame,
-            mapWidthPx, mapHeightPx, swayActive ? sway : null);
+            mapWidthPx, mapHeightPx, swayActive ? sway : null, swayActive ? cameraKickOfTick : null);
 
         if (ticksThisFrame > 0)
         {

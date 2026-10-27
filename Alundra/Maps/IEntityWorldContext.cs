@@ -249,7 +249,10 @@ public interface IEntityWorldContext
     /// </summary>
     string? WorldName => null;
 
-    /// <summary>E20.h4c2 T1 (SKELETON of the tests commit): the camera kick of E13; inert here.</summary>
+    /// <summary>
+    /// E20.h4c2 (D-H4C2-2): the camera kick, the byte <c>[0x800DD874]</c> that E13 of the earth tome 2 assigns 2 at the impact of a rock and that the camera step (<c>0x8002CDA0</c>) adds to the scroll Y of the tick, then clears. ASSIGNED, not added: two impacts at the same tick give
+    /// <paramref name="scrollY"/>, not twice. A default interface member that does nothing, so every existing implementer keeps compiling; <see cref="WorldProxy"/> files it by logic tick of the frame (<see cref="WorldProxy.SetCameraKick"/>).
+    /// </summary>
     void SetCameraKick(int scrollY)
     {
     }
