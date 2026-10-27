@@ -743,7 +743,7 @@ venu du binaire a été recalculé par un second agent ; les corrections de ces 
 | E20.e0 | Apparition d'entités et butin (D-E20-17 ; **E20.e0c faite le 2026-10-23**, §1.26) : `SpawnWarpEntity` (`0x80039F58`, 102 appelants) par indice de sprite global, tirage du butin à l'apparition (`0x80032A40`), lâcher à la mort (`0x80032B90`) avec son veto, objet ramassable (gestionnaire C255), avance du générateur pseudo-aléatoire une fois par tick après la mise à jour du monde (`0x8002BD14`) | oracle ; arcs | Rien de visible seul ; recette avec E20.e |
 | E20.eR | (2026-10-22, D-E20-60 ; détaillée au §1.27a ; **faite et CONFIRMED le 2026-10-22**, analyseur `d687972`, parent `ce7e1ac7`) Renommage de `BalanceLevel` (l'octet 9 de l'en-tête de carte) en `TileCutEffectId` à la source : l'exporteur Tiled de l'analyseur et sa doc, la ré-extraction des cartes, la copie `data-extracted/`, le convertisseur et l'export | export complet, preuve par manifeste | aucune (rien ne change en jeu) |
 | E20.e | Herbe coupée : `CheckAndTriggerTileEffect`, butin tiré par E20.e0 (les pas et la poussière passent à E20.e2, révision 3 ; **faite et CONFIRMED le 2026-10-23**, §1.27) | oracle ; arcs | L'herbe se coupe à l'épée et à la vague ; argent et cœurs tombent et se ramassent |
-| E20.e2 | (2026-10-22, révision 3 d'E20.e ; prérequis E20.e) Effets du héros sortis d'E20.e : `CreatePlayerAnimationEffects` (pas, poussière de marche, de course et d'atterrissage) ; les bouchons « Stub (E20.e) » de `PlayerAnimationEffects` y renvoient | oracle ; arcs | Pas et poussière |
+| E20.e2 | (2026-10-22, révision 3 d'E20.e ; prérequis E20.e ; **détaillée le 2026-10-27 au §1.27c**, après E20.eC, D-E20-89 (3)) Effets du héros sortis d'E20.e : `CreatePlayerAnimationEffects` (la poussière et le bruit de la course, l'atterrissage, les bruits de pas des sols qui en ont, le plongeon, la poussière de la cape ; la poussière de marche du sable va au thème 3) ; les bouchons « Stub (E20.e) » de `PlayerAnimationEffects` y renvoient | oracle ; arcs | Pas et poussière |
 | E20.f | Autres armes (D-E20-7) : charge et aura, fléau et rebond, baguettes, arcs, projectiles par l'apparition d'E20.e0 et les gestionnaires propres au héros, vague de l'épée C61 et flèches chargées C94 (D-E20-18), `0xC0`/`0xC1` | oracle ; arcs | Sauvegarde de test avec les armes (à créer) |
 | E20.g | Porter, poser, lancer (`PlayerTryAction`, `UpdatePlayerCarriedEntity`) ; caisses et jarres redeviennent des obstacles (fin de l'écart D-E19-28/D-E19-46) ; barricade de la 392 (O-E20-5) | oracle ; arcs | Soulever et lancer une caisse ; la 392 |
 | E20.h | Objets du Rond (`TryUseItem`) : graines, bombes (gestionnaire E12), magie, potions ; le couvercle de la 362 | oracle ; arcs | La 362 |
@@ -11148,6 +11148,166 @@ Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ
   théories existantes de `TestSavesTests` sans changer leurs corps.
 - **Recette de l'auteur, à faire** : la sauvegarde `herbe-m14` (carte 14, tuile (31, 43, 1), Steel Edge) ; couper un buisson à l'épée,
   puis avec la vague : le buisson disparaît, l'éclat, parfois un objet, les sons. Les pas et la poussière restent à E20.e2.
+
+### 1.27c E20.e2 — Les pas et la poussière du héros : les trois bouchons de `CreatePlayerAnimationEffects` (D-E20-88 (2), D-E20-89 (3)) ⏳ (détaillée le 2026-10-27, révision 0 ; thème 2 ; après E20.eC)
+
+**Provenance.** Lecture seule du 2026-10-27 (HEAD `539d4cf4`) et sa critique fraîche, CONFIRMÉE avec trois corrections, une citation d'ADR
+redressée et dix ajouts repris ici, dans le scratchpad de la session principale (`scratchpad/t2-feedback/e2-dust/` et `e2-dust-critic/` :
+désassemblage entier de la fonction, tables, sondes `dust_probe.py` et `sand_probe.py` sur une copie du harnais d'E20.d, 22 scénarios
+rejoués deux fois à l'identique), à verser par T0 à `docs/plan-e20-annexe/e20-e2-disc/` (sans les copies d'oracle ni les `__pycache__`).
+
+**Prérequis.** E20.e, E20.f2, E20.d1 et E20.i faites ; **E20.eC faite** (l'octet `0xA` exporté sous le nom `DustEffectId`, D-E20-90) ; les
+tranches du thème 2 s'exécutent une à la fois dans l'arbre de travail du dépôt, dans l'ordre de D-E20-89 ; T0 nomme son HEAD de départ et y
+lance la suite entière (Release, copie neutralisée) : zéro échec exigé, sinon un arrêt avant l'inventaire. E20.h2 (la cape) avant, de
+préférence : sinon la poussière du sable ne se prouve que par un état forcé.
+
+**But.** Comme l'original (D-E20-89 (3)) : en courant, un nuage derrière Alundra tous les 4 ticks (tous les 8 sur les sols des pentes 1 et
+2, une éclaboussure) et le bruit de course tous les 8 ticks ; à la glissade de fin et à la charge, un nuage poussé vers l'avant ; à
+l'atterrissage, un bruit selon le sol et trois nuages (une éclaboussure sur les pentes 1, 2 et 4) ; en marchant, aucun bruit ni poussière
+sur un sol ordinaire, un bruit tous les 16 ticks sur les sols des pentes 1, 2 et 3 ; au plongeon nagé, une éclaboussure tous les 8 ticks ;
+sous la cape, des nuages décalés au hasard. Aujourd'hui les trois parties sont des bouchons vides : ni nuage, ni bruit de course ou
+d'atterrissage.
+
+**Faits** (`e2-dust/` et sa critique ; [FAIT] lu au binaire ou au code, [MESURÉ] rejoué dans l'émulateur du dépôt).
+- **La fonction** `CreatePlayerAnimationEffects(mode)` (`0x8002FB14-0x80030678`), lit l'état `+0x88` ; deux appels, mode 1 en `0x80031BDC`
+  (la branche verrouillée), mode 0 en `0x80031C3C` (`PlayerManager.cs:350` et `:377`) ; le mode ne joue qu'au verrou d'atterrissage
+  (`0x8003020C`) et à la sortie (`0x800303D8`, l'alarme et le fléau) : les pas, la poussière et l'atterrissage tournent dans les deux modes.
+  Les trois aiguillages de la DLL (`IsGrassCutState`, `IsWalkStepState`, `IsLandingState`) sont identiques aux tables du binaire ; la garde
+  « force X ou Y non nulle » est commune à tout le second aiguillage (déjà portée).
+- **Les six sites de création** (`0x8002FC4C`, `0x8002FF30`, `0x8003001C`, `0x800300C8`, `0x800302A4`, `0x80030308`) : `CreateEffect(0, id,
+  0, X = +0x114, Y = +0x118, Z = +0x134)`, le sol sous les pieds (le `+1` de l'ADR-0026) ; tous les effets sont globaux.
+  - Marche (`0x01`, `0x07`) : le son `T_marche[pente]` = [0, 20, 18, 16, 0, 0, 0, 0] (`0x800227F4`) si `+0x1C & 0xF == 0`, aucun effet.
+  - Préparation (`0x29`) : le son `T_course[pente]` = [12, 21, 19, 16, 21, 0, 12, 0] (`0x80022814`) si `+0x1C & 7 == 0`, sans force requise ;
+    `n = min(+0xB0 - 1, 3)` (rien si négatif) ; l'effet (6 sur les pentes 1, 2 et 4, sinon l'octet de carte) si `masque[n] & +0x1C == 0` ;
+    forces par la direction `+0x98` et la table ; 3 tirages si créé.
+  - Course (`0x03`) : le son `T_course[pente]` tous les 8 ticks ; l'effet tous les 4 ticks au sol, tous les 8 sur les pentes 1, 2 et 4 ;
+    `FX·m >> 8`, `FY·m >> 8` (m = -128 au sol, -64 sur l'eau), `FZ = t[30] + hi(r·(t[29] + 1))` ; 1 tirage si créé.
+  - Charge (`0x04`) et glissade (`0x2A`) : comme la course, sans son, m = +32 (0 sur l'eau).
+  - Plongeon nagé (`0x28`) : l'effet 6 tous les 8 ticks, `FX = (-FX) / 4` tronqué vers 0, `FY` de même, sans tirage.
+  - Sable (`0x23`, `0x24`) : l'effet de carte sans test de zéro, tous les 8 ou 4 ticks ; `FZ += 0x10000 + hi(r3·0x10001)`, et des
+    **décalages de position** (pas des forces) `X += -0xC0000 + hi(r1·0x180001)`, `Y += -0x80000 + hi(r2·0x100001)` ; 3 tirages.
+  - Atterrissage (20 états) : garde `mode == 0` ou verrou `0x80098F30` à 0, au sol (`+0x144`), ne monte pas (`+0xB8 <= 0`) ; le son
+    `T_atterrissage[pente]` = [11, 21, 19, 17, 21, 0, 11, 0] (`0x80022804`) ; pentes 1, 2, 4 : un effet 6 sans force ni tirage ; sinon trois
+    fois l'effet de carte (si non nul) et, seulement si créé, `FX = hi(r1·0x30001) - 0x18000`, `FY = hi(r2·0x20001) - 0x10000` (6 tirages
+    au plus) ; le verrou passe à 1.
+- **Les tables de poussière** (32 demi-mots) : le sol `0x80022824`, l'eau (pentes 1, 2, 4) `0x80022864` (`e2-dust/tables.out`).
+- **`CreateEffect`** (`0x8003BDD8`) rend 0 si le réservoir (128 emplacements) est plein, sans tirer ; **`PlaySound`** (`0x800490FC`) ne fait
+  rien pour un id <= 0 (`blez`), alors que `SoundPlayer.PlaySfx` de la DLL n'a pas de garde et inscrit l'id 0 dans la table « une fois par
+  image ».
+- **L'octet de carte** `[[0x800E4334] + 0xA]` vaut 7 sur les 483 cartes ; exporté `C` aujourd'hui, `DustEffectId` après E20.eC ; la DLL n'a aucun
+  lecteur ; cinq autres lecteurs au binaire (la passe `0x80038E84` et quatre gestionnaires natifs non portés) : le lecteur doit être générique.
+  La décompilation nomme `_10` le champ lu au sable : elle se trompe de champ, le binaire tranche.
+- **Mesuré** (`out_probe_all.txt`, 22 scénarios) : course au sol, premier nuage au tick 29 puis tous les 4 ticks à (X du début du tick, Y, 1),
+  `FX` = -½ de la force (-129 024 pour 258 048), `FZ` entre 16 384 et 49 151, son 12 aux ticks 9, 17, 25… ; glissade et charge : +⅛ de la force,
+  sans son ; pentes 1 et 2 : l'effet 6 tous les 8 ticks, -¼, `FZ` 0, **un tirage quand même**, sons 21 et 19 ; marche : rien sur un sol
+  ordinaire, sons 20, 18 et 16 sur les pentes 1, 2 et 3 ; atterrissage : son 11, trois effets 7, **6 tirages** ; pente 1 : son 21 et une
+  éclaboussure ; pente 3 : son 17 et trois nuages ; une corniche de 32 px : aucun nuage en l'air (11 ticks de vol, critique), nuages de
+  course à Z = sol + 1 ; plongeon : l'effet 6 aux ticks 25, 33…, aucun tirage ; préparation tenue en diagonale : son 12 tous les 8 ticks,
+  nuage dès `+0xB0 >= 1`, 3 tirages ; sable (état forcé) : au tick 1, 3 tirages. Preuves indépendantes : `ArrowLifeTests.cs:497-511`
+  (« 6 tirages au tick 22 qui sont ceux du héros ») et `docs/plan-e20-annexe/e20-f2/oracle/f-weapons/out/F-sound-callers.txt` (le son 11
+  et trois effets 7 aux adresses de l'atterrissage).
+- **La DLL au HEAD** : `Alundra/Hero/PlayerAnimationEffects.cs` aiguille et appelle trois bouchons qui ne font qu'enregistrer leur appel
+  (`PlayerRunStepEffects`, `PlayerWalkStepEffects`, `PlayerLandingEffects`) ; le verrou d'atterrissage, la coupe de l'herbe, l'alarme et le
+  fléau sont réels ; les outils : `EffectStage.Emit` (la file, les tirages à l'application, ADR-0077 « Consequences »), les créateurs de
+  `NativeEffects` (`CreateSprintBounce`, `CreateChargeSpark`, `CreateBallPuff`, ce dernier avec la loi `0x30001/0x20001` de
+  l'atterrissage), le modèle de lecteur d'octet de carte (`TileEffect.ResolveCutEffectIndex`, `IScriptHost.TileCutEffectIndex`), la direction
+  du début du tick (`PlayerManager.TickFacing`, calculée en tête de `MovePlayer`, `:301`).
+- **La couture partagée** (critique, ajout 1) : `NativeEffects.CreatedForTests` est lue par au moins 14 bancs, dont plusieurs sans filtre
+  d'id (`HeroChargeTests.cs:163`, `HeroChargeArenaTests.cs:94` et `:168`, `RandomPerTickTests.Advance.cs:205` qui exige `Count == 19`,
+  `WaveSwordLifeTests.cs:79`, `BombRun.cs:132`, `BallRun.cs:236`, `ChargedArrowRun.cs:175`, `BallFlamesTests.cs:71`) ; `RunMontage.cs:112`
+  filtre sur l'id 9.
+- **Hors de la fonction** : la passe `0x80038E84` (les ombres, les anneaux d'eau, l'éclaboussure d'entrée en eau profonde, la petite
+  poussière de marche de la pente 3) : le thème 3 (D-E20-89 (3)) ; l'oracle d'E20.d la neutralise, donc toutes ses traces d'effets 6 et 7
+  viennent de la fonction.
+
+**Décisions.**
+- **D-E2-1** — Les trois bouchons deviennent les corps du binaire (la préparation, la marche, la course, la charge, la glissade, le plongeon
+  et le sable ; l'atterrissage) ; chaque corps garde son `Record(...)` : les tests d'aiguillage existants restent valides, y compris sur un
+  héros sans hôte, sans scène ni lecteur de son (`FlailBounceTests.cs:411-512`), où un corps ne fait rien de plus.
+- **D-E2-2** — Les tables (les trois tables de sons, les deux de poussière) sont des constantes d'un fichier neuf
+  `Alundra/Hero/HeroStepTables.cs` (nom contrôlé par `check_names.py`), vérifiées mot à mot contre l'exécutable (comme
+  `HeroRunTablesTests`).
+- **D-E2-3** — Les créateurs sont des membres de `NativeEffects` (`Alundra/Rendering/Effects/NativeEffects.cs`), mis en file par
+  `EffectStage.Emit` (le nuage n'a pas de poignée, comme `CreateSprintBounce` et `CreateChargeSpark`) : les tirages ont lieu à
+  l'application, après les tirages directs des autres entités du même tick (l'écart d'ADR-0077, écrit dans l'ADR neuf) ; jamais
+  `CreateNow`. Un réservoir plein : ni création ni tirage.
+- **D-E2-4** — L'effet de poussière se lit une fois par carte : un membre par défaut `IScriptHost.DustEffectIndex` (7), posé par
+  `WorldProxy` depuis la propriété `DustEffectId` au chargement de la carte, comme `TileCutEffectIndex` ; générique (les autres lecteurs
+  du binaire le liront).
+- **D-E2-5** — Un son n'est demandé que pour un id > 0 (le `blez` du binaire), aux sites du héros ; `SoundPlayer` ne change pas.
+- **D-E2-6** — La direction des forces de la préparation est celle du début du tick (`TickFacing`, passée à `Create` par ses deux appels),
+  jamais `AnimationDirection` (écrite en fin d'image).
+- **D-E2-7** — Le Z d'un effet vaut le sol + 1 (`+0x134` du binaire) : `FloorHeight + 1` sur un sol nu ; sur un support d'entité, la DLL
+  porte déjà la valeur du binaire (`candidateTop + 1`) et rien ne s'ajoute ; un test épingle les deux.
+- **D-E2-8** — La couture de test : les créateurs des pas et de la poussière notifient une couture dédiée (son nom passe la garde), pas
+  `NativeEffects.CreatedForTests` : les bancs qui lisent celle-ci sans filtre ne voient pas les nuages (ils en voient les tirages, que
+  l'inventaire de T0 compte).
+- **D-E2-9** (écarts consignés) — L'aura (`CreateNow`) prend un emplacement plus bas que le nuage mis en file du même tick, l'inverse du
+  binaire (seul l'identifiant de tri change) ; trames de 2 ticks : les approximations de D-E20-28 ; la pente 3 a moitié moins de poussière
+  que l'original tant que la passe `0x80038E84` manque (thème 3).
+
+**Périmètre.** `Alundra/Hero/PlayerAnimationEffects.cs` (les corps, les commentaires de classe et de bouchons) ; `Alundra/Hero/HeroStepTables.cs`
+(neuf) ; `Alundra/Rendering/Effects/NativeEffects.cs` (les créateurs, la couture) ; `Alundra/Maps/IScriptHost.cs` et `Alundra/Maps/WorldProxy.cs`
+(le lecteur) ; `Alundra/Hero/PlayerManager.cs` (la direction passée aux deux appels, les commentaires `:343` et `:374`) ; `Alundra.Tests/`
+(dont `Support/RunMontage.cs` : les exclusions `IsStubbedSound` 11 et 12 et `StubbedSounds` levées, les effets 6 et 7 comparés) ; l'annexe
+`docs/plan-e20-annexe/e20-e2/` ; un ADR neuf ; ce plan. **Hors périmètre** : la passe `0x80038E84` (thème 3) ; les quatre gestionnaires
+natifs qui lisent l'octet ; le moteur ; le convertisseur et les données (le nom de l'octet est E20.eC).
+
+**Tâches.**
+- ⏳ **T0 — Versement, oracle, sondes, inventaire** (commit de docs). (a) Le HEAD de départ et la suite à zéro échec ; la propriété
+  `DustEffectId` présente dans les `.tileMap` exportés (sinon E20.eC n'est pas faite : arrêt) ; (b) verser la lecture et sa critique à
+  `docs/plan-e20-annexe/e20-e2-disc/` ; (c) **l'oracle** : copier `dust_probe.py`, `sand_probe.py` et la copie du harnais d'E20.d à
+  `docs/plan-e20-annexe/e20-e2/oracle/`, rejouer les 22 scénarios et les groupes G1 à G10 et W1 à W10 avec le réservoir à emplacements,
+  un journal par tick (les sons, les créations : id, X, Y, Z, forces, emplacement ; le mot du générateur avant et après), et les cas que
+  la critique liste (la préparation pour les directions 0 à 2 et `+0xB0` = 3 et 4, la table d'eau en préparation, le sable dans le temps,
+  l'atterrissage depuis d'autres états que `0x2C` et `0x2D`, le mode 1, le réservoir plein, la course et le plongeon verticaux) ; deux
+  exécutions au même manifeste ; (d) **sondes de la DLL** (tests jetables, jamais commités, versés en `.txt` ; une sonde contredite est un
+  arrêt) : P1 les deux modes atteignent les trois parties aux ticks des clés (le journal des bouchons) ; P2 `FloorHeight + 1` égale le sol
+  de l'oracle sur un sol nu, et la valeur de support égale celle du binaire sur une entité ; P3 `TickFacing` égale `+0x98` de l'oracle aux
+  deux appels ; P4 l'ordre des tirages d'une création mise en file (ADR-0077) ; (e) **l'inventaire par exécution** (un câblage temporaire,
+  la suite entière, versé en `.txt`) : la liste des tests qui bougent, au moins les consommateurs de `RunMontage.CompareRows`
+  (`HeroRunTests`, `HeroRunArenaTests`, `HeroSwimTests`, `HeroDeepWaterWallTests`, `StickProbeTests`, `TomeOracleTests`), `FlailBounceTests`
+  (`:620-700`), `HeroAttackTests` (`:40`, `:159-161`), `HeroChargeTests` (`:654-685`), `HeroJumpTests` (`:262-312`, `[10]` devient
+  `[10, 11]`), `ArrowLifeTests` (`:497-511`, la comparaison du générateur rétablie) et les bancs qui courent ou atterrissent avec une scène
+  (les clés de générateur `0xAFBE9EAC`, `0x24D2C78A`, `0xC81B4C37`) ; chacun réécrit par dérivation de l'oracle (D-E0B-8), jamais collé.
+- ⏳ **T1 — Tests d'abord** (rouges avant, puis le code) : (t1) les tables contre l'exécutable, mot à mot ; (c1) les créateurs purs sur un
+  réservoir nu, graines fixées, contre les lignes de l'oracle (course, glissade et charge, éclaboussure des pentes 1 et 2, préparation,
+  plongeon, sable, atterrissage à trois nuages et à éclaboussure), dont le réservoir plein (ni création ni tirage) ; (s1) les sons par pente
+  et leur cadence, l'id 0 jamais demandé ; (d1) `DustEffectIndex` : 7 par défaut, la valeur de la carte quand elle en a une autre (une
+  carte synthétique) ; (f1) la direction du début du tick ; (z1) le Z du sol + 1 sur un sol nu, la valeur du support sur une entité ;
+  (m1) `RunMontage` contre les clés G1 à G10 et W1 à W10 avec les effets 6 et 7 et les sons 11, 12 et 21 (les exclusions levées) ; (w1) le
+  monde, la course sur la carte 14 (`herbe-m14`) : un nuage tous les 4 ticks derrière, le son 12 tous les 8 ; (w2) l'atterrissage après un
+  saut : le son 11, trois nuages, 6 tirages ; (w3) le mode verrouillé : les pas et l'atterrissage (le verrou) ; (w4) le plongeon dans
+  l'eau profonde (`swim-m14`) ; (w5) le sable par un état forcé (`0x23`, `0x24`) et, si E20.h2 est faite, sous la cape ; (g1) les
+  consommateurs de `CreatedForTests` inchangés (D-E2-8) ; puis le code.
+- ⏳ **T2 — Le code, trois commits** : (T2a) la course : la préparation (le son, la poussière), `0x03`, `0x04`, `0x2A`, les sons de marche
+  (`0x01`, `0x07`), le lecteur, la garde de l'id, la direction ; (T2b) l'atterrissage ; (T2c) le plongeon et le sable. Les tests de T0 (e)
+  réécrits par dérivation au commit qui les fait bouger.
+- ⏳ **T3 — Suites, mutants, ADR.** La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions
+  disjointes ; les traces de la 389 ; `cmp` ; `check_names.py --rules` ; au moins 20 mutants réels, chacun tué par le test qu'il nomme : la
+  cadence de course `& 3` en `& 7` ((c1), (w1)) ; le facteur de glissade +32 en -128 ((c1)) ; le `>> 8` des forces omis ((c1)) ; la base de
+  `FZ` omise ((c1)) ; la table d'eau non choisie sur les pentes 1, 2 et 4 ((c1), (m1)) ; `n = +0xB0` au lieu de `+0xB0 - 1` ((c1)) ; deux
+  nuages au lieu de trois ((c1), (w2)) ; les tirages de l'atterrissage sans création ((c1), le réservoir plein) ; le réservoir plein qui
+  tire ((c1)) ; l'id 0 demandé ((s1)) ; les tables de sons de marche et de course échangées ((s1), (m1)) ; `AnimationDirection` au lieu de
+  `TickFacing` ((f1)) ; le `+1` du Z omis ((z1)) ; `DustEffectIndex` ignoré (7 en dur) ((d1)) ; le plongeon `/ 4` en `/ 2` ((c1), (w4)) ;
+  le signe du décalage X du sable ((c1)) ; le mode 1 sans les pas ((w3)) ; le verrou d'atterrissage ignoré ((w3)) ; les créateurs qui
+  notifient `CreatedForTests` ((g1)) ; `CreateNow` au lieu de la file ((c1) l'ordre des tirages, P4) ; un ADR neuf (numéro libre recompté
+  sur toutes les branches) ; la ligne d'enveloppe et la doc de classe de `PlayerAnimationEffects` à jour.
+- ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+
+**Acceptation.** Les sorties de T0 (c) identiques sur deux exécutions ; les sondes tenues ; les tests de T1 rouges avant et verts après
+(nommés) ; les mutants tous tués ; la suite en Release et en Debug, zéro échec ; les tests déplacés ⊂ la liste de T0 (e), chacun réécrit par
+dérivation ; le moteur, le convertisseur et les données sans diff. **Recette de l'auteur** (non bloquante) : `herbe-m14` (courir : un nuage
+derrière Alundra et le bruit de course ; sauter et atterrir : le bruit et trois nuages ; marcher : aucun bruit ni poussière, comme
+l'original) ; `swim-m14` (le plongeon : les éclaboussures) ; les sols des pentes 1 à 3 (Magyscar Entrance, carte 144 ; Overworld 3,3,
+carte 16 ; Overworld 4,2, carte 19 : les bruits de pas) ; `cape-m402` si E20.h2 est faite.
+
+**Arrêts.** La propriété `DustEffectId` absente de l'export ; une clé de T0 (c) qui diffère d'une exécution à l'autre ; une sonde contredite ;
+un test hors de la liste prédite qui bouge ; un besoin de toucher au moteur (le manque se consigne) ; un nom refusé ; un test qui boucle.
+
+**Budget.** Un `executor` par tâche (T0, T1, T2a à T2c, T3) ; deux tentatives chacun. Un `plan-verifier` avant ; deux verifiers frais après.
+
+**Retour arrière.** T2c, puis T2b, puis T2a : les corps redeviennent les bouchons ; le lecteur et les tables restent inertes.
 
 ### 1.28 E20.g3 — Les soulevables redeviennent solides ✅ (détaillée le 2026-10-18, **READY** à la première relecture ; exécutable après g1a, g2a, g2b et la fin du chantier de restructuration ; **faite et CONFIRMED le 2026-10-24** par deux verifiers frais ; ADR-0091)
 
