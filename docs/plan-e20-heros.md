@@ -352,6 +352,14 @@ ADR-0058) :
   - **D-E20-87** (2026-10-27, réponse de l'auteur) — E20.i2a, après la relecture de clôture REVISE de sa révision 3 : « Reprendre sans
     relecture » : la révision 4 (deux bornes numériques de la trace diagonale, vérifiées par script sur la mesure) est exécutée sans nouvelle
     relecture ; les deux verifiers frais de fin de tranche restent.
+  - **D-E20-88** (2026-10-27, premier retour de l'auteur en jeu et ses réponses) — Le retour : (1) la bombe portée est dessinée derrière
+    Alundra, elle devrait être devant ; (2) pas de poussière derrière Alundra pendant la course ; (3) tous les objets ne sont pas encore
+    utilisables. Décisions : (1) l'ordre de dessin de l'objet porté est un défaut à corriger dans le thème 2 (une lecture du binaire
+    d'abord ; un défaut de rendu se corrige dans le moteur s'il en relève) ; (2) E20.e2 (les pas, la poussière de marche, de course et
+    d'atterrissage) entre dans le thème 2 ; (3) l'auteur reprend les tranches en pause qui rendent les objets utilisables (révisant
+    D-E20-84 (1) pour elles) : E20.h1 (les cinq soins), E20.h2 (la cape de sable), E20.i2b puis h4e2, h4f1 et h4f2 (vent 2, eau 1, eau 2), et
+    E20.h3c avec le pot magique h3d (les haricots, contre la réponse C de Q-H3-3) ; chacune repasse par une relecture fraîche de son plan
+    (une époque neuve) avant d'être exécutée ; E20.g1c reste en pause.
 
 Règles reconduites : `ALUN_CD.EXE` (France) tranche sur la décompilation, qui se lit et ne se corrige
 pas ; un défaut avéré de l'original se corrige ; tout écart du port est documenté dans le code et ici.
