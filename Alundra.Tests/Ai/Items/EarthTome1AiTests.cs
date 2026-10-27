@@ -234,14 +234,14 @@ public sealed class EarthTome1AiTests : IDisposable
         foreach (var (counter, speed) in new[] { (20, 1024), (55, 1024), (60, 1280), (95, 1280) })
         {
             var (refused, _) = World(Input(0, counter, Hold, spawn: false));
-            var heroBefore = (refused.Hero.TargetAnimationId, refused.Hero.ItemInUse, refused.Hero.PosX, refused.Hero.PosZ);
+            var heroBefore = (refused.Hero.TargetAnimationId, refused.Hero.ItemInUse, refused.Hero.PosX, refused.Hero.PosZ, refused.Hero.ForceZ);
 
             var answer = EarthTome1Ai.Driver(refused.Hero);
 
             Assert.Equal(0, answer);
             Assert.Equal(2, refused.Host.SpawnCalls.Count); // the births are asked (two entries a tick) ...
             Assert.Empty(Rocks(refused)); // ... and none is given: nothing is written.
-            Assert.Equal(heroBefore, (refused.Hero.TargetAnimationId, refused.Hero.ItemInUse, refused.Hero.PosX, refused.Hero.PosZ));
+            Assert.Equal(heroBefore, (refused.Hero.TargetAnimationId, refused.Hero.ItemInUse, refused.Hero.PosX, refused.Hero.PosZ, refused.Hero.ForceZ)); // the speed of Z is not written on the hero either.
 
             var (answered, _) = World(Input(0, counter, Hold));
             EarthTome1Ai.Driver(answered.Hero);
@@ -295,6 +295,22 @@ public sealed class EarthTome1AiTests : IDisposable
                 Assert.Equal((Tome, 2, other), (over.Hero.ItemInUse, over.Hero.ItemUsePhase, over.Hero.TargetAnimationId)); // the wrapper frees it, not the driver.
                 Assert.Empty(cancelledOver);
             }
+        }
+    }
+
+    [Fact]
+    public void D5_TheCancellation_0x800351A0_IsNeutral_ItWritesNothingOnTheHero()
+    {
+        foreach (var (phase, counter, anim) in new[] { (0, 0, Hold), (0, 40, Cast), (1, 99, Hold), (2, 100, End) })
+        {
+            var (world, _) = World(Input(phase, counter, anim));
+            var hero = world.Hero;
+            var before = (hero.ItemInUse, hero.ItemUsePhase, hero.ItemUseCounter, hero.TargetAnimationId, hero.TargetDirection, hero.PosX, hero.PosY, hero.PosZ, hero.ForceZ, hero.Flags);
+
+            EarthTome1Ai.Cancel(hero);
+
+            Assert.Equal(before, (hero.ItemInUse, hero.ItemUsePhase, hero.ItemUseCounter, hero.TargetAnimationId, hero.TargetDirection, hero.PosX, hero.PosY, hero.PosZ, hero.ForceZ, hero.Flags));
+            Assert.Empty(world.Host.SpawnCalls);
         }
     }
 
