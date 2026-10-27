@@ -1,0 +1,4 @@
+staff equipped (weapon slot 6, item 7 owned), MP 0      weapon id 7  MP 0 -> 0  cast started True  hero anim 0x32  sounds []
+sword equipped, MP 0                                    weapon id 1  MP 0 -> 0  cast started False  hero anim 0x0  sounds [3]
+sword equipped, MP 2                                    weapon id 1  MP 2 -> 1  cast started True  hero anim 0x32  sounds []
+staff equipped, MP 2                                    weapon id 7  MP 2 -> 2  cast started True  hero anim 0x32  sounds []

@@ -1,0 +1,14 @@
+anim dir    oracle(ticks,end,target)   export(ticks,end,target,type)   speed/accel/sfx oracle | export
+  50 down  (32, 'chain', 51)          (32, 'chain', 51, 'Once')        (0, 64, 0) | (0, 64, 0) OK
+  50 up    (32, 'chain', 51)          (32, 'chain', 51, 'Once')        (0, 64, 0) | (0, 64, 0) OK
+  50 left  (32, 'chain', 51)          (32, 'chain', 51, 'Once')        (0, 64, 0) | (0, 64, 0) OK
+  50 right (32, 'chain', 51)          (32, 'chain', 51, 'Once')        (0, 64, 0) | (0, 64, 0) OK
+  51 down  (36, 'loop', None)         (36, 'loop', None, 'Loop')       (0, 64, 0) | (0, 64, 0) OK
+  51 up    (36, 'loop', None)         (36, 'loop', None, 'Loop')       (0, 64, 0) | (0, 64, 0) OK
+  51 left  (36, 'loop', None)         (36, 'loop', None, 'Loop')       (0, 64, 0) | (0, 64, 0) OK
+  51 right (36, 'loop', None)         (36, 'loop', None, 'Loop')       (0, 64, 0) | (0, 64, 0) OK
+  52 down  (26, 'chain', 0)           (26, 'chain', 0, 'Once')         (0, 64, 0) | (0, 64, 0) OK
+  52 up    (26, 'chain', 0)           (26, 'chain', 0, 'Once')         (0, 64, 0) | (0, 64, 0) OK
+  52 left  (26, 'chain', 0)           (26, 'chain', 0, 'Once')         (0, 64, 0) | (0, 64, 0) OK
+  52 right (26, 'chain', 0)           (26, 'chain', 0, 'Once')         (0, 64, 0) | (0, 64, 0) OK
+differences: 0
