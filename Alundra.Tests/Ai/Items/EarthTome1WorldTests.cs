@@ -52,7 +52,7 @@ public sealed class EarthTome1WorldTests : IDisposable
     };
 
     /// <summary>Everything the key holds, tick by tick, without tolerance: the rocks, the item and the hero, the sounds, the draws and the effects.</summary>
-    private static List<string> Everything(EarthTome1Key key, EarthTome1Run run, int last, bool hero = true, params int[] ignoredSounds)
+    internal static List<string> Everything(EarthTome1Key key, EarthTome1Run run, int last, bool hero = true, params int[] ignoredSounds)
     {
         var all = new List<string>();
         all.AddRange(EarthTome1Compare.Rocks(key, run, 1, last));
@@ -63,7 +63,7 @@ public sealed class EarthTome1WorldTests : IDisposable
     }
 
     /// <summary>The lives of the rocks the DLL run saw: (slot, tick of birth, first tick of the status 3 or 0, last tick), in the order of the births.</summary>
-    private static List<(int Slot, int Birth, int Status3, int Last)> Lives(EarthTome1Run run, int last)
+    internal static List<(int Slot, int Birth, int Status3, int Last)> Lives(EarthTome1Run run, int last)
     {
         var lives = new List<(int, int, int, int)>();
         for (var tick = 1; tick <= last; tick++)
@@ -96,7 +96,7 @@ public sealed class EarthTome1WorldTests : IDisposable
         return lives.OrderBy(l => l.Item2).ThenBy(l => l.Item1).ToList();
     }
 
-    private static List<int> SoundTicks(EarthTome1Run run, int sfx) => run.Heard.Played.Where(p => p.Sfx == sfx).Select(p => p.Tick).Order().ToList();
+    internal static List<int> SoundTicks(EarthTome1Run run, int sfx) => run.Heard.Played.Where(p => p.Sfx == sfx).Select(p => p.Tick).Order().ToList();
 
     /// <summary>The ticks at which a rock of the key is first at the status 3.</summary>
     private static List<(int Tick, int Slot)> KeyStatus3(EarthTome1Key key, int last)
