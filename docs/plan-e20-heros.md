@@ -360,6 +360,18 @@ ADR-0058) :
     D-E20-84 (1) pour elles) : E20.h1 (les cinq soins), E20.h2 (la cape de sable), E20.i2b puis h4e2, h4f1 et h4f2 (vent 2, eau 1, eau 2), et
     E20.h3c avec le pot magique h3d (les haricots, contre la réponse C de Q-H3-3) ; chacune repasse par une relecture fraîche de son plan
     (une époque neuve) avant d'être exécutée ; E20.g1c reste en pause.
+  - **D-E20-89** (2026-10-27, les réponses de l'auteur aux découvertes du retour en jeu, `scratchpad/t2-feedback/`, chacune confirmée par sa
+    critique fraîche) — (1) **l'objet porté et l'objet lancé** : le défaut de dessin vaut pour tout objet porté (le tri de la DLL plie la
+    hauteur dans le mauvais sens) ; la correction couvre tous les objets portés et l'objet lancé pendant son vol, comme l'original (E20.g1d,
+    §1.24.8) ; (2) **le saut vers le haut** avec un objet porté : l'objet reste **toujours devant** Alundra (l'image unique où l'original le
+    dessine derrière, au décollage, est un défaut de tri de l'original, corrigé) ; (3) **la poussière de marche** : l'original n'en lève
+    aucune sur un sol ordinaire, ni aucun bruit de pas ; E20.e2 livre la poussière et le bruit de la course, l'atterrissage, les bruits de
+    pas des trois sols qui en ont, le plongeon et la poussière de la cape ; la petite poussière de marche du sable (la passe `0x80038E84`,
+    partagée avec les ombres et les anneaux d'eau) vient avec le thème 3 ; (4) **l'octet `0xA` de l'en-tête de carte** (l'effet de
+    poussière, 7 sur les 483 cartes, exporté sous le nom brut `C`) est **renommé à la source**, comme `TileCutEffectId` (ADR-0079 :
+    l'analyseur, la ré-extraction, le miroir, l'export complet en fenêtre calme), par une tranche de données avant E20.e2 ; le nom se
+    propose à l'auteur. Ordre d'exécution du thème 2 : h4c1, **E20.g1d**, h4c2, h4d1, h4d2, h4e1, h1, h2, i2b, le renommage de l'octet
+    puis E20.e2, h3c, h3d, h4e2, h4f1, h4f2, puis la fusion.
 
 Règles reconduites : `ALUN_CD.EXE` (France) tranche sur la décompilation, qui se lit et ne se corrige
 pas ; un défaut avéré de l'original se corrige ; tout écart du port est documenté dans le code et ici.
@@ -9889,6 +9901,141 @@ prédite bouge ; un besoin de toucher au moteur ; un test qui boucle.
 **Budget.** Un `executor` par phase ; deux tentatives. Un `plan-verifier` avant ; deux verifiers frais après.
 
 **Retour arrière.** La phase B se retire seule (le contact redevient celui du moteur) ; la phase A ne change aucun comportement.
+
+#### 1.24.8 E20.g1d — L'ordre de dessin de l'objet porté et de l'objet lancé (D-E20-88 (1), D-E20-89 (1) et (2)) ⏳ (détaillée le 2026-10-27, révision 0 ; thème 2 ; après h4c1)
+
+**Provenance.** Lecture seule du 2026-10-27 (HEAD `539d4cf4`) et sa critique fraîche, CONFIRMÉE avec quatre corrections reprises ici, dans le
+scratchpad de la session principale (`scratchpad/t2-feedback/carried-draw/` et `carried-draw-critic/`, avec leurs désassemblages, leurs
+scripts et les rejeux des clés), à verser par T0 à `docs/plan-e20-annexe/e20-g1d-disc/` (sans les copies d'oracles ni les `__pycache__`).
+La capture de l'auteur : Alundra face au bas, la bombe tenue au-dessus de sa tête, recouverte par sa chevelure.
+
+**Prérequis.** E20.g1a, g2a, g1b et h3b faites (l'objet dans les mains, le lancer, la bombe en production) ; E20.h4c1 finie et commitée :
+les tranches du thème 2 s'exécutent une à la fois dans l'arbre de travail du dépôt ; T0 nomme son HEAD de départ et y lance la suite
+entière (Release, copie neutralisée) : zéro échec exigé, sinon un arrêt avant la liste prédite.
+
+**But.** Comme l'original : un objet dans les mains d'Alundra (la bombe, les caisses, les pots, les torches, les haricots) est dessiné
+**devant** elle, quelle que soit sa direction et sa rangée de pixels ; au saut vers le haut aussi (D-E20-89 (2), un écart voulu) ; un objet
+qu'elle vient de lancer reste devant elle tant que l'original l'y dessine (lancé à gauche, à droite ou vers le bas, devant pendant son vol
+près d'elle ; lancé vers le haut, derrière dès que sa rangée passe au-dessus de la sienne). Aujourd'hui l'objet porté passe derrière dans
+environ 15 rangées de pixels sur 16.
+
+**Faits** (`carried-draw/` et sa critique ; [FAIT] lu, [MESURÉ] sorti de l'émulateur du vrai `ALUN_CD.EXE`).
+- **La clé du binaire** (`+0x1BC`, le pilote `0x800399B8`, la fonction `F` `0x800397AC`) : `((PosY + (IDSV << 16)) & 0xFFFF0000) +
+  (short)(PosZ >> 16)` ; l'IDSV est celui de l'image affichée (`0x80038CBC`) ; la liste de dessin (`0x8003B414-0x8003B4FC`) n'a aucun cas
+  d'objet porté ; le tri `0x8002DA04` est signé, décroissant, instable ; l'emplacement est `16 × min(clé >> 20, 59) + 6` ; la plus petite clé
+  est dessinée d'abord : Z ne change jamais l'emplacement, il départage à l'intérieur. **Le relèvement au porteur** (`0x8003981C-0x80039858`)
+  ne vaut que pour un objet collidable ; la bombe (`0x13234E`) ne l'est pas : elle n'est devant que parce que son IDSV (5) est au moins celui
+  d'Alundra et que sa hauteur est plus grande. La seconde moitié de `F` (`0x80039860-0x80039978`) relève toute entité collidable à la clé
+  des collidables plus bas qui chevauchent sa boîte (critique A1).
+- **Mesuré** (`out_bomb_keys.txt`, `out_bomb_keys2.txt`, `out_crate_keys.txt`, `out_throw_probe.txt`, rejoués deux fois par la critique,
+  identiques) : la bombe portée est devant sur ses 119 ticks portés (héros `0x00690000`, bombe `0x00690020`) ; sur 241 ticks portés en marche
+  et en saut dans les quatre directions, un seul derrière, le tick 162 (le décollage du saut vers le haut : héros IDSV 6, bombe 5) ; une
+  caisse (collidable, IDSV 7) est relevée à la clé du porteur au tick de la prise (égalité) puis devant ; la bombe lancée à gauche, à droite
+  ou vers le bas reste devant sur les ticks 50 à 55, lancée vers le haut passe derrière au 4ᵉ tick de vol ; au sol, égalité de clé ; un
+  voisin collidable de 16 px qui chevauche la boîte du héros relève sa clé : la bombe est alors derrière (A1, monde non vide).
+- **La DLL au HEAD** : `FrameSyncPasses.RunWallInterleaveSortKeyPass` n'écrit que `DepthSortable2DComponent.Elevation`
+  (`WallPlacementOverlay.ApplyEntitySortKey`, la rangée `16 × min((PosY + (IDSV << 16)) >> 20, 59) + 6`), relevée au porteur pour un objet
+  collidable porté (`EntityDepthKey.RaiseToCarrier`, W6 de g1a) ; l'IDSV est celui de l'image 0 de la paire (animation, direction), pas de
+  l'image affichée ; l'ordre fin est laissé au moteur, écart écrit au commentaire d'`ApplyEntitySortKey` (ADR-0049 point 3) ; les préfabriqués
+  de la bombe et du héros portent `sort_anchor (0,0)` et `local_sort_offset 0`, et rien dans `Alundra/` n'écrit `SortAnchorLocal` ni
+  `LocalSortOffset` ; `IEffectAnchor.SortCoordinate` vaut `100 × ((PosY >> 16) - (PosZ >> 16))` (`EntityScriptProxy.cs`).
+- **Le moteur** (lu, aucun défaut) : le sprite est placé à `(X, -(Y - Z))` arrondi au pixel ; `SortCoordinate = round(-(worldY + ancre.Y) ×
+  100)` en `TopDownYUp` (`DepthSortable2DComponent.cs`) ; la clé se compare dans l'ordre (passe, couche, ordre, `Elevation`,
+  `SortCoordinate`, `LocalSortOffset` + `DrawOrder` de la pièce, `StableId`), croissant (`RenderSortKey2D.cs`) : la plus petite est dessinée
+  d'abord ; le moteur documente `SortAnchorLocal` et `LocalSortOffset` pour un objet tenu (`CasaEngineMonogame/docs/engine/tilemaps-gestion-profondeur.md`).
+- **Le diagnostic** : dans une même rangée (environ 15 cas sur 16), c'est la coordonnée qui décide, et la hauteur y pèse à l'envers (−3200
+  pour 32 px) : exemple Alundra à Y = 206,09 px face au bas, la bombe à 32 px : clés du binaire `0x00D20000` et `0x00D30020`, même
+  emplacement 214 ; coordonnées de la DLL 20600 et 17400 : la bombe est dessinée avant, derrière. Le modèle de la découverte : tous les
+  objets soulevables sont touchés, d'autant plus que leur IDSV est bas. E20.h3b n'y est pour rien (`161ac276` rejoué : la coordonnée est la
+  même avant et après).
+- **La hauteur fractionnaire** (critique A3) : la racine du héros suit `PosZ / 65536f` (`FollowPosZOnRoot`), celle d'un objet porté
+  `PosZ >> 16` : une égalité de coordonnées ne s'obtient exactement qu'en calculant sur les deux translations rendues.
+- **`DrawOrder`** (critique) : les pièces du héros vont de 0 à 13 (376 fichiers), celles de la bombe de 0 à 6 ; les autres objets ne sont pas
+  recensés.
+
+**Décisions.**
+- **D-G1D-1** (D-E20-89 (1)) — La tranche corrige l'ordre de **tout objet porté** (une entité dont `PlatformEntity` est un proxy porteur,
+  le même test que W6) et de **l'objet lancé par le héros pendant son vol** face à son porteur ou à son lanceur, le héros ; elle ne touche
+  pas l'ordre des autres entités entre elles.
+- **D-G1D-2** (D-E20-89 (2), écart voulu) — Un objet porté est **toujours devant** son porteur : son `Elevation` est relevée au moins à
+  celle du porteur pour tout objet porté, collidable ou non (le binaire ne relève que les collidables : écart pour la bombe, dont le
+  décollage du saut vers le haut, tick 162 de `bomb_keys2`) ; son `SortAnchorLocal` égale sa coordonnée de tri à celle du porteur,
+  calculée sur les deux translations rendues de l'image (critique A3 ; T0 (d) sonde l'ordre des passes) ; son `LocalSortOffset` vaut `+K`.
+- **D-G1D-3** (D-E20-89 (1)) — L'objet lancé : `CarryRules.ThrowCarried` marque l'objet de son lanceur ; la marque tombe quand l'objet est
+  au sol (`IsOnGround`), quand il n'est plus au statut normal, ou quand il redevient porté. Pendant ce vol, son `Elevation` reste la sienne
+  (celle du binaire) ; sa coordonnée vaut celle du lanceur plus `100 × Δ`, où `Δ` est la différence, en pixels, des parties hautes des
+  clés du binaire de l'objet et du lanceur (`EntityDepthKey.Compute`) ; à `Δ = 0`, `LocalSortOffset` vaut `+K` si la clé de l'objet
+  dépasse celle du lanceur, `-K` si elle est plus petite, 0 à l'égalité (le binaire n'ordonne pas deux clés égales). L'ordre de l'objet
+  face au lanceur est alors celui des clés du binaire.
+- **D-G1D-4** — `K` est une constante plus grande que le plus grand `DrawOrder` des pièces du héros (13) et des objets soulevables, que T0
+  recense (17 fiches, la bombe à 6) : `K = max(14, maximum des objets + 1)`, épinglé par un test sur l'export.
+- **D-G1D-5** — La passe écrit les deux valeurs à chaque image pour toute entité qu'elle visite : (0, 0) et 0 hors des deux cas (l'objet
+  lâché, posé, brisé ou détruit les retrouve) ; les entités `FlagToDestroy` restent ignorées. La règle vit dans une fonction pure
+  d'`EntityDepthKey` (remplaçable si une suite fait suivre la clé du binaire à toutes les entités).
+- **D-G1D-6** — `IEffectAnchor.SortCoordinate` d'un objet porté ou lancé vaut la coordonnée que la passe lui donne (l'effet ancré, modes 1 et
+  3, comme le bris d'une caisse tenue) ; l'étincelle de la mèche (mode 0, `CreateNow`, non ancrée) n'est pas touchée (O-G1D-1).
+- **D-G1D-7** (écarts consignés, hors tranche) — Le relèvement par un voisin collidable (critique A1 ; déjà écrit dans la doc
+  d'`EntityDepthKey`) ; l'IDSV de l'image 0 au lieu de l'image affichée ; les autres entités en l'air (Alundra qui saute près d'un PNJ, un
+  objet lancé par un ennemi) et l'étincelle : une suite à part, qui ferait suivre la clé du binaire à toutes les entités.
+
+**Périmètre.** `Alundra/Maps/Loop/FrameSyncPasses.cs` (la passe) ; `Alundra/Entities/EntityDepthKey.cs` (la fonction pure de la règle) ;
+`Alundra/Entities/EntityScriptProxy.cs` (`IEffectAnchor.SortCoordinate`, le champ de la marque du lancer) ; `Alundra/Hero/CarryRules.cs`
+(`ThrowCarried` pose la marque) ; `Alundra/Cells/WallPlacementOverlay.cs` (le commentaire de l'écart d'`ApplyEntitySortKey`) ;
+`Alundra.Tests/` (dont `Maps/Loop/CarriedSortKeyTests.cs` étendu, `Ai/Items/BombHandsWorldTests.cs`, `Rendering/Effects/FrozenAnchorTests.cs`) ;
+l'annexe `docs/plan-e20-annexe/e20-g1d/` ; un ADR neuf ; ce plan. **Hors périmètre** : le moteur ; l'ordre des autres entités ; les effets
+non ancrés ; le convertisseur et les données.
+
+**Tâches.**
+- ⏳ **T0 — Versement, oracle, sondes, liste prédite** (commit de docs). (a) Le HEAD de départ et la suite à zéro échec ; (b) verser la
+  lecture et sa critique à `docs/plan-e20-annexe/e20-g1d-disc/` ; (c) rejouer depuis des copies des oracles (`docs/plan-e20-annexe/e20-h3/`
+  `critic/run` et `bin/run`, `docs/plan-e20-annexe/e20-g1a/work/orc`, le tri `0x800399B8` rejoué après chaque tick) les clés
+  `bomb_keys`, `bomb_keys2`, `crate_keys` et `throw_probe`, deux exécutions au même manifeste, versées à `docs/plan-e20-annexe/e20-g1d/keys/`
+  avec, par ligne, l'animation, la direction et l'IDSV du héros et de l'objet, leurs Y et Z, les drapeaux, le signe « devant, derrière,
+  égal » ; (d) **sondes de la DLL** (tests jetables, jamais commités, versés en `.txt` ; une sonde contredite est un arrêt) : P1 la bombe dans
+  les mains du vrai héros sur le banc de `BombHandsWorldTests`, sur les 16 rangées de Y, est derrière dans 15 cas sur 16 (la prédiction de
+  la découverte) ; P2 l'ordre des passes dans l'image : la passe de clé de tri tourne-t-elle après la mise à jour des translations rendues
+  du héros et de l'objet ? (sinon le calcul de D-G1D-2 se fait sur la projection des positions logiques par la même politique, et un test
+  prouve l'égalité aux translations) ; P3 `ThrowCarried` puis le programme de l'objet (C23, C62, C73) : la marque peut-elle être posée au
+  lancer et lue jusqu'à l'atterrissage, et `IsOnGround` tombe-t-il au tick où l'oracle a l'égalité de clé ? ; P4 le `DrawOrder` maximal des
+  pièces du héros et des 17 fiches soulevables (D-G1D-4) ; (e) la liste prédite des tests qui bougent, recomptée au HEAD de départ.
+- ⏳ **T1 — Tests d'abord** (rouges avant, puis le code) : (k1) la fonction pure de la règle (porté : la coordonnée du porteur et `+K` ; lancé :
+  `Δ` et le signe de `K` ; ni porté ni lancé : (0, 0) et 0) ; (o1) **contre les clés de T0 (c)** : pour chaque ligne, deux entités posées
+  aux valeurs de la ligne, la passe puis `BuildSortKey` sur leurs translations rendues, le signe de la comparaison égal au signe de la clé
+  du binaire, sauf le tick 162 de `bomb_keys2` (attendu devant, D-G1D-2) et les lignes à l'égalité (sautées, le binaire ne les ordonne pas) ;
+  (w1) le monde : la bombe dans les mains du vrai héros (le banc de `BombHandsWorldTests`), devant sur les 16 rangées de Y et dans les
+  quatre directions, debout et en marche ; (w2) une caisse portée (collidable, le chemin W6), devant de même ; (w3) le saut vers le haut
+  avec la bombe : devant à toutes les images ; (w4) le lancer à gauche, à droite et vers le bas : devant tant que la clé le dit, vers le
+  haut : derrière dès que la clé le dit, contre les lignes de `throw_probe` ; après l'atterrissage, l'ancre et le décalage reviennent à
+  (0, 0) et 0 ; (w5) l'objet qui quitte les mains sans être lancé (un chemin du HEAD que T0 (e) nomme : l'annulation de la bombe, la
+  blessure si le HEAD la porte) : (0, 0) et 0 à l'image suivante ; (e1) l'effet ancré d'un objet
+  porté (le bris d'une caisse tenue, `FrozenAnchorTests` étendu) se trie à la coordonnée que la passe a posée ; (g1) une entité
+  `FlagToDestroy` reste ignorée (`WorldProxyEntityManipulationTests` vert) ; (p1) `K` contre l'export (D-G1D-4) ; puis le code.
+- ⏳ **T2 — Suites, mutants, ADR.** La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions
+  disjointes ; `cmp` ; `check_names.py --rules` ; au moins 12 mutants réels, chacun tué par le test qu'il nomme : `K` = 13 ((p1), (w1)) ;
+  l'ancre non remise à zéro au lâcher ((w5)) ; la règle appliquée à une entité ni portée ni lancée ((k1), (g1)) ; l'`Elevation` relevée
+  pour les seuls collidables ((w1) au saut, (w3)) ; l'ancre calculée sur les positions logiques au lieu des translations ((w3), la hauteur
+  fractionnaire) ; le lancer sans le terme `Δ` ((w4) vers le haut) ; `-K` à l'égalité ((o1)) ; la marque non posée par `ThrowCarried`
+  ((w4)) ; la marque qui ne tombe pas à l'atterrissage ((w4)) ; l'effet ancré non suivi ((e1)) ; le tick 162 laissé derrière ((w3), (o1)) ;
+  les entités `FlagToDestroy` visitées ((g1)) ; un ADR neuf (numéro libre recompté sur toutes les branches).
+- ⏳ **T3 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+
+**Acceptation.** Les sorties de T0 (c) identiques sur deux exécutions ; les sondes de T0 (d) tenues ; les tests de T1 rouges avant et verts
+après (nommés) ; les mutants tous tués ; la suite en Release et en Debug, zéro échec ; les tests déplacés ⊂ la liste de T0 (e), chacun
+réécrit par dérivation ; le moteur, le convertisseur et les données sans diff. **Recette de l'auteur** (non bloquante) : `bombe-m14` (la
+bombe tenue devant Alundra en marchant dans les quatre directions et en sautant vers le haut ; lancée à gauche, à droite ou en bas, devant
+pendant son vol près d'elle) ; `porter-m72` (un objet porté devant) ; `torche-m92` (la torche tenue devant).
+
+**Arrêts.** Une clé de T0 (c) qui diffère d'une exécution à l'autre ; une sonde contredite ; une ligne de (o1) dont le signe diffère hors des
+deux exceptions écrites ; un test hors de la liste prédite qui bouge ; un besoin de toucher au moteur (le manque se consigne) ; un nom refusé ;
+un test qui boucle.
+
+**Points ouverts.** **O-G1D-1** — L'ordre de l'étincelle de la mèche face à la bombe dans l'original n'est pas mesuré (l'oracle ne simule pas
+les effets) ; elle reste à sa coordonnée `100 × (Y - Z - 8)`, derrière la bombe et le héros.
+
+**Budget.** Un `executor` par tâche (T0, T1, T2) ; deux tentatives chacun. Un `plan-verifier` avant ; deux verifiers frais après.
+
+**Retour arrière.** Retirer l'appel de la règle dans la passe (l'ancre et le décalage restent à (0, 0) et 0, l'état d'aujourd'hui), puis la
+marque du lancer.
 
 ### 1.25 État des lieux des attaques et du portage (2026-10-16, lecture seule)
 
