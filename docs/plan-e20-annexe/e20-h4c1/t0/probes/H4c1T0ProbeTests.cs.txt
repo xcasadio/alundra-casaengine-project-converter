@@ -1,0 +1,304 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using Alundra.Audio;
+using Alundra.Entities;
+using Alundra.Events;
+using Alundra.Hero;
+using Alundra.Maps;
+using Alundra.Rng;
+using Alundra.Session;
+using Alundra.Tests.Audio;
+using Alundra.Tests.Support;
+using Alundra.Transitions;
+using Xunit;
+
+namespace Alundra.Tests.Probes;
+
+/// <summary>E20.h4c1 T0 THROWAWAY probes P1 to P9 (never committed as code; kept as .cs.txt in the annex). A throwaway port of the driver 0x80035320 and of E3 0x8007EDA0 run in the test; the rows are written as CSV for t0/probes/cmp_probe.py.</summary>
+[Collection(MusicPlayerSingletonCollection.Name)]
+public sealed class H4c1T0ProbeTests : IDisposable
+{
+    private static readonly string Out = Environment.GetEnvironmentVariable("H4C1_OUT") ?? Path.GetTempPath();
+
+    public H4c1T0ProbeTests()
+    {
+        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    public void Dispose()
+    {
+        PlayerManager.ItemStartForTests = null;
+        PlayerManager.ItemDriverForTests = null;
+        PlayerManager.ItemCancelForTests = null;
+        EventProgramRunner.NativeSpriteTypeFilterForTests = null;
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    private sealed class Sounds : ISoundPlayer
+    {
+        internal int Tick;
+        internal readonly List<(int Tick, int Sfx)> Played = new();
+        public void PlaySfx(int sfxId) => Played.Add((Tick, sfxId));
+        public void RemixVoice(int sfxId, int left, int right) { }
+        public void FlushFrameSounds() { }
+        public void StopAllSfx() { }
+    }
+
+    // the table 0x8002343C of the binary: (tick, speed, delta), 32 entries of 6 bytes (the report of the discovery, section 1.2; the bytes are checked against the executable by t0/probes/check_table.py)
+    private static readonly (int Tick, int Speed, int Delta)[] Table = BuildTable();
+
+    private static (int, int, int)[] BuildTable()
+    {
+        // two entries per tick, ticks 20, 25 .. 95; the sixteen deltas (3,-6) (0,6) (3,2) (8,14) (3,10) (16,22) (3,18) (24,30) repeat twice
+        var seq = new[] { 3, -6, 0, 6, 3, 2, 8, 14, 3, 10, 16, 22, 3, 18, 24, 30 };
+        var entries = new List<(int, int, int)>();
+        for (var i = 0; i < 32; i++)
+        {
+            var tick = 20 + 5 * (i / 2);
+            entries.Add((tick, tick <= 55 ? 1024 : 1280, seq[i % 16]));
+        }
+
+        return entries.ToArray();
+    }
+
+    private sealed class Run : IDisposable
+    {
+        internal readonly ArcRun Arc;
+        internal readonly Sounds Heard = new();
+        internal int Tick;
+        internal readonly StringBuilder Rows = new();
+        internal readonly StringBuilder HeroRows = new();
+        internal readonly StringBuilder EndFrameRows = new();
+        internal readonly StringBuilder SoundRows = new();
+        internal int Sampled;
+
+        internal Run(string name, uint heroDirection, int heroX, Func<int, int, CutBench.Cell>? cell)
+        {
+            Arc = new ArcRun(new ArcSpec("E20h4c1T0-" + name, "Overworld", "Overworld 3,1-14", Array.Empty<int>(), 8, 6, 0, 4000, RealController: true, Prefabs: true));
+            try
+            {
+                Frames(4);
+                SyntheticField.Install(Arc, cell);
+                foreach (var other in Arc.Entities.Where(e => !ReferenceEquals(e, Arc.Hero)).ToList())
+                {
+                    other.Status = EntityStatus.FlagToDestroy;
+                }
+
+                Arc.Proxy.RecycleDestroyedEntities();
+                typeof(WorldProxy).GetField("<SoundPlayer>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(Arc.Proxy, Heard);
+                Arc.Hero.TargetDirection = heroDirection;
+                Arc.PlaceHero(heroX, 100, 0);
+                Frames(6);
+                Assert.Equal(0u, Arc.Hero.TargetAnimationId);
+                Assert.Equal(1, Arc.Hero.IsOnGround);
+                Arc.Give(0x2B);
+                Arc.SetMp(4, 4);
+                PlayerManager.SetCurrentItemId(GameState.Instance, 0x2B);
+                Arc.Hero.FrameCollisionTickCounter = 0;
+                Arc.Hero.DamagedTickCounter = 0;
+                Arc.Hero.HitCounter = 0;
+                Arc.Hero.TouchingEntity = null;
+            }
+            catch
+            {
+                Dispose();
+                throw;
+            }
+        }
+
+        internal void Frames(int count)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                Arc.HoldDirections(0);
+                Arc.OneFrame();
+            }
+        }
+
+        public void Dispose()
+        {
+            Arc.Proxy.TickTraceForTests = null;
+            Arc.HoldDirections(0);
+            Arc.Dispose();
+        }
+    }
+
+    // the driver 0x80035320 (throwaway port)
+    private static int Driver(EntityScriptProxy hero, uint item)
+    {
+        var world = hero.ScriptHost as IEntityWorldContext;
+        switch (hero.ItemUsePhase)
+        {
+            case 0:
+            {
+                var guard = PlayerManager.TomeSlopeGuard(hero);
+                if (guard != 0)
+                {
+                    return guard;
+                }
+
+                var counter = hero.ItemUseCounter;
+                if (counter < 20)
+                {
+                    return 0;
+                }
+
+                var i = 0;
+                while (i < 32 && counter >= Table[i].Tick)
+                {
+                    if (Table[i].Tick == counter)
+                    {
+                        var born = world!.SpawnEntityBySpriteIndex(hero, false, 16, hero.PosX, hero.PosY, hero.PosZ, (int)((hero.TargetDirection + (uint)Table[i].Delta) & 31));
+                        if (born is not null)
+                        {
+                            born.ForceZ = Table[i].Speed << 8;
+                        }
+                    }
+
+                    i++;
+                }
+
+                if (i >= 32)
+                {
+                    hero.ItemUsePhase = 1;
+                }
+
+                return 0;
+            }
+            case 1:
+            {
+                var guard = PlayerManager.TomeSlopeGuard(hero);
+                if (guard != 0)
+                {
+                    return guard;
+                }
+
+                if (hero.ItemUseCounter < 100)
+                {
+                    return 0;
+                }
+
+                hero.TargetAnimationId = 0x34;
+                hero.ItemUsePhase = 2;
+                return 0;
+            }
+            default:
+                return hero.TargetAnimationId == 0x34 ? 0 : 1;
+        }
+    }
+
+    // E3 0x8007EDA0 (throwaway port)
+    private static void E3(EntityScriptProxy entity, IEntityWorldContext context, GameState state)
+    {
+        if (entity.TargetAnimationId == 1 && entity.ForceResetAnimationFlag == 1)
+        {
+            entity.ScriptHost!.DestroyEntity(entity, -1);
+            return;
+        }
+
+        entity.TargetAnimationId = 1;
+        entity.Flags = (entity.Flags | 0x40u) & ~0x30u;
+        entity.ResyncControllerFromFlags();
+    }
+
+    private static string Row(int tick, EntityScriptProxy e, bool evaluate)
+    {
+        var raw = $"{e.CollisionWidth},{e.CollisionDepth},{e.CollisionHeight}";
+        var ev = raw;
+        if (evaluate)
+        {
+            e.EvaluateFrameBox();
+            ev = $"{e.CollisionWidth},{e.CollisionDepth},{e.CollisionHeight}";
+        }
+
+        return string.Join(",", tick, e.Slot, (int)e.Status, e.PosX, e.PosY, e.PosZ, e.ForceX, e.ForceY, e.ForceZ, e.AnimationDirection, e.TargetDirection, e.TargetAnimationId, e.CurrentAnimationId,
+            e.ForceResetAnimationFlag, e.Flags, e.ForceAdjusted, e.IsOnGround, e.Slope_18c, e.FrameCollisionTickCounter, raw, ev, e.SpriteType);
+    }
+
+    private void Scenario(string name, uint heroDirection, int heroX, Func<int, int, CutBench.Cell>? cell, int last = 140)
+    {
+        using var run = new Run(name, heroDirection, heroX, cell);
+        PlayerManager.ItemStartForTests = PlayerManager.TomeStart;
+        PlayerManager.ItemDriverForTests = Driver;
+        PlayerManager.ItemCancelForTests = (_, _) => { };
+        PlayerManager.TomeTrackCallsForTests = new List<(uint, byte)>();
+        run.Arc.Runner.NativeHandlersEnabled = false;
+        EventProgramRunner.NativeSpriteTypeFilterForTests = new HashSet<int> { 16 };
+        using var registration = run.Arc.Runner.NativeSprites.Register(ScriptHelper.ProgramEDeactivate, 3, new[] { 16 }, E3);
+        GameRandom.RandomSeed = 0x12345678;
+
+        run.Arc.Proxy.TickTraceForTests = pass =>
+        {
+            if (pass == "pad")
+            {
+                run.Tick++;
+                run.Heard.Tick = run.Tick;
+            }
+            else if (pass == "inventory")
+            {
+                var tick = run.Tick;
+                foreach (var e in run.Arc.Entities.Where(x => x.SpriteType == 16).OrderBy(x => x.Slot).ToList())
+                {
+                    run.Rows.AppendLine(Row(tick, e, true));
+                }
+
+                var h = run.Arc.Hero;
+                run.HeroRows.AppendLine(string.Join(",", tick, h.TargetAnimationId, h.ItemInUse, h.ItemUsePhase, h.ItemUseCounter, h.PosX, h.PosY, h.PosZ));
+            }
+        };
+
+        for (var t = 1; t <= last; t++)
+        {
+            run.Arc.HoldDirections(0);
+            if (t == 1)
+            {
+                run.Arc.Press(PadState.Circle);
+            }
+            else
+            {
+                run.Arc.OneFrame();
+            }
+
+            // the end of the frame (one tick per frame): after the validation of the animation switches (FrameSyncPasses)
+            foreach (var e in run.Arc.Entities.Where(x => x.SpriteType == 16).OrderBy(x => x.Slot).ToList())
+            {
+                run.EndFrameRows.AppendLine(Row(run.Tick, e, false));
+            }
+        }
+
+        foreach (var (tick, sfx) in run.Heard.Played)
+        {
+            run.SoundRows.AppendLine(tick + "," + sfx);
+        }
+
+        File.WriteAllText(Path.Combine(Out, name + ".rocks.csv"), run.Rows.ToString());
+        File.WriteAllText(Path.Combine(Out, name + ".hero.csv"), run.HeroRows.ToString());
+        File.WriteAllText(Path.Combine(Out, name + ".endframe.csv"), run.EndFrameRows.ToString());
+        File.WriteAllText(Path.Combine(Out, name + ".sounds.csv"), run.SoundRows.ToString());
+        File.WriteAllText(Path.Combine(Out, name + ".calls.txt"), string.Join("\n", PlayerManager.TomeTrackCallsForTests!.Select(c => c.Item1 + ":" + c.Item2)));
+    }
+
+    private static Func<int, int, CutBench.Cell> Columns(int c0, int c1, int gp)
+        => (column, row) => column >= c0 && column <= c1 ? new CutBench.Cell(0, 0, null, gp) : new CutBench.Cell(0, 0, null, 0);
+
+    [Fact] public void East() => Scenario("earth1_flat_east", 24, 100, null);
+
+    [Fact] public void South() => Scenario("earth1_flat_south", 0, 100, null);
+
+    [Fact] public void West() => Scenario("earth1_flat_west", 8, 100, null);
+
+    [Fact] public void North() => Scenario("earth1_flat_north", 16, 100, null);
+
+    [Fact] public void EastX200() => Scenario("earth1_flat_east_x200", 24, 200, null);
+
+    [Fact] public void DeepWater() => Scenario("earth1_deepwater_cols7_9", 24, 100, Columns(7, 9, 0x08));
+}

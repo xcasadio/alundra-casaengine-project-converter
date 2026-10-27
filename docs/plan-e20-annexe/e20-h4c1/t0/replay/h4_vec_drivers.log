@@ -1,0 +1,76 @@
+vectors 2000 seed 20261017 mismatches 0
+   59 item 0x2b phase 0 result 0
+   9 item 0x2b phase 0 result 1
+   62 item 0x2b phase 1 result 0
+   11 item 0x2b phase 1 result 1
+   13 item 0x2b phase 2 result 0
+   39 item 0x2b phase 2 result 1
+   22 item 0x2b phase 3 result 0
+   77 item 0x2c phase 0 result 0
+   9 item 0x2c phase 0 result 1
+   73 item 0x2c phase 1 result 0
+   9 item 0x2c phase 1 result 1
+   21 item 0x2c phase 2 result 0
+   35 item 0x2c phase 2 result 1
+   27 item 0x2c phase 3 result 0
+   54 item 0x2d phase 0 result 0
+   14 item 0x2d phase 0 result 1
+   64 item 0x2d phase 1 result 0
+   16 item 0x2d phase 1 result 1
+   33 item 0x2d phase 2 result 0
+   21 item 0x2d phase 2 result 1
+   35 item 0x2d phase 3 result 0
+   74 item 0x2e phase 0 result 0
+   13 item 0x2e phase 0 result 1
+   55 item 0x2e phase 1 result 0
+   10 item 0x2e phase 1 result 1
+   33 item 0x2e phase 2 result 0
+   27 item 0x2e phase 2 result 1
+   38 item 0x2e phase 3 result 0
+   75 item 0x2f phase 0 result 0
+   18 item 0x2f phase 0 result 1
+   79 item 0x2f phase 1 result 0
+   20 item 0x2f phase 1 result 1
+   16 item 0x2f phase 2 result 0
+   41 item 0x2f phase 2 result 1
+   30 item 0x2f phase 3 result 0
+   59 item 0x30 phase 0 result 0
+   24 item 0x30 phase 0 result 1
+   79 item 0x30 phase 1 result 0
+   11 item 0x30 phase 1 result 1
+   25 item 0x30 phase 2 result 0
+   37 item 0x30 phase 2 result 1
+   23 item 0x30 phase 3 result 0
+   77 item 0x31 phase 0 result 0
+   13 item 0x31 phase 0 result 1
+   68 item 0x31 phase 1 result 0
+   4 item 0x31 phase 1 result 1
+   21 item 0x31 phase 2 result 0
+   44 item 0x31 phase 2 result 1
+   30 item 0x31 phase 3 result 0
+   75 item 0x32 phase 0 result 0
+   15 item 0x32 phase 0 result 1
+   81 item 0x32 phase 1 result 0
+   8 item 0x32 phase 1 result 1
+   17 item 0x32 phase 2 result 0
+   32 item 0x32 phase 2 result 1
+   25 item 0x32 phase 3 result 0
+coverage wrapper 0x8003634C  73/ 93
+coverage slope helper      19/ 19
+coverage earth1           106/108
+coverage earth2           174/176
+coverage water            187/189
+coverage fire1            118/120
+coverage fire2            145/147
+coverage wind1            216/218
+coverage wind2             75/ 77
+coverage cancel earth2     30/ 30
+coverage cancel water      54/ 54
+coverage cancel fire1      55/ 55
+coverage cancel fire2      47/ 47
+coverage cancel wind2     127/127
+coverage cancel dispatch   50/ 62
+coverage heal water        94/ 94
+coverage heal full         78/ 78
+coverage query             94/ 94
+coverage sort              91/ 91

@@ -1,0 +1,38 @@
+== earth1_flat_east: probe rows 1014 lives 32 | key lives 32
+   whole comparison: 1014 (tick, slot) pairs in both, only in the probe 0 [], only in the key 0 [], field differences {'adir': 32, 'anim_c': 32}
+  FAIL P2: earth1_flat_east life 1 (slot 2, birth 22): row 0 at the birth tick, key 1
+  FAIL P2: earth1_flat_east life 2 (slot 3, birth 27): row 0 at the birth tick, key 3
+  FAIL P2: earth1_flat_east life 7 (slot 8, birth 37): row 0 at the birth tick, key 2
+  FAIL P2: earth1_flat_east life 10 (slot 11, birth 47): row 0 at the birth tick, key 2
+  FAIL P2: earth1_flat_east life 11 (slot 12, birth 47): row 0 at the birth tick, key 1
+  FAIL P2: earth1_flat_east life 13 (slot 2, birth 52): row 0 at the birth tick, key 1
+   P5 east: status 3 of the lives (birth, slot) [((77, 12), 94), ((87, 3), 103), ((92, 14), 109)]
+   P5 east: S3 - birth for every life: [(16, 17), (17, 2), (20, 13)]
+   P6: sounds 32 (probe), 32 (key); all sfx ids [46]
+   P9 east: births slots [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 13, 14, 5, 6]
+   hero/item (animation, item in use, phase) differences over 140 ticks: 0
+   item freed: probe ticks with item 0: first 129; key first 129
+== earth1_flat_south: probe rows 1014 lives 32 | key lives 32
+   whole comparison: 1014 (tick, slot) pairs in both, only in the probe 0 [], only in the key 0 [], field differences {'adir': 32, 'anim_c': 32}
+   P6: sounds 32 (probe), 32 (key); all sfx ids [46]
+   hero/item (animation, item in use, phase) differences over 140 ticks: 0
+== earth1_flat_west: probe rows 1010 lives 32 | key lives 32
+   whole comparison: 1010 (tick, slot) pairs in both, only in the probe 0 [], only in the key 0 [], field differences {'adir': 48, 'anim_c': 32}
+   P6: sounds 32 (probe), 32 (key); all sfx ids [46]
+   hero/item (animation, item in use, phase) differences over 140 ticks: 0
+== earth1_flat_north: probe rows 1014 lives 32 | key lives 32
+   whole comparison: 1014 (tick, slot) pairs in both, only in the probe 0 [], only in the key 0 [], field differences {'adir': 48, 'anim_c': 32}
+   P6: sounds 32 (probe), 32 (key); all sfx ids [46]
+   hero/item (animation, item in use, phase) differences over 140 ticks: 0
+== earth1_flat_east_x200: probe rows 1024 lives 32 | key lives 32
+   whole comparison: 1024 (tick, slot) pairs in both, only in the probe 0 [], only in the key 0 [], field differences {'adir': 32, 'anim_c': 32}
+   P6: sounds 32 (probe), 32 (key); all sfx ids [46]
+   hero/item (animation, item in use, phase) differences over 140 ticks: 0
+== earth1_deepwater_cols7_9: probe rows 832 lives 32 | key lives 32
+   whole comparison: 832 (tick, slot) pairs in both, only in the probe 0 [], only in the key 0 [], field differences {'adir': 32, 'anim_c': 18}
+   P4: lives that touch the deep water: 14
+   P6: sounds 18 (probe), 18 (key); all sfx ids [46]
+   hero/item (animation, item in use, phase) differences over 140 ticks: 0
+row (AnimationDirection) first equal to the key at life tick index (0 = birth tick): {0: 80, 2: 112}
+supplementary field differences over the six keys (info, not a stop): {'adir': 224, 'anim_c': 178}
+PREDICTIONS: {'P1': 'holds', 'P2': 'FAIL x112', 'P3': 'holds', 'P4': 'holds', 'P5': 'holds', 'P6': 'holds', 'P7': 'holds', 'P8': 'holds', 'P9': 'holds'}

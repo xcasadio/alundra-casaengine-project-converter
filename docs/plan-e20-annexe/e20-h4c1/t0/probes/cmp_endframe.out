@@ -1,0 +1,7 @@
+earth1_flat_east pairs 1014 only probe 0 only key 0 differences {'anim_c': 32, 'adir': 16}
+earth1_flat_south pairs 1014 only probe 0 only key 0 differences {'adir': 16, 'anim_c': 32}
+earth1_flat_west pairs 1010 only probe 0 only key 0 differences {'adir': 24, 'anim_c': 32}
+earth1_flat_north pairs 1014 only probe 0 only key 0 differences {'adir': 24, 'anim_c': 32}
+earth1_flat_east_x200 pairs 1024 only probe 0 only key 0 differences {'anim_c': 32, 'adir': 16}
+earth1_deepwater_cols7_9 pairs 832 only probe 0 only key 0 differences {'anim_c': 32, 'adir': 16}
+total {'anim_c': 192, 'adir': 112}

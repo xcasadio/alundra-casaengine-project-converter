@@ -1,0 +1,132 @@
+== crit_flat
+birth  22 slot  1 dir 27  E3 38 st4 51  final (179.9,135.5) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  22 slot  2 dir 18  E3 38 st4 51  final (136.8,40.9) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  27 slot  3 dir 24  E3 43 st4 56  final (196.0,100.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  27 slot  4 dir 30  E3 43 st4 56  final (136.8,159.1) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  32 slot  5 dir 27  E3 48 st4 61  final (179.9,135.5) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  32 slot  6 dir 26  E3 48 st4 61  final (188.8,124.5) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  37 slot  7 dir  0  E3 53 st4 66  final (100.0,164.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  37 slot  8 dir  6  E3 53 st4 66  final (11.2,124.5) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  42 slot  9 dir 27  E3 58 st4 71  final (179.9,135.5) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  42 slot 10 dir  2  E3 58 st4 71  final (63.2,159.1) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  47 slot 11 dir  8  E3 63 st4 76  final (10.0,100.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  47 slot 12 dir 14  E3 63 st4 76  final (63.2,40.9) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  52 slot  1 dir 27  E3 68 st4 81  final (179.9,135.5) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  52 slot  2 dir 10  E3 68 st4 81  final (11.2,75.5) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  57 slot  3 dir 16  E3 73 st4 86  final (100.0,36.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  57 slot  4 dir 22  E3 73 st4 86  final (188.8,75.5) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  62 slot  5 dir 27  E3 82 st4 95  final (199.8,144.4) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  62 slot  6 dir 18  E3 82 st4 95  final (145.9,26.1) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  67 slot  7 dir 24  E3 87 st4 100  final (220.0,100.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  67 slot  8 dir 30  E3 87 st4 100  final (145.9,173.9) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  72 slot  9 dir 27  E3 92 st4 105  final (199.8,144.4) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  72 slot 10 dir 26  E3 92 st4 105  final (210.9,130.6) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  77 slot 11 dir  0  E3 97 st4 110  final (100.0,180.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  77 slot 12 dir  6  E3 94 st4 107  final (10.0,126.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 31
+birth  82 slot  1 dir 27  E3 102 st4 115  final (199.8,144.4) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  82 slot  2 dir  2  E3 102 st4 115  final (54.1,173.9) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  87 slot  3 dir  8  E3 103 st4 116  final (10.0,100.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  87 slot  4 dir 14  E3 107 st4 120  final (54.1,26.1) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  92 slot 13 dir 27  E3 112 st4 125  final (199.8,144.4) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  92 slot 14 dir 10  E3 109 st4 122  final (10.0,74.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 31
+birth  97 slot  5 dir 16  E3 117 st4 130  final (100.0,20.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  97 slot  6 dir 22  E3 117 st4 130  final (210.9,69.4) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+== crit_slope_gp2_cols7_9
+birth  22 slot  1 dir 27  E3 38 st4 51  final (179.9,135.5) pz_end 0.00 slope18C [0, 1]  moved after E3 (0.0, 0.0)  life 30
+birth  22 slot  2 dir 18  E3 38 st4 51  final (136.8,40.9) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  27 slot  3 dir 24  E3 43 st4 56  final (196.0,100.0) pz_end 0.00 slope18C [0, 1]  moved after E3 (0.0, 0.0)  life 30
+birth  27 slot  4 dir 30  E3 43 st4 56  final (136.8,159.1) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  32 slot  5 dir 27  E3 48 st4 61  final (179.9,135.5) pz_end 0.00 slope18C [0, 1]  moved after E3 (0.0, 0.0)  life 30
+birth  32 slot  6 dir 26  E3 48 st4 61  final (188.8,124.5) pz_end 0.00 slope18C [0, 1]  moved after E3 (0.0, 0.0)  life 30
+birth  37 slot  7 dir  0  E3 53 st4 66  final (100.0,164.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  37 slot  8 dir  6  E3 53 st4 66  final (11.2,124.5) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  42 slot  9 dir 27  E3 58 st4 71  final (179.9,135.5) pz_end 0.00 slope18C [0, 1]  moved after E3 (0.0, 0.0)  life 30
+birth  42 slot 10 dir  2  E3 58 st4 71  final (63.2,159.1) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  47 slot 11 dir  8  E3 63 st4 76  final (10.0,100.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  47 slot 12 dir 14  E3 63 st4 76  final (63.2,40.9) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  52 slot  1 dir 27  E3 68 st4 81  final (179.9,135.5) pz_end 0.00 slope18C [0, 1]  moved after E3 (0.0, 0.0)  life 30
+birth  52 slot  2 dir 10  E3 68 st4 81  final (11.2,75.5) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  57 slot  3 dir 16  E3 73 st4 86  final (100.0,36.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  57 slot  4 dir 22  E3 73 st4 86  final (188.8,75.5) pz_end 0.00 slope18C [0, 1]  moved after E3 (0.0, 0.0)  life 30
+birth  62 slot  5 dir 27  E3 82 st4 95  final (199.8,144.4) pz_end 0.00 slope18C [0, 1]  moved after E3 (0.0, 0.0)  life 34
+birth  62 slot  6 dir 18  E3 82 st4 95  final (145.9,26.1) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  67 slot  7 dir 24  E3 87 st4 100  final (220.0,100.0) pz_end 0.00 slope18C [0, 1]  moved after E3 (0.0, 0.0)  life 34
+birth  67 slot  8 dir 30  E3 87 st4 100  final (145.9,173.9) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  72 slot  9 dir 27  E3 92 st4 105  final (199.8,144.4) pz_end 0.00 slope18C [0, 1]  moved after E3 (0.0, 0.0)  life 34
+birth  72 slot 10 dir 26  E3 92 st4 105  final (210.9,130.6) pz_end 0.00 slope18C [0, 1]  moved after E3 (0.0, 0.0)  life 34
+birth  77 slot 11 dir  0  E3 97 st4 110  final (100.0,180.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  77 slot 12 dir  6  E3 94 st4 107  final (10.0,126.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 31
+birth  82 slot  1 dir 27  E3 102 st4 115  final (199.8,144.4) pz_end 0.00 slope18C [0, 1]  moved after E3 (0.0, 0.0)  life 34
+birth  82 slot  2 dir  2  E3 102 st4 115  final (54.1,173.9) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  87 slot  3 dir  8  E3 103 st4 116  final (10.0,100.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  87 slot  4 dir 14  E3 107 st4 120  final (54.1,26.1) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  92 slot 13 dir 27  E3 112 st4 125  final (199.8,144.4) pz_end 0.00 slope18C [0, 1]  moved after E3 (0.0, 0.0)  life 34
+birth  92 slot 14 dir 10  E3 109 st4 122  final (10.0,74.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 31
+birth  97 slot  5 dir 16  E3 117 st4 130  final (100.0,20.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  97 slot  6 dir 22  E3 117 st4 130  final (210.9,69.4) pz_end 0.00 slope18C [0, 1]  moved after E3 (0.0, 0.0)  life 34
+== crit_step16_cols7_9
+birth  22 slot  1 dir 27  E3 35 st4 48  final (157.0,125.3) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 27
+birth  22 slot  2 dir 18  E3 38 st4 51  final (136.8,40.9) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  27 slot  3 dir 24  E3 38 st4 51  final (157.0,100.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 25
+birth  27 slot  4 dir 30  E3 43 st4 56  final (136.8,159.1) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  32 slot  5 dir 27  E3 45 st4 58  final (157.0,125.3) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 27
+birth  32 slot  6 dir 26  E3 45 st4 58  final (157.0,115.7) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 27
+birth  37 slot  7 dir  0  E3 53 st4 66  final (100.0,164.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  37 slot  8 dir  6  E3 53 st4 66  final (11.2,124.5) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  42 slot  9 dir 27  E3 55 st4 68  final (157.0,125.3) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 27
+birth  42 slot 10 dir  2  E3 58 st4 71  final (63.2,159.1) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  47 slot 11 dir  8  E3 63 st4 76  final (10.0,100.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  47 slot 12 dir 14  E3 63 st4 76  final (63.2,40.9) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  52 slot  1 dir 27  E3 65 st4 78  final (157.0,125.3) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 27
+birth  52 slot  2 dir 10  E3 68 st4 81  final (11.2,75.5) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  57 slot  3 dir 16  E3 73 st4 86  final (100.0,36.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  57 slot  4 dir 22  E3 70 st4 83  final (157.0,84.3) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 27
+birth  62 slot  5 dir 27  E3 77 st4 90  final (174.9,133.3) pz_end 16.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 29
+birth  62 slot  6 dir 18  E3 82 st4 95  final (145.9,26.1) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  67 slot  7 dir 24  E3 82 st4 95  final (190.0,100.0) pz_end 16.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 29
+birth  67 slot  8 dir 30  E3 87 st4 100  final (145.9,173.9) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  72 slot  9 dir 27  E3 87 st4 100  final (174.9,133.3) pz_end 16.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 29
+birth  72 slot 10 dir 26  E3 87 st4 100  final (183.2,123.0) pz_end 16.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 29
+birth  77 slot 11 dir  0  E3 97 st4 110  final (100.0,180.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  77 slot 12 dir  6  E3 94 st4 107  final (10.0,126.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 31
+birth  82 slot  1 dir 27  E3 97 st4 110  final (174.9,133.3) pz_end 16.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 29
+birth  82 slot  2 dir  2  E3 102 st4 115  final (54.1,173.9) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  87 slot  3 dir  8  E3 103 st4 116  final (10.0,100.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  87 slot  4 dir 14  E3 107 st4 120  final (54.1,26.1) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  92 slot  5 dir 27  E3 107 st4 120  final (174.9,133.3) pz_end 16.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 29
+birth  92 slot 13 dir 10  E3 109 st4 122  final (10.0,74.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 31
+birth  97 slot  6 dir 16  E3 117 st4 130  final (100.0,20.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  97 slot  7 dir 22  E3 112 st4 125  final (183.2,77.0) pz_end 16.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 29
+== crit_step32_cols7_9
+birth  22 slot  1 dir 27  E3 35 st4 48  final (157.0,125.3) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 27
+birth  22 slot  2 dir 18  E3 38 st4 51  final (136.8,40.9) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  27 slot  3 dir 24  E3 38 st4 51  final (157.0,100.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 25
+birth  27 slot  4 dir 30  E3 43 st4 56  final (136.8,159.1) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  32 slot  5 dir 27  E3 45 st4 58  final (157.0,125.3) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 27
+birth  32 slot  6 dir 26  E3 45 st4 58  final (157.0,115.7) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 27
+birth  37 slot  7 dir  0  E3 53 st4 66  final (100.0,164.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  37 slot  8 dir  6  E3 53 st4 66  final (11.2,124.5) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  42 slot  9 dir 27  E3 55 st4 68  final (157.0,125.3) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 27
+birth  42 slot 10 dir  2  E3 58 st4 71  final (63.2,159.1) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  47 slot 11 dir  8  E3 63 st4 76  final (10.0,100.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  47 slot 12 dir 14  E3 63 st4 76  final (63.2,40.9) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  52 slot  1 dir 27  E3 65 st4 78  final (157.0,125.3) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 27
+birth  52 slot  2 dir 10  E3 68 st4 81  final (11.2,75.5) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  57 slot  3 dir 16  E3 73 st4 86  final (100.0,36.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  57 slot  4 dir 22  E3 70 st4 83  final (157.0,84.3) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 27
+birth  62 slot  5 dir 27  E3 75 st4 88  final (157.0,125.3) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 27
+birth  62 slot  6 dir 18  E3 82 st4 95  final (145.9,26.1) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  67 slot  7 dir 24  E3 78 st4 91  final (157.0,100.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 25
+birth  67 slot  8 dir 30  E3 87 st4 100  final (145.9,173.9) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  72 slot  9 dir 27  E3 85 st4 98  final (157.0,125.3) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 27
+birth  72 slot 10 dir 26  E3 85 st4 98  final (157.0,115.7) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 27
+birth  77 slot 11 dir  0  E3 97 st4 110  final (100.0,180.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  77 slot 12 dir  6  E3 94 st4 107  final (10.0,126.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 31
+birth  82 slot  1 dir 27  E3 95 st4 108  final (157.0,125.3) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 27
+birth  82 slot  2 dir  2  E3 102 st4 115  final (54.1,173.9) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  87 slot  3 dir  8  E3 103 st4 116  final (10.0,100.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 30
+birth  87 slot  4 dir 14  E3 107 st4 120  final (54.1,26.1) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  92 slot  5 dir 27  E3 105 st4 118  final (157.0,125.3) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 27
+birth  92 slot  7 dir 10  E3 109 st4 122  final (10.0,74.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 31
+birth  97 slot  6 dir 16  E3 117 st4 130  final (100.0,20.0) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 34
+birth  97 slot 13 dir 22  E3 110 st4 123  final (157.0,84.3) pz_end 0.00 slope18C [0]  moved after E3 (0.0, 0.0)  life 27

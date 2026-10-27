@@ -1,0 +1,5 @@
+cb5b6acca719cc08129efc63747e3a45 *../critic/work/fcopy/_crit_out/crit_flat.json
+0b1a89e768bf34681c9ffc74b70a5626 *../critic/work/fcopy/_crit_out/crit_pointblank_wall_col5.json
+af7d53610dc8a363266f66dc0b76c93e *../critic/work/fcopy/_crit_out/crit_slope_gp2_cols7_9.json
+949e8928b0bfcc524ed3f971efbb2c2e *../critic/work/fcopy/_crit_out/crit_step16_cols7_9.json
+9e89d1dbf494e2c0aab5d441958b440f *../critic/work/fcopy/_crit_out/crit_step32_cols7_9.json
