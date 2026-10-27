@@ -11149,7 +11149,7 @@ Exécution en mode AUTO sur `chantier/theme1-porter-plateforme`, HEAD de départ
 - **Recette de l'auteur, à faire** : la sauvegarde `herbe-m14` (carte 14, tuile (31, 43, 1), Steel Edge) ; couper un buisson à l'épée,
   puis avec la vague : le buisson disparaît, l'éclat, parfois un objet, les sons. Les pas et la poussière restent à E20.e2.
 
-### 1.27c E20.e2 — Les pas et la poussière du héros : les trois bouchons de `CreatePlayerAnimationEffects` (D-E20-88 (2), D-E20-89 (3)) ⏳ (détaillée le 2026-10-27 ; thème 2 ; après E20.eC ; révision 0 relue : REVISE ; révision 1 relue : REVISE ; **révision 1.1** du 2026-10-27 après disposition, à la relecture de clôture)
+### 1.27c E20.e2 — Les pas et la poussière du héros : les trois bouchons de `CreatePlayerAnimationEffects` (D-E20-88 (2), D-E20-89 (3)) ⏳ (détaillée le 2026-10-27 ; thème 2 ; après E20.eC ; révision 0 relue : REVISE ; révision 1 relue : REVISE ; révision 1.1 du 2026-10-27 après disposition, relue à la clôture : REVISE (un point) ; **révision 1.2** du 2026-10-27, la correction de ce point ; ⚠️ **en pause de relecture**, Q-E2-R)
 
 **Provenance.** Lecture seule du 2026-10-27 (HEAD `539d4cf4`) et sa critique fraîche, CONFIRMÉE avec trois corrections, une citation d'ADR
 redressée et dix ajouts repris ici, dans le scratchpad de la session principale (`scratchpad/t2-feedback/e2-dust/` et `e2-dust-critic/` :
@@ -11170,6 +11170,14 @@ du masque de la préparation, le choix de `m`) que le plan ne mettait pas dans l
 contrat des créateurs (ils prennent ce que le binaire lit au site et portent eux-mêmes les gardes, la porte et le facteur) et les deux
 mutants nomment les cas de (c1) qui les distinguent ; (2) « `AnimationDirection` au lieu de `TickFacing` » : (f1) fait tourner Alundra
 pendant la préparation, au tick où un nuage naît, contre une ligne neuve de l'oracle.
+
+**Révision 1.2 (2026-10-27, après la relecture de clôture : REVISE).** Un seul point : à un tick par image, `TickFacing` et
+`AnimationDirection` sont égales en tête de chaque tick (la passe de synchronisation de la fin de l'image précédente a déjà écrit la
+même direction, `PlayerManager.cs:204-213`, `FrameSyncPasses.cs`), y compris au tick du virage : le mutant survivait à (f1). Elles ne
+diffèrent qu'au second tick d'une image de deux ticks. (f1) et sa ligne d'oracle deviennent ce cas : **deux ticks par image**, la
+direction passe de 3 à 0 au premier tick, un nuage de préparation naît au second ; ses forces suivent `TickFacing` (la direction neuve,
+comme le `+0x98` du binaire au tick 2) et non `AnimationDirection` (l'ancienne, écrite en fin d'image) ; une sonde (P3) confirme que les
+deux valeurs diffèrent à ce tick dans la DLL. La tranche est en pause de relecture (une clôture REVISE) : Q-E2-R à l'auteur.
 
 **Prérequis.** E20.e, E20.f2, E20.d1 et E20.i faites ; **E20.eC faite** (l'octet `0xA` exporté sous le nom `DustEffectId`, D-E20-90) ; les
 tranches du thème 2 s'exécutent une à la fois dans l'arbre de travail du dépôt, dans l'ordre de D-E20-89 ; T0 nomme son HEAD de départ et y
@@ -11278,12 +11286,12 @@ natifs qui lisent l'octet ; le moteur ; le convertisseur et les données (le nom
   `docs/plan-e20-annexe/e20-e2/oracle/`, rejouer les 22 scénarios et les groupes G1 à G10 et W1 à W10 avec le réservoir à emplacements,
   un journal par tick (les sons, les créations : id, X, Y, Z, forces, emplacement ; le mot du générateur avant et après), et les cas que
   la critique liste (la préparation pour les directions 0 à 2 et `+0xB0` = 3 et 4, la table d'eau en préparation, le sable dans le temps,
-  l'atterrissage depuis d'autres états que `0x2C` et `0x2D`, le mode 1, le réservoir plein, la course et le plongeon verticaux ; (révision 1.1) la préparation tenue en diagonale où la direction passe de 3 à 0 au tick
-  où un nuage naît) ; deux
+  l'atterrissage depuis d'autres états que `0x2C` et `0x2D`, le mode 1, le réservoir plein, la course et le plongeon verticaux ; (révision 1.2) la préparation tenue en diagonale où la direction passe de 3 à 0 au tick
+  qui précède celui où un nuage naît, la ligne du nuage portant les forces de la direction neuve) ; deux
   exécutions au même manifeste ; (d) **sondes de la DLL** (tests jetables, jamais commités, versés en `.txt` ; une sonde contredite est un
   arrêt) : P1 les deux modes atteignent les trois parties aux ticks des clés (le journal des bouchons) ; P2 `FloorHeight + 1` égale le sol
   de l'oracle sur un sol nu, et la valeur de support égale celle du binaire sur une entité ; P3 `TickFacing` égale `+0x98` de l'oracle aux
-  deux appels ; P4 l'ordre des tirages d'une création mise en file (ADR-0077) ; (e) **l'inventaire par exécution** (un câblage temporaire,
+  deux appels, et (révision 1.2) diffère d'`AnimationDirection` au second tick de l'image de deux ticks de (f1) ; P4 l'ordre des tirages d'une création mise en file (ADR-0077) ; (e) **l'inventaire par exécution** (un câblage temporaire,
   la suite entière, versé en `.txt`) : la liste des tests qui bougent, au moins les consommateurs de `RunMontage.CompareRows`
   (`HeroRunTests`, `HeroRunArenaTests`, `HeroSwimTests`, `HeroDeepWaterWallTests`, `StickProbeTests`, `TomeOracleTests`), `FlailBounceTests`
   (`:620-700`), `HeroAttackTests` (`:40`, `:159-161`), `HeroChargeTests` (`:654-685`), `HeroJumpTests` (`:262-312`, `[10]` devient
@@ -11296,9 +11304,9 @@ natifs qui lisent l'octet ; le moteur ; le convertisseur et les données (le nom
   réservoir ; l'application de la file fait les tirages et crée les nuages ; (s1) les sons par pente et leur cadence, l'id 0 jamais
   demandé ; (d1) `DustEffectIndex` : 7 par défaut, la valeur de la carte quand elle en a une autre (une carte synthétique), et (révision 1)
   **par les vrais corps** : sur un hôte dont l'effet de poussière vaut 9, la course crée des effets 9 et l'atterrissage trois effets 9
-  (l'éclaboussure 6 des pentes 1, 2 et 4 ne change pas) ; (f1) (révision 1.1) la direction du début du tick : la préparation tenue, la direction
-  passe de 3 à 0 au tick où un nuage naît : les forces de ce nuage suivent la ligne de l'ancienne direction, égales à la ligne de
-  l'oracle de T0 (c) ; (z1) le Z du sol + 1 sur un sol nu, la valeur du support sur une entité ;
+  (l'éclaboussure 6 des pentes 1, 2 et 4 ne change pas) ; (f1) (révision 1.2) la direction du début du tick, à **deux ticks par image** : la préparation
+  tenue, la direction passe de 3 à 0 au premier tick de l'image, un nuage naît au second : ses forces suivent `TickFacing` (la direction
+  neuve), égales à la ligne de l'oracle de T0 (c), et diffèrent de celles que donnerait `AnimationDirection` (l'ancienne) ; (z1) le Z du sol + 1 sur un sol nu, la valeur du support sur une entité ;
   (m1) `RunMontage` contre les clés G1 à G10 et W1 à W10 avec les effets 6 et 7 et les sons 11, 12 et 21 (les exclusions levées) ; (w1) le
   monde, la course sur la carte 14 (`herbe-m14`) : un nuage tous les 4 ticks derrière, le son 12 tous les 8 ; (w2) l'atterrissage après un
   saut : le son 11, trois nuages, 6 tirages ; (w3) le mode verrouillé : les pas et l'atterrissage (le verrou) ; (w4) le plongeon dans
@@ -11314,7 +11322,7 @@ natifs qui lisent l'octet ; le moteur ; le convertisseur et les données (le nom
   `FZ` omise ((c1)) ; la table d'eau non choisie sur les pentes 1, 2 et 4 ((c1), (m1)) ; `n = +0xB0` au lieu de `+0xB0 - 1` ((c1) : la préparation à `+0xB0 = 0`, aucun nuage, et à `+0xB0 = 1`, le masque `[0]`) ; deux
   nuages au lieu de trois ((c1), (w2)) ; les tirages de l'atterrissage sans création ((c1), le réservoir plein) ; le réservoir plein qui
   tire ((c1)) ; l'id 0 demandé ((s1)) ; les tables de sons de marche et de course échangées ((s1), (m1)) ; `AnimationDirection` au lieu de
-  `TickFacing` ((f1), le nuage du tick du virage) ; le `+1` du Z omis ((z1)) ; `DustEffectIndex` ignoré (7 en dur) ((d1), par les vrais corps, l'id 9) ; le plongeon `/ 4` en `/ 2` ((c1), (w4)) ;
+  `TickFacing` ((f1), le nuage du second tick d'une image de deux ticks) ; le `+1` du Z omis ((z1)) ; `DustEffectIndex` ignoré (7 en dur) ((d1), par les vrais corps, l'id 9) ; le plongeon `/ 4` en `/ 2` ((c1), (w4)) ;
   le signe du décalage X du sable ((c1)) ; le mode 1 sans les pas ((w3)) ; le verrou d'atterrissage ignoré ((w3)) ; les créateurs qui
   notifient `CreatedForTests` ((g1), un nuage trouvé dans `CreatedForTests`) ; `CreateNow` au lieu de la file ((c2), les tirages différés) ; un ADR neuf (numéro libre recompté
   sur toutes les branches) ; la ligne d'enveloppe et la doc de classe de `PlayerAnimationEffects` à jour.
@@ -12399,7 +12407,7 @@ tolérance) ; un test hors de la liste prédite qui bouge ; un besoin de toucher
 
 **Retour arrière.** Retirer les branches `0x1F` (Rond revient au bouchon silencieux) ; la phase A reste inerte.
 
-#### 1.30.4b E20.h3d — Le pot magique : A20 et C74 (le type `0x199`) ⏳ (détaillée le 2026-10-27 ; thème 2 ; D-E20-88, D-E20-90 ; après h3c ; révision 0 relue : REVISE ; **révision 1** du 2026-10-27, non relue)
+#### 1.30.4b E20.h3d — Le pot magique : A20 et C74 (le type `0x199`) ⏳ (détaillée le 2026-10-27 ; thème 2 ; D-E20-88, D-E20-90 ; après h3c ; révision 0 relue : REVISE ; révision 1 relue : REVISE ; **révision 1.1** du 2026-10-27 après disposition, à la relecture de clôture)
 
 **Provenance.** La même lecture et la même critique que h3c (`scratchpad/t2-feedback/h3c-beans/` et `h3c-beans-critic/`, versées par le T0 de
 h3c à `docs/plan-e20-annexe/e20-h3cd-disc/`) : les vecteurs neufs du pot (`out/goldens_pot.json`, 25 pour A20 et 25 pour C74, rejoués depuis une
@@ -12414,6 +12422,12 @@ et les mutants nomment les tests qui les distinguent ; (2) la liste prédite ome
 tourne sur un registre neuf où seul `BeansAi` est inscrit et ne bouge pas ; T0 (d) nomme chaque test de h3c qui observe un pot, avec son
 registre.
 
+**Révision 1.1 (2026-10-27, disposition de la session principale après deux REVISE de l'époque : FIX).** La relecture de la révision 1 a
+relevé que (w6), la séquence de la carte 144 jusqu'à la corniche, n'avait aucune clé du binaire (`walk_a` est un saut vertical sans
+direction ; la recette de la 144 est une inférence de la critique, non rejouée) ni de banc défini (le registre de la phase A, `ArcRun` sur
+la vraie carte). Disposition : **(w6) sort des tests** ; la corniche de la 144 reste à la recette de l'auteur, et T0 (b) la mesure à
+l'oracle pour la recette (versée, l'oracle d'aucun test) ; le but est réduit à ce que les clés prouvent.
+
 **Prérequis.** E20.h3c faite (E21 réveille le pot) ; l'ordre du thème 2 (D-E20-89) ; T0 nomme son HEAD de départ et y lance la suite entière :
 zéro échec exigé.
 
@@ -12421,7 +12435,8 @@ zéro échec exigé.
 31) puis se repose ; Alundra montée dessus l'enfonce (0,5 px par tick, 12 px) ; resté sur lui 28 ticks après le début de l'enfoncement, le pot
 la tient (le maintien) ; un saut depuis le maintien la renvoie très haut (99 px au-dessus du sol, environ 83 au-dessus du haut du pot, 38 ticks
 de vol) et le pot remonte par moitiés (le son 86) ; un saut pendant l'enfoncement est un saut normal ; un pot dormant est un bloc solide de
-16 px ; un pot se rendort à chaque entrée sur la carte. Sur la carte 144, le grand saut atteint le coffre de la corniche (48 px).
+16 px ; un pot se rendort à chaque entrée sur la carte. Sur la carte 144, la recette de l'auteur vérifie que le grand saut atteint le
+coffre de la corniche (48 px) (révision 1.1).
 
 **Faits.**
 - **La fiche du pot** (l'enregistrement 153, `data-extracted/data/map_12.json`) : `0x6080` (Collidable, NoObstacleSlide, NoRiders, sans Gravity),
@@ -12465,7 +12480,10 @@ inconnus des effets ; le moteur (un manque se consigne).
 **Tâches.**
 - ⏳ **T0 — Oracle, sondes, liste prédite** (commit de docs). (a) Le HEAD de départ et la suite à zéro échec ; (b) rejouer depuis des copies
   `goldens_pot.json`, les clés du grand saut et celles de la critique, deux exécutions au même manifeste, versées à
-  `docs/plan-e20-annexe/e20-h3d/keys/` ; les refaire **avec le banc de la DLL** là où la clé dépend du tick où le héros se pose (la réserve
+  `docs/plan-e20-annexe/e20-h3d/keys/` ; (révision 1.1) **pour la recette seulement**, la séquence de la carte 144 mesurée à l'oracle (le champ
+  des vraies cases autour du pot en (11, 15) et de la corniche (10..13, 14), depuis la case du préréglage, sans écriture de la position du
+  héros : le haricot lancé, le réveil, Alundra sur le pot, le maintien, le saut direction tenue vers le nord), versée avec le tick et le Z
+  de l'atterrissage, l'oracle d'aucun test ; les refaire **avec le banc de la DLL** là où la clé dépend du tick où le héros se pose (la réserve
   du rapport : une clé par écriture de la position est remplacée par celle de la critique, le héros qui marche) ; (c) **sondes de la DLL**
   (jetables, versées en `.txt` ; une sonde contredite est un arrêt) : P1 les durées des chaînes 22, 28 et 18 ticks par l'horloge logique ;
   P2 le pot sans gravité qui descend s'arrête quand le bas de sa boîte touche le sol (-12) ; P3 `ForceZ = 0x98000` écrit par le programme est
@@ -12480,10 +12498,8 @@ inconnus des effets ; le moteur (un manque se consigne).
   monde, le pot inscrit sur un registre neuf (le modèle de `WaterDropAi`), sans tolérance hors du `-1` de Z de l'ADR-0026 : (w1) le réveil par
   un haricot (`beans_pot` de la critique : l'animation 1 du t64 au t86, l'effet 14 aux t65, 69, … 85, l'animation 2 au t86) ; (w2) le grand saut
   contre `walk_a` de la critique (la chronologie du t117 au t213) ; (w3) le saut trop tôt contre `walk_early135` (un saut normal, apex 35,5) ;
-  (w4) le pot dormant contre `potjump_nowake` (un bloc de 16 px, apex 43,5) ; (w5) l'enfoncement jusqu'à -12 et le retour par moitiés ; (w6) la
-  carte 144 (le banc d'`ArcRun` sur la vraie carte si T0 montre qu'elle fait tourner le bloc des entités, sinon un champ synthétique des
-  cases de la 144 autour du pot) : depuis la case du préréglage, un haricot lancé sur le pot, le réveil, Alundra montée dessus, le maintien,
-  le saut qui la pose sur la corniche de 48 px.
+  (w4) le pot dormant contre `potjump_nowake` (un bloc de 16 px, apex 43,5) ; (w5) l'enfoncement jusqu'à -12 et le retour par moitiés ;
+  (révision 1.1) pas de (w6) : la corniche de la 144 est à la recette.
 - ⏳ **T2 — Phase B et tests de production** (rouges avant) : (p1) l'inscription : (A, 20) et (C, 74) pour le type `0x199` seul ; (p2) le réveil
   par le chemin de production (le haricot de h3c sur un pot né de sa carte) ; les épingles réécrites par dérivation ; la preuve de retrait :
   retirer l'inscription rend rouges (p1), (p2) et les cinq épingles du registre (révision 1), et les tests
@@ -12497,7 +12513,7 @@ inconnus des effets ; le moteur (un manque se consigne).
   qui agit à l'animation 0 ((v1), les arcs des cartes 14 et 15) ; chacun appliqué par script puis annulé ; un ADR neuf (numéro libre recompté).
 - ⏳ **T4 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
 
-**Acceptation.** Les vecteurs et les clés rejoués à l'identique ; les sondes tenues ; (v1), (v2) et (w1) à (w6) rouges avant et verts après ;
+**Acceptation.** Les vecteurs et les clés rejoués à l'identique ; les sondes tenues ; (v1), (v2) et (w1) à (w5) rouges avant et verts après ;
 (p1) et (p2) rouges avant la phase B et verts après ; la preuve de retrait exacte ; les mutants tous tués ; la suite en Release et en Debug,
 zéro échec ; les tests déplacés ⊂ la liste de T0 (d) ; le moteur, le convertisseur et les données sans diff. **Recette de l'auteur** (non
 bloquante) : `haricots-m144` : ni le saut au sol ni le saut depuis le pot dormant n'atteignent la corniche ; un haricot lancé sur le pot le
