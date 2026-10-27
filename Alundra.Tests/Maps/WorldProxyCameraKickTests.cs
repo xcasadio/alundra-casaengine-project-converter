@@ -113,6 +113,19 @@ public sealed class WorldProxyCameraKickTests : IDisposable
         Assert.Empty(proxy.CameraKickOfTickForTests);
     }
 
+    /// <summary>T3 (survivor of the mutant m42, the reset <c>_cameraKickTick = 0</c> removed): after a driven frame of three ticks, an entity that ticks outside the entity block (before the next <c>Update</c>) files its kick at the index 0 of the next image, never at the index of the last tick of the previous frame.</summary>
+    [Fact]
+    public void K2_AfterADrivenFrameOfThreeTicks_AKickFiledOutsideTheEntityBlock_GoesToTheIndex0_NotToTheLastTickOfTheFrame()
+    {
+        using var arena = new HitArena("h4c2-k2b", 100, 100, new List<int[]>());
+        var proxy = arena.Arc.Proxy;
+
+        arena.Frame(0, 3);
+        ((IEntityWorldContext)proxy).SetCameraKick(2);
+
+        Assert.Equal(new[] { 2 }, proxy.CameraKickOfTickForTests);
+    }
+
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     // (k3) a world with no driver: E13 files its kick at the index 0 before Update, the camera step of the same image applies it.
     // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
