@@ -5474,7 +5474,15 @@ hors de la fenêtre ; le tick noté seulement avec un sprite). **Reportés (P4)*
 tranché (option A) ; enveloppe, révision 10 : e0a5 ajoutée aux prérequis des lignes 5 (f3c), 6, 7, 8 (f6b) et 11, et à la ligne 2 ;
 §1.16.4 : la mesure P-B d'e0a3b est à refaire après e0a5.
 
-#### 1.16.6 E20.e0a6 — La fraction de pixel à la naissance par l'interface (D-E20-92) ⏳ (détaillée le 2026-10-27, révision 0, **READY** à la première relecture, `plan-verifier` frais ; thème 2 ; avant la reprise de h4c2)
+#### 1.16.6 E20.e0a6 — La fraction de pixel à la naissance par l'interface (D-E20-92) ✅ (**faite et CONFIRMED le 2026-10-27**, `ef0c28dc` à `a32b114f`, complément de l'ADR-0103 ; détaillée le 2026-10-27, révision 0, **READY** à la première relecture, `plan-verifier` frais ; thème 2 ; avant la reprise de h4c2)
+
+**Résultats (2026-10-27, `docs/plan-e20-annexe/e20-e0a6/`).** Le binaire passe la position 16.16 de la caisse à la naissance du butin
+(`DestroyEntity` `0x8003A59C` appelle `0x80032B90`, qui passe `+0x114`, `+0x118`, `+0x11C` entiers à `SpawnWarpEntity` `0x80039F58`) ; une
+seule ligne de code (`keepSubPixel: true` au site de `SpawnEntityBySpriteIndex`, les deux autres sites inchangés) ; (s1) et (s2) rouges avant,
+verts après ((s2) rejoue les deux premières naissances de `cast_2c_pf_mid_x600y480` ; (s1) déplacé loin du héros, qui poussait le rocher) ;
+B5 seule a bougé (ses trois lignes), réécrite par dérivation ; la suite 7 721 verte en Release et en Debug ; le mutant tué par (s1), (s2)
+et B5 ; deux verifiers frais CONFIRMED (deux avis P4 : le commit de tests garde les premières coordonnées de (s1), rouges même avec le code ;
+aucune autre remarque).
 
 **Provenance.** L'arrêt de T0 de h4c2 sur la sonde (s2) (`docs/plan-e20-annexe/e20-h4c2/t0/results.md`, l'expérience
 `docs/plan-e20-annexe/e20-h4c2/t0/spawn-subpixel/`) : dans les clés `cast_2c_pf_mid_x600y480` et `cast_2c_pf_rockfix`, 13 naissances de
@@ -5508,16 +5516,16 @@ naissance, à la racine comme dans sa position logique. Rien d'autre ne change.
 l'ADR-0103 (le complément) ; ce plan. **Hors périmètre** : les autres chemins de naissance ; le moteur.
 
 **Tâches.**
-- ⏳ **T0 — Relevés** (commit de docs) : le HEAD de départ et la suite à zéro échec ; la lecture au binaire de la naissance du butin d'E2
+- ✅ **T0 — Relevés** (commit de docs ; `ef0c28dc`) : le HEAD de départ et la suite à zéro échec ; la lecture au binaire de la naissance du butin d'E2
   (la position passée à la création) ; la liste prédite : B5 seule (ses trois lignes) ; recomptée par un câblage temporaire et la suite entière.
-- ⏳ **T1 — Test d'abord, puis le code** : (s1) une entité née par l'interface à une position fractionnaire (143,5 px en X, une fraction en Y)
+- ✅ **T1 — Test d'abord, puis le code** (`b5f85baf`, `aa63f92e`) : (s1) une entité née par l'interface à une position fractionnaire (143,5 px en X, une fraction en Y)
   garde cette position à la racine et dans sa position logique au tick suivant, rouge avant ; (s2) la naissance d'un rocher du tome de terre
   2 rejouée contre `cast_2c_pf_mid_x600y480` au tick de naissance et au suivant (X et Y égaux à la clé ; le banc de la sonde de h4c2, sans
   le code de h4c2 : le rocher né par la couture de naissance), rouge avant ; puis l'argument ; B5 réécrite (D-E0A6-2).
-- ⏳ **T2 — Suites et mutant** : la suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ;
+- ✅ **T2 — Suites et mutant** (`a32b114f`) : la suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ;
   `cmp` ; `check_names.py --rules` ; le mutant « `keepSubPixel: false` » tué par (s1), (s2) et B5 ; le complément de l'ADR-0103 ; résultats
   dans l'annexe.
-- ⏳ **T3 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+- ✅ **T3 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles (CONFIRMED tous deux).
 
 **Acceptation.** (s1) et (s2) rouges avant et verts après ; seule B5 a bougé, réécrite par dérivation ; la suite en Release et en Debug, zéro
 échec ; le moteur, le convertisseur et les données sans diff.
