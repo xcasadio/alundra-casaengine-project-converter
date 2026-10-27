@@ -315,4 +315,26 @@ public sealed class SpawnBySpriteIndexInterfaceTests
         IEntityWorldContext context = NoOpEntityWorldContext.Instance;
         Assert.Null(context.SpawnEntityBySpriteIndex(null, false, 3, 0, 0, 0, 0x10));
     }
+
+    /// <summary>E20.e0a6 (docs/plan-e20-heros.md section 1.16.6, D-E20-92, D-E0A6-1): an entity born by the interface keeps the fraction of the pixel of the position it is given, at the root and in its logical position at the next tick
+    /// (the binary stores the 16.16 position unshifted, <c>0x80039D04</c>). The rock (index 17, no force on X and Y) stays where it is born.</summary>
+    [Fact]
+    public void S1_AnEntityBornAtAFractionalPosition_KeepsItAtTheRoot_AndInItsLogicalPositionAtTheNextTick()
+    {
+        using var arc = Arc("subpixel");
+        const int RockIndex = 17;
+        var x = (143 << 16) + 0x8000; // 143.5 px
+        var y = (101 << 16) + 0x4000; // 101.25 px
+        var born = Context(arc).SpawnEntityBySpriteIndex(arc.Hero, false, RockIndex, x, y, 40 << 16, 0x10)!;
+        Assert.NotNull(born);
+        Assert.Equal((x, y), (born.PosX, born.PosY));
+
+        var root = ArcRun.EntityOf(born)!.RootComponent!.LocalTransform.Position;
+        Assert.Equal((143.5f, 101.25f), (root.X, root.Y));
+
+        arc.OneFrame();
+        Assert.Equal((x, y), (born.PosX, born.PosY));
+        root = ArcRun.EntityOf(born)!.RootComponent!.LocalTransform.Position;
+        Assert.Equal((143.5f, 101.25f), (root.X, root.Y));
+    }
 }
