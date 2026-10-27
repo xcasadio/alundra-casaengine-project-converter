@@ -302,6 +302,16 @@ public sealed class TargetQueryTests
     }
 
     [Fact]
+    public void Q4_ThePivotIsFixedAtTheEntry_ItIsNotRecomputedAfterASwap()
+    {
+        // Keys 4, 4, 1, 5 (slot 1 at (2, 0), slot 2 at (0, 2), slot 3 at (1, 0), slot 4 at (2, 1)): the pivot of the entry is 2; recomputed from the ends after the first swap it would order the two equal keys [3, 1, 2, 4].
+        var hero = Hero();
+        var list = new List<EntityScriptProxy> { hero, Make(1, x: 2, y: 0), Make(2, x: 0, y: 2), Make(3, x: 1, y: 0), Make(4, x: 2, y: 1) };
+        Assert.Equal(new[] { 3, 2, 1, 4 }, Run(list, 5, hero));
+        Assert.Equal(new[] { 3, 2, 1, 4 }, Run(list, 5, hero, corrected: true));
+    }
+
+    [Fact]
     public void Q4_DistinctKeys_AreSortedAscending()
     {
         var hero = Hero();
