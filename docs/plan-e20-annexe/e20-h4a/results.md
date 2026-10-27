@@ -85,3 +85,11 @@ Real mutations by script (`PlayerManager.cs` restored by `git checkout`, `git di
    which is the same duration the oracle shows for a start at the tick 1 (o3: `0x33` at the tick 33). The constants of the tests are 33 and 27 for that reason.
 3. **One test fix in the code commit** (`c8e436ec`): the control of (t3b) lets the Circle go for one tick before the second press (the controller reads the edge across frames).
 4. **Not done here** (T2/T3 of the plan, not this pass): the ADR, the plan update, the two fresh verifiers. The mutants of section 6 were run as a check of the tests, not as the T3 closing mutants.
+
+## 8. T2 (oracle tests) - state at the HEAD `bc59d2e7`
+
+The oracle tests (o1) `W9-item2B` to `W9-item32` (`TomeOracleTests`), (o2) the four cases of the staff (`TomeStartTests`) and (o3) the beginning of `trace_cast` for `0x2B` (`TomeOracleTests`) were written with the T1 tests,
+on the same bench, and were already red on the inert signatures (O1 x8, O2 x4, O3: section 3) and green after the code (section 3). The retirement proofs of section 5 already include them (start function retired: red O1 x8, O2 x4, O3; handlers
+retired: (o3) stays green). The code is unchanged since `c8e436ec` (`git diff --stat c8e436ec HEAD` shows only this file), so the full suites of section 4 (Release 7 605 green, then Debug 7 605 green, `cmp` identical) stay valid and were not
+re-run. Re-checked in this pass: the 69 `Tome*` tests in Release with the neutralised copy (69 passed, 0 failed, 40 s); `check_names.py --rules` 0 findings (1 pre-existing warning); `git diff --ignore-cr-at-eol -- docs/` clean (traces unchanged).
+No new existing test moved.
