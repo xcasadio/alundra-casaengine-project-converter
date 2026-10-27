@@ -479,12 +479,19 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     int IEffectAnchor.Status => (int)Status;
 
     // The sprite is drawn from the DLL's own PosZ (the render position of the root), not from the binary's.
-    int IEffectAnchor.SortCoordinate => 100 * ((PosY >> 16) - (PosZ >> 16));
+    // E20.g1d (D-G1D-6): a held or thrown object is sorted at the coordinate the sort pass gave it (DrawnSortCoordinate).
+    int IEffectAnchor.SortCoordinate => DrawnSortCoordinate ?? 100 * ((PosY >> 16) - (PosZ >> 16));
 
-    /// <summary>STUB of E20.g1d T1: the hero that threw this object while it flies.</summary>
+    /// <summary>
+    /// E20.g1d (docs/plan-e20-heros.md section 1.24.8, D-G1D-3): the hero that threw this object, set by <see cref="Hero.CarryRules.ThrowCarried"/> and read by the sort pass while the object flies; the pass drops it when the object is on the ground, no longer in the normal
+    /// status, or held again. Not copied by <see cref="Clone"/>.
+    /// </summary>
     internal EntityScriptProxy? ThrownBy;
 
-    /// <summary>STUB of E20.g1d T1: the sort coordinate the pass gave to this object while it is held or thrown.</summary>
+    /// <summary>
+    /// E20.g1d (D-G1D-6): the sort coordinate the sort pass gave to the sprite of this object while it is held or thrown (null otherwise); <see cref="IEffectAnchor.SortCoordinate"/> follows it, so that an effect anchored to the object sorts as the object does.
+    /// Not copied by <see cref="Clone"/>.
+    /// </summary>
     internal int? DrawnSortCoordinate;
 
     /// <summary>E20.f2: the landing latch of <c>CreatePlayerAnimationEffects</c>, the binary's <c>0x800A8F30</c>: set when the landing part ran, cleared by every state that is not a landing state; the locked mode (1) does not land again while it is set. Hero only.</summary>

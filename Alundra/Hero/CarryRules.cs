@@ -257,7 +257,7 @@ internal static class CarryRules
     /// forbids the throw (<c>CombinedVramFlagsOR &amp; 0x2000</c>, <see cref="PlayerManager.NoAttackVramFlag"/>: the binary ends the tick there). Otherwise it writes, in the binary's order, the direction word of the object (<c>+0x8C</c>) from the
     /// table <c>0x80023644</c> indexed by the hero's direction of the PREVIOUS tick (<see cref="EntityScriptProxy.BoxDirection"/>, <c>+0x98</c>: never the pad of this tick nor the end-of-frame <see cref="EntityScriptProxy.AnimationDirection"/>,
     /// D-F3-2, probe P-G-2), its position (the hero's X and Y, his Z plus <see cref="HeadHeight"/>), then on the ground the hero's state <see cref="ThrowGroundState"/> and the code <c>+0x24</c> of the object 1 (no direction held) or 2, in the air
-    /// <see cref="ThrowAirState"/> and 2 or 3. The links, the flags, the marker, the offset and the counter are not touched: the program C23 of the object turns the code into a projectile at its own tick (<see cref="Alundra.Ai.Objects.LiftableAi"/>),
+    /// <see cref="ThrowAirState"/> and 2 or 3. The mark of the thrower (<see cref="EntityScriptProxy.ThrownBy"/>, E20.g1d) is set on the object. The links, the flags, the marker, the offset and the counter are not touched: the program C23 of the object turns the code into a projectile at its own tick (<see cref="Alundra.Ai.Objects.LiftableAi"/>),
     /// and there is no way to put the object down: the Square always throws.
     /// </summary>
     internal static bool ThrowCarried(EntityScriptProxy hero, bool ground, bool directionHeld)
@@ -267,6 +267,7 @@ internal static class CarryRules
             return false;
         }
 
+        item.ThrownBy = hero; // E20.g1d (D-G1D-3): the sort pass orders the flying object against its thrower.
         item.TargetDirection = (uint)PlayerManager.SpawnDirections[Math.Clamp(hero.BoxDirection, 0, PlayerManager.SpawnDirections.Length - 1)];
         item.PosX = hero.PosX;
         item.PosY = hero.PosY;

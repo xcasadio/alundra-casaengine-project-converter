@@ -470,17 +470,85 @@ internal static class FrameSyncPasses
                 continue;
             }
 
-            // E20.g1a T3 (W6): an object in the hands of the hero is drawn at least as its carrier (EntityDepthKey.RaiseToCarrier); the bucket of the raised value is the carrier's (its IDSV is already in the key).
+            // E20.g1a T3 (W6) and E20.g1d (D-G1D-1 to D-G1D-3, D-G1D-5): an object in the hands of the hero is drawn at least as its carrier (EntityDepthKey.RaiseToCarrier, the bucket of the raised value is the carrier's: its IDSV is already in the key)
+            // and right after him (his sort coordinate and the offset +K); an object he threw is ordered against him by the keys of the binary while it flies; every other entity gets (0, 0) and 0, whatever was there.
             var idsv = ResolveIdsv(proxy);
+            var carrierEntity = proxy.PlatformEntity;
+            var carrier = carrierEntity?.GameplayProxy as EntityScriptProxy;
+            var role = EntityDepthKey.DrawRole.Plain;
+            Entity? partnerEntity = null;
+            EntityScriptProxy? partner = null;
+            if (carrier != null)
+            {
+                role = EntityDepthKey.DrawRole.Carried;
+                partnerEntity = carrierEntity;
+                partner = carrier;
+
+                // Held again: the mark of the throw falls, unless the throw is still to be consumed by the program of the object (the code of the throw, Flags2, is set until it releases the object).
+                if (proxy.Flags2 == 0)
+                {
+                    proxy.ThrownBy = null;
+                }
+            }
+            else if (proxy.ThrownBy is { } thrower)
+            {
+                if (proxy.PlatformEntity == null && proxy.IsOnGround == 0 && proxy.Status == EntityStatus.Normal && thrower.LogicContextEntity != null)
+                {
+                    role = EntityDepthKey.DrawRole.Thrown;
+                    partnerEntity = thrower.LogicContextEntity;
+                    partner = thrower;
+                }
+                else
+                {
+                    proxy.ThrownBy = null;
+                }
+            }
+
             if (proxy.PlatformEntity != null)
             {
                 var value = EntityDepthKey.RaiseToCarrier(proxy, unchecked(proxy.PosY + (idsv << 16)));
                 WallPlacementOverlay.ApplyEntitySortKey(depthSortable, value, 0);
-                continue;
+            }
+            else
+            {
+                WallPlacementOverlay.ApplyEntitySortKey(depthSortable, proxy.PosY, idsv);
             }
 
-            WallPlacementOverlay.ApplyEntitySortKey(depthSortable, proxy.PosY, idsv);
+            ApplyDrawTie(depthSortable, proxy, role, partnerEntity, partner);
         }
+    }
+
+    /// <summary>
+    /// E20.g1d (D-G1D-2, D-G1D-3, D-G1D-5, D-G1D-6): writes the fine draw order of the entity, the sort anchor and the local sort offset of its <see cref="DepthSortable2DComponent"/> and the coordinate its effects follow
+    /// (<see cref="EntityScriptProxy.DrawnSortCoordinate"/>), from the rule of <see cref="EntityDepthKey.ResolveDrawTie"/>. The coordinate of the partner and the height of the entity are read on the RENDERED translations (what the renderer builds the key on:
+    /// the root of the hero follows <c>PosZ / 65536f</c>, that of a held object <c>PosZ &gt;&gt; 16</c>, so only the rendered ones are equal to the bit); an entity or a partner without a rendered pose (the bare proxies of the unit tests) gets the offset alone.
+    /// </summary>
+    private static void ApplyDrawTie(DepthSortable2DComponent depthSortable, EntityScriptProxy proxy, EntityDepthKey.DrawRole role, Entity? partnerEntity, EntityScriptProxy? partner)
+    {
+        int? coordinate = null;
+        float renderY = 0f;
+        var partnerKey = 0u;
+        var objectKey = 0u;
+        if (role != EntityDepthKey.DrawRole.Plain && partnerEntity != null && partner != null)
+        {
+            var partnerDepth = partnerEntity.GetComponent<DepthSortable2DComponent>();
+            if (partnerDepth != null && partner.RenderProjection != null && proxy.RenderProjection != null)
+            {
+                coordinate = partnerDepth.BuildSortKey(partner.RenderProjection.WorldMatrixNoScale.Translation).SortCoordinate;
+                renderY = proxy.RenderProjection.WorldMatrixNoScale.Translation.Y;
+            }
+
+            if (role == EntityDepthKey.DrawRole.Thrown)
+            {
+                objectKey = EntityDepthKey.Compute(proxy);
+                partnerKey = EntityDepthKey.Compute(partner);
+            }
+        }
+
+        var tie = EntityDepthKey.ResolveDrawTie(role, coordinate, objectKey, partnerKey);
+        depthSortable.SortAnchorLocal = tie.Coordinate is { } wanted ? new Vector2(0f, EntityDepthKey.AnchorY(renderY, wanted)) : Vector2.Zero;
+        depthSortable.LocalSortOffset = tie.LocalOffset;
+        proxy.DrawnSortCoordinate = tie.Coordinate;
     }
 
     /// <summary>

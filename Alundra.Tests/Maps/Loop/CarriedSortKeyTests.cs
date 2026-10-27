@@ -13,8 +13,9 @@ namespace Alundra.Tests.Maps.Loop;
 
 /// <summary>
 /// E20.g1a T2 (docs/plan-e20-heros.md section 1.24.1, D-G-5 and "Révision au HEAD" on the sort key; (w10)): the sort pass of the entities of the frame (<see cref="FrameSyncPasses.RunWallInterleaveSortKeyPass"/>, the draw order of the sprites) draws an object in the hands of
-/// another at least as its carrier (<c>0x8003981C-0x80039858</c>: the key of the object is raised to the carrier's when it is below it, for a collidable object). Next to it, the object nobody carries, the carried one that is already in front, the carried one that is not
-/// collidable and the one that asks for no collision keep their own key. Written BEFORE the raise (W6): red.
+/// another at least as its carrier (<c>0x8003981C-0x80039858</c>: the key of the object is raised to the carrier's when it is below it). Next to it, the object nobody carries and the carried one that is already in front keep their own key. Written BEFORE the raise (W6): red.
+/// E20.g1d (D-G1D-2, D-E20-89 (2)) rewrote the last assertions by derivation: the binary raises the collidables only, the DLL raises every held object, so the held one that is not a collidable (the flag 0x80 clear) and the one that asks for no collision (the animation
+/// flag 0x80) are now raised to the carrier's key as well.
 /// </summary>
 public sealed class CarriedSortKeyTests
 {
@@ -52,7 +53,7 @@ public sealed class CarriedSortKeyTests
         var inFront = Make("inFront", 220 * Px);
         inFront.Proxy.PlatformEntity = hero.Entity;
 
-        // Held but not a collidable (the flag 0x80 clear) or asking for no collision (the animation flag 0x80): not raised.
+        // Held but not a collidable (the flag 0x80 clear) or asking for no collision (the animation flag 0x80): raised as well since E20.g1d (the binary leaves them at their own key: written deviation D-G1D-2).
         var notCollidable = Make("notCollidable", 100 * Px, CarryRig.CrateFlags & ~EntityFlags.Collidable);
         notCollidable.Proxy.PlatformEntity = hero.Entity;
         var noCollision = Make("noCollision", 100 * Px);
@@ -66,7 +67,7 @@ public sealed class CarriedSortKeyTests
         Assert.Equal(Elevation(100 * Px), loose.Depth.Elevation);
         Assert.Equal(Elevation(220 * Px), inFront.Depth.Elevation);
         Assert.True(inFront.Depth.Elevation > hero.Depth.Elevation);
-        Assert.Equal(Elevation(100 * Px), notCollidable.Depth.Elevation);
-        Assert.Equal(Elevation(100 * Px), noCollision.Depth.Elevation);
+        Assert.Equal(hero.Depth.Elevation, notCollidable.Depth.Elevation);
+        Assert.Equal(hero.Depth.Elevation, noCollision.Depth.Elevation);
     }
 }

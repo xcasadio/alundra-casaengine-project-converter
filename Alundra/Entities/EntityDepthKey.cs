@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using Alundra.Maps.Loop;
 using Alundra.Rendering.Effects;
 
@@ -27,12 +28,14 @@ internal static class EntityDepthKey
         => Compute(proxy.PosY, FrameSyncPasses.ResolveIdsv(proxy), unchecked(proxy.PosZ + 1));
 
     /// <summary>
-    /// E20.g1a T3 (W6, binary <c>0x8003981C-0x80039858</c>, the sort driver <c>0x800397AC</c>): an entity in the hands of another that is collidable (<see cref="EntityFlags.Collidable"/> set, the animation flag <c>0x80</c> clear) is sorted at least as its
-    /// carrier: when its depth value <paramref name="depthSortValue"/> (<c>PosY + (IDSV &lt;&lt; 16)</c>) is below the carrier's key (<see cref="Compute(EntityScriptProxy)"/>, signed comparison), the carrier's key replaces it. Any other entity keeps its value.
+    /// E20.g1a T3 (W6, binary <c>0x8003981C-0x80039858</c>, the sort driver <c>0x800397AC</c>), widened by E20.g1d (D-G1D-2, D-E20-89 (2), a written deviation): an entity in the hands of another is sorted at least as its carrier: when its depth value
+    /// <paramref name="depthSortValue"/> (<c>PosY + (IDSV &lt;&lt; 16)</c>) is below the carrier's key (<see cref="Compute(EntityScriptProxy)"/>, signed comparison), the carrier's key replaces it. The binary raises the collidable ones only (the flag
+    /// <see cref="EntityFlags.Collidable"/> set, the animation flag <c>0x80</c> clear); the DLL raises every held object, the bomb (not a collidable) included, so that it is never behind its carrier, not even at the take-off of the jump facing up
+    /// (the tick 162 of <c>docs/plan-e20-annexe/e20-g1d/keys/out_bomb_keys2.txt</c>). An entity nobody carries keeps its value.
     /// </summary>
     internal static int RaiseToCarrier(EntityScriptProxy proxy, int depthSortValue)
     {
-        if ((proxy.Flags & EntityFlags.Collidable) == 0 || (proxy.AnimFlags & 0x80) != 0 || proxy.PlatformEntity?.GameplayProxy is not EntityScriptProxy carrier)
+        if (proxy.PlatformEntity?.GameplayProxy is not EntityScriptProxy carrier)
         {
             return depthSortValue;
         }
@@ -41,10 +44,13 @@ internal static class EntityDepthKey
         return depthSortValue < carrierKey ? carrierKey : depthSortValue;
     }
 
-    /// <summary>STUB of E20.g1d T1 (tests first): the draw order of a held or thrown object is not written yet.</summary>
-    internal const int HeldDrawOffset = 0;
+    /// <summary>
+    /// E20.g1d (docs/plan-e20-heros.md section 1.24.8, D-G1D-4): K, the offset of the local sort that puts the pieces of a held object after every piece of its carrier. It must exceed the largest <c>DrawOrder</c> of the pieces of the hero (13) and of the
+    /// liftable objects (6, the bomb): <c>max(14, largest + 1)</c>, pinned against the export by <c>EntityDrawTieTests</c>.
+    /// </summary>
+    internal const int HeldDrawOffset = 14;
 
-    /// <summary>STUB of E20.g1d T1.</summary>
+    /// <summary>What the sort pass writes an entity for: nothing special, in the hands of another (the hero), or thrown by the hero and still flying.</summary>
     internal enum DrawRole
     {
         Plain,
@@ -52,12 +58,33 @@ internal static class EntityDepthKey
         Thrown,
     }
 
-    /// <summary>STUB of E20.g1d T1.</summary>
+    /// <summary>The two things the pass writes beyond <see cref="CasaEngine.Framework.Scene.Entities.Components.DepthSortable2DComponent.Elevation"/>: the sort coordinate the sprite must have (null: none, the anchor stays (0, 0)) and its local sort offset.</summary>
     internal readonly record struct DrawTie(int? Coordinate, int LocalOffset);
 
-    /// <summary>STUB of E20.g1d T1.</summary>
-    internal static DrawTie ResolveDrawTie(DrawRole role, int? partnerCoordinate, uint objectKey, uint partnerKey) => default;
+    /// <summary>
+    /// E20.g1d (D-G1D-1 to D-G1D-3, D-G1D-5): the pure rule of the fine draw order of a held or thrown object, against its partner (the carrier, or the thrower). <paramref name="partnerCoordinate"/> is the sort coordinate of the partner's sprite (null when the
+    /// rendered poses are not known: only the offset is then written). <see cref="DrawRole.Carried"/>: the partner's coordinate and +K, so the object is drawn right after the pieces of its carrier. <see cref="DrawRole.Thrown"/>: the partner's coordinate plus 100
+    /// per pixel of difference of the high halves of the two binary keys (<see cref="Compute(EntityScriptProxy)"/>, <paramref name="objectKey"/> and <paramref name="partnerKey"/>), and, at the same pixel, +K when the key of the object is above the partner's, -K when
+    /// it is below, 0 when equal (the binary does not order two equal keys): the order against the partner is then the binary's. <see cref="DrawRole.Plain"/>: nothing.
+    /// </summary>
+    internal static DrawTie ResolveDrawTie(DrawRole role, int? partnerCoordinate, uint objectKey, uint partnerKey)
+    {
+        switch (role)
+        {
+            case DrawRole.Carried:
+                return new DrawTie(partnerCoordinate, HeldDrawOffset);
+            case DrawRole.Thrown:
+                var delta = ((int)objectKey >> 16) - ((int)partnerKey >> 16);
+                var coordinate = partnerCoordinate is { } c ? c + 100 * delta : (int?)null;
+                return new DrawTie(coordinate, delta != 0 ? 0 : Math.Sign(((int)objectKey).CompareTo((int)partnerKey)) * HeldDrawOffset);
+            default:
+                return default;
+        }
+    }
 
-    /// <summary>STUB of E20.g1d T1.</summary>
-    internal static float AnchorY(float renderY, int coordinate) => 0f;
+    /// <summary>
+    /// The <c>SortAnchorLocal.Y</c> that makes the engine's own computation (<c>round(-(renderY + anchor) * 100)</c>, top-down Y up) give EXACTLY <paramref name="coordinate"/> for a sprite whose rendered translation is at <paramref name="renderY"/>
+    /// (the rounding of the engine absorbs the float error of the sum: the wanted value is an integer hundredth).
+    /// </summary>
+    internal static float AnchorY(float renderY, int coordinate) => -(coordinate / 100f) - renderY;
 }

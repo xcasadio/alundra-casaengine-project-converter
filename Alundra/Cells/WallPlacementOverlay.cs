@@ -365,6 +365,8 @@ public static class WallPlacementOverlay
     /// <c>WorldProxy.ResolveLogicalPosition</c> + the policy's render projection) instead of the original's <c>PosZ &gt;&gt; 16</c> screen-elevation low bits (<c>EntityManager.cs:1036</c>) -
     /// both still order correctly by row (the coarse <c>Elevation</c> bucket this method sets), only the
     /// tiebreak among entities sharing one row can diverge slightly from the original.
+    /// E20.g1d (docs/plan-e20-heros.md section 1.24.8, ADR-0049 point 3 amended): the one exception is an object in the hands of the hero and the one he threw while it flies, whose fine order is written by the same pass
+    /// through <c>SortAnchorLocal</c> and <c>LocalSortOffset</c> (<see cref="FrameSyncPasses.RunWallInterleaveSortKeyPass"/>, <c>EntityDepthKey.ResolveDrawTie</c>); the other entities keep the deviation above.
     ///
     /// SECOND DEVIATION: <paramref name="idsv"/> is only ever the CURRENT (CurrentAnimationId,
     /// AnimationDirection) pair's frame-0 IDSV value (see <see cref="FrameSyncPasses.RunWallInterleaveSortKeyPass"/>),

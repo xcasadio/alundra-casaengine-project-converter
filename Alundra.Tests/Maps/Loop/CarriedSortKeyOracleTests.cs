@@ -43,10 +43,10 @@ public sealed class CarriedSortKeyOracleTests
 
     [Theory]
     [InlineData("out_bomb_keys.txt", 119)]
-    [InlineData("out_bomb_keys2.txt", 240)]
-    [InlineData("out_crate_keys.txt", 90 + 90 + 79)]
-    [InlineData("out_throw_probe.txt", 24 + 24 + 43 + 5 + 38 + 20 + 20)]
-    public void TheDrawOrder_OfTheHeldAndOfTheThrownObject_HasTheSignOfTheKeysOfTheBinary(string file, int minimumCompared)
+    [InlineData("out_bomb_keys2.txt", 241)]
+    [InlineData("out_crate_keys.txt", 239)]
+    [InlineData("out_throw_probe.txt", 134)]
+    public void TheDrawOrder_OfTheHeldAndOfTheThrownObject_HasTheSignOfTheKeysOfTheBinary(string file, int expectedCompared)
     {
         var compared = 0;
         var failures = new List<string>();
@@ -86,7 +86,7 @@ public sealed class CarriedSortKeyOracleTests
         }
 
         Assert.True(failures.Count == 0, $"{failures.Count} rows differ from the binary of {compared} compared:{Environment.NewLine}{string.Join(Environment.NewLine, failures.Take(30))}");
-        Assert.True(compared >= minimumCompared, $"only {compared} rows compared, at least {minimumCompared} expected");
+        Assert.Equal(expectedCompared, compared);
     }
 
     [Fact]
