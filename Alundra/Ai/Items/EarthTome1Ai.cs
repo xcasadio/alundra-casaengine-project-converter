@@ -9,8 +9,7 @@ using Alundra.Maps;
 namespace Alundra.Ai.Items;
 
 /// <summary>
-/// E20.h4c1 phase A (docs/plan-e20-heros.md section 1.31.3, D-H4C1-1): the earth tome 1, the item <c>0x2B</c>: the driver <c>0x80035320</c> and the native handler E3 (<c>0x8007EDA0</c>, slot E) for the sprite type 16, the rocks. INERT in production: the entry of the
-/// tome in the three seams of the item in use (<see cref="PlayerManager"/>) is the stub of h0a and the key of E3 is not registered by <see cref="NativeSpriteRegistry.CreateForProduction"/> until the phase B (D-H4C1-2); the tests install the seams and the key themselves.
+/// E20.h4c1 (docs/plan-e20-heros.md section 1.31.3, D-H4C1-1): the earth tome 1, the item <c>0x2B</c>: the driver <c>0x80035320</c> and the native handler E3 (<c>0x8007EDA0</c>, slot E) for the sprite type 16, the rocks. Wired in production by the phase B (D-H4C1-2): the entries <c>0x2B</c> of the three seams of the item in use (<see cref="PlayerManager"/>) and the key of E3 in <see cref="NativeSpriteRegistry.CreateForProduction"/>; the tests of phase A install the seams and the key themselves.
 /// <list type="bullet">
 /// <item><description>The driver, called every tick of the item (the counter is 0 at its first call, the tick after the start; the wrapper <c>0x8003634C</c> increments it after the driver and frees the item when the driver answers non-zero). Phase 0: the guard of the slope
 /// (<see cref="PlayerManager.TomeSlopeGuard"/>), then nothing before the counter 20; then, for each entry of the table whose tick is the counter, a rock is born at the hero by the interface (<c>SpawnWarpEntity</c>, the sprite 16 of the global page, the direction
