@@ -9912,7 +9912,22 @@ prédite bouge ; un besoin de toucher au moteur ; un test qui boucle.
 
 **Retour arrière.** La phase B se retire seule (le contact redevient celui du moteur) ; la phase A ne change aucun comportement.
 
-#### 1.24.8 E20.g1d — L'ordre de dessin de l'objet porté et de l'objet lancé (D-E20-88 (1), D-E20-89 (1) et (2)) ⏳ (détaillée le 2026-10-27 ; thème 2 ; après h4c1 ; révision 0 relue : REVISE ; révision 1 du 2026-10-27, **READY** à la deuxième relecture, `plan-verifier` frais)
+#### 1.24.8 E20.g1d — L'ordre de dessin de l'objet porté et de l'objet lancé (D-E20-88 (1), D-E20-89 (1) et (2)) ✅ (**faite et CONFIRMED le 2026-10-27**, `06ff9a90` à `5e6978f4`, ADR-0108 ; recette de l'auteur à faire ; détaillée le 2026-10-27 ; thème 2 ; après h4c1 ; révision 0 relue : REVISE ; révision 1 du 2026-10-27, **READY** à la deuxième relecture, `plan-verifier` frais)
+
+**Écarts de l'exécution (2026-10-27, acceptés par la session principale, `docs/plan-e20-annexe/e20-g1d/`).** (1) La sonde P1 a confirmé le
+défaut au HEAD de départ (la bombe tenue derrière dans 15 rangées sur 16 face au bas, 16 sur 16 à gauche et à droite, 13 sur 16 vers le
+haut) ; P2 : les translations rendues sont à jour à l'entrée de la passe ; P3 : `IsOnGround` tombe à 1 au tick 72, celui où l'oracle a
+Z = 0 ; P4 : `K = 14` (le héros à 13, les 17 fiches soulevables à 6 au plus). (2) (o1) saute aussi la ligne où la bombe n'est pas encore
+dans la liste de dessin du binaire (clé 0, la première de `bomb_keys`) et les lignes de `bomb_keys2` après l'explosion dans les mains (tick
+255 et suivants, non portées) ; ses comptes de lignes (119, 241, 239, 134) sont épinglés exactement. (3) La marque `ThrownBy` tombe à
+l'atterrissage, hors du statut normal, ou quand l'objet est repris sans code de lancer en attente : un lancer pas encore consommé par le
+programme de l'objet (`Flags2` de 1 à 3) la garde ; un mutant du verifier qui traite un tel objet comme porté a survécu, sans doute
+équivalent (la passe ne voit jamais cette image) : P4, non disposé par un test. (4) Le mutant `K = 13` n'est tué que par (p1) ((w1) lit les
+composants et non les pièces du sprite) ; le verifier a lu la vraie clé du moteur (`BuildComposedAnimationBaseSortKey`) sur 3 520 images :
+identique à celle des tests, la pièce la plus basse de la bombe jamais derrière la plus haute du héros. (5) `RaiseToCarrier` n'est plus
+conditionné aux drapeaux de collision (D-G1D-2) ; sans pose rendue (les proxys nus des tests anciens), seul le décalage s'écrit. (6) Un seul
+test existant a bougé, comme prédit (`CarriedSortKeyTests`, réécrit par dérivation). **Mesures** : 43 tests neufs (39 rouges avant) ; la
+suite 7 719 verte en Release et en Debug ; 20 mutants réels tous tués ; deux verifiers frais CONFIRMED.
 
 **Provenance.** Lecture seule du 2026-10-27 (HEAD `539d4cf4`) et sa critique fraîche, CONFIRMÉE avec quatre corrections reprises ici, dans le
 scratchpad de la session principale (`scratchpad/t2-feedback/carried-draw/` et `carried-draw-critic/`, avec leurs désassemblages, leurs
@@ -10005,7 +10020,7 @@ l'annexe `docs/plan-e20-annexe/e20-g1d/` ; un ADR neuf ; ce plan. **Hors périm�
 non ancrés ; le convertisseur et les données.
 
 **Tâches.**
-- ⏳ **T0 — Versement, oracle, sondes, liste prédite** (commit de docs). (a) Le HEAD de départ et la suite à zéro échec ; (b) verser la
+- ✅ **T0 — Versement, oracle, sondes, liste prédite** (commit de docs ; fait le 2026-10-27, `06ff9a90`). (a) Le HEAD de départ et la suite à zéro échec ; (b) verser la
   lecture et sa critique à `docs/plan-e20-annexe/e20-g1d-disc/` ; (c) rejouer depuis des copies des oracles (`docs/plan-e20-annexe/e20-h3/`
   `critic/run` et `bin/run`, `docs/plan-e20-annexe/e20-g1a/work/orc`, le tri `0x800399B8` rejoué après chaque tick) les clés
   `bomb_keys`, `bomb_keys2`, `crate_keys` et `throw_probe`, deux exécutions au même manifeste, versées à `docs/plan-e20-annexe/e20-g1d/keys/`
@@ -10017,7 +10032,7 @@ non ancrés ; le convertisseur et les données.
   prouve l'égalité aux translations) ; P3 `ThrowCarried` puis le programme de l'objet (C23, C62, C73) : la marque peut-elle être posée au
   lancer et lue jusqu'à l'atterrissage, et `IsOnGround` tombe-t-il au tick où l'oracle a l'égalité de clé ? ; P4 le `DrawOrder` maximal des
   pièces du héros et des 17 fiches soulevables (D-G1D-4) ; (e) la liste prédite des tests qui bougent, recomptée au HEAD de départ.
-- ⏳ **T1 — Tests d'abord** (rouges avant, puis le code) : (k1) la fonction pure de la règle (porté : la coordonnée du porteur et `+K` ; lancé :
+- ✅ **T1 — Tests d'abord** (rouges avant, puis le code ; fait le 2026-10-27, `fb524a29`, `5648f25f`) : (k1) la fonction pure de la règle (porté : la coordonnée du porteur et `+K` ; lancé :
   `Δ` et le signe de `K` ; ni porté ni lancé : (0, 0) et 0) ; (k1), encore (révision 1) : un cas lancé aux deux clés exactement égales (les
   valeurs d'une ligne d'égalité de `throw_probe`) : décalage 0 ; (o1) **contre les clés de T0 (c)** : pour chaque ligne, deux entités posées
   aux valeurs de la ligne, la passe puis `BuildSortKey` sur leurs translations rendues, le signe de la comparaison égal au signe de la clé
@@ -10032,7 +10047,7 @@ non ancrés ; le convertisseur et les données.
   blessure si le HEAD la porte) : (0, 0) et 0 à l'image suivante ; (e1) l'effet ancré d'un objet
   porté (le bris d'une caisse tenue, `FrozenAnchorTests` étendu) se trie à la coordonnée que la passe a posée ; (g1) une entité
   `FlagToDestroy` reste ignorée (`WorldProxyEntityManipulationTests` vert) ; (p1) `K` contre l'export (D-G1D-4) ; puis le code.
-- ⏳ **T2 — Suites, mutants, ADR.** La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions
+- ✅ **T2 — Suites, mutants, ADR** (fait le 2026-10-27, `5e6978f4`, ADR-0108). La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions
   disjointes ; `cmp` ; `check_names.py --rules` ; au moins 12 mutants réels, chacun tué par le test qu'il nomme : `K` = 13 ((p1), (w1)) ;
   l'ancre non remise à zéro au lâcher ((w5)) ; la règle appliquée à une entité ni portée ni lancée ((k1), (g1)) ; l'`Elevation` relevée
   pour les seuls collidables ((w3) depuis les 16 rangées) ; l'ancre calculée sur les positions logiques au lieu des translations ((w3),
@@ -10040,7 +10055,7 @@ non ancrés ; le convertisseur et les données.
   le cas aux clés égales) ; la marque non posée par `ThrowCarried`
   ((w4)) ; la marque qui ne tombe pas à l'atterrissage ((w4)) ; l'effet ancré non suivi ((e1)) ; le tick 162 laissé derrière ((w3), (o1)) ;
   les entités `FlagToDestroy` visitées ((g1)) ; un ADR neuf (numéro libre recompté sur toutes les branches).
-- ⏳ **T3 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+- ✅ **T3 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles (2026-10-27 : CONFIRMED tous deux).
 
 **Acceptation.** Les sorties de T0 (c) identiques sur deux exécutions ; les sondes de T0 (d) tenues ; les tests de T1 rouges avant et verts
 après (nommés) ; les mutants tous tués ; la suite en Release et en Debug, zéro échec ; les tests déplacés ⊂ la liste de T0 (e), chacun
