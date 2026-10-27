@@ -3656,7 +3656,7 @@ D-H2-6) ; i2b, la fonction des forces (§1.14.3), indépendante d'i2a, avant h4e
 (§1.14.4, esquisse), après i2b, E20.c2b et E20.h0a (elle touche la même zone de `PlayerManager.cs`). i2d (le serrage à la carte pour le héros et
 les entités placées, O-E19-17) reste hors de ces tranches (Q-I2-5, défaut A, D-E19-25).
 
-#### 1.14.2 E20.i2a — Le mur d'eau profonde sans bottes de nage (O-E19-22) ⏳ (détaillée le 2026-10-25 ; thème 2, avant i2b ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais ; T0 arrêté à (c) le 2026-10-27 ; révision 3 du 2026-10-27, nouvelle époque, relue à la clôture : REVISE ; **révision 4** du 2026-10-27, vérifiée par script sur la mesure ; reprise sans nouvelle relecture sur décision de l'auteur, D-E20-87)
+#### 1.14.2 E20.i2a — Le mur d'eau profonde sans bottes de nage (O-E19-22) ✅ (**faite et CONFIRMED le 2026-10-27**, `4da8267c` à `c7fb877c`, ADR-0104 ; recette de l'auteur à faire ; détaillée le 2026-10-25 ; thème 2, avant i2b ; révisions 0 et 1 relues : REVISE ; révision 2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais ; T0 arrêté à (c) le 2026-10-27 ; révision 3 du 2026-10-27, nouvelle époque, relue à la clôture : REVISE ; **révision 4** du 2026-10-27, vérifiée par script sur la mesure ; reprise sans nouvelle relecture sur décision de l'auteur, D-E20-87)
 
 **Révision 1 (2026-10-25).** La relecture de la révision 0 (REVISE) a relevé deux blocages, corrigés (FIX) : (1) les traces vers l'est
 rejoignent l'écart connu du mur est (O-E19-42 : la DLL s'arrête au contact, le binaire une unité avant, le rebond un tick plus tôt) et la
@@ -3727,6 +3727,14 @@ Aujourd'hui elle nage partout, écart épinglé par `HeroSwimArenaTests.WithoutT
   puis un décalage constant ; l'écart des pas de D-E20-80) ; (t3) le
   contact au sol un tick plus tard (O-E20-12) ; (t4) les sons non comparés. Une trace n'emploie que le sous-ensemble que T0 (c) écrit pour
   elle ; tout autre écart, ou une valeur au-delà, est un arrêt.
+- **D-I2A-7** (2026-10-27, écarts de l'exécution, acceptés par la session principale) — (1) l'adoption : le pion du héros est neuf à chaque
+  carte ; l'adoption pose le bit par la fonction de production (`PlayerManager.RefreshHeroWalkabilityMask`) au lieu de le « garder » ; (2)
+  l'assertion de soutien d'`ArcRun` (le masque après le resync, `== 0x41`) devient `0x41 | mur`, le mur lu de `BootsLevelOf`, dérivée (sans
+  elle, tous les arcs à préfab s'arrêtaient au constructeur) : une assertion de soutien, pas un test de la liste ; (3) le mutant
+  « `BlockedCorners` sur `Flags` » survivait (les bornes de t2 sont larges pour la diagonale) : un test (r8) le tue (le bit posé par la
+  fonction de production sur une entité au milieu de l'étang : `BlockedCorners` vaut 15 avec le bit, 0 sans) ; (4) (r3) appelle
+  `ResyncControllerFromFlags`, le point unique des opcodes `0x16`, `0x17`, `0x62` et `0x63`, pas un opcode réel ; (5) le mutant de la
+  condition de hauteur est tué par le test du champ, pas par R9 (l'étang est à la hauteur 0).
 - **D-I2A-5** (Q-I2-6, défaut A) — Un préréglage `mur-m14` : `swim-m14` sans bottes (la berge de l'étang de la 14, case (40, 48, 1), eau profonde
   dès la rangée 49) ; le test de liste des préréglages change mécaniquement (D-E0D-12).
 
@@ -3738,7 +3746,9 @@ montage reçoit le bit par la fonction de production, pas à la main) ; les test
 **Hors périmètre.** i2b, i2c ; la cape (h2) ; le court-circuit `0x80037490` ; le moteur.
 
 **Tâches.**
-- ⏳ **T0 — Versement, rejeux, inventaire par exécution** (commit de docs). (a) Verser la lecture (`scratchpad/t2-next/i2/` et sa critique) à
+- ✅ **T0 — Versement, rejeux, inventaire par exécution** (commit de docs ; un premier passage arrêté à (c), disposé par les révisions 3 et 4 ;
+  fait le 2026-10-27, `4da8267c` : les rejeux identiques, 2 tests prédits déplacés, les 15 traces dans leurs bornes, le pseudo-bit `0x10000`,
+  la case (40, 48, 1)). (a) Verser la lecture (`scratchpad/t2-next/i2/` et sa critique) à
   `docs/plan-e20-annexe/e20-i2-disc/` (README, `SHA1SUMS.txt`) ; (b) rejouer depuis une copie du harnais d'`e20-d` les 15 traces du mur et les
   sondes de la lecture, identiques ; (c) l'inventaire par exécution : un câblage temporaire (jamais commité, versé en `.txt`) du mur, la suite
   entière en Release, la liste nommée des tests qui bougent et pourquoi (le héros sans bottes posé sur ou près de l'eau profonde ; candidats de la
@@ -3749,7 +3759,8 @@ montage reçoit le bit par la fonction de production, pas à la main) ; les test
   qu'elle emploie, écrit dans l'annexe avant T1 ; (révision 2) la preuve, par le même câblage, que les tests avec bottes restent verts
   (les inventaires `b1b` et `b1c` du montage, les traces W1 et W2 en L2 et L3, `R9-deepwater-boots2`, `R9-allwater-start-T-R`) et que seules
   les traces L0 et L1 bougent ; (d) le nom et la valeur du pseudo-bit ; (e) la case du préréglage. Arrêt : un test d'une chaîne d'histoire (389 à 392, 179, intro) qui bouge ; plus de 10 tests déplacés.
-- ⏳ **T1 — Tests d'abord** (rouges avant) : (c1) `CellsCollisionField` : le pseudo-bit bloque `0xE00 == 0x800` et seulement lui (pas `0xC00`,
+- ✅ **T1 — Tests d'abord** (fait le 2026-10-27, `f76193c6`, `57fe72da` : 29 rouges avant, tous verts après ; 7 535 verts ; les écarts de
+  D-I2A-7 ; rouges avant) : (c1) `CellsCollisionField` : le pseudo-bit bloque `0xE00 == 0x800` et seulement lui (pas `0xC00`,
   l'échelle), sans condition de hauteur ; (r1) les 15 traces rejouées sur le montage (le masque posé par la fonction de production) aux colonnes
   du harnais, avec les seules tolérances que T0 (c) écrit pour chacune (D-I2A-6) : R9 (x = 325,00 au tick 84, `ForceAdjusted` au 86, `0x3E` au 87), W1 L0 et L1 (L1 : l'objet `0x1A`, niveau 1, bloque aussi), W2
   (figé à 624,00), W5 (le glissement le long du bord, dont la diagonale), W10 ; (r2) avec les bottes de niveau 2 : la nage d'E20.i inchangée
@@ -3758,13 +3769,15 @@ montage reçoit le bit par la fonction de production, pas à la main) ; les test
   s'arrête au bord) ; (r6) (révision 1) la fonction du tick laisse `Controller.Settings.Gravity` et `MaxFallSpeed` du héros inchangés
   (assertion directe, avant et après un tick où le bit change) ; témoin vert avant et après : (r7) une entité qui n'est pas le héros, posée sur
   une case `0xE00 == 0x800` sans bottes, n'est pas bloquée ; puis le code ; le préréglage `mur-m14` et son test de contenu.
-- ⏳ **T2 — Suites, mutants, ADR.** La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ;
+- ✅ **T2 — Suites, mutants, ADR** (fait le 2026-10-27, `2f31ddce`, `d03e7bc4`, `c7fb877c` : Release et Debug 7 536 verts ; 15 mutants réels,
+  le survivant tué par (r8) ; ADR-0104). La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions disjointes ;
   `cmp` ; `check_names.py --rules` ; au moins 10 mutants réels, chacun tué par le test qu'il nomme : `BootsLevel < 3` ((r2)) ; `BootsLevel < 1`
   ((r1), les traces L1 : l'objet `0x1A` bloque) ; `& 0xE00 == 0x800` en `& 0x800 != 0` ((c1), l'échelle) ; une condition de hauteur ajoutée ((c1), (r1) R9) ; le bit écrit seulement à
   l'adoption ((r1) W2, (r3)) ; `ResyncControllerFromFlags` qui efface le bit ((r3)) ; l'adoption qui l'efface ((r4)) ; `BlockedCorners` sur
   `Flags` ((r1) W5-L0-wall-diag) ; la fonction qui appelle `ResyncControllerFromFlags` ((r6) : la gravité et la chute du contrôleur remises à 0) ;
   le mur appliqué aussi aux autres entités (le témoin (r7)) ; un ADR neuf (numéro libre recompté).
-- ⏳ **T3 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
+- ✅ **T3 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles (fait le 2026-10-27, `wf_5dd2afd8-f6b` : les deux
+  CONFIRMED).
 
 **Acceptation.** Les sorties de T0 (b) identiques ; (c1), (r1) (avec les tolérances écrites par T0 (c) pour chaque trace, D-I2A-6), (r3), (r4),
 (r5) et (r6) rouges avant et verts après ; (r2) et (r7) verts avant et après, chacun tué par son mutant ; les mutants tous tués par le test qu'ils nomment ; la suite en Release et en Debug, zéro échec ; les tests déplacés ⊂ la liste
