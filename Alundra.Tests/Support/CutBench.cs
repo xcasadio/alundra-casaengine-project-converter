@@ -187,10 +187,20 @@ internal sealed class CutBench
         /// <summary>E20.g2c2 T1: the birth seam of a test, called with the entity just born (before it is returned): it gives the born entity the words the real machine found in its slot.</summary>
         public Action<EntityScriptProxy>? OnBirth { get; set; }
 
+        /// <summary>E20.h4c2 T1: refuses the birth of the call whose index (0 for the first call of the bench) the function accepts, as a table that fills up in the middle of a tick; null accepts every call (see <see cref="TableIsFull"/>).</summary>
+        public Func<int, bool>? RefuseCall { get; set; }
+
+        /// <summary>E20.h4c2 T1: the calls of <c>SetCameraKick(scrollY)</c> (E13), in order.</summary>
+        public List<int> CameraKicks { get; } = new();
+
+        public void SetCameraKick(int scrollY) => CameraKicks.Add(scrollY);
+
         public EntityScriptProxy? SpawnEntityBySpriteIndex(EntityScriptProxy? parent, bool isMapPage, int index, int x, int y, int z, int direction)
         {
+            var call = SpawnCalls.Count;
             SpawnCalls.Add((parent, isMapPage, index, x, y, z, direction));
-            if (TableIsFull)
+            if (TableIsFull || RefuseCall?.Invoke(call) == true)
+
             {
                 return null;
             }

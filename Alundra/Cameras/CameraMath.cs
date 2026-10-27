@@ -166,7 +166,7 @@ internal static class CameraMath
     /// </summary>
     internal static Vector3 AdvanceCameraSmoothing(
         Vector3 previousSmoothedTarget, bool needsSnap, Vector3 lookAtRenderTarget,
-        int ticksThisFrame, int? mapWidthPx, int? mapHeightPx, CameraSway? sway = null)
+        int ticksThisFrame, int? mapWidthPx, int? mapHeightPx, CameraSway? sway = null, IReadOnlyList<int>? cameraKickOfTick = null)
     {
         var smoothed = previousSmoothedTarget;
         var fullTicks = ticksThisFrame;

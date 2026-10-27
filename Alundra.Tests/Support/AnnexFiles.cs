@@ -174,6 +174,27 @@ internal static class AnnexFiles
         throw new InvalidOperationException($"AnnexFiles: no 'docs/plan-e20-annexe/e20-h4c1/{relative}' found above '{AppContext.BaseDirectory}'.");
     }
 
+    /// <summary>E20.h4c2 T1: a file of the annex <c>docs/plan-e20-annexe/e20-h4c2/</c> (the keys, the cases of the driver and the table of the earth tome 2), found above the test binaries.</summary>
+    public static string EarthTome2Annex(string relative)
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            var candidate = Path.Combine(directory.FullName, "docs/plan-e20-annexe/e20-h4c2", relative);
+            if (File.Exists(candidate))
+            {
+                return candidate;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new InvalidOperationException($"AnnexFiles: no 'docs/plan-e20-annexe/e20-h4c2/{relative}' found above '{AppContext.BaseDirectory}'.");
+    }
+
+    /// <summary>E20.h4c2 T1: a vector file of the h4b bricks (<c>docs/plan-e20-annexe/e20-h4b/bin/vec/</c>: E13, the camera step), the real code of the binary replayed from an empty memory.</summary>
+    public static string H4bVector(string name) => WaterDropAnnex("e20-h4b/bin/vec/" + name);
+
     /// <summary>The parsed vector file; the caller disposes it.</summary>
     public static JsonDocument ReadVector(string name) => JsonDocument.Parse(File.ReadAllText(Vector(name)));
 

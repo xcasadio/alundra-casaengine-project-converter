@@ -780,6 +780,9 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
     /// <summary>Test-only seam (E19.u, docs/plan-e19-u-annexe/): the effect gate of each logic tick of the last <see cref="Update"/> (see <see cref="_effectFrozenOfTick"/>).</summary>
     internal IReadOnlyList<bool> EffectFrozenOfTickForTests => _effectFrozenOfTick;
 
+    /// <summary>E20.h4c2 T1 (SKELETON of the tests commit): the camera kick of each logic tick of the frame; always empty here.</summary>
+    internal IReadOnlyList<int> CameraKickOfTickForTests => System.Array.Empty<int>();
+
     private bool _pendingTriggersGate;
 
     /// <summary>Test-only seam (E19.u, docs/plan-e19-u-annexe/): the gate the pending event triggers read in the last <see cref="Update"/> (true = frozen).</summary>

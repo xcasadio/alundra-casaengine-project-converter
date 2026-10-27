@@ -211,7 +211,7 @@ internal sealed class CameraDirector
     /// <c>InitializeWithWorld</c> AFTER two early returns, so capturing it any earlier would hold null
     /// forever and silently drop the map-bounds clamp below.
     /// </summary>
-    internal void UpdateCameraFollow(int ticksThisFrame, EntityScriptProxy? followedByCamera, int? mapWidthPx, int? mapHeightPx)
+    internal void UpdateCameraFollow(int ticksThisFrame, EntityScriptProxy? followedByCamera, int? mapWidthPx, int? mapHeightPx, IReadOnlyList<int>? cameraKickOfTick = null)
     {
         // E19.k1 (docs/plan-e19-opcodes.md section 1.2k.1, K3/K4): the ONE site of the camera sway step - the
         // binary steps it once per tick at the head of its camera follow (0x8002CDD8), so exactly

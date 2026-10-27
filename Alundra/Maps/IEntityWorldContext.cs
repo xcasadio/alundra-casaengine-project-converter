@@ -248,4 +248,9 @@ public interface IEntityWorldContext
     /// member, same "degraded" shape as the seams above: null means "no world name", and a capture then refuses.
     /// </summary>
     string? WorldName => null;
+
+    /// <summary>E20.h4c2 T1 (SKELETON of the tests commit): the camera kick of E13; inert here.</summary>
+    void SetCameraKick(int scrollY)
+    {
+    }
 }
