@@ -9912,7 +9912,7 @@ prédite bouge ; un besoin de toucher au moteur ; un test qui boucle.
 
 **Retour arrière.** La phase B se retire seule (le contact redevient celui du moteur) ; la phase A ne change aucun comportement.
 
-#### 1.24.8 E20.g1d — L'ordre de dessin de l'objet porté et de l'objet lancé (D-E20-88 (1), D-E20-89 (1) et (2)) ⏳ (détaillée le 2026-10-27 ; thème 2 ; après h4c1 ; révision 0 relue : REVISE ; **révision 1** du 2026-10-27, non relue)
+#### 1.24.8 E20.g1d — L'ordre de dessin de l'objet porté et de l'objet lancé (D-E20-88 (1), D-E20-89 (1) et (2)) ⏳ (détaillée le 2026-10-27 ; thème 2 ; après h4c1 ; révision 0 relue : REVISE ; révision 1 du 2026-10-27, **READY** à la deuxième relecture, `plan-verifier` frais)
 
 **Provenance.** Lecture seule du 2026-10-27 (HEAD `539d4cf4`) et sa critique fraîche, CONFIRMÉE avec quatre corrections reprises ici, dans le
 scratchpad de la session principale (`scratchpad/t2-feedback/carried-draw/` et `carried-draw-critic/`, avec leurs désassemblages, leurs
