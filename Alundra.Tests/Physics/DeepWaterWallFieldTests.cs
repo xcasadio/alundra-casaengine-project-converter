@@ -13,7 +13,7 @@ namespace Alundra.Tests.Physics;
 /// </summary>
 public class DeepWaterWallFieldTests
 {
-    /// <summary>The pseudo-bit (T0 (d)); the constant of production is asserted equal to it at the code commit.</summary>
+    /// <summary>The pseudo-bit (T0 (d)); the constant of production is asserted equal to it by <see cref="TheBitIsAboveSixteenBits"/>.</summary>
     private const uint Bit = 0x10000;
 
     private const int GroundDeepWater = 0x18; // 0x1800 & 0xE00 == 0x800
@@ -29,6 +29,14 @@ public class DeepWaterWallFieldTests
     {
         Assert.True(field.TrySampleGround(new Vector3(36f, 24f, 0f), float.MaxValue, mask, out var sample));
         return sample.IsWalkable;
+    }
+
+    [Fact]
+    public void TheBitIsAboveSixteenBits()
+    {
+        Assert.Equal(Bit, CellsCollisionField.DeepWaterWallMaskBit);
+        Assert.True(Bit > 0xFFFF, "no bit of walkability | groundProperty << 8 can be the pseudo-bit");
+        Assert.Equal(0u, CellsCollisionField.WalkabilityMaskFor(uint.MaxValue) & Bit);
     }
 
     [Theory]

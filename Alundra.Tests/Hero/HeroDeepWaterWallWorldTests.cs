@@ -46,7 +46,9 @@ public sealed class HeroDeepWaterWallWorldTests : IDisposable
     /// </summary>
     private static uint AdoptedMask(bool boots)
     {
-        var spec = new ArcSpec("E20i2a-adopt", "Overworld", "Overworld 3,1-14", Array.Empty<int>(), 8, 6, 0, 2000, RealController: true, Prefabs: true);
+        // A real portal arrival on the bank of the pond of the map 14 (tile (40, 48), height 1): with an arrival the New Game kit does not run, the inventory is the one posed below.
+        var arrival = new ArcArrival((40 * 24 + 12) << 16, (48 * 16 + 8) << 16, 1 << 20, GameState.ResetAnimationId, 0);
+        var spec = new ArcSpec("E20i2a-adopt", "Overworld", "Overworld 3,1-14", Array.Empty<int>(), 0, 0, 0, 2000, RealController: true, Prefabs: true, Arrival: arrival);
         using var arc = new ArcRun(spec, beforeInitialize: _ =>
         {
             if (boots)

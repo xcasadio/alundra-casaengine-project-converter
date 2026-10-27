@@ -9,6 +9,7 @@ using Xunit;
 using Xunit.Abstractions;
 using Alundra.Session;
 using Alundra.Hero;
+using Alundra.Physics;
 using Alundra.Rng;
 using Alundra.Transitions;
 using Alundra.Tests.Audio;
@@ -123,7 +124,7 @@ public sealed class PrefabArcSupportTests
         Assert.True(string.IsNullOrEmpty(collision.PhysicsDefinition.ProfileName), "the hero's collision profile is not empty (contact response)");
         Assert.Empty(collision.Collisions);
         Assert.NotNull(arc.Hero.Controller);
-        Assert.Equal(0x41u, arc.Hero.Controller!.Settings.WalkabilityMask);
+        Assert.Equal(0x41u | CellsCollisionField.DeepWaterWallMaskBit, arc.Hero.Controller!.Settings.WalkabilityMask); // E20.i2a: the arc owns no boots, so the live mask of the hero carries the wall of the deep water
 
         // (2) At the end of frame 0: the forced Idle 0, logical tick 0.
         Assert.Equal("bankalundra_0_anim0_down", sprite.CurrentAnimation.Animation2dData.Name);

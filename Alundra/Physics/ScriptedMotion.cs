@@ -991,7 +991,9 @@ internal static class ScriptedMotion
         var top = entity.PosY + advanceY + entity.ModY;
         var xs = new[] { left >> 16, (left + entity.Width) >> 16 };
         var ys = new[] { top >> 16, (top + entity.Height) >> 16 };
-        var mask = CellsCollisionField.WalkabilityMaskFor(entity.Flags);
+        // E20.i2a (D-I2A-3): the LIVE mask of the controller, not the one rebuilt from the flags - the hero's carries the wall of the deep water (CellsCollisionField.DeepWaterWallMaskBit), without which the slide along the edge of the water
+        // would be judged on other corners than the mover's. For every other entity the controller's mask is WalkabilityMaskFor(Flags) (spawn and ResyncControllerFromFlags), the same value.
+        var mask = entity.Controller.Settings.WalkabilityMask;
         var reach = entity.PosZ / 65536f + entity.Controller.Settings.StepHeight;
         var blocked = 0;
         for (var i = 0; i < 4; i++)

@@ -2269,6 +2269,7 @@ public class WorldProxy : GameplayProxy, IEntityWorldContext, IScriptHost
             settings.Gravity = mapGravity;
             settings.MaxFallSpeed = mapMaxFallSpeed;
             settings.WalkabilityMask = CellsCollisionField.WalkabilityMaskFor(proxy.Flags);
+            PlayerManager.RefreshHeroWalkabilityMask(proxy, GameState); // E20.i2a (D-I2A-2): the wall of the deep water for a hero without the swim boots, from the arrival on
         }
         else if (!_loggedNoHeroController)
         {

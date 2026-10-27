@@ -689,7 +689,9 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
         }
 
         ApplyGravitySettingsToController();
-        Controller.Settings.WalkabilityMask = CellsCollisionField.WalkabilityMaskFor(Flags);
+
+        // E20.i2a (D-I2A-2): the pseudo-bit of the wall of the deep water is not a function of the flags, it is the hero's own function of the tick (PlayerManager.RefreshHeroWalkabilityMask): a resync keeps the one it finds.
+        Controller.Settings.WalkabilityMask = CellsCollisionField.WalkabilityMaskFor(Flags) | (Controller.Settings.WalkabilityMask & CellsCollisionField.DeepWaterWallMaskBit);
     }
 
     /// <summary>

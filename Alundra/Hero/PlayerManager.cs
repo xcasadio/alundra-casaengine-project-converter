@@ -46,7 +46,7 @@ namespace Alundra.Hero;
 /// <see cref="CarryGroupTick"/>); the Square throws (E20.g2a, <see cref="CarryRules.ThrowCarried"/>), and nothing but <see cref="PutInHands"/> puts an object in the hands yet (the trigger is E20.g1b).</description></item>
 /// <item><description>The run (E20.d1), binary <c>0x80031F54</c>, <c>0x80031FF4</c>, <c>0x80032118</c> and <c>0x80032558</c>: the preparation (0x29, entered from the common tail by a held Triangle), the run (0x03), the
 /// slide that ends it (0x2A) and the bounce (0x3E, and 0x1C which shares its handler); the tackle (0x04) is of the ground attack group.</description></item>
-/// <item><description>The swim (E20.i), binary <c>0x8003260C</c>: on deep water (slope 4) <see cref="SwimTick"/> replaces everything between the pad and the end of the tick: the 80-entry table <c>0x80022E7C</c> in six kinds of handler (<see cref="SwimTable"/>), the floating (0x1D), the swimming (0x0F), the burst on the edge of the Triangle, the Cross or the Square (0x28), the end of the hurt in water (0x3A, 0x3B, entered by the hurt block, E20.c2b); the exits to the land are cases of the state chain. NOT ported: the wall of the deep water without the swim boots (O-E19-22), the currents (O-E20-16), the splash, the wake and the ripple (E20.e).</description></item>
+/// <item><description>The swim (E20.i), binary <c>0x8003260C</c>: on deep water (slope 4) <see cref="SwimTick"/> replaces everything between the pad and the end of the tick: the 80-entry table <c>0x80022E7C</c> in six kinds of handler (<see cref="SwimTable"/>), the floating (0x1D), the swimming (0x0F), the burst on the edge of the Triangle, the Cross or the Square (0x28), the end of the hurt in water (0x3A, 0x3B, entered by the hurt block, E20.c2b); the exits to the land are cases of the state chain. The wall of the deep water without the swim boots (O-E19-22) is E20.i2a's (<see cref="RefreshHeroWalkabilityMask"/>). NOT ported: the currents (O-E20-16), the splash, the wake and the ripple (E20.e).</description></item>
 /// <item><description>LoadingMap(0x36) case, binary 0x800325E8 (PlayerManager.cs:914-922): on the ground the
 /// case ends and the hero stays LoadingMap - its exit is then the animation Chain bridge
 /// (<c>WorldProxy.OnAnimationFinished</c>, 2026-08-23 "Correctif fins d'animation" - anim 54's trailing
@@ -742,8 +742,8 @@ public static class PlayerManager
     /// <summary>
     /// E20.i T2: the swim, the branch of the slope 4 (<c>0x8003260C</c>) in the binary's order. The charge counter (<c>0x80126FFC</c>) and the pending-shot pointer (<c>0x80127110</c>) are zeroed, carrying is told
     /// <c>UpdatePlayerCarriedEntity(2)</c> (E20.g1a: mode 2 lets the object in the hands go with the code -1), then the state decides, through the table <c>0x80022E7C</c> (<see cref="SwimTable"/>), which of the six handlers runs. The branch never reaches the
-    /// weapon effects, the weapon steps, <c>PlayerTryAttack</c> or <c>PlayerTryAction</c>; the caller ends the tick. It reads no boots level: the wall of the deep water (O-E19-22) and the currents (O-E20-16) are not ported,
-    /// so a hero without the swim boots swims where the original stops him; the splash, the wake and the ripple of the dive (the shadow pass <c>0x80038E84</c> and <c>CreatePlayerAnimationEffects</c>) are E20.e's.
+    /// weapon effects, the weapon steps, <c>PlayerTryAttack</c> or <c>PlayerTryAction</c>; the caller ends the tick. It reads no boots level: the wall of the deep water (O-E19-22) is the walkability mask's (E20.i2a, a hero without the swim boots is stopped at
+    /// the edge before this branch is ever reached), the currents (O-E20-16) are not ported; the splash, the wake and the ripple of the dive (the shadow pass <c>0x80038E84</c> and <c>CreatePlayerAnimationEffects</c>) are E20.e's.
     /// </summary>
     private static void SwimTick(EntityScriptProxy player, in PadState pad, GameState state, IScriptHost? host, uint nibble, uint dir)
     {
@@ -2249,7 +2249,30 @@ public static class PlayerManager
     }
 
     public static void Tick(EntityScriptProxy player, int ticks)
-        => ScriptedMotion.TickPlayer(player, ticks);
+    {
+        RefreshHeroWalkabilityMask(player, player.ScriptHost?.GameState);
+        ScriptedMotion.TickPlayer(player, ticks);
+    }
+
+    /// <summary>
+    /// E20.i2a (D-I2A-2, O-E19-22): the walkability mask of the hero's controller carries the wall of the deep water (<see cref="CellsCollisionField.DeepWaterWallMaskBit"/>) while the boots level is under 2
+    /// (<see cref="BootsLevelOf"/>: no object <c>0x1B</c> or <c>0x1C</c>), as the corner test of the binary (<c>0x80037488</c>) reads <c>[0x80127000] &lt; 2</c>. Called by <see cref="Tick"/> before the movement, and by the
+    /// adoption of the pawn. It writes the bit and nothing else: it never calls <see cref="EntityScriptProxy.ResyncControllerFromFlags"/>, which would put the gravity and the fall speed of the controller back to 0 (D-I2A-2, the trap
+    /// h2 found, O-H2-1). Deviation noted: the binary reads the value cached at the end of the previous tick, this one the inventory of the tick; they differ only on the tick where the boots change, which only the menu does, the world stopped.
+    /// The mask is also the place of the later pseudo-bits of the hero (the cape of E20.h2 extends this function).
+    /// </summary>
+    internal static void RefreshHeroWalkabilityMask(EntityScriptProxy hero, GameState? state)
+    {
+        if (hero.Controller == null || state == null)
+        {
+            return;
+        }
+
+        var settings = hero.Controller.Settings;
+        settings.WalkabilityMask = BootsLevelOf(state) < 2
+            ? settings.WalkabilityMask | CellsCollisionField.DeepWaterWallMaskBit
+            : settings.WalkabilityMask & ~CellsCollisionField.DeepWaterWallMaskBit;
+    }
 
     // ---------------------------------------------------------------------------------------------
     // E13 C0 (docs/plan-e13-hud.md): the five player-stat setters, ported from PlayerManager.cs's own

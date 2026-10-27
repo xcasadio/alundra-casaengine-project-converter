@@ -30,6 +30,7 @@ using Alundra.Entities;
 using Alundra.Events;
 using Alundra.Ai.Objects;
 using Alundra.Hero;
+using Alundra.Physics;
 using Alundra.Items;
 using Alundra.Rng;
 using Alundra.Rendering.Backdrops;
@@ -258,7 +259,9 @@ internal sealed class ArcRun : IDisposable
                 // In this process AdoptPlayerPawn derived the walkability mask BEFORE the header (empty catalog):
                 // the controller is re-synced from the flags now. ClassB gives 0x41.
                 Hero.ResyncControllerFromFlags();
-                Assert.Equal(0x41u, Hero.Controller!.Settings.WalkabilityMask);
+                // E20.i2a: plus the wall of the deep water (CellsCollisionField.DeepWaterWallMaskBit) while the hero has no boots of level 2: the adoption gave it, the resync above keeps it.
+                var wall = PlayerManager.BootsLevelOf(State) < 2 ? CellsCollisionField.DeepWaterWallMaskBit : 0u;
+                Assert.Equal(0x41u | wall, Hero.Controller!.Settings.WalkabilityMask);
             }
 
             // The map-entry animation (0x36) ends through the animation chain (anim 54 -> 0), which the headless

@@ -1,0 +1,534 @@
+Série de tests pour D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\bin\Release\net9.0-windows\Alundra.Tests.dll (.NETCoreApp,Version=v9.0)
+Au total, 1 fichiers de test ont correspondu au modèle spécifié.
+[xUnit.net 00:00:00.88]     Alundra.Tests.Physics.DeepWaterWallFieldTests.TheBit_HasNoConditionOnTheHeight(height: 1) [FAIL]
+[xUnit.net 00:00:00.88]     Alundra.Tests.Physics.DeepWaterWallFieldTests.TheBit_HasNoConditionOnTheHeight(height: 3) [FAIL]
+[xUnit.net 00:00:00.88]     Alundra.Tests.Physics.DeepWaterWallFieldTests.TheBit_HasNoConditionOnTheHeight(height: 0) [FAIL]
+[xUnit.net 00:00:00.89]     Alundra.Tests.Physics.DeepWaterWallFieldTests.TheBit_BlocksTheCellsOfTheDeepWater_AndWithoutTheBitTheyAreWalkable(groundProperty: 24) [FAIL]
+  Échoué Alundra.Tests.Physics.DeepWaterWallFieldTests.TheBit_HasNoConditionOnTheHeight(height: 1) [< 1 ms]
+  Message d'erreur :
+   Assert.False() Failure
+Expected: False
+Actual:   True
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.DeepWaterWallFieldTests.TheBit_HasNoConditionOnTheHeight(Int32 height) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\DeepWaterWallFieldTests.cs:line 63
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+  Échoué Alundra.Tests.Physics.DeepWaterWallFieldTests.TheBit_HasNoConditionOnTheHeight(height: 3) [< 1 ms]
+  Message d'erreur :
+   Assert.False() Failure
+Expected: False
+Actual:   True
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.DeepWaterWallFieldTests.TheBit_HasNoConditionOnTheHeight(Int32 height) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\DeepWaterWallFieldTests.cs:line 63
+   at InvokeStub_DeepWaterWallFieldTests.TheBit_HasNoConditionOnTheHeight(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.DeepWaterWallFieldTests.TheBit_HasNoConditionOnTheHeight(height: 0) [< 1 ms]
+  Message d'erreur :
+   Assert.False() Failure
+Expected: False
+Actual:   True
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.DeepWaterWallFieldTests.TheBit_HasNoConditionOnTheHeight(Int32 height) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\DeepWaterWallFieldTests.cs:line 63
+   at InvokeStub_DeepWaterWallFieldTests.TheBit_HasNoConditionOnTheHeight(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Physics.DeepWaterWallFieldTests.TheBit_BlocksTheCellsOfTheDeepWater_AndWithoutTheBitTheyAreWalkable(groundProperty: 24) [< 1 ms]
+  Message d'erreur :
+   Assert.False() Failure
+Expected: False
+Actual:   True
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.DeepWaterWallFieldTests.TheBit_BlocksTheCellsOfTheDeepWater_AndWithoutTheBitTheyAreWalkable(Int32 groundProperty) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\DeepWaterWallFieldTests.cs:line 42
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.90]     Alundra.Tests.Physics.DeepWaterWallFieldTests.TheBit_BlocksTheCellsOfTheDeepWater_AndWithoutTheBitTheyAreWalkable(groundProperty: 8) [FAIL]
+[xUnit.net 00:00:01.08]     Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(name: "w1/W1-walk-L1") [FAIL]
+  Échoué Alundra.Tests.Physics.DeepWaterWallFieldTests.TheBit_BlocksTheCellsOfTheDeepWater_AndWithoutTheBitTheyAreWalkable(groundProperty: 8) [< 1 ms]
+  Message d'erreur :
+   Assert.False() Failure
+Expected: False
+Actual:   True
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Physics.DeepWaterWallFieldTests.TheBit_BlocksTheCellsOfTheDeepWater_AndWithoutTheBitTheyAreWalkable(Int32 groundProperty) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Physics\DeepWaterWallFieldTests.cs:line 42
+   at InvokeStub_DeepWaterWallFieldTests.TheBit_BlocksTheCellsOfTheDeepWater_AndWithoutTheBitTheyAreWalkable(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(name: "w1/W1-walk-L1") [5 ms]
+  Message d'erreur :
+   502 differences with the oracle; the first ones:
+w1/W1-walk-L1 tick 11 pos_x: dll 1677312, oracle 1638400
+w1/W1-walk-L1 tick 12 pos_x: dll 1837056, oracle 1638400
+w1/W1-walk-L1 tick 12 force_adj: dll 0, oracle 1
+w1/W1-walk-L1 tick 13 pos_x: dll 1996800, oracle 1638400
+w1/W1-walk-L1 tick 13 force_adj: dll 0, oracle 1
+w1/W1-walk-L1 tick 14 pos_x: dll 2156544, oracle 1638400
+w1/W1-walk-L1 tick 14 force_adj: dll 0, oracle 1
+w1/W1-walk-L1 tick 15 pos_x: dll 2316288, oracle 1638400
+w1/W1-walk-L1 tick 15 force_adj: dll 0, oracle 1
+w1/W1-walk-L1 tick 16 pos_x: dll 2476032, oracle 1638400
+w1/W1-walk-L1 tick 16 force_adj: dll 0, oracle 1
+w1/W1-walk-L1 tick 17 pos_x: dll 2635776, oracle 1638400
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Support.RunMontage.AssertEqualToOracle(List`1 diffs) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Support\RunMontage.cs:line 264
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.Equal(String name, Int32 tolerance, Int32 shiftFrom, Int32 shift) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 59
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 78
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+[xUnit.net 00:00:01.09]     Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(name: "w2/W2-L0-inside-R") [FAIL]
+[xUnit.net 00:00:01.09]     Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(name: "w5/W5-L0-wall-walk") [FAIL]
+[xUnit.net 00:00:01.10]     Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(name: "w5/W5-L1-wall-walk") [FAIL]
+[xUnit.net 00:00:01.11]     Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(name: "w1/W1-fall-walk-L1") [FAIL]
+[xUnit.net 00:00:01.11]     Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(name: "w2/W2-L1-inside-R") [FAIL]
+[xUnit.net 00:00:01.12]     Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(name: "w10/W10-shallow-to-deep-L0") [FAIL]
+[xUnit.net 00:00:01.13]     Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(name: "w1/W1-jump-L0") [FAIL]
+[xUnit.net 00:00:01.14]     Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(name: "w1/W1-walk-L0") [FAIL]
+[xUnit.net 00:00:01.14]     Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(name: "w1/W1-jump-L1") [FAIL]
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(name: "w2/W2-L0-inside-R") [6 ms]
+  Message d'erreur :
+   112 differences with the oracle; the first ones:
+w2/W2-L0-inside-R tick 5 pos_x: dll 6912, oracle 0
+w2/W2-L0-inside-R tick 5 force_adj: dll 0, oracle 1
+w2/W2-L0-inside-R tick 6 pos_x: dll 20736, oracle 0
+w2/W2-L0-inside-R tick 6 force_adj: dll 0, oracle 1
+w2/W2-L0-inside-R tick 7 pos_x: dll 41472, oracle 0
+w2/W2-L0-inside-R tick 7 force_adj: dll 0, oracle 1
+w2/W2-L0-inside-R tick 8 pos_x: dll 69120, oracle 0
+w2/W2-L0-inside-R tick 8 force_adj: dll 0, oracle 1
+w2/W2-L0-inside-R tick 9 pos_x: dll 103680, oracle 0
+w2/W2-L0-inside-R tick 9 force_adj: dll 0, oracle 1
+w2/W2-L0-inside-R tick 10 pos_x: dll 145152, oracle 0
+w2/W2-L0-inside-R tick 10 force_adj: dll 0, oracle 1
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Support.RunMontage.AssertEqualToOracle(List`1 diffs) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Support\RunMontage.cs:line 264
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.Equal(String name, Int32 tolerance, Int32 shiftFrom, Int32 shift) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 59
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 78
+   at InvokeStub_HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(name: "w5/W5-L0-wall-walk") [4 ms]
+  Message d'erreur :
+   502 differences with the oracle; the first ones:
+w5/W5-L0-wall-walk tick 11 pos_x: dll 1677312, oracle 1638400
+w5/W5-L0-wall-walk tick 12 pos_x: dll 1837056, oracle 1638400
+w5/W5-L0-wall-walk tick 12 force_adj: dll 0, oracle 1
+w5/W5-L0-wall-walk tick 13 pos_x: dll 1996800, oracle 1638400
+w5/W5-L0-wall-walk tick 13 force_adj: dll 0, oracle 1
+w5/W5-L0-wall-walk tick 14 pos_x: dll 2156544, oracle 1638400
+w5/W5-L0-wall-walk tick 14 force_adj: dll 0, oracle 1
+w5/W5-L0-wall-walk tick 15 pos_x: dll 2316288, oracle 1638400
+w5/W5-L0-wall-walk tick 15 force_adj: dll 0, oracle 1
+w5/W5-L0-wall-walk tick 16 pos_x: dll 2476032, oracle 1638400
+w5/W5-L0-wall-walk tick 16 force_adj: dll 0, oracle 1
+w5/W5-L0-wall-walk tick 17 pos_x: dll 2635776, oracle 1638400
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Support.RunMontage.AssertEqualToOracle(List`1 diffs) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Support\RunMontage.cs:line 264
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.Equal(String name, Int32 tolerance, Int32 shiftFrom, Int32 shift) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 59
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 78
+   at InvokeStub_HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(name: "w5/W5-L1-wall-walk") [4 ms]
+  Message d'erreur :
+   502 differences with the oracle; the first ones:
+w5/W5-L1-wall-walk tick 11 pos_x: dll 1677312, oracle 1638400
+w5/W5-L1-wall-walk tick 12 pos_x: dll 1837056, oracle 1638400
+w5/W5-L1-wall-walk tick 12 force_adj: dll 0, oracle 1
+w5/W5-L1-wall-walk tick 13 pos_x: dll 1996800, oracle 1638400
+w5/W5-L1-wall-walk tick 13 force_adj: dll 0, oracle 1
+w5/W5-L1-wall-walk tick 14 pos_x: dll 2156544, oracle 1638400
+w5/W5-L1-wall-walk tick 14 force_adj: dll 0, oracle 1
+w5/W5-L1-wall-walk tick 15 pos_x: dll 2316288, oracle 1638400
+w5/W5-L1-wall-walk tick 15 force_adj: dll 0, oracle 1
+w5/W5-L1-wall-walk tick 16 pos_x: dll 2476032, oracle 1638400
+w5/W5-L1-wall-walk tick 16 force_adj: dll 0, oracle 1
+w5/W5-L1-wall-walk tick 17 pos_x: dll 2635776, oracle 1638400
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Support.RunMontage.AssertEqualToOracle(List`1 diffs) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Support\RunMontage.cs:line 264
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.Equal(String name, Int32 tolerance, Int32 shiftFrom, Int32 shift) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 59
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 78
+   at InvokeStub_HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(name: "w1/W1-fall-walk-L1") [6 ms]
+  Message d'erreur :
+   732 differences with the oracle; the first ones:
+w1/W1-fall-walk-L1 tick 11 pos_x: dll 1677312, oracle 1638400
+w1/W1-fall-walk-L1 tick 12 pos_x: dll 1837056, oracle 1638400
+w1/W1-fall-walk-L1 tick 12 force_adj: dll 0, oracle 1
+w1/W1-fall-walk-L1 tick 13 pos_x: dll 1996800, oracle 1638400
+w1/W1-fall-walk-L1 tick 13 force_adj: dll 0, oracle 1
+w1/W1-fall-walk-L1 tick 14 pos_x: dll 2156544, oracle 1638400
+w1/W1-fall-walk-L1 tick 14 force_adj: dll 0, oracle 1
+w1/W1-fall-walk-L1 tick 15 pos_x: dll 2316288, oracle 1638400
+w1/W1-fall-walk-L1 tick 15 force_adj: dll 0, oracle 1
+w1/W1-fall-walk-L1 tick 16 pos_x: dll 2476032, oracle 1638400
+w1/W1-fall-walk-L1 tick 16 force_adj: dll 0, oracle 1
+w1/W1-fall-walk-L1 tick 17 pos_x: dll 2635776, oracle 1638400
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Support.RunMontage.AssertEqualToOracle(List`1 diffs) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Support\RunMontage.cs:line 264
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.Equal(String name, Int32 tolerance, Int32 shiftFrom, Int32 shift) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 59
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 78
+   at InvokeStub_HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(name: "w2/W2-L1-inside-R") [4 ms]
+  Message d'erreur :
+   112 differences with the oracle; the first ones:
+w2/W2-L1-inside-R tick 5 pos_x: dll 6912, oracle 0
+w2/W2-L1-inside-R tick 5 force_adj: dll 0, oracle 1
+w2/W2-L1-inside-R tick 6 pos_x: dll 20736, oracle 0
+w2/W2-L1-inside-R tick 6 force_adj: dll 0, oracle 1
+w2/W2-L1-inside-R tick 7 pos_x: dll 41472, oracle 0
+w2/W2-L1-inside-R tick 7 force_adj: dll 0, oracle 1
+w2/W2-L1-inside-R tick 8 pos_x: dll 69120, oracle 0
+w2/W2-L1-inside-R tick 8 force_adj: dll 0, oracle 1
+w2/W2-L1-inside-R tick 9 pos_x: dll 103680, oracle 0
+w2/W2-L1-inside-R tick 9 force_adj: dll 0, oracle 1
+w2/W2-L1-inside-R tick 10 pos_x: dll 145152, oracle 0
+w2/W2-L1-inside-R tick 10 force_adj: dll 0, oracle 1
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Support.RunMontage.AssertEqualToOracle(List`1 diffs) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Support\RunMontage.cs:line 264
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.Equal(String name, Int32 tolerance, Int32 shiftFrom, Int32 shift) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 59
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 78
+   at InvokeStub_HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(name: "w10/W10-shallow-to-deep-L0") [9 ms]
+  Message d'erreur :
+   410 differences with the oracle; the first ones:
+w10/W10-shallow-to-deep-L0 tick 21 pos_x: dll 1677312, oracle 1638400
+w10/W10-shallow-to-deep-L0 tick 22 pos_x: dll 1757184, oracle 1638400
+w10/W10-shallow-to-deep-L0 tick 22 force_adj: dll 0, oracle 1
+w10/W10-shallow-to-deep-L0 tick 23 pos_x: dll 1837056, oracle 1638400
+w10/W10-shallow-to-deep-L0 tick 23 force_adj: dll 0, oracle 1
+w10/W10-shallow-to-deep-L0 tick 24 pos_x: dll 1916928, oracle 1638400
+w10/W10-shallow-to-deep-L0 tick 24 force_adj: dll 0, oracle 1
+w10/W10-shallow-to-deep-L0 tick 25 pos_x: dll 1996800, oracle 1638400
+w10/W10-shallow-to-deep-L0 tick 25 force_adj: dll 0, oracle 1
+w10/W10-shallow-to-deep-L0 tick 26 pos_x: dll 2076672, oracle 1638400
+w10/W10-shallow-to-deep-L0 tick 26 force_adj: dll 0, oracle 1
+w10/W10-shallow-to-deep-L0 tick 27 pos_x: dll 2156544, oracle 1638400
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Support.RunMontage.AssertEqualToOracle(List`1 diffs) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Support\RunMontage.cs:line 264
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.Equal(String name, Int32 tolerance, Int32 shiftFrom, Int32 shift) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 59
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 78
+   at InvokeStub_HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(name: "w1/W1-jump-L0") [5 ms]
+  Message d'erreur :
+   416 differences with the oracle; the first ones:
+w1/W1-jump-L0 tick 12 pos_x: dll 1786368, oracle 1638400
+w1/W1-jump-L0 tick 13 pos_x: dll 1936896, oracle 1638400
+w1/W1-jump-L0 tick 13 force_adj: dll 0, oracle 1
+w1/W1-jump-L0 tick 14 pos_x: dll 2087424, oracle 1638400
+w1/W1-jump-L0 tick 14 force_adj: dll 0, oracle 1
+w1/W1-jump-L0 tick 15 pos_x: dll 2237952, oracle 1638400
+w1/W1-jump-L0 tick 15 force_adj: dll 0, oracle 1
+w1/W1-jump-L0 tick 16 pos_x: dll 2388480, oracle 1638400
+w1/W1-jump-L0 tick 16 force_adj: dll 0, oracle 1
+w1/W1-jump-L0 tick 17 pos_x: dll 2539008, oracle 1638400
+w1/W1-jump-L0 tick 17 force_adj: dll 0, oracle 1
+w1/W1-jump-L0 tick 18 pos_x: dll 2689536, oracle 1638400
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Support.RunMontage.AssertEqualToOracle(List`1 diffs) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Support\RunMontage.cs:line 264
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.Equal(String name, Int32 tolerance, Int32 shiftFrom, Int32 shift) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 59
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 78
+   at InvokeStub_HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(name: "w1/W1-walk-L0") [5 ms]
+  Message d'erreur :
+   502 differences with the oracle; the first ones:
+w1/W1-walk-L0 tick 11 pos_x: dll 1677312, oracle 1638400
+w1/W1-walk-L0 tick 12 pos_x: dll 1837056, oracle 1638400
+w1/W1-walk-L0 tick 12 force_adj: dll 0, oracle 1
+w1/W1-walk-L0 tick 13 pos_x: dll 1996800, oracle 1638400
+w1/W1-walk-L0 tick 13 force_adj: dll 0, oracle 1
+w1/W1-walk-L0 tick 14 pos_x: dll 2156544, oracle 1638400
+w1/W1-walk-L0 tick 14 force_adj: dll 0, oracle 1
+w1/W1-walk-L0 tick 15 pos_x: dll 2316288, oracle 1638400
+w1/W1-walk-L0 tick 15 force_adj: dll 0, oracle 1
+w1/W1-walk-L0 tick 16 pos_x: dll 2476032, oracle 1638400
+w1/W1-walk-L0 tick 16 force_adj: dll 0, oracle 1
+w1/W1-walk-L0 tick 17 pos_x: dll 2635776, oracle 1638400
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Support.RunMontage.AssertEqualToOracle(List`1 diffs) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Support\RunMontage.cs:line 264
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.Equal(String name, Int32 tolerance, Int32 shiftFrom, Int32 shift) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 59
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 78
+   at InvokeStub_HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(name: "w1/W1-jump-L1") [4 ms]
+  Message d'erreur :
+   416 differences with the oracle; the first ones:
+w1/W1-jump-L1 tick 12 pos_x: dll 1786368, oracle 1638400
+w1/W1-jump-L1 tick 13 pos_x: dll 1936896, oracle 1638400
+w1/W1-jump-L1 tick 13 force_adj: dll 0, oracle 1
+w1/W1-jump-L1 tick 14 pos_x: dll 2087424, oracle 1638400
+w1/W1-jump-L1 tick 14 force_adj: dll 0, oracle 1
+w1/W1-jump-L1 tick 15 pos_x: dll 2237952, oracle 1638400
+w1/W1-jump-L1 tick 15 force_adj: dll 0, oracle 1
+w1/W1-jump-L1 tick 16 pos_x: dll 2388480, oracle 1638400
+w1/W1-jump-L1 tick 16 force_adj: dll 0, oracle 1
+w1/W1-jump-L1 tick 17 pos_x: dll 2539008, oracle 1638400
+w1/W1-jump-L1 tick 17 force_adj: dll 0, oracle 1
+w1/W1-jump-L1 tick 18 pos_x: dll 2689536, oracle 1638400
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Support.RunMontage.AssertEqualToOracle(List`1 diffs) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Support\RunMontage.cs:line 264
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.Equal(String name, Int32 tolerance, Int32 shiftFrom, Int32 shift) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 59
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 78
+   at InvokeStub_HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:01.15]     Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(name: "w1/W1-fall-walk-L0") [FAIL]
+[xUnit.net 00:00:01.16]     Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheRunIntoTheDeepWater_StopsAtTheEdge_TheEastWallOfTheBinary(name: "g9/R9-deepwater-noboots") [FAIL]
+[xUnit.net 00:00:01.17]     Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheRunIntoTheDeepWater_StopsAtTheEdge_TheEastWallOfTheBinary(name: "w1/W1-run-L1") [FAIL]
+[xUnit.net 00:00:01.17]     Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheRunIntoTheDeepWater_StopsAtTheEdge_TheEastWallOfTheBinary(name: "w1/W1-run-L0") [FAIL]
+[xUnit.net 00:00:01.18]     Alundra.Tests.Hero.HeroDeepWaterWallTests.R3_AnOpcodeOfFlagsAimedAtTheHero_KeepsTheBit [FAIL]
+[xUnit.net 00:00:01.19]     Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheWalkAlongTheEdge_NeverEntersTheWater(name: "w5/W5-L1-wall-walk") [FAIL]
+[xUnit.net 00:00:01.20]     Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheWalkAlongTheEdge_NeverEntersTheWater(name: "w5/W5-L0-wall-walk") [FAIL]
+[xUnit.net 00:00:01.20]     Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_AHeroInTheWaterWithoutTheBoots_CannotMove(name: "w2/W2-L0-inside-R") [FAIL]
+[xUnit.net 00:00:01.21]     Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_AHeroInTheWaterWithoutTheBoots_CannotMove(name: "w2/W2-L1-inside-R") [FAIL]
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(name: "w1/W1-fall-walk-L0") [5 ms]
+  Message d'erreur :
+   732 differences with the oracle; the first ones:
+w1/W1-fall-walk-L0 tick 11 pos_x: dll 1677312, oracle 1638400
+w1/W1-fall-walk-L0 tick 12 pos_x: dll 1837056, oracle 1638400
+w1/W1-fall-walk-L0 tick 12 force_adj: dll 0, oracle 1
+w1/W1-fall-walk-L0 tick 13 pos_x: dll 1996800, oracle 1638400
+w1/W1-fall-walk-L0 tick 13 force_adj: dll 0, oracle 1
+w1/W1-fall-walk-L0 tick 14 pos_x: dll 2156544, oracle 1638400
+w1/W1-fall-walk-L0 tick 14 force_adj: dll 0, oracle 1
+w1/W1-fall-walk-L0 tick 15 pos_x: dll 2316288, oracle 1638400
+w1/W1-fall-walk-L0 tick 15 force_adj: dll 0, oracle 1
+w1/W1-fall-walk-L0 tick 16 pos_x: dll 2476032, oracle 1638400
+w1/W1-fall-walk-L0 tick 16 force_adj: dll 0, oracle 1
+w1/W1-fall-walk-L0 tick 17 pos_x: dll 2635776, oracle 1638400
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Support.RunMontage.AssertEqualToOracle(List`1 diffs) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Support\RunMontage.cs:line 264
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.Equal(String name, Int32 tolerance, Int32 shiftFrom, Int32 shift) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 59
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 78
+   at InvokeStub_HeroDeepWaterWallTests.R1_TheTracesWithoutTheBoots_AreTheOracle_Exactly(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheRunIntoTheDeepWater_StopsAtTheEdge_TheEastWallOfTheBinary(name: "g9/R9-deepwater-noboots") [8 ms]
+  Message d'erreur :
+   193 differences with the oracle; the first ones:
+g9/R9-deepwater-noboots tick 84 pos_x: dll 14837760, oracle 14745599
+g9/R9-deepwater-noboots tick 85 pos_x: dll 15095808, oracle 14745600
+g9/R9-deepwater-noboots tick 85 force_adj: dll 0, oracle 1
+g9/R9-deepwater-noboots tick 86 anim_target: dll 3, oracle 62
+g9/R9-deepwater-noboots tick 86 anim_cur: dll 3, oracle 62
+g9/R9-deepwater-noboots tick 86 facing: dll 3, oracle 2
+g9/R9-deepwater-noboots tick 86 dir_target: dll 24, oracle 8
+g9/R9-deepwater-noboots tick 86 force_x: dll 258048, oracle -196608
+g9/R9-deepwater-noboots tick 86 force_z: dll 0, oracle 262144
+g9/R9-deepwater-noboots tick 86 pos_x: dll 15353856, oracle 14548992
+g9/R9-deepwater-noboots tick 86 pos_z: dll 0, oracle 262144
+g9/R9-deepwater-noboots tick 86 on_ground: dll 1, oracle 0
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Support.RunMontage.AssertEqualToOracle(List`1 diffs) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Support\RunMontage.cs:line 264
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.Equal(String name, Int32 tolerance, Int32 shiftFrom, Int32 shift) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 59
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheRunIntoTheDeepWater_StopsAtTheEdge_TheEastWallOfTheBinary(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 91
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheRunIntoTheDeepWater_StopsAtTheEdge_TheEastWallOfTheBinary(name: "w1/W1-run-L1") [5 ms]
+  Message d'erreur :
+   294 differences with the oracle; the first ones:
+w1/W1-run-L1 tick 84 pos_x: dll 14837760, oracle 14745599
+w1/W1-run-L1 tick 85 pos_x: dll 15095808, oracle 14745600
+w1/W1-run-L1 tick 85 force_adj: dll 0, oracle 1
+w1/W1-run-L1 tick 86 anim_target: dll 3, oracle 62
+w1/W1-run-L1 tick 86 anim_cur: dll 3, oracle 62
+w1/W1-run-L1 tick 86 facing: dll 3, oracle 2
+w1/W1-run-L1 tick 86 dir_target: dll 24, oracle 8
+w1/W1-run-L1 tick 86 force_x: dll 258048, oracle -196608
+w1/W1-run-L1 tick 86 force_z: dll 0, oracle 262144
+w1/W1-run-L1 tick 86 pos_x: dll 15353856, oracle 14548992
+w1/W1-run-L1 tick 86 pos_z: dll 0, oracle 262144
+w1/W1-run-L1 tick 86 on_ground: dll 1, oracle 0
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Support.RunMontage.AssertEqualToOracle(List`1 diffs) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Support\RunMontage.cs:line 264
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.Equal(String name, Int32 tolerance, Int32 shiftFrom, Int32 shift) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 59
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheRunIntoTheDeepWater_StopsAtTheEdge_TheEastWallOfTheBinary(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 91
+   at InvokeStub_HeroDeepWaterWallTests.R1_TheRunIntoTheDeepWater_StopsAtTheEdge_TheEastWallOfTheBinary(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheRunIntoTheDeepWater_StopsAtTheEdge_TheEastWallOfTheBinary(name: "w1/W1-run-L0") [5 ms]
+  Message d'erreur :
+   294 differences with the oracle; the first ones:
+w1/W1-run-L0 tick 84 pos_x: dll 14837760, oracle 14745599
+w1/W1-run-L0 tick 85 pos_x: dll 15095808, oracle 14745600
+w1/W1-run-L0 tick 85 force_adj: dll 0, oracle 1
+w1/W1-run-L0 tick 86 anim_target: dll 3, oracle 62
+w1/W1-run-L0 tick 86 anim_cur: dll 3, oracle 62
+w1/W1-run-L0 tick 86 facing: dll 3, oracle 2
+w1/W1-run-L0 tick 86 dir_target: dll 24, oracle 8
+w1/W1-run-L0 tick 86 force_x: dll 258048, oracle -196608
+w1/W1-run-L0 tick 86 force_z: dll 0, oracle 262144
+w1/W1-run-L0 tick 86 pos_x: dll 15353856, oracle 14548992
+w1/W1-run-L0 tick 86 pos_z: dll 0, oracle 262144
+w1/W1-run-L0 tick 86 on_ground: dll 1, oracle 0
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Support.RunMontage.AssertEqualToOracle(List`1 diffs) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Support\RunMontage.cs:line 264
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.Equal(String name, Int32 tolerance, Int32 shiftFrom, Int32 shift) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 59
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheRunIntoTheDeepWater_StopsAtTheEdge_TheEastWallOfTheBinary(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 91
+   at InvokeStub_HeroDeepWaterWallTests.R1_TheRunIntoTheDeepWater_StopsAtTheEdge_TheEastWallOfTheBinary(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallTests.R3_AnOpcodeOfFlagsAimedAtTheHero_KeepsTheBit [5 ms]
+  Message d'erreur :
+   Assert.NotEqual() Failure: Values are equal
+Expected: Not 0
+Actual:       0
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Hero.HeroDeepWaterWallTests.R3_AnOpcodeOfFlagsAimedAtTheHero_KeepsTheBit() in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 199
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheWalkAlongTheEdge_NeverEntersTheWater(name: "w5/W5-L1-wall-walk") [5 ms]
+  Message d'erreur :
+   502 differences with the oracle; the first ones:
+w5/W5-L1-wall-walk tick 11 pos_x: dll 1677312, oracle 1638400
+w5/W5-L1-wall-walk tick 12 pos_x: dll 1837056, oracle 1638400
+w5/W5-L1-wall-walk tick 12 force_adj: dll 0, oracle 1
+w5/W5-L1-wall-walk tick 13 pos_x: dll 1996800, oracle 1638400
+w5/W5-L1-wall-walk tick 13 force_adj: dll 0, oracle 1
+w5/W5-L1-wall-walk tick 14 pos_x: dll 2156544, oracle 1638400
+w5/W5-L1-wall-walk tick 14 force_adj: dll 0, oracle 1
+w5/W5-L1-wall-walk tick 15 pos_x: dll 2316288, oracle 1638400
+w5/W5-L1-wall-walk tick 15 force_adj: dll 0, oracle 1
+w5/W5-L1-wall-walk tick 16 pos_x: dll 2476032, oracle 1638400
+w5/W5-L1-wall-walk tick 16 force_adj: dll 0, oracle 1
+w5/W5-L1-wall-walk tick 17 pos_x: dll 2635776, oracle 1638400
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Support.RunMontage.AssertEqualToOracle(List`1 diffs) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Support\RunMontage.cs:line 264
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.Equal(String name, Int32 tolerance, Int32 shiftFrom, Int32 shift) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 59
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheWalkAlongTheEdge_NeverEntersTheWater(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 126
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheWalkAlongTheEdge_NeverEntersTheWater(name: "w5/W5-L0-wall-walk") [8 ms]
+  Message d'erreur :
+   502 differences with the oracle; the first ones:
+w5/W5-L0-wall-walk tick 11 pos_x: dll 1677312, oracle 1638400
+w5/W5-L0-wall-walk tick 12 pos_x: dll 1837056, oracle 1638400
+w5/W5-L0-wall-walk tick 12 force_adj: dll 0, oracle 1
+w5/W5-L0-wall-walk tick 13 pos_x: dll 1996800, oracle 1638400
+w5/W5-L0-wall-walk tick 13 force_adj: dll 0, oracle 1
+w5/W5-L0-wall-walk tick 14 pos_x: dll 2156544, oracle 1638400
+w5/W5-L0-wall-walk tick 14 force_adj: dll 0, oracle 1
+w5/W5-L0-wall-walk tick 15 pos_x: dll 2316288, oracle 1638400
+w5/W5-L0-wall-walk tick 15 force_adj: dll 0, oracle 1
+w5/W5-L0-wall-walk tick 16 pos_x: dll 2476032, oracle 1638400
+w5/W5-L0-wall-walk tick 16 force_adj: dll 0, oracle 1
+w5/W5-L0-wall-walk tick 17 pos_x: dll 2635776, oracle 1638400
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Support.RunMontage.AssertEqualToOracle(List`1 diffs) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Support\RunMontage.cs:line 264
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.Equal(String name, Int32 tolerance, Int32 shiftFrom, Int32 shift) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 59
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheWalkAlongTheEdge_NeverEntersTheWater(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 126
+   at InvokeStub_HeroDeepWaterWallTests.R1_TheWalkAlongTheEdge_NeverEntersTheWater(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_AHeroInTheWaterWithoutTheBoots_CannotMove(name: "w2/W2-L0-inside-R") [4 ms]
+  Message d'erreur :
+   112 differences with the oracle; the first ones:
+w2/W2-L0-inside-R tick 5 pos_x: dll 6912, oracle 0
+w2/W2-L0-inside-R tick 5 force_adj: dll 0, oracle 1
+w2/W2-L0-inside-R tick 6 pos_x: dll 20736, oracle 0
+w2/W2-L0-inside-R tick 6 force_adj: dll 0, oracle 1
+w2/W2-L0-inside-R tick 7 pos_x: dll 41472, oracle 0
+w2/W2-L0-inside-R tick 7 force_adj: dll 0, oracle 1
+w2/W2-L0-inside-R tick 8 pos_x: dll 69120, oracle 0
+w2/W2-L0-inside-R tick 8 force_adj: dll 0, oracle 1
+w2/W2-L0-inside-R tick 9 pos_x: dll 103680, oracle 0
+w2/W2-L0-inside-R tick 9 force_adj: dll 0, oracle 1
+w2/W2-L0-inside-R tick 10 pos_x: dll 145152, oracle 0
+w2/W2-L0-inside-R tick 10 force_adj: dll 0, oracle 1
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Support.RunMontage.AssertEqualToOracle(List`1 diffs) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Support\RunMontage.cs:line 264
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.Equal(String name, Int32 tolerance, Int32 shiftFrom, Int32 shift) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 59
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_AHeroInTheWaterWithoutTheBoots_CannotMove(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 109
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_AHeroInTheWaterWithoutTheBoots_CannotMove(name: "w2/W2-L1-inside-R") [4 ms]
+  Message d'erreur :
+   112 differences with the oracle; the first ones:
+w2/W2-L1-inside-R tick 5 pos_x: dll 6912, oracle 0
+w2/W2-L1-inside-R tick 5 force_adj: dll 0, oracle 1
+w2/W2-L1-inside-R tick 6 pos_x: dll 20736, oracle 0
+w2/W2-L1-inside-R tick 6 force_adj: dll 0, oracle 1
+w2/W2-L1-inside-R tick 7 pos_x: dll 41472, oracle 0
+w2/W2-L1-inside-R tick 7 force_adj: dll 0, oracle 1
+w2/W2-L1-inside-R tick 8 pos_x: dll 69120, oracle 0
+w2/W2-L1-inside-R tick 8 force_adj: dll 0, oracle 1
+w2/W2-L1-inside-R tick 9 pos_x: dll 103680, oracle 0
+w2/W2-L1-inside-R tick 9 force_adj: dll 0, oracle 1
+w2/W2-L1-inside-R tick 10 pos_x: dll 145152, oracle 0
+w2/W2-L1-inside-R tick 10 force_adj: dll 0, oracle 1
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Support.RunMontage.AssertEqualToOracle(List`1 diffs) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Support\RunMontage.cs:line 264
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.Equal(String name, Int32 tolerance, Int32 shiftFrom, Int32 shift) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 59
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_AHeroInTheWaterWithoutTheBoots_CannotMove(String name) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 109
+   at InvokeStub_HeroDeepWaterWallTests.R1_AHeroInTheWaterWithoutTheBoots_CannotMove(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:01.22]     Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheDiagonalAgainstTheEdge_SlidesAlongIt_WithinTheBoundsOfEachTick [FAIL]
+[xUnit.net 00:00:01.22]     Alundra.Tests.Hero.HeroDeepWaterWallTests.R6_TheFunctionOfTheTick_LeavesTheGravityAndTheMaxFallSpeedOfTheHeroAlone_WhenTheBitChanges [FAIL]
+[xUnit.net 00:00:01.23]     Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_FromTheShallowWaterToTheDeepOne_TheHeroStopsAtTheEdge [FAIL]
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheDiagonalAgainstTheEdge_SlidesAlongIt_WithinTheBoundsOfEachTick [6 ms]
+  Message d'erreur :
+   418 differences with the oracle; the first ones:
+w5/W5-L0-wall-diag tick 57 slope: dll 4, oracle 0
+w5/W5-L0-wall-diag tick 58 anim_target: dll 29, oracle 1
+w5/W5-L0-wall-diag tick 58 anim_cur: dll 29, oracle 1
+w5/W5-L0-wall-diag tick 58 force_x: dll 98826, oracle 112944
+w5/W5-L0-wall-diag tick 58 force_y: dll 65884, oracle 75296
+w5/W5-L0-wall-diag tick 58 slope: dll 4, oracle 0
+w5/W5-L0-wall-diag tick 59 anim_target: dll 15, oracle 1
+w5/W5-L0-wall-diag tick 59 anim_cur: dll 15, oracle 1
+w5/W5-L0-wall-diag tick 59 force_x: dll 97537, oracle 112944
+w5/W5-L0-wall-diag tick 59 force_y: dll 65025, oracle 75296
+w5/W5-L0-wall-diag tick 59 slope: dll 4, oracle 0
+w5/W5-L0-wall-diag tick 59 sounds: dll [22], oracle []
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Support.RunMontage.AssertEqualToOracle(List`1 diffs) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Support\RunMontage.cs:line 264
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_TheDiagonalAgainstTheEdge_SlidesAlongIt_WithinTheBoundsOfEachTick() in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 151
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallTests.R6_TheFunctionOfTheTick_LeavesTheGravityAndTheMaxFallSpeedOfTheHeroAlone_WhenTheBitChanges [4 ms]
+  Message d'erreur :
+   Assert.NotEqual() Failure: Values are equal
+Expected: Not 0
+Actual:       0
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Hero.HeroDeepWaterWallTests.R6_TheFunctionOfTheTick_LeavesTheGravityAndTheMaxFallSpeedOfTheHeroAlone_WhenTheBitChanges() in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 211
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_FromTheShallowWaterToTheDeepOne_TheHeroStopsAtTheEdge [7 ms]
+  Message d'erreur :
+   410 differences with the oracle; the first ones:
+w10/W10-shallow-to-deep-L0 tick 21 pos_x: dll 1677312, oracle 1638400
+w10/W10-shallow-to-deep-L0 tick 22 pos_x: dll 1757184, oracle 1638400
+w10/W10-shallow-to-deep-L0 tick 22 force_adj: dll 0, oracle 1
+w10/W10-shallow-to-deep-L0 tick 23 pos_x: dll 1837056, oracle 1638400
+w10/W10-shallow-to-deep-L0 tick 23 force_adj: dll 0, oracle 1
+w10/W10-shallow-to-deep-L0 tick 24 pos_x: dll 1916928, oracle 1638400
+w10/W10-shallow-to-deep-L0 tick 24 force_adj: dll 0, oracle 1
+w10/W10-shallow-to-deep-L0 tick 25 pos_x: dll 1996800, oracle 1638400
+w10/W10-shallow-to-deep-L0 tick 25 force_adj: dll 0, oracle 1
+w10/W10-shallow-to-deep-L0 tick 26 pos_x: dll 2076672, oracle 1638400
+w10/W10-shallow-to-deep-L0 tick 26 force_adj: dll 0, oracle 1
+w10/W10-shallow-to-deep-L0 tick 27 pos_x: dll 2156544, oracle 1638400
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Support.RunMontage.AssertEqualToOracle(List`1 diffs) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Support\RunMontage.cs:line 264
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.Equal(String name, Int32 tolerance, Int32 shiftFrom, Int32 shift) in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 59
+   at Alundra.Tests.Hero.HeroDeepWaterWallTests.R1_FromTheShallowWaterToTheDeepOne_TheHeroStopsAtTheEdge() in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallTests.cs:line 135
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:05.54]     Alundra.Tests.Hero.HeroSwimArenaTests.WithoutTheBoots_TheHeroStopsAtTheEdgeOfTheDeepWater_O_E19_22 [FAIL]
+  Échoué Alundra.Tests.Hero.HeroSwimArenaTests.WithoutTheBoots_TheHeroStopsAtTheEdgeOfTheDeepWater_O_E19_22 [2 s]
+  Message d'erreur :
+   Assert.DoesNotContain() Failure: Filter matched in collection
+                                                                                                                                                                                                                                                                                                                                                       ↓ (pos 10)
+Collection: [···, Tick { Number = 9, Anim = 1, Dir = 0, ForceX = 0, ForceY = 106496, PosX = 63700992, PosY = 51761152, PosZ = 1048576, Slope = 0, Adjusted = False, OnGround = 1 }, Tick { Number = 10, Anim = 1, Dir = 0, ForceX = 0, ForceY = 106496, PosX = 63700992, PosY = 51867648, PosZ = 1048576, Slope = 0, Adjusted = False, OnGround = 1 }, Tick { Number = 11, Anim = 44, Dir = 0, ForceX = 0, ForceY = 103424, PosX = 63700992, PosY = 51971072, PosZ = 1015808, Slope = 0, Adjusted = False, OnGround = 0 }, Tick { Number = 12, Anim = 44, Dir = 0, ForceX = 0, ForceY = 100352, PosX = 63700992, PosY = 52071424, PosZ = 950272, Slope = 0, Adjusted = False, OnGround = 0 }, Tick { Number = 13, Anim = 44, Dir = 0, ForceX = 0, ForceY = 100352, PosX = 63700992, PosY = 52171776, PosZ = 851968, Slope = 0, Adjusted = False, OnGround = 0 }, ···]
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Hero.HeroSwimArenaTests.WithoutTheBoots_TheHeroStopsAtTheEdgeOfTheDeepWater_O_E19_22() in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroSwimArenaTests.cs:line 148
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:06.00]     Alundra.Tests.Hero.HeroDeepWaterWallWorldTests.R4_TheAdoptionOfTheHero_GivesTheBitWithoutTheBoots_AndNotWithThem [FAIL]
+Message du collecteur de données 'Blame' : Tous les tests ont fini de s'exécuter. Le fichier de séquence ne sera pas généré.
+  Échoué Alundra.Tests.Hero.HeroDeepWaterWallWorldTests.R4_TheAdoptionOfTheHero_GivesTheBitWithoutTheBoots_AndNotWithThem [446 ms]
+  Message d'erreur :
+   Assert.NotEqual() Failure: Values are equal
+Expected: Not 0
+Actual:       0
+  Arborescence des appels de procédure :
+     at Alundra.Tests.Hero.HeroDeepWaterWallWorldTests.R4_TheAdoptionOfTheHero_GivesTheBitWithoutTheBoots_AndNotWithThem() in D:\development\repo\alundra-casaengine-project-converter\Alundra.Tests\Hero\HeroDeepWaterWallWorldTests.cs:line 38
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Échoué!  - échec :    29, réussite :    14, ignorée(s) :     0, total :    43, durée : 5 s - Alundra.Tests.dll (net9.0)

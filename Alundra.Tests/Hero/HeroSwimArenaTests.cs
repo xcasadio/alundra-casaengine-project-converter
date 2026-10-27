@@ -16,7 +16,7 @@ namespace Alundra.Tests.Hero;
 /// <c>Update</c>), where <see cref="HeroSwimTests"/> uses the montage on a synthetic field. One arc, on the pond of map 14 (<c>Overworld 3,1-14</c>): 81 deep cells at the tiles x 40 to 46, y 43 to 59, height 0,
 /// the shores at height 1. The hero stands on the shore at tile (40, 48), height 1, walks south, falls the 16 pixels of the bank into the water, floats one tick, swims, bursts with the Triangle (42 ticks, 90112 of force
 /// south), swims on and stops against the bank at the south end of the pond. Written before the first run (the numbers are the oracle's: the swim 73728 south, the burst 90112, the float then the swim after a fall).
-/// The same arc without boots is pinned as a deviation: the original stops a hero without the swim boots at the edge of the deep water (O-E19-22, not ported), this one swims.
+/// The same arc without boots (E20.i2a): the original stops a hero without the swim boots at the edge of the deep water (O-E19-22), this one too.
 /// </summary>
 [Collection(MusicPlayerSingletonCollection.Name)]
 public sealed class HeroSwimArenaTests : IDisposable

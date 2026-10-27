@@ -90,13 +90,16 @@ From `arsenal-a-m14` the inventory (Start) reaches the slots 1 to 6 as items 1, 
 | Preset | Map, tile, z | Owned | Equipped |
 |---|---|---|---|
 | `swim-m14` | 14, (40, 48), 1 | the kit's items 1, 17, 25 and the swim boots (item 0x1B, level 2) | the basic sword |
+| `mur-m14` | 14, (40, 48), 1 | the kit's items 1, 17, 25 alone (no boots; E20.i2a) | the basic sword |
 
 The arrival tile is on the bank (height 1) of the pond of map 14: 81 deep cells at the tiles x 40 to 46, y 43 to 59 (height 0), a bank of 16
 pixels all around. Walk south off the bank into the water: the hero falls, floats, then swims (0x1D, 0x0F); the Triangle, the Cross
 and the Square start a burst of 42 ticks (0x28), the Circle does not. Known gaps of the port: no splash, no wake, no ripple of the burst
-(E20.e); a hero without the swim boots swims too, where the original stops him at the edge of the deep water (O-E19-22); the pond has
+(E20.e); a hero without the swim boots is stopped at the edge of the deep water, as the original does (O-E19-22, E20.i2a: see `mur-m14`); the pond has
 no exit at the same level but its south edge, a bank is a wall for the swimmer. Do not go near the cascade of map 416 (currents,
 O-E20-16).
+
+`mur-m14` (E20.i2a) is the same arrival without the boots: walk south, the hero stops at the edge of the water (the original's wall, O-E19-22) instead of falling in; `swim-m14` is the control.
 
 ### Pickup presets (E20.e0c)
 

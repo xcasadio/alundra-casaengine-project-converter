@@ -70,6 +70,7 @@ public sealed class TestSavesTests : IDisposable
 
     // E20.i T5: the swim preset, then the full list in the order of the table.
     private const string SwimPresetName = "swim-m14";
+    private const string WallPresetName = "mur-m14";
 
     // E20.e0c T4: the two pickup recipes (docs/plan-e20-heros.md section 1.26, T0 (k)), then the full list in the order of the table.
     private static readonly string[] PickupPresetNames = ["pickup-m11", "loot-m14"];
@@ -118,7 +119,7 @@ public sealed class TestSavesTests : IDisposable
     // E20.c2c T1 (docs/plan-e20-heros.md section 1.12.2, D-C2C-1): the four armour presets, on the cell of `blessure-m15`, listed after the two presets of the hurt hero.
     private static readonly string[] ArmourPresetNames = ["blessure-m15-tissu", "blessure-m15-cuir", "blessure-m15-ancienne", "blessure-m15-argent"];
 
-    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName, BarricadePresetName, LiftPresetName, LiftPlatformPresetName, C4Map22PresetName, C4Map70PresetName, .. ChestPresetNames, LegendM14PresetName, LegendM7PresetName, .. HurtPresetNames, .. ArmourPresetNames, OlenPresetName, TorchPresetName, DropsPresetName, BombPresetName];
+    private static readonly string[] AllPresetNames = [Day3.Name, Day4.Name, .. WeaponPresetNames, SwimPresetName, WallPresetName, .. PickupPresetNames, GrassPresetName, ElevatorPresetName, BarricadePresetName, LiftPresetName, LiftPlatformPresetName, C4Map22PresetName, C4Map70PresetName, .. ChestPresetNames, LegendM14PresetName, LegendM7PresetName, .. HurtPresetNames, .. ArmourPresetNames, OlenPresetName, TorchPresetName, DropsPresetName, BombPresetName];
 
     public static TheoryData<string> WeaponNames => new([.. WeaponPresetNames, GrassPresetName, LegendM14PresetName]);
 
@@ -134,7 +135,7 @@ public sealed class TestSavesTests : IDisposable
     }
 
     [Fact]
-    public void TheThirtyFourPresets_AreListed_InTheOrderOfTheTable()
+    public void TheThirtyFivePresets_AreListed_InTheOrderOfTheTable()
     {
         Assert.Equal(AllPresetNames, TestSaves.Presets.Select(p => p.Name));
         Assert.Equal(AllPresetNames.Length, TestSaves.Presets.Count);
@@ -462,6 +463,29 @@ public sealed class TestSavesTests : IDisposable
         var reloaded = new GameState();
         save.ApplyTo(reloaded);
         Assert.Equal(1, reloaded.NumberOfItems[2 * 0x1B + 1]);
+        Assert.True(save.TryValidate(rules, out var error), error);
+    }
+
+    [Fact]
+    public void TheWallPreset_IsTheNewGameWithoutTheSwimBoots_OnTheBankOfThePondOfMap14()
+    {
+        // E20.i2a (D-I2A-5): `swim-m14` without its boots; the walk south ends at the edge of the deep water.
+        var rules = RealRules();
+        var save = Build(WallPresetName);
+
+        Assert.Equal(14, save.InitialMapId);
+        Assert.Equal((40, 48, 1), (save.CameraTileX, save.CameraTileY, save.CameraTileZ));
+        Assert.All(save.GameFlags, word => Assert.Equal(0u, word));
+
+        // The new game's counters (items 1, 17 and 25: raw indices 3, 35, 51), nothing else: no boots of any level.
+        var expectedCounts = new int[256];
+        expectedCounts[3] = expectedCounts[35] = expectedCounts[51] = 1;
+        Assert.Equal(expectedCounts, save.NumberOfItems.Select(c => (int)c));
+        Assert.Equal(((short)10, (short)10, (short)0, (short)0, (short)0, (short)1, (short)0), (save.Hp, save.HpMax, save.Mp, save.MpMax, save.Money, save.WeaponId, save.ItemId));
+
+        var reloaded = new GameState();
+        save.ApplyTo(reloaded);
+        Assert.Equal(0, PlayerManager.BootsLevelOf(reloaded));
         Assert.True(save.TryValidate(rules, out var error), error);
     }
 

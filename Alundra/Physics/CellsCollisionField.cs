@@ -54,6 +54,14 @@ public sealed class CellsCollisionField : ICollisionField
     /// </summary>
     public const uint BaseWalkabilityMask = 0x40;
 
+    /// <summary>
+    /// E20.i2a (D-I2A-1, docs/plan-e20-heros.md section 1.14.2): a pseudo-bit of the walkability mask, above the 16 bits of <c>walkability | groundProperty &lt;&lt; 8</c> so that no real bit collides with it. A mask that
+    /// carries it blocks the cells whose half-word satisfies <c>(tileFlags &amp; 0xE00) == 0x800</c> - the deep water - whatever their height: the corner test of the hero without the swim boots (<c>0x80037488</c>,
+    /// <c>0x80037504</c>, <c>0x80037558-0x80037560</c>). An EQUALITY on <c>0xE00</c>, which no bit of the mask expresses (the ladder, <c>0xC00</c>, has the bit <c>0x800</c> too). Never part of
+    /// <see cref="WalkabilityMaskFor"/>: only the hero's own function (<see cref="Alundra.Hero.PlayerManager.RefreshHeroWalkabilityMask"/>) writes it.
+    /// </summary>
+    public const uint DeepWaterWallMaskBit = 0x10000;
+
     // StaticVariables.MapTileWidth/MapTileHeight (StaticVariables.cs:57-58).
     private const int CellWidthPx = 24;
     private const int CellHeightPx = 16;
@@ -181,7 +189,8 @@ public sealed class CellsCollisionField : ICollisionField
         var walkability = (uint)_walkability[cellIndex];
         var groundProperty = _groundProperty[cellIndex];
         var tileFlags = walkability | ((uint)groundProperty << 8);
-        var isWalkable = (tileFlags & walkabilityMask) == 0;
+        var isWalkable = (tileFlags & walkabilityMask) == 0
+            && !((walkabilityMask & DeepWaterWallMaskBit) != 0 && (tileFlags & 0xE00) == 0x800); // E20.i2a: the wall of the deep water (D-I2A-1)
         var surfaceTag = _surfaceTagCache[groundProperty & 0xFF];
 
         sample = new GroundSample(groundHeight, Vector3.UnitZ, isWalkable, surfaceTag ?? string.Empty);

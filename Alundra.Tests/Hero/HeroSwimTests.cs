@@ -20,8 +20,8 @@ namespace Alundra.Tests.Hero;
 /// <para>
 /// WHAT IS NOT COMPARED, and why (each is an allowance of the plan): the effects 6 and 0x15 (the splash, the wake and the ripple of the dive: the shadow pass <c>0x80038E84</c> and <c>CreatePlayerAnimationEffects</c>, E20.e), the sounds 21
 /// and 6 of a landing in the water (E20.e), the hurt of the water is entered through the REAL entry of the hero's damage (E20.c2b): the traces W7 hurt the hero with a Beannoid the
-/// montage does not have, so the test poses the toucher the hit pass of the previous tick would have written (<see cref="HurtAccess"/>) and the effect 9 of that touch is not compared; the wall of the deep water without the swim boots (O-E19-22) and the currents (O-E20-16) are not ported, the traces of
-/// boots level 0 and 1 are information; the east wall stops one unit short in the binary (O-E19-42); the clamp at the border of the map (O-E19-17).
+/// montage does not have, so the test poses the toucher the hit pass of the previous tick would have written (<see cref="HurtAccess"/>) and the effect 9 of that touch is not compared; the currents (O-E20-16) are not ported; the wall of the deep water without the swim boots (O-E19-22) is E20.i2a's, the traces of
+/// boots level 0 and 1 are replayed by <see cref="HeroDeepWaterWallTests"/>; the east wall stops one unit short in the binary (O-E19-42); the clamp at the border of the map (O-E19-17).
 /// </para>
 /// </summary>
 [Collection(RandomStaticStateCollection.Name)]

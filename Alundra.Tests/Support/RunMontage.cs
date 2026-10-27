@@ -101,6 +101,9 @@ internal sealed class RunMontage
                 throw new InvalidOperationException($"{trace.Name}: the inventory '{trace.Inventory}' is not built by the montage");
         }
 
+        // E20.i2a: the wall of the deep water of the hero without the swim boots is posed by the function of production, from the inventory just built (the montage never poses the pseudo-bit by hand).
+        PlayerManager.RefreshHeroWalkabilityMask(rig.Hero, rig.Host.GameState);
+
         var stage = new EffectStage();
         stage.Load(EffectGolden.BankOf(Root, 163));
         rig.Host.EffectStage = stage;

@@ -142,9 +142,13 @@ public static class TestSaves
         WeaponPreset("arrow-m16", 16, 34, 31, 3, 2, 5, 9, 14, 16, 7),
 
         // E20.i T5 (docs/plan-e20-heros.md section 1.14): the swim. Map 14, tile (40, 48, 1), on the bank of the pond (81 deep cells at the tiles x 40 to 46, y 43 to 59, height 0; the bank is height 1, walkable, no
-        // portal floor), with the swim boots (item 0x1B, level 2) on top of the new game's kit. Walk south off the bank into the water. Without the boots the original stops the hero at the edge of the deep water;
-        // this port does not port that wall yet (O-E19-22), the hero swims either way.
+        // portal floor), with the swim boots (item 0x1B, level 2) on top of the new game's kit. Walk south off the bank into the water. Without the boots the original stops the hero at the edge of the deep water
+        // (O-E19-22, ported by E20.i2a): see `mur-m14` below.
         new Preset("swim-m14", "test-swim-m14", 14, 40, 48, 1, [], [], [], [(CounterIndex(0x1B), 1)]),
+
+        // E20.i2a (D-I2A-5, docs/plan-e20-heros.md section 1.14.2, T0 (e)): the wall of the deep water. `mur-m14` is `swim-m14` without the boots: map 14, tile (40, 48, 1), the bank of the pond (height 1; deep water from the row 49), the
+        // new game's kit alone, the boots level 0. Walk south: the hero stops at the edge of the water, as the original does (O-E19-22); with `swim-m14` it falls in and swims.
+        new Preset("mur-m14", "test-mur-m14", 14, 40, 48, 1, [], [], [], []),
 
         // E20.e0c T4 (docs/plan-e20-heros.md section 1.26, T0 (k)): the pickup recipes, on the new game's kit (the basic sword) with HP 4/10 and MP 2/4 so that the hearts, the herbs and the crystals show. `pickup-m11`: the Debug zone (map 11),
         // tile (27, 18, 10), the hero rests on the ground; to the north on the same column the herb (27, 16), the Small Potion (27, 15) and the Large Potion (27, 14); the Magic Extract (29, 15), the Brew (29, 14) and a key (24, 20); the 22 key objects
