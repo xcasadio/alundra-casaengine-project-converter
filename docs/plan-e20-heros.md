@@ -12411,7 +12411,7 @@ tolérance) ; un test hors de la liste prédite qui bouge ; un besoin de toucher
 
 **Retour arrière.** Retirer les branches `0x1F` (Rond revient au bouchon silencieux) ; la phase A reste inerte.
 
-#### 1.30.4b E20.h3d — Le pot magique : A20 et C74 (le type `0x199`) ⏳ (détaillée le 2026-10-27 ; thème 2 ; D-E20-88, D-E20-90 ; après h3c ; révision 0 relue : REVISE ; révision 1 relue : REVISE ; **révision 1.1** du 2026-10-27 après disposition, à la relecture de clôture)
+#### 1.30.4b E20.h3d — Le pot magique : A20 et C74 (le type `0x199`) ⏳ (détaillée le 2026-10-27 ; thème 2 ; D-E20-88, D-E20-90 ; après h3c ; révision 0 relue : REVISE ; révision 1 relue : REVISE ; révision 1.1 du 2026-10-27 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais)
 
 **Provenance.** La même lecture et la même critique que h3c (`scratchpad/t2-feedback/h3c-beans/` et `h3c-beans-critic/`, versées par le T0 de
 h3c à `docs/plan-e20-annexe/e20-h3cd-disc/`) : les vecteurs neufs du pot (`out/goldens_pot.json`, 25 pour A20 et 25 pour C74, rejoués depuis une
