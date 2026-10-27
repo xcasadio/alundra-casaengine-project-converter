@@ -372,6 +372,12 @@ ADR-0058) :
     l'analyseur, la ré-extraction, le miroir, l'export complet en fenêtre calme), par une tranche de données avant E20.e2 ; le nom se
     propose à l'auteur. Ordre d'exécution du thème 2 : h4c1, **E20.g1d**, h4c2, h4d1, h4d2, h4e1, h1, h2, i2b, le renommage de l'octet
     puis E20.e2, h3c, h3d, h4e2, h4f1, h4f2, puis la fusion.
+  - **D-E20-90** (2026-10-27, réponses de l'auteur) — (1) l'octet `0xA` de l'en-tête de carte s'exporte sous le nom **`DustEffectId`**
+    (comme `SlideEffectId` et `TileCutEffectId`) ; (2) les haricots et le pot s'essaient sur un préréglage neuf **`haricots-m144`** (la
+    carte 144 devant le pot, les haricots dans le sac et sur Rond ; le coffre de la corniche de 48 px au nord prouve le grand saut) ; (3) les
+    autres points des haricots et du pot sont **comme l'original** : le grand saut seulement depuis le pot enfoncé (environ 30 ticks sur lui,
+    un saut plus tôt est un saut normal) ; le menu Start fermé tant que les haricots sont en main, sans minuteur ; le pot rendormi au retour
+    sur la carte ; les six pots de la carte 60 hors tranche ; les sons inconnus des effets 8 et 14 laissés tels quels.
 
 Règles reconduites : `ALUN_CD.EXE` (France) tranche sur la décompilation, qui se lit et ne se corrige
 pas ; un défaut avéré de l'original se corrige ; tout écart du port est documenté dans le code et ici.
@@ -9902,12 +9908,21 @@ prédite bouge ; un besoin de toucher au moteur ; un test qui boucle.
 
 **Retour arrière.** La phase B se retire seule (le contact redevient celui du moteur) ; la phase A ne change aucun comportement.
 
-#### 1.24.8 E20.g1d — L'ordre de dessin de l'objet porté et de l'objet lancé (D-E20-88 (1), D-E20-89 (1) et (2)) ⏳ (détaillée le 2026-10-27, révision 0 ; thème 2 ; après h4c1)
+#### 1.24.8 E20.g1d — L'ordre de dessin de l'objet porté et de l'objet lancé (D-E20-88 (1), D-E20-89 (1) et (2)) ⏳ (détaillée le 2026-10-27 ; thème 2 ; après h4c1 ; révision 0 relue : REVISE ; **révision 1** du 2026-10-27, non relue)
 
 **Provenance.** Lecture seule du 2026-10-27 (HEAD `539d4cf4`) et sa critique fraîche, CONFIRMÉE avec quatre corrections reprises ici, dans le
 scratchpad de la session principale (`scratchpad/t2-feedback/carried-draw/` et `carried-draw-critic/`, avec leurs désassemblages, leurs
 scripts et les rejeux des clés), à verser par T0 à `docs/plan-e20-annexe/e20-g1d-disc/` (sans les copies d'oracles ni les `__pycache__`).
 La capture de l'auteur : Alundra face au bas, la bombe tenue au-dessus de sa tête, recouverte par sa chevelure.
+
+**Révision 1 (2026-10-27).** La relecture de la révision 0 (REVISE) a relevé trois mutants que le test qu'ils nommaient ne pouvait pas
+tuer, corrigés (FIX) : (1) « `-K` à l'égalité » renvoyait à (o1), qui saute les lignes à l'égalité : (k1) reçoit un cas lancé aux clés
+exactement égales (attendu 0) ; (2) « l'ancre sur les positions logiques » ne change pas le sens « devant » (la coordonnée logique met
+l'objet à égalité ou 100 plus haut) : (w3) vérifie l'**égalité exacte** des coordonnées de l'objet et du porteur sur les translations
+rendues, la hauteur du héros fractionnaire au milieu du saut ; (3) « l'`Elevation` relevée pour les seuls collidables » ne pouvait être
+tué ni par (w1) (pas de saut) ni par un saut unique : (w3) part des 16 rangées de Y, dont l'une fait passer la rangée du héros (IDSV 6)
+au-dessus de celle de la bombe (5). Relevé en plus par la session principale : le mutant « le lancer sans le terme `Δ` » ne change pas
+l'ordre de l'objet face au seul lanceur (le signe de `K` suit la clé) : il est tué par (k1) et par l'égalité de la coordonnée de (w4).
 
 **Prérequis.** E20.g1a, g2a, g1b et h3b faites (l'objet dans les mains, le lancer, la bombe en production) ; E20.h4c1 finie et commitée :
 les tranches du thème 2 s'exécutent une à la fois dans l'arbre de travail du dépôt ; T0 nomme son HEAD de départ et y lance la suite
@@ -9999,13 +10014,16 @@ non ancrés ; le convertisseur et les données.
   lancer et lue jusqu'à l'atterrissage, et `IsOnGround` tombe-t-il au tick où l'oracle a l'égalité de clé ? ; P4 le `DrawOrder` maximal des
   pièces du héros et des 17 fiches soulevables (D-G1D-4) ; (e) la liste prédite des tests qui bougent, recomptée au HEAD de départ.
 - ⏳ **T1 — Tests d'abord** (rouges avant, puis le code) : (k1) la fonction pure de la règle (porté : la coordonnée du porteur et `+K` ; lancé :
-  `Δ` et le signe de `K` ; ni porté ni lancé : (0, 0) et 0) ; (o1) **contre les clés de T0 (c)** : pour chaque ligne, deux entités posées
+  `Δ` et le signe de `K` ; ni porté ni lancé : (0, 0) et 0) ; (k1), encore (révision 1) : un cas lancé aux deux clés exactement égales (les
+  valeurs d'une ligne d'égalité de `throw_probe`) : décalage 0 ; (o1) **contre les clés de T0 (c)** : pour chaque ligne, deux entités posées
   aux valeurs de la ligne, la passe puis `BuildSortKey` sur leurs translations rendues, le signe de la comparaison égal au signe de la clé
   du binaire, sauf le tick 162 de `bomb_keys2` (attendu devant, D-G1D-2) et les lignes à l'égalité (sautées, le binaire ne les ordonne pas) ;
   (w1) le monde : la bombe dans les mains du vrai héros (le banc de `BombHandsWorldTests`), devant sur les 16 rangées de Y et dans les
   quatre directions, debout et en marche ; (w2) une caisse portée (collidable, le chemin W6), devant de même ; (w3) le saut vers le haut
-  avec la bombe : devant à toutes les images ; (w4) le lancer à gauche, à droite et vers le bas : devant tant que la clé le dit, vers le
-  haut : derrière dès que la clé le dit, contre les lignes de `throw_probe` ; après l'atterrissage, l'ancre et le décalage reviennent à
+  avec la bombe, **depuis les 16 rangées de Y** (révision 1) : devant à toutes les images, et la coordonnée de tri de la bombe **égale
+  exactement** à celle du héros sur leurs translations rendues à toutes les images, la hauteur du héros fractionnaire en vol ; (w4) le lancer à gauche, à droite et vers le bas : devant tant que la clé le dit, vers le
+  haut : derrière dès que la clé le dit, contre les lignes de `throw_probe` ; à chaque image du vol, la coordonnée de l'objet égale celle du
+  lanceur plus `100 × Δ` (révision 1) ; après l'atterrissage, l'ancre et le décalage reviennent à
   (0, 0) et 0 ; (w5) l'objet qui quitte les mains sans être lancé (un chemin du HEAD que T0 (e) nomme : l'annulation de la bombe, la
   blessure si le HEAD la porte) : (0, 0) et 0 à l'image suivante ; (e1) l'effet ancré d'un objet
   porté (le bris d'une caisse tenue, `FrozenAnchorTests` étendu) se trie à la coordonnée que la passe a posée ; (g1) une entité
@@ -10013,8 +10031,9 @@ non ancrés ; le convertisseur et les données.
 - ⏳ **T2 — Suites, mutants, ADR.** La suite entière en Release (copie neutralisée) puis en Debug en dernier, zéro échec, partitions
   disjointes ; `cmp` ; `check_names.py --rules` ; au moins 12 mutants réels, chacun tué par le test qu'il nomme : `K` = 13 ((p1), (w1)) ;
   l'ancre non remise à zéro au lâcher ((w5)) ; la règle appliquée à une entité ni portée ni lancée ((k1), (g1)) ; l'`Elevation` relevée
-  pour les seuls collidables ((w1) au saut, (w3)) ; l'ancre calculée sur les positions logiques au lieu des translations ((w3), la hauteur
-  fractionnaire) ; le lancer sans le terme `Δ` ((w4) vers le haut) ; `-K` à l'égalité ((o1)) ; la marque non posée par `ThrowCarried`
+  pour les seuls collidables ((w3) depuis les 16 rangées) ; l'ancre calculée sur les positions logiques au lieu des translations ((w3),
+  l'égalité exacte des coordonnées en vol) ; le lancer sans le terme `Δ` ((k1), (w4) l'égalité de la coordonnée) ; `-K` à l'égalité ((k1),
+  le cas aux clés égales) ; la marque non posée par `ThrowCarried`
   ((w4)) ; la marque qui ne tombe pas à l'atterrissage ((w4)) ; l'effet ancré non suivi ((e1)) ; le tick 162 laissé derrière ((w3), (o1)) ;
   les entités `FlagToDestroy` visitées ((g1)) ; un ADR neuf (numéro libre recompté sur toutes les branches).
 - ⏳ **T3 — Verifiers frais** (la session principale) : un sur la tranche, un sur les épingles.
