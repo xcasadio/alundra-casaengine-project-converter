@@ -1,0 +1,4 @@
+  Échoué Alundra.Tests.Ai.Objects.LiftableBreakWorldTests.B5_TheContentsOfTheCrateAreDroppedAtItsBreak_WhereAContentOfZeroDropsNothing(ticksPerFrame: 3) [635 ms]
+  Échoué Alundra.Tests.Ai.Objects.LiftableBreakWorldTests.B5_TheContentsOfTheCrateAreDroppedAtItsBreak_WhereAContentOfZeroDropsNothing(ticksPerFrame: 1) [630 ms]
+  Échoué Alundra.Tests.Ai.Objects.LiftableBreakWorldTests.B5_TheContentsOfTheCrateAreDroppedAtItsBreak_WhereAContentOfZeroDropsNothing(ticksPerFrame: 2) [570 ms]
+Échoué!  - échec :     3, réussite :   632, ignorée(s) :     0, total :   635, durée : 4 m 4 s - Alundra.Tests.dll (net9.0)
