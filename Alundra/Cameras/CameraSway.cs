@@ -112,18 +112,47 @@ public sealed class CameraSway
         return (offset, reach);
     }
 
-    /// <summary>E20.h4d1 (D-H4D1-2) SKELETON: the buffer of the pilot of the fire tome 2 (<c>0x80127138</c>), nine words in the order of the block.</summary>
+    /// <summary>
+    /// E20.h4d1 (D-H4D1-2): the buffer of the session of the pilot of the fire tome 2 (<c>0x80127138</c>, <c>0x80035C64</c>): nine words in the order of the block (Flag, LimitX, LimitY, SpeedX, SpeedY, OffsetX, OffsetY, ReachX, ReachY), zero at the start, written by
+    /// <see cref="CaptureToBuffer"/>, read by <see cref="RestoreFromBuffer"/>. Session-scoped like the block, never saved, kept by <see cref="OnMapLoad"/> and cleared by <see cref="ResetForTests"/> only.
+    /// </summary>
     internal int[] Buffer { get; } = new int[9];
 
-    /// <summary>E20.h4d1 SKELETON: copies the nine words of the block to the buffer.</summary>
-    internal void CaptureToBuffer() => throw new System.NotImplementedException();
+    /// <summary>E20.h4d1 (D-H4D1-2): copies the nine words of the block to the buffer, in order (the pilot of the fire tome 2 at the birth of the column, before it writes the block). The block is left as it is.</summary>
+    internal void CaptureToBuffer()
+    {
+        Buffer[0] = Flag;
+        Buffer[1] = LimitX;
+        Buffer[2] = LimitY;
+        Buffer[3] = SpeedX;
+        Buffer[4] = SpeedY;
+        Buffer[5] = OffsetX;
+        Buffer[6] = OffsetY;
+        Buffer[7] = ReachX;
+        Buffer[8] = ReachY;
+    }
 
-    /// <summary>E20.h4d1 SKELETON: copies the buffer to the nine words of the block, with no guard.</summary>
-    internal void RestoreFromBuffer() => throw new System.NotImplementedException();
+    /// <summary>
+    /// E20.h4d1 (D-H4D1-2): copies the buffer to the nine words of the block, in order, WITH NO GUARD (<c>0x80034E08</c> and the end of the pilot): an empty buffer (no cast ever captured one) zeroes the block, a stale one is restored as it is. The buffer is not cleared.
+    /// The step of the shake is not run.
+    /// </summary>
+    internal void RestoreFromBuffer()
+    {
+        Flag = Buffer[0];
+        LimitX = Buffer[1];
+        LimitY = Buffer[2];
+        SpeedX = Buffer[3];
+        SpeedY = Buffer[4];
+        OffsetX = Buffer[5];
+        OffsetY = Buffer[6];
+        ReachX = Buffer[7];
+        ReachY = Buffer[8];
+    }
 
-    /// <summary>Test-only: the nine fields to 0, Reach included.</summary>
+    /// <summary>Test-only: the nine fields to 0, Reach included, and the buffer of the fire tome 2 (E20.h4d1).</summary>
     internal void ResetForTests()
     {
         Flag = LimitX = LimitY = SpeedX = SpeedY = OffsetX = OffsetY = ReachX = ReachY = 0;
+        System.Array.Clear(Buffer);
     }
 }

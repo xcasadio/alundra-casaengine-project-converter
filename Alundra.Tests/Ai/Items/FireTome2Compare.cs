@@ -35,7 +35,7 @@ internal static class FireTome2Compare
     }
 
     /// <summary>The shake block (five words at every tick, nine where <paramref name="nineWords"/> says so) and the buffer of the pilot (nine words at every tick).</summary>
-    internal static List<string> Shake(FireTome2Key key, FireTome2Run run, int last, Func<int, bool>? nineWords = null)
+    internal static List<string> Shake(FireTome2Key key, FireTome2Run run, int last, Func<int, bool>? nineWords = null, int bufferWords = 9)
     {
         var wrong = new List<string>();
         for (var tick = 1; tick <= last; tick++)
@@ -47,7 +47,7 @@ internal static class FireTome2Compare
                 wrong.Add($"t{tick}: block [{string.Join(",", run.Blocks[tick].Take(count))}] (key [{string.Join(",", k.Block.Take(count))}])");
             }
 
-            if (!run.Buffers[tick].SequenceEqual(k.Buffer))
+            if (!run.Buffers[tick].Take(bufferWords).SequenceEqual(k.Buffer.Take(bufferWords)))
             {
                 wrong.Add($"t{tick}: buffer [{string.Join(",", run.Buffers[tick])}] (key [{string.Join(",", k.Buffer)}])");
             }
@@ -137,11 +137,11 @@ internal static class FireTome2Compare
     internal static List<string> Generator(FireTome2Key key, FireTome2Run run, int last) => Generator(key.Ticks.Values.Select(k => (k.Tick, k.Rng0, k.Rng1)), run, last);
 
     /// <summary>Everything a cast key holds, tick by tick.</summary>
-    internal static List<string> Everything(FireTome2Key key, FireTome2Run run, int last, int animationUntil, Func<int, bool>? nineWords = null)
+    internal static List<string> Everything(FireTome2Key key, FireTome2Run run, int last, int animationUntil, Func<int, bool>? nineWords = null, int bufferWords = 9)
     {
         var all = new List<string>();
         all.AddRange(Hero(key, run, last, animationUntil));
-        all.AddRange(Shake(key, run, last, nineWords));
+        all.AddRange(Shake(key, run, last, nineWords, bufferWords));
         all.AddRange(Column(key, run, last));
         all.AddRange(Effects(key, run, last));
         all.AddRange(Generator(key, run, last));

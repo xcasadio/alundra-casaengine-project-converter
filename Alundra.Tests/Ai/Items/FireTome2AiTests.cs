@@ -70,6 +70,13 @@ public sealed class FireTome2AiTests : IDisposable
         return entity;
     }
 
+    /// <summary>A newborn of the bench is an entity of the table (the world gives it a slot and a status of the living; the bare proxy of the host has neither).</summary>
+    private static void Alive(EntityScriptProxy born)
+    {
+        born.Slot = 5;
+        born.Status = EntityStatus.Normal;
+    }
+
     private sealed record World(BombHandsBench Bench, CameraSway Sway, List<EntityScriptProxy> Others)
     {
         internal EntityScriptProxy Hero => Bench.Hero;
@@ -92,6 +99,7 @@ public sealed class FireTome2AiTests : IDisposable
         hero.ItemInUse = item;
         hero.ItemUsePhase = phase;
         hero.ItemUseCounter = counter;
+        bench.Host.OnBirth = Alive;
         SeamCancel();
         return new World(bench, sway, new List<EntityScriptProxy>());
     }
@@ -162,6 +170,7 @@ public sealed class FireTome2AiTests : IDisposable
         }
 
         bench.Host.RefuseCall = call => call == 0 && v.SpawnReturn == 0;
+        bench.Host.OnBirth = Alive;
 
         var answer = FireTome2Ai.Driver(hero);
 

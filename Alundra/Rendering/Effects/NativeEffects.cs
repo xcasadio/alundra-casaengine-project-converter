@@ -263,11 +263,21 @@ public static class NativeEffects
     /// <summary>The depth offset of the break effect, the first of the four stack arguments of <c>0x8003BE74</c> that <c>DestroyEntity</c> writes (<c>0x8003A5F8-0x8003A618</c>; the three offsets after it are 0): one above the key of the destroyed entity.</summary>
     public const int BreakEffectDepthOffset = 1;
 
-    /// <summary>E20.h4d1 SKELETON: the global effect of the explosions of the column of the fire tome 2 (bank 0, effect 19).</summary>
+    /// <summary>The global effect of the explosions of the column of the fire tome 2 (<c>0x8003BDD8(0, 19, 2, x, y, z)</c>, bank 0, effect 19, animation 2; E28, <c>0x8007FB58</c>).</summary>
     public const int FireColumnBlastEffect = 19;
 
-    /// <summary>E20.h4d1 SKELETON: one explosion of the column.</summary>
-    public static void CreateFireColumnBlast(EffectReservoir reservoir, int x, int y, int z) => throw new System.NotImplementedException();
+    /// <summary>
+    /// E20.h4d1 (D-H4D1-4): one explosion of the column of the fire tome 2 (<c>0x8003BDD8(0, 19, 2, x, y, z)</c>), at (<paramref name="x"/>, <paramref name="y"/>, <paramref name="z"/>) with <paramref name="z"/> in the binary's frame of Z (the DLL's <c>PosZ + 1</c>, ADR-0026): no offset
+    /// on Z, no force, no sound and no number drawn (the radius was drawn by the caller, created or not). A full reservoir creates nothing. The slot is handed to <see cref="CreatedForTests"/>.
+    /// </summary>
+    public static void CreateFireColumnBlast(EffectReservoir reservoir, int x, int y, int z)
+    {
+        var slot = reservoir.Create(false, FireColumnBlastEffect, 2, x, y, z);
+        if (slot != null)
+        {
+            CreatedForTests?.Invoke(slot);
+        }
+    }
 
     /// <summary>The global effect of the trail of the charged arrow (<c>0x8007C128</c>: <c>0x8003BDD8(0, 0x19, +0x98, x, y, z)</c>, bank 0, effect 25: four animations, one per direction, no sound).</summary>
     public const int ChargedArrowTrailEffect = 0x19;
