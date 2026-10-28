@@ -1,0 +1,19 @@
+buffer_inert 17
+   .Ai.Items.FireTome2AiTests.C1 | .Ai.Items.FireTome2AiTests.C1_TheCancellation_RestoresTheBufferWithNoGuard_Pu
+   .Ai.Items.FireTome2AiTests.C2 | .Ai.Items.FireTome2AiTests.C2_TheGuardInThePhase1_RestoresTheBuffer_AnswersOn
+   .Ai.Items.FireTome2AiTests.D1 | .Ai.Items.FireTome2AiTests.D1_ThePilotAndTheCancellation_TheSixtyVectorsAndTh
+   .Ai.Items.FireTome2AiTests.D4 | .Ai.Items.FireTome2AiTests.D4_TheCapturePrecedesTheWriteOfFlag_TheBlockOfTheT
+   .Ai.Items.FireTome2AiTests.D5 | .Ai.Items.FireTome2AiTests.D5_AnEntityToDestroyThatIsNotRecycledYetIsAlive_Re
+   .Ai.Items.FireTome2ProductionTests.W10 | .Ai.Items.FireTome2ProductionTests.W10_RondWithTheItem0x30_InterruptedAtTheTi
+   .Ai.Items.FireTome2ProductionTests.W8 | .Ai.Items.FireTome2ProductionTests.W8_RondWithTheItem0x30_TheKeyOfW1HoldsThro
+   .Ai.Items.FireTome2WorldTests.W1 | .Ai.Items.FireTome2WorldTests.W1_TheFireTome2_EqualsTheKey_EveryTickEveryFiel
+   .Ai.Items.FireTome2WorldTests.W2 | .Ai.Items.FireTome2WorldTests.W2_AnInterruptionAtTheTick60_PutsTheColumnAtThe
+   .Ai.Items.FireTome2WorldTests.W3 | .Ai.Items.FireTome2WorldTests.W3_AnInterruptionBeforeTheBirth_BornNothing_NoE
+   .Ai.Items.FireTome2WorldTests.W4 | .Ai.Items.FireTome2WorldTests.W4_ThePresetWithZeroLimits_GoesAndComesBack_The
+   .Ai.Items.FireTome2WorldTests.W4b | .Ai.Items.FireTome2WorldTests.W4b_ThePresetBlock_TheBufferIsThePresetFromTheT
+   .Ai.Items.FireTome2WorldTests.W5 | .Ai.Items.FireTome2WorldTests.W5_AnInterruptionAtTheTick170_AfterTheBurning_T
+   .Ai.Items.FireTome2WorldTests.W7 | .Ai.Items.FireTome2WorldTests.W7_AtTwoAndThreeTicksAFrame_TheColumnIsBornAt34
+   .Ai.Items.FireTome2WorldTests.W7b | .Ai.Items.FireTome2WorldTests.W7b_AnInterruptionAtTheTick60_AtTwoAndThreeTick
+   .Cameras.CameraSwayBufferTests.B1 | .Cameras.CameraSwayBufferTests.B1_TheCapture_CopiesTheNineWordsInTheOrderOfTh
+   .Cameras.CameraSwayBufferTests.B2 | .Cameras.CameraSwayBufferTests.B2_TheRestoration_HasNoGuard_AZeroBufferZeroes
+['Échoué!  - échec\xa0:    22, réussite\xa0:   106, ignorée(s)\xa0:     0, total\xa0:   128, durée\xa0: 32 s - Alundra.Tests.dll (net9.0)']

@@ -1,0 +1,3 @@
+cancel_stub 1
+   .Ai.Items.FireTome2ProductionTests.W10 | .Ai.Items.FireTome2ProductionTests.W10_RondWithTheItem0x30_InterruptedAtTheTi
+['Échoué!  - échec\xa0:     1, réussite\xa0:   127, ignorée(s)\xa0:     0, total\xa0:   128, durée\xa0: 33 s - Alundra.Tests.dll (net9.0)']

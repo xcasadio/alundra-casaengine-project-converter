@@ -1,0 +1,9 @@
+noreg 7
+   .Ai.Items.FireTome2ProductionTests.W10 | .Ai.Items.FireTome2ProductionTests.W10_RondWithTheItem0x30_InterruptedAtTheTi
+   .Ai.Items.FireTome2ProductionTests.W8 | .Ai.Items.FireTome2ProductionTests.W8_RondWithTheItem0x30_TheKeyOfW1HoldsThro
+   .Ai.NativeSpriteRegistryTests.ProductionRunner | .Ai.NativeSpriteRegistryTests.ProductionRunner_RegistryHoldsTheHandlersOfTheB
+   .Ai.Objects.LiftableAiRegistrationTests.R1 | .Ai.Objects.LiftableAiRegistrationTests.R1_TheKeyIsInTheSlotCOnly_AndTheCount
+   .Ai.Projectiles.BallFlamesTests.M3 | .Ai.Projectiles.BallFlamesTests.M3_TheProductionRegistryHoldsC60AndE9_ForTheS
+   .Ai.Projectiles.ChargedArrowAiTests.C2 | .Ai.Projectiles.ChargedArrowAiTests.C2_TheProductionRegistry_HoldsTheKeyForTh
+   .Ai.Projectiles.WaveSwordLifeTests.V3 | .Ai.Projectiles.WaveSwordLifeTests.V3_TheProductionRegistryHoldsTheKeysOfItsC
+['Échoué!  - échec\xa0:     7, réussite\xa0:   121, ignorée(s)\xa0:     0, total\xa0:   128, durée\xa0: 33 s - Alundra.Tests.dll (net9.0)']
