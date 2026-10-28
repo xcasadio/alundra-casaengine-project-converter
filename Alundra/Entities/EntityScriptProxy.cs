@@ -447,6 +447,9 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     /// <summary>E20.h0a (D-H-1): the phase of the item in use, the binary's <c>[0x80127160]</c>: 0 at the start; written by the drivers of the items. Hero only.</summary>
     internal int ItemUsePhase;
 
+    /// <summary>E20.h4d1 (D-H4D1-3): the entity the item in use brought to life, the binary's <c>[0x80127124]</c> (the pointer the pilot of the fire tome 2 keeps from the birth of the column of fire; null when the birth was refused). A single field is enough: one item is in use at a time (the binary has globals per pilot). A new hero (every map) has none. Hero only.</summary>
+    internal EntityScriptProxy? ItemSpawnedEntity;
+
     /// <summary>E20.b B2: the tick counter that goes with <see cref="WeaponRecordPointer"/>, the binary's <c>0x80127114</c> (reset by the press, counted up to the delay of the record). Hero only.</summary>
     internal int WeaponStepCounter;
 

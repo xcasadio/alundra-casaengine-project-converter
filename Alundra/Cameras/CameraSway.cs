@@ -112,6 +112,15 @@ public sealed class CameraSway
         return (offset, reach);
     }
 
+    /// <summary>E20.h4d1 (D-H4D1-2) SKELETON: the buffer of the pilot of the fire tome 2 (<c>0x80127138</c>), nine words in the order of the block.</summary>
+    internal int[] Buffer { get; } = new int[9];
+
+    /// <summary>E20.h4d1 SKELETON: copies the nine words of the block to the buffer.</summary>
+    internal void CaptureToBuffer() => throw new System.NotImplementedException();
+
+    /// <summary>E20.h4d1 SKELETON: copies the buffer to the nine words of the block, with no guard.</summary>
+    internal void RestoreFromBuffer() => throw new System.NotImplementedException();
+
     /// <summary>Test-only: the nine fields to 0, Reach included.</summary>
     internal void ResetForTests()
     {

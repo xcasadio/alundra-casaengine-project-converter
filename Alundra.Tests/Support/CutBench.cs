@@ -8,6 +8,7 @@ using CasaEngine.Framework.AI.Navigation;
 using CasaEngine.Framework.Assets.TileMap;
 using Xunit;
 using Alundra.Audio;
+using Alundra.Cameras;
 using Alundra.Cells;
 using Alundra.Entities;
 using Alundra.Events;
@@ -122,6 +123,9 @@ internal sealed class CutBench
         public ICellMutator? CellMutator { get; set; }
 
         public EffectStage? EffectStage { get; set; }
+
+        /// <summary>E20.h4d1 T1: the sway of the camera the world context hands out (<see cref="IEntityWorldContext.CameraSway"/>); null by default (a world without a sway), a test that exercises the fire tome 2 puts a fresh instance.</summary>
+        public CameraSway? CameraSway { get; set; }
 
         public ISoundPlayer? SoundPlayer { get; set; }
 

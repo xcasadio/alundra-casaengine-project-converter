@@ -192,6 +192,9 @@ internal static class AnnexFiles
         throw new InvalidOperationException($"AnnexFiles: no 'docs/plan-e20-annexe/e20-h4c2/{relative}' found above '{AppContext.BaseDirectory}'.");
     }
 
+    /// <summary>E20.h4d1 T1: a file of the annex <c>docs/plan-e20-annexe/e20-h4d1/</c> (the faithful keys of the fire tome 2 in <c>critic/keys_faithful/</c>, the vectors of E28 replayed by T0 in <c>t0/vec/</c>), found above the test binaries.</summary>
+    public static string FireTome2Annex(string relative) => WaterDropAnnex("e20-h4d1/" + relative);
+
     /// <summary>E20.h4c2 T1: a vector file of the h4b bricks (<c>docs/plan-e20-annexe/e20-h4b/bin/vec/</c>: E13, the camera step), the real code of the binary replayed from an empty memory.</summary>
     public static string H4bVector(string name) => WaterDropAnnex("e20-h4b/bin/vec/" + name);
 
