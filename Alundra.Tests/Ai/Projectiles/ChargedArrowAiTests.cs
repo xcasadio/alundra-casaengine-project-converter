@@ -242,11 +242,12 @@ public sealed class ChargedArrowAiTests : IDisposable
         WaterDropAi.Register(sum); // E20.g2c3: (A, 19) and (C, 71)
         EarthTome1Ai.Register(sum); // E20.h4c1: (E, 3) for the type 16
         EarthTome2Ai.Register(sum); // E20.h4c2: (E, 13) for the type 17
+        FireTome2Ai.Register(sum); // E20.h4d1: (E, 28) for the type 21
 
         Assert.True(production.TryGet(ScriptHelper.ProgramCTick, 94, 7, out _));
         Assert.False(production.TryGet(ScriptHelper.ProgramCTick, 94, 3, out _));
         Assert.Equal(sum.Count, production.Count);
-        Assert.Equal(3 + 3 + 1 + PickupAi.Keys.Count + ChestAi.Keys.Count + ChargedArrowAi.Keys.Count + ArrowAi.Keys.Count + PillarAi.Keys.Count + LiftableAi.Keys.Count + LiftableAi.BreakKeys.Count + LiftableAi.C4Keys.Count + BallAi.Keys.Count + BombAi.Keys.Count + BombLidAi.Keys.Count + TorchAi.Keys.Count + BrambleAi.Keys.Count + WaterDropAi.Keys.Count + EarthTome1Ai.Keys.Count + EarthTome2Ai.Keys.Count, production.Count);
+        Assert.Equal(3 + 3 + 1 + PickupAi.Keys.Count + ChestAi.Keys.Count + ChargedArrowAi.Keys.Count + ArrowAi.Keys.Count + PillarAi.Keys.Count + LiftableAi.Keys.Count + LiftableAi.BreakKeys.Count + LiftableAi.C4Keys.Count + BallAi.Keys.Count + BombAi.Keys.Count + BombLidAi.Keys.Count + TorchAi.Keys.Count + BrambleAi.Keys.Count + WaterDropAi.Keys.Count + EarthTome1Ai.Keys.Count + EarthTome2Ai.Keys.Count + FireTome2Ai.Keys.Count, production.Count);
     }
 
     [Fact]

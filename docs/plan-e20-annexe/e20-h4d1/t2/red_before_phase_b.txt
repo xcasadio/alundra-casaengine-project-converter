@@ -1,0 +1,4 @@
+T2 tests commit against the HEAD without phase B (Release, copy neutralised): 8 red of 128 in the filter
+(FireTome2 | NativeSpriteRegistryTests | LiftableAiRegistrationTests | ChargedArrowAiTests | WaveSwordLifeTests | BallFlamesTests | CameraSwayBuffer)
+FireTome2ProductionTests: W8, W9, W10, and the five sums:
+NativeSpriteRegistryTests.ProductionRunner_..., LiftableAiRegistrationTests.R1, ChargedArrowAiTests.C2, WaveSwordLifeTests.V3, BallFlamesTests.M3

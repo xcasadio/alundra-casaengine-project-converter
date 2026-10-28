@@ -92,7 +92,8 @@ internal sealed class FireTome2Run : IDisposable
     /// <param name="targets">The pixels (X, Y) of the blocks (the global sprite 25, class A, 5000 HP) put on the bench as targets.</param>
     /// <param name="block">The nine words of the shake block before the tick 1 (null: the world's, all 0).</param>
     /// <param name="buffer">The nine words of the buffer of the pilot before the tick 1 (null: 0).</param>
-    internal FireTome2Run(string name, IReadOnlyList<int[]>? targets = null, int[]? block = null, int[]? buffer = null)
+    /// <param name="production">The phase B (T2): no seam and no registration of the test, the item runs through the entries of the object in <see cref="PlayerManager"/> and the registry of production alone.</param>
+    internal FireTome2Run(string name, IReadOnlyList<int[]>? targets = null, int[]? block = null, int[]? buffer = null, bool production = false)
     {
         Arena = new HitArena("h4d1-" + name, 100, 100, new List<int[]>(), 24, 0);
         try
@@ -140,19 +141,22 @@ internal sealed class FireTome2Run : IDisposable
             }
 
             EventProgramRunner.NativeSpriteTypeFilterForTests = new HashSet<int> { Column };
-            PlayerManager.ItemStartForTests = PlayerManager.TomeStart;
-            PlayerManager.ItemDriverForTests = (hero, _) => FireTome2Ai.Driver(hero);
-            PlayerManager.ItemCancelForTests = (hero, item) =>
+            if (!production)
             {
-                if (item == Item)
+                PlayerManager.ItemStartForTests = PlayerManager.TomeStart;
+                PlayerManager.ItemDriverForTests = (hero, _) => FireTome2Ai.Driver(hero);
+                PlayerManager.ItemCancelForTests = (hero, item) =>
                 {
-                    FireTome2Ai.Cancel(hero);
+                    if (item == Item)
+                    {
+                        FireTome2Ai.Cancel(hero);
+                    }
+                };
+                var registry = Arena.Arc.Runner.NativeSprites;
+                if (!registry.TryGet(ScriptHelper.ProgramEDeactivate, FireTome2Ai.ColumnEndCode, Column, out _))
+                {
+                    _registration = FireTome2Ai.Register(registry);
                 }
-            };
-            var registry = Arena.Arc.Runner.NativeSprites;
-            if (!registry.TryGet(ScriptHelper.ProgramEDeactivate, FireTome2Ai.ColumnEndCode, Column, out _))
-            {
-                _registration = FireTome2Ai.Register(registry);
             }
         }
         catch
