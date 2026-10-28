@@ -1,0 +1,2 @@
+fire2 driver: 4000 runs, mismatches 0, coverage of the driver 144/146
+uncovered ['0x80035c90', '0x80035c94']

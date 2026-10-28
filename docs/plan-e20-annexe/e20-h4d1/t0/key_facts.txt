@@ -1,0 +1,50 @@
+== fire2_cast_pf ticks 200 options {'pf': True, 'hurt': None, 'block': None, 'buf': None, 'ticks': 200, 'seed': 305419896, 'item': 48}
+ slot 1 type 21 flags 0x2044 first tick with state 34 status 2 pos (6553600, 6553600, 2) last tick with state 154 status 4
+    t=34 status 2
+    t=153 animend(+0xAC)=1
+    t=154 status 4
+  t=1 hero_anim_t 0x32 inuse 0x30 phase 0 counter 0 mp 3
+  t=33 hero_anim_t 0x33 inuse 0x30 phase 0 counter 32 mp 3
+  t=34 hero_anim_t 0x33 inuse 0x30 phase 1 counter 33 mp 3
+  t=155 hero_anim_t 0x34 inuse 0x30 phase 2 counter 154 mp 3
+  t=181 hero_anim_t 0x0 inuse 0x30 phase 2 counter 180 mp 3
+  t=182 hero_anim_t 0x0 inuse 0x0 phase 2 counter 181 mp 3
+  t=1 block [0, 0, 0, 0, 0, 0, 0, 0, 0]
+  t=1 buf [0, 0, 0, 0, 0, 0, 0, 0, 0]
+  t=34 block [1, 0, 2, 0, 2, 0, 0, 0, 0]
+  t=50 block [1, 0, 3, 0, 3, 0, 0, 0, 0]
+  t=66 block [1, 1, 4, 1, 4, 0, 0, 0, 0]
+  t=82 block [1, 1, 5, 1, 5, 0, 0, 0, 0]
+  t=98 block [1, 1, 6, 1, 6, 0, 0, 0, 0]
+  t=114 block [1, 1, 7, 1, 7, 0, 0, 0, 0]
+  t=130 block [1, 2, 8, 2, 8, 0, 0, 0, 0]
+  t=146 block [1, 2, 9, 2, 9, 0, 0, 0, 0]
+  t=155 block [0, 0, 0, 0, 0, 0, 0, 0, 0]
+  rng0 t=154 -> t=155: 9 steps (rng0 0xa468a517 -> 0xec3bcbaa)
+  t=33 sound 0
+  t=34 sound 0
+  t=154 journal ['effect_3BDD8', [0, 19, 2, 6553600, 9383424, 2, 3910731458, 4727, 2148696556, 2148696004]]
+  t=154 journal ['effect_3BDD8', [0, 19, 2, 3421033, 8641978, 2, 1283347041, 4969, 2148696556, 2148696004]]
+  t=154 journal ['effect_3BDD8', [0, 19, 2, 3294976, 6553600, 2, 2803741092, 3443, 2148696556, 2148696004]]
+  t=154 journal ['effect_3BDD8', [0, 19, 2, 3333067, 4406578, 2, 3824077179, 5131, 2148696556, 2148696004]]
+  t=154 journal ['effect_3BDD8', [0, 19, 2, 6553600, 5288960, 2, 1179610390, 1670, 2148696556, 2148696004]]
+  t=154 journal ['effect_3BDD8', [0, 19, 2, 7846483, 5691678, 2, 357801189, 1581, 2148696556, 2148696004]]
+  t=154 journal ['effect_3BDD8', [0, 19, 2, 10161664, 6553600, 2, 608938392, 3898, 2148696556, 2148696004]]
+  t=154 journal ['effect_3BDD8', [0, 19, 2, 7978432, 7503488, 2, 1481337631, 1824, 2148696556, 2148696004]]
+  t=155 sound 0
+  t=181 sound 0
+  t=1 ptr 0x0 ident 0
+  t=34 ptr 0x80127fc4 ident 2
+== fire2_targets_pf targets [[140, 100], [100, 140], [180, 100]] ticks 200
+  target 0 [140, 100] hit-pass writes at [42, 67, 92, 117, 142]
+  target 1 [100, 140] hit-pass writes at [54, 79, 104, 129]
+  target 2 [180, 100] hit-pass writes at [72, 97, 122, 147]
+  ticks where the passes drew (rng0 != rng1), with the number of steps: [(42, 9), (54, 9), (67, 9), (72, 9), (79, 9), (92, 9), (97, 9), (104, 9), (117, 9), (122, 9), (129, 9), (142, 9), (147, 9), (154, 8)]
+  sprite 21 present (box logged) from None to None
+== fire2_targets_edge_pf targets [[200, 100], [201, 100], [100, 186], [100, 187]] ticks 200
+  target 0 [200, 100] hit-pass writes at [87, 112, 137]
+  target 1 [201, 100] hit-pass writes at []
+  target 2 [100, 186] hit-pass writes at [87, 112, 137]
+  target 3 [100, 187] hit-pass writes at []
+  ticks where the passes drew (rng0 != rng1), with the number of steps: [(87, 18), (112, 18), (137, 18), (154, 8)]
+  sprite 21 present (box logged) from None to None

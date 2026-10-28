@@ -14,3 +14,5 @@ never-used slot, because the h4 harness zeroes the 64 slots instead of writing t
 this annex are remade with the index. The duplicate copies of the e20-h4b vectors made by the agents are left out (they are in
 `docs/plan-e20-annexe/e20-h4b/bin/vec/`). The scripts read the binary at the absolute path they name (outside the repository) and write next to
 themselves: rerun them from a copy, never in place. `SHA1SUMS` lists every file here.
+
+T0 of the slice (2026-10-28, no code): `t0/` (results.md, predictions.md written before the probes, the replays of the faithful keys and of the vectors, the table of the words, the probes of the DLL). Read `t0/results.md` first.

@@ -1,0 +1,10 @@
+E20.h4d1 T0 (a0): the starting suite at HEAD a021b819 (branch chantier/theme2-attaques-objets, 2026-10-28), Release with the neutralised copy (skipcopy.targets), --blame-hang-timeout 60s, in seven parts (part.sh of the session scratchpad: the filters on the namespaces of Alundra.Tests).
+1 Ai.Objects.                                   Reussi!  echec 0, reussite  635  (3 m 39 s)
+2 Ai.Projectiles.                               Reussi!  echec 0, reussite  332  (3 m  8 s)
+3 Ai. minus Ai.Objects. and Ai.Projectiles.     Reussi!  echec 0, reussite  369  (2 m 44 s)
+4 Hero.Hero*                                    Reussi!  echec 0, reussite 1331  (1 m  2 s)
+5 Hero. minus Hero.Hero*                        Reussi!  echec 0, reussite  619  (1 m  0 s)
+6 Arcs. Audio. Cameras. Cells. Combat. Dialogues. Entities. Events.   Reussi! echec 0, reussite 2268 (4 m 47 s)
+7 the rest                                      Reussi!  echec 0, reussite 2231  (1 m 21 s)
+TOTAL 7785 tests, 0 failure (the same total as the end of E20.h4c2: 7785).
+The traces docs/hero-trace-389-*.txt were rewritten with CR at the end of lines by the suites: `git diff --ignore-cr-at-eol --quiet -- docs/` true (no content change), restored by `git checkout` of the four files.

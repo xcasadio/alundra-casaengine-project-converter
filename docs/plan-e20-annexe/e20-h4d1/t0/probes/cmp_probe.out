@@ -1,0 +1,38 @@
+OK   (d1) first sample of the sprite at tick 34 : 34
+OK   (d1) status Normal(2) at every sample 34..153
+OK   (d1) one entity of the type 21 alive at every sample 34..154
+OK   (d1) birth at the driver call of tick 34, counter 32
+OK   (d2) position (6553600, 6553600, 1) and forces 0 at 34..154
+OK   (d3) +0xAC 0 at 34..152, 1 at 153 : at 153: 1, at 152: 0
+OK   (d4) E28 once at tick 154
+OK   (d4) status FlagToDestroy(4) at the sample 154
+OK   (d4) status Destroyed(0) at the samples 155..199
+OK   (d4) the 8 effects at tick 154, (19, 2, X, Y, 2) as the key
+OK   (d4) the key journal at 154 has the same 8 (X, Y, Z)
+OK   (d5) Flag, LimitX, LimitY, SpeedX, SpeedY equal the key at ticks 1..154 : differences at []
+OK   (d5) the nine words at 155 are 0 (the captured ones) : [0, 0, 0, 0, 0, 0, 0, 0, 0]
+OK   (d5) hero 0x34 and phase 2 at the sample 155 : ta 0x34 phase 2
+OK   (d5) hero animation 0 at the sample 181 : 0x0
+OK   (d5) ItemInUse 0 first at the sample 182 : inuse 181: 0x30, 182: 0x0
+OK   (e) state after frame t == rng0(t+1) of the key, t = 1..199 : []
+OK   (e) steps per tick: 1, and 9 at the tick 154 : []
+OK   (e) state after frame 153 = 0xA468A517, after 154 = 0xEC3BCBAA : 0xa468a517 0xec3bcbaa
+OK   (d6) targets: the ticks of the hit-pass writes equal the key : DLL [[42, 67, 92, 117, 142], [54, 79, 104, 129], [72, 97, 122, 147]] ; key [[42, 67, 92, 117, 142], [54, 79, 104, 129], [72, 97, 122, 147]]
+FAIL (d6) targets: sparks = 3 per hit (x blocks hit that tick) and 0 elsewhere : {42: 1, 54: 1, 67: 1, 72: 1, 79: 1, 92: 1, 97: 1, 104: 1, 117: 1, 122: 1, 129: 1, 142: 1, 147: 1}
+OK   (d6-erratum) targets: the seam HitSparksForTests is called ONCE PER HIT (WorldProxy.EmitHitSparks, before the three sparks are queued): its count per tick = the number of blocks hit that tick
+OK   (d6) targets: the hero is never hit (counter and HitCounter 0)
+INFO targets: draws per tick (steps-1) equal the key 
+OK   (d6) edge: the ticks of the hit-pass writes equal the key : DLL [[87, 112, 137], [], [87, 112, 137], []] ; key [[87, 112, 137], [], [87, 112, 137], []]
+FAIL (d6) edge: sparks = 3 per hit (x blocks hit that tick) and 0 elsewhere : {87: 2, 112: 2, 137: 2}
+OK   (d6-erratum) edge: the seam HitSparksForTests is called ONCE PER HIT (WorldProxy.EmitHitSparks, before the three sparks are queued): its count per tick = the number of blocks hit that tick
+OK   (d6) edge: the hero is never hit (counter and HitCounter 0)
+INFO edge: draws per tick (steps-1) equal the key 
+INFO hero (target animation, item, phase, MP) vs the key at ticks 1..200: 0 differences []
+INFO ItemUseCounter vs the key: 0 differences []
+INFO sounds played in cast (tick, id): []
+INFO sprite 21: attack (attribute, power) = {(10, 128)} ; flags {8260}
+INFO box (w, d, h raw) at ticks 34, 36, 70, 100, 140, 153: [(34, 1966079, 1179647, 8323071), (36, 2490367, 1441791, 8323071), (70, 8519679, 7208959, 8323071), (100, 11665407, 10354687, 8323071), (140, 11665407, 10354687, 8323071), (153, 11665407, 10354687, 8323071)]
+INFO cast_t2: sprite first sample tick 34, status 4 at [154], last notes line "e28 ticks: 154", total steps 208
+INFO cast_t3: sprite first sample tick 34, status 4 at [154], last notes line "e28 ticks: 154", total steps 208
+RESULT CONTRADICTED: (d6) targets: sparks = 3 per hit (x blocks hit that tick) and 0 elsewhere; (d6) edge: sparks = 3 per hit (x blocks hit that tick) and 0 elsewhere
+RESULT-AFTER-ERRATUM the only contradicted clauses are the two seam-grain clauses of the prediction (3 per hit), replaced by the erratum clauses which hold

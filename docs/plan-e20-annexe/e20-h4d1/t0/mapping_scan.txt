@@ -1,0 +1,132 @@
+== fire2 driver 0x80035C64 60 vectors
+ reads:
+   0x8002341c         size 4  read by   2 vectors  distinct values 1
+   0x80023430         size 4  read by  18 vectors  distinct values 1
+   0x800e4338         size 4  read by   3 vectors  distinct values 3
+   0x800e433c         size 4  read by   3 vectors  distinct values 2
+   0x800e4340         size 4  read by   3 vectors  distinct values 2
+   0x800e4344         size 4  read by   3 vectors  distinct values 2
+   0x800e4348         size 4  read by   3 vectors  distinct values 3
+   0x800e434c         size 4  read by   3 vectors  distinct values 3
+   0x800e4350         size 4  read by   3 vectors  distinct values 3
+   0x800e4354         size 4  read by   3 vectors  distinct values 3
+   0x800e4358         size 4  read by   3 vectors  distinct values 3
+   0x80127124         size 4  read by   9 vectors  distinct values 1
+   0x80127128         size 4  read by   9 vectors  distinct values 8
+   0x80127138         size 4  read by  24 vectors  distinct values 23
+   0x8012713c         size 4  read by  24 vectors  distinct values 24
+   0x80127140         size 4  read by  24 vectors  distinct values 23
+   0x80127144         size 4  read by  24 vectors  distinct values 23
+   0x80127148         size 4  read by  24 vectors  distinct values 24
+   0x8012714c         size 4  read by  24 vectors  distinct values 23
+   0x80127150         size 4  read by  24 vectors  distinct values 24
+   0x80127154         size 4  read by  24 vectors  distinct values 24
+   0x80127158         size 4  read by  24 vectors  distinct values 24
+   0x8012715c         size 4  read by  11 vectors  distinct values 7
+   0x80127160         size 4  read by  60 vectors  distinct values 4
+   0x80127164         size 4  read by  24 vectors  distinct values 3
+   slot[0]+0x88       size 4  read by  50 vectors  distinct values 6
+   slot[0]+0x114      size 4  read by   7 vectors  distinct values 7
+   slot[0]+0x118      size 4  read by   7 vectors  distinct values 7
+   slot[0]+0x11C      size 4  read by   7 vectors  distinct values 7
+   slot[0]+0x18C      size 4  read by  44 vectors  distinct values 3
+   slot[1]+0x10       size 4  read by  12 vectors  distinct values 3
+   slot[1]+0x68       size 4  read by  18 vectors  distinct values 3
+   slot[2]+0x10       size 4  read by   8 vectors  distinct values 3
+   slot[2]+0x68       size 4  read by  18 vectors  distinct values 3
+   slot[3]+0x10       size 4  read by   7 vectors  distinct values 3
+   slot[3]+0x68       size 4  read by  18 vectors  distinct values 3
+   slot[4]+0x10       size 4  read by   8 vectors  distinct values 3
+   slot[4]+0x68       size 4  read by  18 vectors  distinct values 3
+   slot[5]+0x10       size 4  read by  13 vectors  distinct values 3
+   slot[5]+0x68       size 4  read by  18 vectors  distinct values 3
+   slot[7]+0xC8       size 4  read by  12 vectors  distinct values 10
+   0x80134360         size 4  read by  18 vectors  distinct values 1
+ writes:
+   0x800e4338         size 4  written by  35 vectors
+   0x800e433c         size 4  written by  35 vectors
+   0x800e4340         size 4  written by  35 vectors
+   0x800e4344         size 4  written by  35 vectors
+   0x800e4348         size 4  written by  35 vectors
+   0x800e434c         size 4  written by  24 vectors
+   0x800e4350         size 4  written by  24 vectors
+   0x800e4354         size 4  written by  24 vectors
+   0x800e4358         size 4  written by  24 vectors
+   0x80127124         size 4  written by   7 vectors
+   0x80127128         size 4  written by   3 vectors
+   0x80127138         size 4  written by   3 vectors
+   0x8012713c         size 4  written by   3 vectors
+   0x80127140         size 4  written by   3 vectors
+   0x80127144         size 4  written by   3 vectors
+   0x80127148         size 4  written by   3 vectors
+   0x8012714c         size 4  written by   3 vectors
+   0x80127150         size 4  written by   3 vectors
+   0x80127154         size 4  written by   3 vectors
+   0x80127158         size 4  written by   3 vectors
+   0x80127160         size 4  written by   4 vectors
+   0x80127164         size 4  written by  20 vectors
+   slot[0]+0x88       size 4  written by   1 vectors
+   slot[1]+0x10       size 4  written by   4 vectors
+   slot[1]+0x20       size 4  written by   4 vectors
+   slot[2]+0x10       size 4  written by   2 vectors
+   slot[2]+0x20       size 4  written by   2 vectors
+   slot[3]+0x10       size 4  written by   2 vectors
+   slot[3]+0x20       size 4  written by   2 vectors
+   slot[4]+0x10       size 4  written by   4 vectors
+   slot[4]+0x20       size 4  written by   4 vectors
+   slot[5]+0x10       size 4  written by   7 vectors
+   slot[5]+0x20       size 4  written by   7 vectors
+== cancel 0x80034E08 (critic extra) 1 vectors
+ reads:
+   0x80127138         size 4  read by   1 vectors  distinct values 1
+   0x8012713c         size 4  read by   1 vectors  distinct values 1
+   0x80127140         size 4  read by   1 vectors  distinct values 1
+   0x80127144         size 4  read by   1 vectors  distinct values 1
+   0x80127148         size 4  read by   1 vectors  distinct values 1
+   0x8012714c         size 4  read by   1 vectors  distinct values 1
+   0x80127150         size 4  read by   1 vectors  distinct values 1
+   0x80127154         size 4  read by   1 vectors  distinct values 1
+   0x80127158         size 4  read by   1 vectors  distinct values 1
+   slot[1]+0x10       size 4  read by   1 vectors  distinct values 1
+   slot[1]+0x68       size 4  read by   1 vectors  distinct values 1
+   slot[2]+0x10       size 4  read by   1 vectors  distinct values 1
+   slot[2]+0x68       size 4  read by   1 vectors  distinct values 1
+   0x80134360         size 4  read by   1 vectors  distinct values 1
+ writes:
+   0x800e4338         size 4  written by   1 vectors
+   0x800e433c         size 4  written by   1 vectors
+   0x800e4340         size 4  written by   1 vectors
+   0x800e4344         size 4  written by   1 vectors
+   0x800e4348         size 4  written by   1 vectors
+   0x800e434c         size 4  written by   1 vectors
+   0x800e4350         size 4  written by   1 vectors
+   0x800e4354         size 4  written by   1 vectors
+   0x800e4358         size 4  written by   1 vectors
+   slot[1]+0x10       size 4  written by   1 vectors
+   slot[1]+0x20       size 4  written by   1 vectors
+   slot[2]+0x10       size 4  written by   1 vectors
+   slot[2]+0x20       size 4  written by   1 vectors
+== E28 0x8007FB58 203 vectors
+ reads:
+   0x80023654         size 2  read by 203 vectors  distinct values 1
+   0x8002365c         size 2  read by 203 vectors  distinct values 1
+   0x80023664         size 2  read by 203 vectors  distinct values 1
+   0x8002366c         size 2  read by 203 vectors  distinct values 1
+   0x80023674         size 2  read by 203 vectors  distinct values 1
+   0x8002367c         size 2  read by 203 vectors  distinct values 1
+   0x80023684         size 2  read by 203 vectors  distinct values 1
+   0x8002368c         size 2  read by 203 vectors  distinct values 1
+   0x80023694         size 2  read by 203 vectors  distinct values 1
+   0x8002369c         size 2  read by 203 vectors  distinct values 1
+   0x800236a4         size 2  read by 203 vectors  distinct values 1
+   0x800236ac         size 2  read by 203 vectors  distinct values 1
+   0x800236b4         size 2  read by 203 vectors  distinct values 1
+   0x800236bc         size 2  read by 203 vectors  distinct values 1
+   0x800236c4         size 2  read by 203 vectors  distinct values 1
+   0x800236cc         size 2  read by 203 vectors  distinct values 1
+   0x80098708         size 4  read by 203 vectors  distinct values 203
+   slot[5]+0x114      size 4  read by 203 vectors  distinct values 201
+   slot[5]+0x118      size 4  read by 203 vectors  distinct values 201
+   slot[5]+0x11C      size 4  read by 203 vectors  distinct values 87
+ writes:
+   0x80098708         size 4  written by 203 vectors

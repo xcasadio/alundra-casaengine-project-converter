@@ -1,0 +1,3 @@
+birth tick 34 counter 32 buffer 0 0 0 0 0 0 0 0 0 sprite slot 5 status 1 pos 6553600,6553600,1 hero pos 6553600,6553600,0
+identity changed at tick 155 counter 153
+e28 ticks: 154
