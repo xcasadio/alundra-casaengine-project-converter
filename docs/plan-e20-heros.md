@@ -13631,7 +13631,21 @@ PM, la piste XA, les états `0x32` à `0x34`, la garde (h4a) ; E3 pour le type 2
 
 ---
 
-#### 1.31.4 E20.h4c2 — La terre 2 : le pilote `0x800354D0`, E13, l'annulation et le coup de caméra ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `ae1fe95` ; **révision 3 du 2026-10-25** : D-E20-56 (Q-H4C2-3, B) et E20.c2b avant h4 (D-E20-83), nouvelle époque ; révisions 3 et 3.1 relues : REVISE ; révision 3.2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais ; défauts de Q-H4C2-5 et Q-H4C2-6 pris par la règle de l'auteur, D-E20-83)
+#### 1.31.4 E20.h4c2 — La terre 2 : le pilote `0x800354D0`, E13, l'annulation et le coup de caméra ✅ (**faite et CONFIRMED le 2026-10-28**, `0ad67d19` puis `e92ce64e` à `aa59cc4d`, ADR-0109 ; le tome de terre 2 jouable en production par le Rond ; recette de l'auteur à faire ; détaillée le 2026-10-18 ; REVISE, REVISE, révisions 1 et 2, **READY** à la relecture de clôture, `ae1fe95` ; **révision 3 du 2026-10-25** : D-E20-56 (Q-H4C2-3, B) et E20.c2b avant h4 (D-E20-83), nouvelle époque ; révisions 3 et 3.1 relues : REVISE ; révision 3.2 du 2026-10-25 après disposition, **READY** à la relecture de clôture, `plan-verifier` frais ; défauts de Q-H4C2-5 et Q-H4C2-6 pris par la règle de l'auteur, D-E20-83)
+
+**Écarts de l'exécution (2026-10-28, acceptés par la session principale, `docs/plan-e20-annexe/e20-h4c2/t1/`, `t2/`, `t3/`).**
+- **D-H4C2-6** (P3) — Un rocher détruit sur place (l'octet 17, les ids 9, 13 et 14 des clés `hb17`) : la clé lit `ground = 1` sur la ligne
+  de son tick de naissance (le mot du gabarit de la case), la DLL 0 ; la comparaison saute ce seul champ (et la direction) sur cette seule
+  ligne, tout le reste sans tolérance : aucun effet observable, la case est libérée au même tick.
+- La sonde (s2) rejouée après E20.e0a6 tient : x, y, Z et statut des naissances égaux aux clés ; (w1) est comparé avec une borne de 0 sur
+  toute la clé ; le rocher 8 contre le mur à l'atterrissage est à 248 876 unités brutes de la clé (3,8 px), dans la borne de (s10a) ; (w2)
+  compte un son 45 au tick 163 (le rocher né au 130) et un au 195 ; (w3b) tourne avec le héros en x = 40 (à x = 100 aucun rocher ne sort de
+  la grille à trois ticks par image) ; (w5), non bloquant, est vert (le harnais de l'oracle enregistre la touche au tick suivant) ; 22
+  vecteurs de la caméra « binaire seul » (D-H4C2-5), les 78 autres comparés ; aucun vecteur n'a à la fois un coup et un calage (la perte
+  du coup au calage est portée par (k1)) ; neutraliser la garde du sol rend aussi rouges (s10b) et (w6), qui reprennent la clé du bord (une
+  preuve plus forte que la liste « exactement ») ; les « deux épingles » sont les cinq sommes du registre.
+- **Mesures** : 59 tests neufs en phase A, 4 en phase B (9 rouges avant), un pour le survivant m42 ; la suite 7 785 verte en Release et en
+  Debug ; 46 mutants réels tués, l'équivalent `ResyncControllerFromFlags` d'E13 prouvé par lecture ; deux verifiers frais CONFIRMED.
 
 **Révision 3 (2026-10-25, nouvelle époque).** La réponse de l'auteur à Q-H4C2-3 (B : le rocher arrêté en l'air attend le sol, D-E20-56) et
 l'ordre de D-E20-83 (E20.c2b avant h0a, donc avant h4) changent trois choses (lecture seule du 2026-10-25, `scratchpad/t2-next/h4-rev/` et sa critique `scratchpad/t2-next/h4-rev-critic/`, à verser
@@ -13772,7 +13786,7 @@ le manifeste, un `README`).
   position avec elles ; (s11) E20.c2b présente : un `0x31` posé passe par le `case 0x31`, la garde de h4a l'annule, le son 23 du héros est joué ;
   (s12) la case de la carte 14 sous le héros à (100, 100) n'est pas dangereuse (la carte 14 n'en a aucune) ;
   (d) la liste prédite : les deux épingles ; recomptée.
-- ⏳ **T1 — Phase A** (tests d'abord ; R-EL-4, les trois coutures) : (t1) la table contre l'exécutable ; (t2) le pilote contre les cas de
+- ✅ **T1 — Phase A** (fait le 2026-10-28, `e92ce64e`, `c186ea28` ; tests d'abord ; R-EL-4, les trois coutures) : (t1) la table contre l'exécutable ; (t2) le pilote contre les cas de
   `driver_2c_cases.json` dont le terrain du nouveau-né vaut 0 (le champ plat), en un seul test (le journal de naissance, le générateur, la phase, le
   compteur, l'animation du héros, le statut et `ForceZ`) ; **les cas `eq` (2) et `lt` (3), dont le terrain n'est pas représentable par un champ, sont
   exclus par leur nom** et couverts par (t4) et (w8) (révision 1), accolé à (t3) un refus de naissance qui tire quand même
@@ -13805,11 +13819,11 @@ le manifeste, un `README`).
   3.1, une fois E13 écrit) la position finale du rocher 8 et du rocher de bord dans la DLL, mesurée et versée, comparée aux bornes de
   (s10a) ; (w5) en dernier, non bloquant, derrière (s8) : les touches contre des blocs 25 posés ClassA sur le champ
   plat (`targets_2c_pf_inv0`).
-- ⏳ **T2 — Phase B et tests de production, rouges avant** : (p1) Rond avec le tome 44 : la clé de (w1) par le chemin de production ; (p2) la table des
+- ✅ **T2 — Phase B et tests de production, rouges avant** (fait le 2026-10-28, `b89811f2`, `5153fdca`, `1ecc35b8`) : (p1) Rond avec le tome 44 : la clé de (w1) par le chemin de production ; (p2) la table des
   cases pleine : aucune entité, l'objet libéré au tick 309 ; (p3) l'invariant `UnhandledWeaponSpriteCodes({17}, …)` ; (p4) Rond avec le tome 44,
   interrompu comme `cancel_2c_pf_t100` (R-EL-6) par le chemin de production : la clé et `critic/keys/cancel_2c_pf_t100_sounds.txt` (un son 45 par
   rocher annulé) (révision 1) ; les épingles par dérivation.
-- ⏳ **T3 — ADR, plan, verifiers frais** (deux). Mutants, au moins 28, tous tués : r1 et r2 échangés ; direction prise sur r1 ; `p + 0xA00` → `p` ; X32
+- ✅ **T3 — ADR, plan, verifiers frais** (deux ; fait le 2026-10-28, `56ee4d6b`, `aa59cc4d`, ADR-0109 ; CONFIRMED tous deux). Mutants, au moins 28, tous tués : r1 et r2 échangés ; direction prise sur r1 ; `p + 0xA00` → `p` ; X32
   et Y32 échangés ; Z + 128 px ; `ForceZ` −4 px ; comparaison `<=` (tué par (t4)) ; terrain sans le +1 (tué par (t4)) ; naissance nulle qui détruit ;
   entrée 224 décalée ; un seul tirage ; garde absente en phase 1 ; seuil `0x119` ; phase 2 qui rend 1 tout de suite ; phase 1 non enchaînée ; E13 sans
   coup ; coup additionné ; sans `0x40` ; `0x30` non effacé ; destruction sans `+0xAC` ; coup à la première vue d'un rocher annulé ; annulation de tous
