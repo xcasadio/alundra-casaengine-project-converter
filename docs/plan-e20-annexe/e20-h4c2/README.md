@@ -23,3 +23,4 @@ themselves: rerun them from a copy, never in place. `SHA1SUMS` lists every file 
 - The `SHA1SUMS` of this folder still lists the 179 files of the reading of 2026-10-18 only.
 
 - `t1/` (2026-10-27, HEAD `4c7d7a47`): the phase A of E20.h4c2 - the table of the executable (`table_80023504.*`, `dump_table.py`), the independent model of the camera step (`camera_kick_model.py`), the replay of the probe (s2) after E20.e0a6 (`s2-replay/`), the red list before the code, and `results.md` (59 test cases, red before / green after, the measured final positions of (s10b), the deviations). `t1/SHA1SUMS` lists its files.
+- `t3/` (2026-10-28): the mutants of E20.h4c2 (46 real mutants by script `mutants.py`, all killed; one survivor and its test; the declared equivalent proven), the suites (7785, Release and Debug), the raw log `run.log` and `results.md`; ADR-0109.

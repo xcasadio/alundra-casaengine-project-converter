@@ -1,0 +1,300 @@
+warning: in the working copy of 'Alundra/Ai/Items/EarthTome2Ai.cs', LF will be replaced by CRLF the next time Git touches it
+MUTANT m01_r1_r2_swapped KILLED red_cases=11 git_diff_empty=True 92s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T2_Driver_TheCasesOfTheOracleWhoseTerrainIsRepresentable_AreReplayedField_AnswerPhaseAnimationGeneratorBirthsDestructionAndForceOfZ
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P1_RondWithTheTome44_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_FifteenRocks_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.S10b_TheFinalPositionOfTheRock8AtTheWall_IsWithinTheBoundOfS10a_OnEachAxis(label:
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.S10b_TheFinalPositionOfTheRockOfTheEdge_IsExactlyTheKeys_OnEachAxis
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W1_TheEarthTome2AtTheMiddleOfTheMap_EqualsTheKey_EveryTickEveryField_FifteenRocks_TheKicksAtTheTicksOfTheKey_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W2_TheRockOfTheEdgeOfTheMap_SlidesAlongTheEdge_LandsAt194_AndGivesItsKickAndItsSoundAt195_NotAt163_AsTheCorrectedKey
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W5_TheRocksTouchSixStaticTargets_AtTheTicksOfTheKey_EachTouchSetsTheCooldown25
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W6_ABandOfDeepWater_TheRocksOfTheType17Live_TheyDoNotDrown_AsTheKey
+    ['Échoué!  - échec\xa0:    11, réussite\xa0:   390, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 27 s - Alundra.Tests.dll (net9.0)']
+warning: in the working copy of 'Alundra/Ai/Items/EarthTome2Ai.cs', LF will be replaced by CRLF the next time Git touches it
+MUTANT m02_direction_on_r1 KILLED red_cases=11 git_diff_empty=True 93s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T2_Driver_TheCasesOfTheOracleWhoseTerrainIsRepresentable_AreReplayedField_AnswerPhaseAnimationGeneratorBirthsDestructionAndForceOfZ
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P1_RondWithTheTome44_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_FifteenRocks_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.S10b_TheFinalPositionOfTheRock8AtTheWall_IsWithinTheBoundOfS10a_OnEachAxis(label:
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.S10b_TheFinalPositionOfTheRockOfTheEdge_IsExactlyTheKeys_OnEachAxis
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W1_TheEarthTome2AtTheMiddleOfTheMap_EqualsTheKey_EveryTickEveryField_FifteenRocks_TheKicksAtTheTicksOfTheKey_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W2_TheRockOfTheEdgeOfTheMap_SlidesAlongTheEdge_LandsAt194_AndGivesItsKickAndItsSoundAt195_NotAt163_AsTheCorrectedKey
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W5_TheRocksTouchSixStaticTargets_AtTheTicksOfTheKey_EachTouchSetsTheCooldown25
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W6_ABandOfDeepWater_TheRocksOfTheType17Live_TheyDoNotDrown_AsTheKey
+    ['Échoué!  - échec\xa0:    11, réussite\xa0:   390, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 27 s - Alundra.Tests.dll (net9.0)']
+warning: in the working copy of 'Alundra/Ai/Items/EarthTome2Ai.cs', LF will be replaced by CRLF the next time Git touches it
+MUTANT m03_no_a00 KILLED red_cases=11 git_diff_empty=True 92s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T2_Driver_TheCasesOfTheOracleWhoseTerrainIsRepresentable_AreReplayedField_AnswerPhaseAnimationGeneratorBirthsDestructionAndForceOfZ
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P1_RondWithTheTome44_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_FifteenRocks_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.S10b_TheFinalPositionOfTheRock8AtTheWall_IsWithinTheBoundOfS10a_OnEachAxis(label:
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.S10b_TheFinalPositionOfTheRockOfTheEdge_IsExactlyTheKeys_OnEachAxis
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W1_TheEarthTome2AtTheMiddleOfTheMap_EqualsTheKey_EveryTickEveryField_FifteenRocks_TheKicksAtTheTicksOfTheKey_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W2_TheRockOfTheEdgeOfTheMap_SlidesAlongTheEdge_LandsAt194_AndGivesItsKickAndItsSoundAt195_NotAt163_AsTheCorrectedKey
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W5_TheRocksTouchSixStaticTargets_AtTheTicksOfTheKey_EachTouchSetsTheCooldown25
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W6_ABandOfDeepWater_TheRocksOfTheType17Live_TheyDoNotDrown_AsTheKey
+    ['Échoué!  - échec\xa0:    11, réussite\xa0:   390, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 27 s - Alundra.Tests.dll (net9.0)']
+warning: in the working copy of 'Alundra/Ai/Items/EarthTome2Ai.cs', LF will be replaced by CRLF the next time Git touches it
+MUTANT m04_x32_y32_swapped KILLED red_cases=11 git_diff_empty=True 92s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T2_Driver_TheCasesOfTheOracleWhoseTerrainIsRepresentable_AreReplayedField_AnswerPhaseAnimationGeneratorBirthsDestructionAndForceOfZ
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P1_RondWithTheTome44_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_FifteenRocks_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.S10b_TheFinalPositionOfTheRock8AtTheWall_IsWithinTheBoundOfS10a_OnEachAxis(label:
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.S10b_TheFinalPositionOfTheRockOfTheEdge_IsExactlyTheKeys_OnEachAxis
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W1_TheEarthTome2AtTheMiddleOfTheMap_EqualsTheKey_EveryTickEveryField_FifteenRocks_TheKicksAtTheTicksOfTheKey_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W2_TheRockOfTheEdgeOfTheMap_SlidesAlongTheEdge_LandsAt194_AndGivesItsKickAndItsSoundAt195_NotAt163_AsTheCorrectedKey
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W5_TheRocksTouchSixStaticTargets_AtTheTicksOfTheKey_EachTouchSetsTheCooldown25
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W6_ABandOfDeepWater_TheRocksOfTheType17Live_TheyDoNotDrown_AsTheKey
+    ['Échoué!  - échec\xa0:    11, réussite\xa0:   390, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 26 s - Alundra.Tests.dll (net9.0)']
+warning: in the working copy of 'Alundra/Ai/Items/EarthTome2Ai.cs', LF will be replaced by CRLF the next time Git touches it
+MUTANT m05_birth_height_128px KILLED red_cases=18 git_diff_empty=True 95s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T2_Driver_TheCasesOfTheOracleWhoseTerrainIsRepresentable_AreReplayedField_AnswerPhaseAnimationGeneratorBirthsDestructionAndForceOfZ
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T4_TheDestructionAtTheBirth_IsTheSignedStrictComparisonOfTheTerrainWithTheZOfTheHeroPlus1PlusHalfAMeter_TheEqualityKeeps
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P1_RondWithTheTome44_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_FifteenRocks_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P4_RondWithTheTome44_InterruptedAtTheTick100_TheKeyHolds_ASound45PerRockCancelledInTheAir_ThroughTheEntriesOfTheObject
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.S10b_TheFinalPositionOfTheRock8AtTheWall_IsWithinTheBoundOfS10a_OnEachAxis(label:
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.S10b_TheFinalPositionOfTheRockOfTheEdge_IsExactlyTheKeys_OnEachAxis
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W1_TheEarthTome2AtTheMiddleOfTheMap_EqualsTheKey_EveryTickEveryField_FifteenRocks_TheKicksAtTheTicksOfTheKey_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W2_TheRockOfTheEdgeOfTheMap_SlidesAlongTheEdge_LandsAt194_AndGivesItsKickAndItsSoundAt195_NotAt163_AsTheCorrectedKey
+    ['Échoué!  - échec\xa0:    18, réussite\xa0:   383, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 29 s - Alundra.Tests.dll (net9.0)']
+MUTANT m06_force_z_minus_4px KILLED red_cases=20 git_diff_empty=True 94s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T2_Driver_TheCasesOfTheOracleWhoseTerrainIsRepresentable_AreReplayedField_AnswerPhaseAnimationGeneratorBirthsDestructionAndForceOfZ
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T3_ARefusedBirth_DrawsTheTwoNumbersAllTheSame_AndDestroysNothingNorWritesAForce_WhileAnAnsweredOneIsGivenTheForceOf8PixelsATick
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P1_RondWithTheTome44_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_FifteenRocks_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P4_RondWithTheTome44_InterruptedAtTheTick100_TheKeyHolds_ASound45PerRockCancelledInTheAir_ThroughTheEntriesOfTheObject
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.S10b_TheFinalPositionOfTheRock8AtTheWall_IsWithinTheBoundOfS10a_OnEachAxis(label:
+    ['Échoué!  - échec\xa0:    20, réussite\xa0:   381, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 28 s - Alundra.Tests.dll (net9.0)']
+MUTANT m07_destroy_le KILLED red_cases=1 git_diff_empty=True 96s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T4_TheDestructionAtTheBirth_IsTheSignedStrictComparisonOfTheTerrainWithTheZOfTheHeroPlus1PlusHalfAMeter_TheEqualityKeeps
+    ['Échoué!  - échec\xa0:     1, réussite\xa0:   400, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 30 s - Alundra.Tests.dll (net9.0)']
+MUTANT m08_terrain_without_plus1 KILLED red_cases=1 git_diff_empty=True 94s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T4_TheDestructionAtTheBirth_IsTheSignedStrictComparisonOfTheTerrainWithTheZOfTheHeroPlus1PlusHalfAMeter_TheEqualityKeeps
+    ['Échoué!  - échec\xa0:     1, réussite\xa0:   400, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 29 s - Alundra.Tests.dll (net9.0)']
+MUTANT m09_null_birth_destroys KILLED red_cases=2 git_diff_empty=True 93s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T3_ARefusedBirth_DrawsTheTwoNumbersAllTheSame_AndDestroysNothingNorWritesAForce_WhileAnAnsweredOneIsGivenTheForceOf8PixelsATick
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P2_WithNoFreeSlot_NoRockIsBorn_NoExceptionIsRaised_AndTheObjectIsFreedAtTheTick309_TheDriverRuns
+    ['Échoué!  - échec\xa0:     2, réussite\xa0:   399, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 27 s - Alundra.Tests.dll (net9.0)']
+MUTANT m10_entry_224_shifted KILLED red_cases=10 git_diff_empty=True 94s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T1_TheTable_IsTheOneOfTheExecutable_15EntriesOfU16S16_AndTheSentinel
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T2_Driver_TheCasesOfTheOracleWhoseTerrainIsRepresentable_AreReplayedField_AnswerPhaseAnimationGeneratorBirthsDestructionAndForceOfZ
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T3_ARefusedBirth_DrawsTheTwoNumbersAllTheSame_AndDestroysNothingNorWritesAForce_WhileAnAnsweredOneIsGivenTheForceOf8PixelsATick
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T5_Thresholds_TwoRocksAtTheCounter224_ThePhase1AtTheCounter240InTheSameCall_0x117Against0x118_ThePhase2
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P1_RondWithTheTome44_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_FifteenRocks_TheItemFreedAtTheTick309
+    ['Échoué!  - échec\xa0:    10, réussite\xa0:   391, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 27 s - Alundra.Tests.dll (net9.0)']
+MUTANT m11_one_draw KILLED red_cases=12 git_diff_empty=True 95s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T2_Driver_TheCasesOfTheOracleWhoseTerrainIsRepresentable_AreReplayedField_AnswerPhaseAnimationGeneratorBirthsDestructionAndForceOfZ
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T3_ARefusedBirth_DrawsTheTwoNumbersAllTheSame_AndDestroysNothingNorWritesAForce_WhileAnAnsweredOneIsGivenTheForceOf8PixelsATick
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P1_RondWithTheTome44_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_FifteenRocks_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.S10b_TheFinalPositionOfTheRock8AtTheWall_IsWithinTheBoundOfS10a_OnEachAxis(label:
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.S10b_TheFinalPositionOfTheRockOfTheEdge_IsExactlyTheKeys_OnEachAxis
+    ['Échoué!  - échec\xa0:    12, réussite\xa0:   389, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 28 s - Alundra.Tests.dll (net9.0)']
+MUTANT m12_phase1_guard_removed KILLED red_cases=3 git_diff_empty=True 95s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T2_Driver_TheCasesOfTheOracleWhoseTerrainIsRepresentable_AreReplayedField_AnswerPhaseAnimationGeneratorBirthsDestructionAndForceOfZ
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T2_TheCounterAndTheRelease_ByThePathOfTheTick_AreTheWrapperOfTheOracle_TheCounterSaturatesAtTheLargestPositiveWord
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T6_TheGuard_CancelsAndAnswers1_OnTheSlope4OrOutsideTheCastAnimations_InThePhases0And1_AndAnswers0InTheCast
+    ['Échoué!  - échec\xa0:     3, réussite\xa0:   398, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 30 s - Alundra.Tests.dll (net9.0)']
+MUTANT m13_threshold_0x119 KILLED red_cases=7 git_diff_empty=True 95s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T2_Driver_TheCasesOfTheOracleWhoseTerrainIsRepresentable_AreReplayedField_AnswerPhaseAnimationGeneratorBirthsDestructionAndForceOfZ
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T5_Thresholds_TwoRocksAtTheCounter224_ThePhase1AtTheCounter240InTheSameCall_0x117Against0x118_ThePhase2
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P1_RondWithTheTome44_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_FifteenRocks_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P2_WithNoFreeSlot_NoRockIsBorn_NoExceptionIsRaised_AndTheObjectIsFreedAtTheTick309_TheDriverRuns
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W1_TheEarthTome2AtTheMiddleOfTheMap_EqualsTheKey_EveryTickEveryField_FifteenRocks_TheKicksAtTheTicksOfTheKey_TheItemFreedAtTheTick309
+    ['Échoué!  - échec\xa0:     7, réussite\xa0:   394, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 29 s - Alundra.Tests.dll (net9.0)']
+MUTANT m14_phase2_ends_at_once KILLED red_cases=8 git_diff_empty=True 93s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T2_Driver_TheCasesOfTheOracleWhoseTerrainIsRepresentable_AreReplayedField_AnswerPhaseAnimationGeneratorBirthsDestructionAndForceOfZ
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T2_TheCounterAndTheRelease_ByThePathOfTheTick_AreTheWrapperOfTheOracle_TheCounterSaturatesAtTheLargestPositiveWord
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T5_Thresholds_TwoRocksAtTheCounter224_ThePhase1AtTheCounter240InTheSameCall_0x117Against0x118_ThePhase2
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P1_RondWithTheTome44_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_FifteenRocks_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P2_WithNoFreeSlot_NoRockIsBorn_NoExceptionIsRaised_AndTheObjectIsFreedAtTheTick309_TheDriverRuns
+    ['Échoué!  - échec\xa0:     8, réussite\xa0:   393, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 28 s - Alundra.Tests.dll (net9.0)']
+MUTANT m15_phase1_not_chained KILLED red_cases=7 git_diff_empty=True 95s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T2_Driver_TheCasesOfTheOracleWhoseTerrainIsRepresentable_AreReplayedField_AnswerPhaseAnimationGeneratorBirthsDestructionAndForceOfZ
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T5_Thresholds_TwoRocksAtTheCounter224_ThePhase1AtTheCounter240InTheSameCall_0x117Against0x118_ThePhase2
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P1_RondWithTheTome44_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_FifteenRocks_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P2_WithNoFreeSlot_NoRockIsBorn_NoExceptionIsRaised_AndTheObjectIsFreedAtTheTick309_TheDriverRuns
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W1_TheEarthTome2AtTheMiddleOfTheMap_EqualsTheKey_EveryTickEveryField_FifteenRocks_TheKicksAtTheTicksOfTheKey_TheItemFreedAtTheTick309
+    ['Échoué!  - échec\xa0:     7, réussite\xa0:   394, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 30 s - Alundra.Tests.dll (net9.0)']
+MUTANT m16_e13_without_kick KILLED red_cases=17 git_diff_empty=True 93s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E1_E13_TheFortyVectorsOfTheOracle_AreReplayed_TheFirstPassesOnTheGround_TheKickIsAssigned2_TheSecondPassesDestroyAtTheEndOfTheAnimation
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E2_E13_TheFirstPassOnTheGround_AsksTheAnimation1_SetsTheFlag0x40_ClearsTheBits0x30_AndAssignsTheKick2
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E6_E13_TheFirstPassInTheAir_PutsTheStatusBackTo2_AndWritesNothingElse_NoAnimationNoFlagsNoKick
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E7_E13_OnTheGroundWithTheFlagOfTheWallRaised_TheImpactHappens_TheGuardReadsTheGroundAndNotTheFlag
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P1_RondWithTheTome44_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_FifteenRocks_TheItemFreedAtTheTick309
+    ['Échoué!  - échec\xa0:    17, réussite\xa0:   384, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 27 s - Alundra.Tests.dll (net9.0)']
+MUTANT m17_kick_added KILLED red_cases=9 git_diff_empty=True 93s
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P1_RondWithTheTome44_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_FifteenRocks_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W1_TheEarthTome2AtTheMiddleOfTheMap_EqualsTheKey_EveryTickEveryField_FifteenRocks_TheKicksAtTheTicksOfTheKey_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W2_TheRockOfTheEdgeOfTheMap_SlidesAlongTheEdge_LandsAt194_AndGivesItsKickAndItsSoundAt195_NotAt163_AsTheCorrectedKey
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W3_AnInteriorRock_HasTheSameChronologyRelativeToItsBirth_At2And3TicksPerFrame(ticksPerFrame:
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W3b_ARockHeldInTheAirByTheEdgeOfTheMap_WaitsForTheGround_At2And3TicksPerFrame_TheStatusStays2_AndTheImpactIsOneTickAfterTheLanding(ticksPerFrame:
+    ['Échoué!  - échec\xa0:     9, réussite\xa0:   392, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 27 s - Alundra.Tests.dll (net9.0)']
+MUTANT m18_without_0x40 KILLED red_cases=14 git_diff_empty=True 93s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E1_E13_TheFortyVectorsOfTheOracle_AreReplayed_TheFirstPassesOnTheGround_TheKickIsAssigned2_TheSecondPassesDestroyAtTheEndOfTheAnimation
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E2_E13_TheFirstPassOnTheGround_AsksTheAnimation1_SetsTheFlag0x40_ClearsTheBits0x30_AndAssignsTheKick2
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E5_E13_WithoutAWorldContext_DoesTheRockAndNothingElse_NoKickNoException
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E7_E13_OnTheGroundWithTheFlagOfTheWallRaised_TheImpactHappens_TheGuardReadsTheGroundAndNotTheFlag
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P1_RondWithTheTome44_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_FifteenRocks_TheItemFreedAtTheTick309
+    ['Échoué!  - échec\xa0:    14, réussite\xa0:   387, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 28 s - Alundra.Tests.dll (net9.0)']
+MUTANT m19_0x30_not_cleared KILLED red_cases=14 git_diff_empty=True 95s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E1_E13_TheFortyVectorsOfTheOracle_AreReplayed_TheFirstPassesOnTheGround_TheKickIsAssigned2_TheSecondPassesDestroyAtTheEndOfTheAnimation
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E2_E13_TheFirstPassOnTheGround_AsksTheAnimation1_SetsTheFlag0x40_ClearsTheBits0x30_AndAssignsTheKick2
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E5_E13_WithoutAWorldContext_DoesTheRockAndNothingElse_NoKickNoException
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E7_E13_OnTheGroundWithTheFlagOfTheWallRaised_TheImpactHappens_TheGuardReadsTheGroundAndNotTheFlag
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P1_RondWithTheTome44_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_FifteenRocks_TheItemFreedAtTheTick309
+    ['Échoué!  - échec\xa0:    14, réussite\xa0:   387, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 30 s - Alundra.Tests.dll (net9.0)']
+MUTANT m20_destroy_effect_0 KILLED red_cases=2 git_diff_empty=True 92s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E1_E13_TheFortyVectorsOfTheOracle_AreReplayed_TheFirstPassesOnTheGround_TheKickIsAssigned2_TheSecondPassesDestroyAtTheEndOfTheAnimation
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E3_E13_TheSecondPass_DestroysAtTheEndOfTheAnimation1Alone_WithTheAnimationAndTheFlagsUntouched_OnTheGroundOrInTheAir
+    ['Échoué!  - échec\xa0:     2, réussite\xa0:   399, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 27 s - Alundra.Tests.dll (net9.0)']
+MUTANT m20b_destroy_single_argument BUILD_ERROR red_cases=0 git_diff_empty=True 3s
+    []
+MUTANT m21_kick_at_first_view_of_cancelled KILLED red_cases=17 git_diff_empty=True 93s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E1_E13_TheFortyVectorsOfTheOracle_AreReplayed_TheFirstPassesOnTheGround_TheKickIsAssigned2_TheSecondPassesDestroyAtTheEndOfTheAnimation
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E3_E13_TheSecondPass_DestroysAtTheEndOfTheAnimation1Alone_WithTheAnimationAndTheFlagsUntouched_OnTheGroundOrInTheAir
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E4_E13_ARockAlreadyInTheAnimation1AtItsFirstView_ACancelledRock_GivesNeitherKickNorFlags
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P1_RondWithTheTome44_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_FifteenRocks_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P4_RondWithTheTome44_InterruptedAtTheTick100_TheKeyHolds_ASound45PerRockCancelledInTheAir_ThroughTheEntriesOfTheObject
+    ['Échoué!  - échec\xa0:    17, réussite\xa0:   384, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 28 s - Alundra.Tests.dll (net9.0)']
+MUTANT m22_cancel_all_types KILLED red_cases=6 git_diff_empty=True 93s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.C1_TheCancellation_PutsTheRocksAtTheStatus2AtTheStatus3_WithNothingBlockingThemAndTheAnimation1_AndTouchesNothingElse
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T2_Driver_TheCasesOfTheOracleWhoseTerrainIsRepresentable_AreReplayedField_AnswerPhaseAnimationGeneratorBirthsDestructionAndForceOfZ
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P4_RondWithTheTome44_InterruptedAtTheTick100_TheKeyHolds_ASound45PerRockCancelledInTheAir_ThroughTheEntriesOfTheObject
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W4_AnInterruption_PutsTheRocksInTheAirAtTheStatus3WithTheAnimation1_ASound45EachAndTheKicksOfTheKey_TheHeroIsHurt(at:
+    ['Échoué!  - échec\xa0:     6, réussite\xa0:   395, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 28 s - Alundra.Tests.dll (net9.0)']
+MUTANT m23_cancel_touches_status3 KILLED red_cases=2 git_diff_empty=True 95s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.C1_TheCancellation_PutsTheRocksAtTheStatus2AtTheStatus3_WithNothingBlockingThemAndTheAnimation1_AndTouchesNothingElse
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T2_Driver_TheCasesOfTheOracleWhoseTerrainIsRepresentable_AreReplayedField_AnswerPhaseAnimationGeneratorBirthsDestructionAndForceOfZ
+    ['Échoué!  - échec\xa0:     2, réussite\xa0:   399, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 29 s - Alundra.Tests.dll (net9.0)']
+MUTANT m24_cancel_forgets_highest_slot KILLED red_cases=5 git_diff_empty=True 93s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.C1_TheCancellation_PutsTheRocksAtTheStatus2AtTheStatus3_WithNothingBlockingThemAndTheAnimation1_AndTouchesNothingElse
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T2_Driver_TheCasesOfTheOracleWhoseTerrainIsRepresentable_AreReplayedField_AnswerPhaseAnimationGeneratorBirthsDestructionAndForceOfZ
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P4_RondWithTheTome44_InterruptedAtTheTick100_TheKeyHolds_ASound45PerRockCancelledInTheAir_ThroughTheEntriesOfTheObject
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W4_AnInterruption_PutsTheRocksInTheAirAtTheStatus3WithTheAnimation1_ASound45EachAndTheKicksOfTheKey_TheHeroIsHurt(at:
+    ['Échoué!  - échec\xa0:     5, réussite\xa0:   396, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 27 s - Alundra.Tests.dll (net9.0)']
+MUTANT m25_kick_sign_inverted KILLED red_cases=20 git_diff_empty=True 94s
+    Alundra.Tests.Cameras.CameraKickTests.K1_AFrameOfThreeTicks_AppliesTheKickOfEachTickAtItsOwnStep_AsThreeFramesOfOneTick(a:
+    Alundra.Tests.Cameras.CameraKickTests.K1_AKickOf2_LeavesALastingShiftWhichDependsOnTheGapAtRest(targetY:
+    Alundra.Tests.Cameras.CameraKickTests.K1_AShortListIsZeroForTheTicksItDoesNotCover_ALongListIsCutAtTheNumberOfTicks_ZeroTicksLeaveTheStateAlone
+    Alundra.Tests.Cameras.CameraKickTests.K1_ASnapFrame_LosesTheKickOfItsFirstTick_AndAppliesTheOthers
+    Alundra.Tests.Cameras.CameraKickTests.K1_SuccessiveKicks_AddUp_UntilTheyUseTheGapUp
+    ['Échoué!  - échec\xa0:    20, réussite\xa0:   381, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 29 s - Alundra.Tests.dll (net9.0)']
+MUTANT m26_kick_applied_at_snap_tick KILLED red_cases=1 git_diff_empty=True 91s
+    Alundra.Tests.Cameras.CameraKickTests.K1_ASnapFrame_LosesTheKickOfItsFirstTick_AndAppliesTheOthers
+    ['Échoué!  - échec\xa0:     1, réussite\xa0:   400, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 26 s - Alundra.Tests.dll (net9.0)']
+MUTANT m27_kick_filed_by_image KILLED red_cases=3 git_diff_empty=True 93s
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W3_AnInteriorRock_HasTheSameChronologyRelativeToItsBirth_At2And3TicksPerFrame(ticksPerFrame:
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W3b_ARockHeldInTheAirByTheEdgeOfTheMap_WaitsForTheGround_At2And3TicksPerFrame_TheStatusStays2_AndTheImpactIsOneTickAfterTheLanding(ticksPerFrame:
+    Alundra.Tests.Maps.WorldProxyCameraKickTests.K2_TheKickIsFiledAtTheIndexOfItsTick_TwoE13AtTheSameTickGive2NotFour_TheListIsEmptyAfterTheCameraStepOfTheFrame
+    ['Échoué!  - échec\xa0:     3, réussite\xa0:   398, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 28 s - Alundra.Tests.dll (net9.0)']
+MUTANT m28_kick_consumed_one_tick_late KILLED red_cases=20 git_diff_empty=True 93s
+    Alundra.Tests.Cameras.CameraKickTests.K1_AFrameOfThreeTicks_AppliesTheKickOfEachTickAtItsOwnStep_AsThreeFramesOfOneTick(a:
+    Alundra.Tests.Cameras.CameraKickTests.K1_AKickOf2_LeavesALastingShiftWhichDependsOnTheGapAtRest(targetY:
+    Alundra.Tests.Cameras.CameraKickTests.K1_AShortListIsZeroForTheTicksItDoesNotCover_ALongListIsCutAtTheNumberOfTicks_ZeroTicksLeaveTheStateAlone
+    Alundra.Tests.Cameras.CameraKickTests.K1_ASnapFrame_LosesTheKickOfItsFirstTick_AndAppliesTheOthers
+    Alundra.Tests.Cameras.CameraKickTests.K1_SuccessiveKicks_AddUp_UntilTheyUseTheGapUp
+    ['Échoué!  - échec\xa0:    20, réussite\xa0:   381, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 28 s - Alundra.Tests.dll (net9.0)']
+MUTANT m29_index_shift_at_snap KILLED red_cases=1 git_diff_empty=True 94s
+    Alundra.Tests.Cameras.CameraKickTests.K1_ASnapFrame_LosesTheKickOfItsFirstTick_AndAppliesTheOthers
+    ['Échoué!  - échec\xa0:     1, réussite\xa0:   400, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 29 s - Alundra.Tests.dll (net9.0)']
+MUTANT m30_e13_also_for_469 KILLED red_cases=2 git_diff_empty=True 93s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.R1_E13_IsRegisteredForTheType17Alone_NotThe469_NorThe16_NorAnyOtherType_AndTheRegistrationIsTakenOffByItsDisposable
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P3_TheProductionRegistryHandlesTheCodesOfTheType17_AnEmptyOneLacksOnlyE13
+    ['Échoué!  - échec\xa0:     2, réussite\xa0:   399, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 28 s - Alundra.Tests.dll (net9.0)']
+MUTANT m31_dF55_rule_removed KILLED red_cases=33 git_diff_empty=True 94s
+    Alundra.Tests.Ai.Items.EarthTome1ProductionTests.P1_RondWithTheTome43_BornsTheRocksAtTheTick22_AndTheKeyOfW1HoldsThroughTheEntriesOfTheObject
+    Alundra.Tests.Ai.Items.EarthTome1WorldTests.W1_TheEarthTome1OnTheFlatFieldToTheEast_EqualsTheKey_EveryTickEveryField_ThirtyTwoRocksTwoEveryFiveTicks_TheItemFreedAtTheTick129
+    Alundra.Tests.Ai.Items.EarthTome1WorldTests.W2_TheOtherOrientationsAndTheHeroAtX200_EqualTheirKeys_EveryTickEveryField(name:
+    Alundra.Tests.Ai.Items.EarthTome1WorldTests.W3_TheFlatKeyOfTheCriticAndTheBandOfSlope1_EqualTheirKeys_EveryTickEveryField(name:
+    Alundra.Tests.Ai.Items.EarthTome1WorldTests.W3_TheWallAndTheSteps_FollowTheKeyWithTheStatus3AtMostOneTickEarly_TheChronologyReadFromTheObservedStatus3(name:
+    ['Échoué!  - échec\xa0:    33, réussite\xa0:   368, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 29 s - Alundra.Tests.dll (net9.0)']
+MUTANT m32_speed_target_forgotten_for_17 KILLED red_cases=8 git_diff_empty=True 94s
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P1_RondWithTheTome44_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_FifteenRocks_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.S10b_TheFinalPositionOfTheRockOfTheEdge_IsExactlyTheKeys_OnEachAxis
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W1_TheEarthTome2AtTheMiddleOfTheMap_EqualsTheKey_EveryTickEveryField_FifteenRocks_TheKicksAtTheTicksOfTheKey_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W2_TheRockOfTheEdgeOfTheMap_SlidesAlongTheEdge_LandsAt194_AndGivesItsKickAndItsSoundAt195_NotAt163_AsTheCorrectedKey
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W5_TheRocksTouchSixStaticTargets_AtTheTicksOfTheKey_EachTouchSetsTheCooldown25
+    ['Échoué!  - échec\xa0:     8, réussite\xa0:   393, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 29 s - Alundra.Tests.dll (net9.0)']
+MUTANT m33_e13_without_ground_guard KILLED red_cases=9 git_diff_empty=True 93s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E6_E13_TheFirstPassInTheAir_PutsTheStatusBackTo2_AndWritesNothingElse_NoAnimationNoFlagsNoKick
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.S10b_TheFinalPositionOfTheRockOfTheEdge_IsExactlyTheKeys_OnEachAxis
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W2_TheRockOfTheEdgeOfTheMap_SlidesAlongTheEdge_LandsAt194_AndGivesItsKickAndItsSoundAt195_NotAt163_AsTheCorrectedKey
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W3b_ARockHeldInTheAirByTheEdgeOfTheMap_WaitsForTheGround_At2And3TicksPerFrame_TheStatusStays2_AndTheImpactIsOneTickAfterTheLanding(ticksPerFrame:
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W4_AnInterruption_PutsTheRocksInTheAirAtTheStatus3WithTheAnimation1_ASound45EachAndTheKicksOfTheKey_TheHeroIsHurt(at:
+    ['Échoué!  - échec\xa0:     9, réussite\xa0:   392, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 28 s - Alundra.Tests.dll (net9.0)']
+MUTANT m34_guard_on_force_adjusted KILLED red_cases=11 git_diff_empty=True 93s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E6_E13_TheFirstPassInTheAir_PutsTheStatusBackTo2_AndWritesNothingElse_NoAnimationNoFlagsNoKick
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E7_E13_OnTheGroundWithTheFlagOfTheWallRaised_TheImpactHappens_TheGuardReadsTheGroundAndNotTheFlag
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.S10b_TheFinalPositionOfTheRock8AtTheWall_IsWithinTheBoundOfS10a_OnEachAxis(label:
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.S10b_TheFinalPositionOfTheRockOfTheEdge_IsExactlyTheKeys_OnEachAxis
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W2_TheRockOfTheEdgeOfTheMap_SlidesAlongTheEdge_LandsAt194_AndGivesItsKickAndItsSoundAt195_NotAt163_AsTheCorrectedKey
+    ['Échoué!  - échec\xa0:    11, réussite\xa0:   390, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 27 s - Alundra.Tests.dll (net9.0)']
+MUTANT m35_status_left_at_3 KILLED red_cases=8 git_diff_empty=True 95s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E6_E13_TheFirstPassInTheAir_PutsTheStatusBackTo2_AndWritesNothingElse_NoAnimationNoFlagsNoKick
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W2_TheRockOfTheEdgeOfTheMap_SlidesAlongTheEdge_LandsAt194_AndGivesItsKickAndItsSoundAt195_NotAt163_AsTheCorrectedKey
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W3b_ARockHeldInTheAirByTheEdgeOfTheMap_WaitsForTheGround_At2And3TicksPerFrame_TheStatusStays2_AndTheImpactIsOneTickAfterTheLanding(ticksPerFrame:
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W4_AnInterruption_PutsTheRocksInTheAirAtTheStatus3WithTheAnimation1_ASound45EachAndTheKicksOfTheKey_TheHeroIsHurt(at:
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W6_ABandOfDeepWater_TheRocksOfTheType17Live_TheyDoNotDrown_AsTheKey
+    ['Échoué!  - échec\xa0:     8, réussite\xa0:   393, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 29 s - Alundra.Tests.dll (net9.0)']
+MUTANT m36_guard_on_second_branch KILLED red_cases=2 git_diff_empty=True 92s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E3_E13_TheSecondPass_DestroysAtTheEndOfTheAnimation1Alone_WithTheAnimationAndTheFlagsUntouched_OnTheGroundOrInTheAir
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.R1_E13_IsRegisteredForTheType17Alone_NotThe469_NorThe16_NorAnyOtherType_AndTheRegistrationIsTakenOffByItsDisposable
+    ['Échoué!  - échec\xa0:     2, réussite\xa0:   399, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 27 s - Alundra.Tests.dll (net9.0)']
+MUTANT m37_kick_value_3 KILLED red_cases=17 git_diff_empty=True 94s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E1_E13_TheFortyVectorsOfTheOracle_AreReplayed_TheFirstPassesOnTheGround_TheKickIsAssigned2_TheSecondPassesDestroyAtTheEndOfTheAnimation
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E2_E13_TheFirstPassOnTheGround_AsksTheAnimation1_SetsTheFlag0x40_ClearsTheBits0x30_AndAssignsTheKick2
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E6_E13_TheFirstPassInTheAir_PutsTheStatusBackTo2_AndWritesNothingElse_NoAnimationNoFlagsNoKick
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.E7_E13_OnTheGroundWithTheFlagOfTheWallRaised_TheImpactHappens_TheGuardReadsTheGroundAndNotTheFlag
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P1_RondWithTheTome44_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_FifteenRocks_TheItemFreedAtTheTick309
+    ['Échoué!  - échec\xa0:    17, réussite\xa0:   384, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 28 s - Alundra.Tests.dll (net9.0)']
+MUTANT m38_phase1_end_does_not_enter_phase2 KILLED red_cases=7 git_diff_empty=True 91s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T2_Driver_TheCasesOfTheOracleWhoseTerrainIsRepresentable_AreReplayedField_AnswerPhaseAnimationGeneratorBirthsDestructionAndForceOfZ
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T5_Thresholds_TwoRocksAtTheCounter224_ThePhase1AtTheCounter240InTheSameCall_0x117Against0x118_ThePhase2
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P1_RondWithTheTome44_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_FifteenRocks_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P2_WithNoFreeSlot_NoRockIsBorn_NoExceptionIsRaised_AndTheObjectIsFreedAtTheTick309_TheDriverRuns
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W1_TheEarthTome2AtTheMiddleOfTheMap_EqualsTheKey_EveryTickEveryField_FifteenRocks_TheKicksAtTheTicksOfTheKey_TheItemFreedAtTheTick309
+    ['Échoué!  - échec\xa0:     7, réussite\xa0:   394, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 26 s - Alundra.Tests.dll (net9.0)']
+MUTANT m39_cancel_keeps_blocker KILLED red_cases=2 git_diff_empty=True 95s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.C1_TheCancellation_PutsTheRocksAtTheStatus2AtTheStatus3_WithNothingBlockingThemAndTheAnimation1_AndTouchesNothingElse
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T2_Driver_TheCasesOfTheOracleWhoseTerrainIsRepresentable_AreReplayedField_AnswerPhaseAnimationGeneratorBirthsDestructionAndForceOfZ
+    ['Échoué!  - échec\xa0:     2, réussite\xa0:   399, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 29 s - Alundra.Tests.dll (net9.0)']
+MUTANT m40_cancel_without_animation KILLED red_cases=6 git_diff_empty=True 92s
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.C1_TheCancellation_PutsTheRocksAtTheStatus2AtTheStatus3_WithNothingBlockingThemAndTheAnimation1_AndTouchesNothingElse
+    Alundra.Tests.Ai.Items.EarthTome2AiTests.T2_Driver_TheCasesOfTheOracleWhoseTerrainIsRepresentable_AreReplayedField_AnswerPhaseAnimationGeneratorBirthsDestructionAndForceOfZ
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P4_RondWithTheTome44_InterruptedAtTheTick100_TheKeyHolds_ASound45PerRockCancelledInTheAir_ThroughTheEntriesOfTheObject
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W4_AnInterruption_PutsTheRocksInTheAirAtTheStatus3WithTheAnimation1_ASound45EachAndTheKicksOfTheKey_TheHeroIsHurt(at:
+    ['Échoué!  - échec\xa0:     6, réussite\xa0:   395, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 26 s - Alundra.Tests.dll (net9.0)']
+MUTANT m41_kick_list_not_emptied KILLED red_cases=19 git_diff_empty=True 93s
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P1_RondWithTheTome44_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_FifteenRocks_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P4_RondWithTheTome44_InterruptedAtTheTick100_TheKeyHolds_ASound45PerRockCancelledInTheAir_ThroughTheEntriesOfTheObject
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W1_TheEarthTome2AtTheMiddleOfTheMap_EqualsTheKey_EveryTickEveryField_FifteenRocks_TheKicksAtTheTicksOfTheKey_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W2_TheRockOfTheEdgeOfTheMap_SlidesAlongTheEdge_LandsAt194_AndGivesItsKickAndItsSoundAt195_NotAt163_AsTheCorrectedKey
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W3_AnInteriorRock_HasTheSameChronologyRelativeToItsBirth_At2And3TicksPerFrame(ticksPerFrame:
+    ['Échoué!  - échec\xa0:    19, réussite\xa0:   382, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 28 s - Alundra.Tests.dll (net9.0)']
+MUTANT m42_kick_tick_not_reset SURVIVED red_cases=0 git_diff_empty=True 93s
+    ['Réussi!  - échec\xa0:     0, réussite\xa0:   401, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 28 s - Alundra.Tests.dll (net9.0)']
+MUTANT m43_kick_tick_not_set_in_block KILLED red_cases=3 git_diff_empty=True 94s
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W3_AnInteriorRock_HasTheSameChronologyRelativeToItsBirth_At2And3TicksPerFrame(ticksPerFrame:
+    Alundra.Tests.Ai.Items.EarthTome2WorldTests.W3b_ARockHeldInTheAirByTheEdgeOfTheMap_WaitsForTheGround_At2And3TicksPerFrame_TheStatusStays2_AndTheImpactIsOneTickAfterTheLanding(ticksPerFrame:
+    Alundra.Tests.Maps.WorldProxyCameraKickTests.K2_TheKickIsFiledAtTheIndexOfItsTick_TwoE13AtTheSameTickGive2NotFour_TheListIsEmptyAfterTheCameraStepOfTheFrame
+    ['Échoué!  - échec\xa0:     3, réussite\xa0:   398, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 28 s - Alundra.Tests.dll (net9.0)']
+MUTANT m44_cancel_entry_to_stub KILLED red_cases=1 git_diff_empty=True 94s
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P4_RondWithTheTome44_InterruptedAtTheTick100_TheKeyHolds_ASound45PerRockCancelledInTheAir_ThroughTheEntriesOfTheObject
+    ['Échoué!  - échec\xa0:     1, réussite\xa0:   400, ignorée(s)\xa0:     0, total\xa0:   401, durée\xa0: 1 m 28 s - Alundra.Tests.dll (net9.0)']
+MUTANT m42_kick_tick_not_reset KILLED red_cases=1 git_diff_empty=True 94s
+    Alundra.Tests.Maps.WorldProxyCameraKickTests.K2_AfterADrivenFrameOfThreeTicks_AKickFiledOutsideTheEntityBlock_GoesToTheIndex0_NotToTheLastTickOfTheFrame
+    ['Échoué!  - échec\xa0:     1, réussite\xa0:   401, ignorée(s)\xa0:     0, total\xa0:   402, durée\xa0: 1 m 27 s - Alundra.Tests.dll (net9.0)']
+MUTANT m45_driver_entry_to_stub KILLED red_cases=3 git_diff_empty=True 93s
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P1_RondWithTheTome44_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_FifteenRocks_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P2_WithNoFreeSlot_NoRockIsBorn_NoExceptionIsRaised_AndTheObjectIsFreedAtTheTick309_TheDriverRuns
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P4_RondWithTheTome44_InterruptedAtTheTick100_TheKeyHolds_ASound45PerRockCancelledInTheAir_ThroughTheEntriesOfTheObject
+    ['Échoué!  - échec\xa0:     3, réussite\xa0:   399, ignorée(s)\xa0:     0, total\xa0:   402, durée\xa0: 1 m 28 s - Alundra.Tests.dll (net9.0)']
+MUTANT m46_registration_removed KILLED red_cases=8 git_diff_empty=True 94s
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P1_RondWithTheTome44_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_FifteenRocks_TheItemFreedAtTheTick309
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P3_TheProductionRegistryHandlesTheCodesOfTheType17_AnEmptyOneLacksOnlyE13
+    Alundra.Tests.Ai.Items.EarthTome2ProductionTests.P4_RondWithTheTome44_InterruptedAtTheTick100_TheKeyHolds_ASound45PerRockCancelledInTheAir_ThroughTheEntriesOfTheObject
+    Alundra.Tests.Ai.NativeSpriteRegistryTests.ProductionRunner_RegistryHoldsTheHandlersOfTheBeannoidTheMurutaTheSwordWaveAndThePickupObjects_AndTheSwitchIsOn
+    Alundra.Tests.Ai.Objects.LiftableAiRegistrationTests.R1_TheKeyIsInTheSlotCOnly_AndTheCountOfTheProductionRegistryIsTheSumOfTheCountsOfTheClasses
+    ['Échoué!  - échec\xa0:     8, réussite\xa0:   394, ignorée(s)\xa0:     0, total\xa0:   402, durée\xa0: 1 m 28 s - Alundra.Tests.dll (net9.0)']
+MUTANT e01_equivalent_no_resync SURVIVED red_cases=0 git_diff_empty=True 93s
+    ['Réussi!  - échec\xa0:     0, réussite\xa0:   402, ignorée(s)\xa0:     0, total\xa0:   402, durée\xa0: 1 m 28 s - Alundra.Tests.dll (net9.0)']
+Traceback (most recent call last):
+  File "D:\development\repo\alundra-casaengine-project-converter\docs\plan-e20-annexe\e20-h4c2\t3\mutants.py", line 73, in <module>
+    for path, old, new in M[name]:
+                          ~^^^^^^
+KeyError: 'baseline'

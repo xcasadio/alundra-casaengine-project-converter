@@ -122,3 +122,4 @@ This folder records the architecture decisions of this repository: architecture,
 | ADR-0106 | The spell target query is a pure function with the corrected bound and sort threshold, inert in production | Accepted | 2026-10-27 |
 | ADR-0107 | The earth tome 1 is driven by the table driver 0x80035320 and its rocks by E3, registered for the sprite type 16 alone | Accepted | 2026-10-27 |
 | ADR-0108 | A held object is always drawn in front of its carrier and a thrown one follows the keys of the binary, through the engine sort anchor | Accepted | 2026-10-27 |
+| ADR-0109 | The earth tome 2 is driven by the table driver 0x800354D0 and its rocks by E13, registered for the sprite type 17 alone with a ground guard, and the impact kicks the camera | Accepted | 2026-10-28 |
