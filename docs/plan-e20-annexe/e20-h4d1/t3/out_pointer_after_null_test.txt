@@ -1,0 +1,5 @@
+mutant pointer_after_null_test
+failed 1
+ Alundra.Tests.Ai.Items.FireTome2AiTests.D3_ARefusedBirth_KeepsTheNullPointer_AnswersOne_AndCapturesNothing
+
+Échoué!  - échec :     1, réussite :   127, ignorée(s) :     0, total :   128, durée : 37 s - Alundra.Tests.dll (net9.0)

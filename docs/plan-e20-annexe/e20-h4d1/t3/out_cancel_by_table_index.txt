@@ -1,0 +1,7 @@
+mutant cancel_by_table_index
+failed 3
+ Alundra.Tests.Ai.Items.FireTome2AiTests.C1_TheCancellation_RestoresTheBufferWithNoGuard_PutsTheColumnsAtTheStatus2AtTheStatus3AndClearsTheirBlocker_NothingElseMoves
+ Alundra.Tests.Ai.Items.FireTome2AiTests.C2_TheGuardInThePhase1_RestoresTheBuffer_AnswersOne_AndLeavesThePhaseAndThePointer_WhateverTheItemInUse
+ Alundra.Tests.Ai.Items.FireTome2AiTests.D1_ThePilotAndTheCancellation_TheSixtyVectorsAndTheOneOfTheCancellationOfTheOracle_AreReplayed_AnswerPhaseAnimationItemPointerBlockBufferBirthsAndStatuses
+
+Échoué!  - échec :     3, réussite :   125, ignorée(s) :     0, total :   128, durée : 38 s - Alundra.Tests.dll (net9.0)

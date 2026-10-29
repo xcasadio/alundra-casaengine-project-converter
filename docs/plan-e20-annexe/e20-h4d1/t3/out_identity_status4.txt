@@ -1,0 +1,5 @@
+mutant identity_status4
+failed 1
+ Alundra.Tests.Ai.Items.FireTome2AiTests.D5_AnEntityToDestroyThatIsNotRecycledYetIsAlive_RecycledOrTakenOffTheTableTheBurningEnds
+
+Échoué!  - échec :     1, réussite :   127, ignorée(s) :     0, total :   128, durée : 38 s - Alundra.Tests.dll (net9.0)

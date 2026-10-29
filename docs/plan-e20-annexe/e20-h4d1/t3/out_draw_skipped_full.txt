@@ -1,0 +1,5 @@
+mutant draw_skipped_full
+failed 1
+ Alundra.Tests.Ai.Items.FireTome2AiTests.E2_AFullReservoir_CreatesNoEffect_ButDrawsTheEightNumbersAllTheSame_AndDestroys
+
+Échoué!  - échec :     1, réussite :   127, ignorée(s) :     0, total :   128, durée : 38 s - Alundra.Tests.dll (net9.0)

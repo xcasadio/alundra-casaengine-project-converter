@@ -1,0 +1,7 @@
+mutant destroy_minus1_removed
+failed 3
+ Alundra.Tests.Ai.Items.FireTome2AiTests.E1_E28_TheTwoHundredAndThreeVectorsOfTheOracle_AreReplayed_EightEffects19Animation2_TheGeneratorAndTheDestruction
+ Alundra.Tests.Ai.Items.FireTome2AiTests.E2_AFullReservoir_CreatesNoEffect_ButDrawsTheEightNumbersAllTheSame_AndDestroys
+ Alundra.Tests.Ai.Items.FireTome2AiTests.E3_TheDestructionWithMinusOne_ReadsTheBreakEffectOfTheHeader_TheEffectAttachedIs8OnAnEntityThatHasIt_AndNoneOnTheRealSprite21
+
+Échoué!  - échec :     3, réussite :   125, ignorée(s) :     0, total :   128, durée : 37 s - Alundra.Tests.dll (net9.0)
