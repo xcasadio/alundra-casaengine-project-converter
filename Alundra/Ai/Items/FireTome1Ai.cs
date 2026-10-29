@@ -50,8 +50,114 @@ internal static class FireTome1Ai
     /// <summary>The turn step: 4 of the 32 directions.</summary>
     private const int TurnStep = 4;
 
-    /// <summary>The pilot <c>0x80035A84</c> of the item <c>0x2F</c> (0: still in use; 1: finished). SKELETON of the tests-first commit of the phase A2: it does nothing (the code follows).</summary>
-    internal static int Drive(EntityScriptProxy hero) => 0;
+    /// <summary>The pilot answers 0 (still in use) or 1 (finished, cancelled by the guard, or the birth of the column was refused): see <see cref="Drive"/>.</summary>
+    private const int StillInUse = 0;
+
+    private const int Finished = 1;
+
+    /// <summary>The counter of a tick is read before the wrapper increments it: a ball is born when it is a multiple of 8 (the first at the tick the column is born, 34, then 8 ticks apart).</summary>
+    private const int BallPeriodMask = 7;
+
+    /// <summary>The bound of the draw of the direction of a ball: the 32 directions.</summary>
+    private const int DirectionBound = 32;
+
+    /// <summary>A ball is born 16 pixels above the hero, in Z: 16 pixels of 16.16 units.</summary>
+    private const int BallBirthLift = 0x100000;
+
+    /// <summary>The force of fall (up, 8 px) a newborn ball starts with: <c>0x80000</c>.</summary>
+    private const int BallBirthForceZ = 0x80000;
+
+    /// <summary>The wait counter a newborn ball holds: 16 ticks.</summary>
+    private const int BallBirthWait = 0x10;
+
+    /// <summary>
+    /// The pilot <c>0x80035A84</c> of the item <c>0x2F</c> (0: still in use; 1: finished, or cancelled by the guard, or the birth of the column was refused), called every tick of the item (the counter is 0 at its first call, the tick after the start; the wrapper <c>0x8003634C</c> increments it
+    /// after the pilot and frees the item when the pilot answers non-zero). Phase 0: the guard of the slope (<see cref="PlayerManager.TomeSlopeGuard"/>), then nothing until the animation is <c>0x33</c> (the end of the cast pose, 32 ticks); then the column of fire is born by the interface (the sprite 20 of
+    /// the global page, direction 0) at the hero's X, Y and Z, and the pointer is kept BEFORE the test of nullity (a refused birth keeps null and the answer is 1, the item is freed with nothing else written); the phase is 1 and the phase 1 runs in the same tick. Phase 1: the guard (non-zero: the answer is 1
+    /// with no restoration and the phase does not advance; the guard has already cancelled the item); once the column is gone (its slot recycled or taken off the table) the animation is <c>0x34</c> (the end of the cast), the phase 2 and the answer 0; otherwise, when the counter the pilot reads (the value of
+    /// the tick, before the increment) is a multiple of 8, ONE draw below 32 gives the direction of a ball (consumed whether the birth is accepted or not), born by the interface (the sprite 23 of the global page) at the hero's X and Y and 16 px above his Z; a newborn ball holds the Z force <c>0x80000</c>,
+    /// the wait 16 and no target (the byte <c>+0x27C</c>, the identity of the target, is not written). Phase 2, with no guard: 0 while the animation is <c>0x34</c>, otherwise 1. Any other phase, negative included, answers 0 and writes nothing. No sound is played, the hero is not moved.
+    /// </summary>
+    internal static int Drive(EntityScriptProxy hero)
+    {
+        switch (hero.ItemUsePhase)
+        {
+            case 0:
+                return Birth(hero);
+            case 1:
+                return Throw(hero);
+            case 2:
+                return hero.TargetAnimationId == PlayerManager.TomeEndAnimationId ? StillInUse : Finished;
+            default:
+                return StillInUse;
+        }
+    }
+
+    private static int Birth(EntityScriptProxy hero)
+    {
+        var guard = PlayerManager.TomeSlopeGuard(hero);
+        if (guard != 0)
+        {
+            return guard;
+        }
+
+        if (hero.TargetAnimationId != PlayerManager.TomeHoldAnimationId)
+        {
+            return StillInUse;
+        }
+
+        var world = hero.ScriptHost as IEntityWorldContext;
+        var column = world?.SpawnEntityBySpriteIndex(hero, false, ColumnType, hero.PosX, hero.PosY, hero.PosZ, 0);
+
+        // The pointer is kept before the test of nullity.
+        hero.ItemSpawnedEntity = column;
+        if (column is null)
+        {
+            return Finished;
+        }
+
+        hero.ItemUsePhase = 1;
+        return Throw(hero);
+    }
+
+    private static int Throw(EntityScriptProxy hero)
+    {
+        if (PlayerManager.TomeSlopeGuard(hero) != 0)
+        {
+            return Finished;
+        }
+
+        if (ColumnChanged(hero.ItemSpawnedEntity))
+        {
+            hero.TargetAnimationId = PlayerManager.TomeEndAnimationId;
+            hero.ItemUsePhase = 2;
+            return StillInUse;
+        }
+
+        if ((hero.ItemUseCounter & BallPeriodMask) != 0)
+        {
+            return StillInUse;
+        }
+
+        // The draw is made before the birth and consumed whether the birth is accepted or not.
+        var direction = EnemyHelpers.Below(DirectionBound);
+        var ball = (hero.ScriptHost as IEntityWorldContext)?.SpawnEntityBySpriteIndex(hero, false, BallType, hero.PosX, hero.PosY, hero.PosZ + BallBirthLift, direction);
+        if (ball is not null)
+        {
+            ball.ForceZ = BallBirthForceZ;
+            TomeWords.Write274(ball, BallBirthWait);
+            ball.DelayOrAngleOrEntityId = 0;
+            ball.SpellTarget = null;
+        }
+
+        return StillInUse;
+    }
+
+    /// <summary>
+    /// The identity test of the pilot (D-H4D2-4): the column kept at its birth is no longer the entity of its slot once the slot was recycled (<see cref="EntityStatus.Destroyed"/>, the pass of the recycling frees it the tick after its destruction) or taken off the table
+    /// (<see cref="EntityScriptProxy.Slot"/> negative). An entity to destroy that is not recycled yet is still the column, and a missing pointer is no column.
+    /// </summary>
+    private static bool ColumnChanged(EntityScriptProxy? column) => column is null || column.Status == EntityStatus.Destroyed || column.Slot < 0;
 
     /// <summary>C63 as the registry runs it: the count of the query is the highest slot of the entities born (<see cref="TargetQuery.StoredCount"/>), the settings of the query those of production.</summary>
     internal static void BallTick(EntityScriptProxy ball, IEntityWorldContext context)

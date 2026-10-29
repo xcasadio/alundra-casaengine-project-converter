@@ -1,0 +1,18 @@
+E20.h4d2 T1 bis: the suite after the code commit of the phase A2, seven parts (part.sh), --blame-hang-timeout 60s. Release with the neutralised copy (skipcopy.targets), then Debug (last).
+== Release
+part 1: Réussi!  - échec :     0, réussite :   635, ignorée(s) :     0, total :   635, durée : 3 m 44 s - Alundra.Tests.dll (net9.0)
+part 2: Réussi!  - échec :     0, réussite :   332, ignorée(s) :     0, total :   332, durée : 3 m 12 s - Alundra.Tests.dll (net9.0)
+part 3: Réussi!  - échec :     0, réussite :   507, ignorée(s) :     0, total :   507, durée : 3 m 23 s - Alundra.Tests.dll (net9.0)
+part 4: Réussi!  - échec :     0, réussite :  1331, ignorée(s) :     0, total :  1331, durée : 1 m 4 s - Alundra.Tests.dll (net9.0)
+part 5: Réussi!  - échec :     0, réussite :   619, ignorée(s) :     0, total :   619, durée : 1 m 1 s - Alundra.Tests.dll (net9.0)
+part 6: Réussi!  - échec :     0, réussite :  2271, ignorée(s) :     0, total :  2271, durée : 4 m 51 s - Alundra.Tests.dll (net9.0)
+part 7: Réussi!  - échec :     0, réussite :  2231, ignorée(s) :     0, total :  2231, durée : 1 m 24 s - Alundra.Tests.dll (net9.0)
+== Debug
+part 1: Réussi!  - échec :     0, réussite :   635, ignorée(s) :     0, total :   635, durée : 3 m 49 s - Alundra.Tests.dll (net9.0)
+part 2: Réussi!  - échec :     0, réussite :   332, ignorée(s) :     0, total :   332, durée : 3 m 22 s - Alundra.Tests.dll (net9.0)
+part 3: Réussi!  - échec :     0, réussite :   507, ignorée(s) :     0, total :   507, durée : 3 m 37 s - Alundra.Tests.dll (net9.0)
+part 4: Réussi!  - échec :     0, réussite :  1331, ignorée(s) :     0, total :  1331, durée : 1 m 13 s - Alundra.Tests.dll (net9.0)
+part 5: Réussi!  - échec :     0, réussite :   619, ignorée(s) :     0, total :   619, durée : 1 m 7 s - Alundra.Tests.dll (net9.0)
+part 6: Réussi!  - échec :     0, réussite :  2271, ignorée(s) :     0, total :  2271, durée : 5 m 2 s - Alundra.Tests.dll (net9.0)
+part 7: Réussi!  - échec :     0, réussite :  2231, ignorée(s) :     0, total :  2231, durée : 1 m 30 s - Alundra.Tests.dll (net9.0)
+TOTAL 7926 tests, 0 failure in each configuration (7886 of T1 + 40 new: 6 FireTome1DriverTests + 34 FireTome1WorldTests).
