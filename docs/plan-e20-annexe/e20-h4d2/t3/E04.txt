@@ -1,0 +1,7 @@
+E04 [e3] destroy when the end of the animation alone
+verdict: KILLED (2 failing tests)
+git diff empty after: True
+filter: base
+summary: Échoué!  - échec :     2, réussite :   228, ignorée(s) :     0, total :   230, durée : 1 m 3 s - Alundra.Tests.dll (net9.0)
+  Ai.Items.EarthTome1AiTests.E1_E3_NeedsNoHost_AndATouchOfTheAnimationAlone_OrTheEndAlone_DoesNotDestroy
+  Ai.Items.EarthTome1AiTests.E1_E3_TheTwoHundredAndTwentyFourVectorsOfTheOracle_AreReplayed_TheDestructionAtTheEndOfTheAnimation_TheOthersSetTheAnimation1AndTheFlags

@@ -1,0 +1,8 @@
+K06 [critic] guard result of phase 0 ignored
+verdict: KILLED (3 failing tests)
+git diff empty after: True
+filter: base
+summary: Échoué!  - échec :     3, réussite :   227, ignorée(s) :     0, total :   230, durée : 1 m - Alundra.Tests.dll (net9.0)
+  Ai.Items.FireTome1DriverTests.C3_TheGuard_InTheDeepWaterOrInAnotherAnimation_CancelsTheSpell_TheColumnIsDestroyedWithItsEffect_TheBallsAreDeactivated_TheItemIsFreed_TheAnswerIsOne
+  Ai.Items.FireTome1DriverTests.D1_ThePilot_ThreeThousandOneHundredAndEightyThreeVectorsOfTheOracle_AreReplayed_AnswerPhaseAnimationItemPointerBirthsGeneratorAndTheCancellationOfTheGuard
+  Ai.Items.FireTome1DriverTests.D2_TheBirthOfTheColumn_WaitsForTheAnimation0x33_AtTheHeroPlace_InTheSameTickThePhase1RunsAndNoBallIsBornAtTheCounter33

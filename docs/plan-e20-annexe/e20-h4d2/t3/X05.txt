@@ -1,0 +1,10 @@
+X05 [cancel] +0x20 (blocker) not cleared
+verdict: KILLED (5 failing tests)
+git diff empty after: True
+filter: base
+summary: Échoué!  - échec :     5, réussite :   225, ignorée(s) :     0, total :   230, durée : 1 m 2 s - Alundra.Tests.dll (net9.0)
+  Ai.Items.FireTome1AiTests.C1_TheCancellation_ThreeHundredAndNineteenVectorsOfTheOracle_AreReplayed_TheColumnAtTheStatus2GivesTheEffectAndIsDestroyed_TheBallGoesToTheStatus3AndLosesItsBlocker
+  Ai.Items.FireTome1AiTests.C2_TheBallAtTheStatus2_GoesToTheStatus3AndLosesItsBlocker_NoEffectIsCreatedAndNothingIsDestroyed
+  Ai.Items.FireTome1AiTests.C2_TheStatusesOtherThan2AreLeftAlone_ForTheColumnAndTheBall_EachNextToTheStatus2ThatActs
+  Ai.Items.FireTome1DriverTests.C3_TheGuard_InTheDeepWaterOrInAnotherAnimation_CancelsTheSpell_TheColumnIsDestroyedWithItsEffect_TheBallsAreDeactivated_TheItemIsFreed_TheAnswerIsOne
+  Ai.Items.FireTome1DriverTests.D1_ThePilot_ThreeThousandOneHundredAndEightyThreeVectorsOfTheOracle_AreReplayed_AnswerPhaseAnimationItemPointerBirthsGeneratorAndTheCancellationOfTheGuard

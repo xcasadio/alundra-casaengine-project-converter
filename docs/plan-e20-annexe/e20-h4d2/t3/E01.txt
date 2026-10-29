@@ -1,0 +1,33 @@
+E01 [e3] without | 0x40
+verdict: KILLED (28 failing tests)
+git diff empty after: True
+filter: base
+summary: Échoué!  - échec :    28, réussite :   202, ignorée(s) :     0, total :   230, durée : 1 m - Alundra.Tests.dll (net9.0)
+  Ai.Items.EarthTome1AiTests.E1_E3_NeedsNoHost_AndATouchOfTheAnimationAlone_OrTheEndAlone_DoesNotDestroy
+  Ai.Items.EarthTome1AiTests.E1_E3_TheTwoHundredAndTwentyFourVectorsOfTheOracle_AreReplayed_TheDestructionAtTheEndOfTheAnimation_TheOthersSetTheAnimation1AndTheFlags
+  Ai.Items.EarthTome1ProductionTests.P1_RondWithTheTome43_BornsTheRocksAtTheTick22_AndTheKeyOfW1HoldsThroughTheEntriesOfTheObject
+  Ai.Items.EarthTome1WorldTests.W1_TheEarthTome1OnTheFlatFieldToTheEast_EqualsTheKey_EveryTickEveryField_ThirtyTwoRocksTwoEveryFiveTicks_TheItemFreedAtTheTick129
+  Ai.Items.EarthTome1WorldTests.W2_TheOtherOrientationsAndTheHeroAtX200_EqualTheirKeys_EveryTickEveryField(name: "earth1_flat_east_x200", direction: 24, heroX: 200)
+  Ai.Items.EarthTome1WorldTests.W2_TheOtherOrientationsAndTheHeroAtX200_EqualTheirKeys_EveryTickEveryField(name: "earth1_flat_north", direction: 16, heroX: 100)
+  Ai.Items.EarthTome1WorldTests.W2_TheOtherOrientationsAndTheHeroAtX200_EqualTheirKeys_EveryTickEveryField(name: "earth1_flat_south", direction: 0, heroX: 100)
+  Ai.Items.EarthTome1WorldTests.W2_TheOtherOrientationsAndTheHeroAtX200_EqualTheirKeys_EveryTickEveryField(name: "earth1_flat_west", direction: 8, heroX: 100)
+  Ai.Items.EarthTome1WorldTests.W3_TheFlatKeyOfTheCriticAndTheBandOfSlope1_EqualTheirKeys_EveryTickEveryField(name: "crit_flat", folder: "critic/work/fcopy/_crit_out", field: "flat")
+  Ai.Items.EarthTome1WorldTests.W3_TheFlatKeyOfTheCriticAndTheBandOfSlope1_EqualTheirKeys_EveryTickEveryField(name: "crit_slope_gp2_cols7_9", folder: "critic/work/fcopy/_crit_out", field: "slope")
+  Ai.Items.EarthTome1WorldTests.W3_TheWallAndTheSteps_FollowTheKeyWithTheStatus3AtMostOneTickEarly_TheChronologyReadFromTheObservedStatus3(name: "crit_pointblank_wall_col5", folder: "critic/work/fcopy/_crit_out", field: "wall5", last: 140)
+  Ai.Items.EarthTome1WorldTests.W3_TheWallAndTheSteps_FollowTheKeyWithTheStatus3AtMostOneTickEarly_TheChronologyReadFromTheObservedStatus3(name: "crit_step16_cols7_9", folder: "critic/work/fcopy/_crit_out", field: "step16", last: 140)
+  Ai.Items.EarthTome1WorldTests.W3_TheWallAndTheSteps_FollowTheKeyWithTheStatus3AtMostOneTickEarly_TheChronologyReadFromTheObservedStatus3(name: "crit_step32_cols7_9", folder: "critic/work/fcopy/_crit_out", field: "step32", last: 140)
+  Ai.Items.EarthTome1WorldTests.W3_TheWallAndTheSteps_FollowTheKeyWithTheStatus3AtMostOneTickEarly_TheChronologyReadFromTheObservedStatus3(name: "earth1_wall_col9", folder: "disc/keys", field: "wall9", last: 140)
+  Ai.Items.EarthTome1WorldTests.W4_TheDeepWater_KillsTheRocksThatLandInIt_AtTheLandingPlus1_WithTheEffect6_WithoutE3_WithoutTheSound46
+  Ai.Items.EarthTome1WorldTests.W5_TheRocksTouchAnInertBeannoid_TheTickTheShooterTheNineDrawsAndTheCooldown25_AreTheKey_TheRockGoesOn(x: 108, y: 136, last: 160)
+  Ai.Items.EarthTome1WorldTests.W5_TheRocksTouchAnInertBeannoid_TheTickTheShooterTheNineDrawsAndTheCooldown25_AreTheKey_TheRockGoesOn(x: 108, y: 56, last: 160)
+  Ai.Items.EarthTome1WorldTests.W5_TheRocksTouchAnInertBeannoid_TheTickTheShooterTheNineDrawsAndTheCooldown25_AreTheKey_TheRockGoesOn(x: 132, y: 104, last: 160)
+  Ai.Items.EarthTome1WorldTests.W5_TheRocksTouchAnInertBeannoid_TheTickTheShooterTheNineDrawsAndTheCooldown25_AreTheKey_TheRockGoesOn(x: 132, y: 136, last: 160)
+  Ai.Items.EarthTome1WorldTests.W5_TheRocksTouchAnInertBeannoid_TheTickTheShooterTheNineDrawsAndTheCooldown25_AreTheKey_TheRockGoesOn(x: 180, y: 104, last: 160)
+  Ai.Items.EarthTome1WorldTests.W5_TheRocksTouchAnInertBeannoid_TheTickTheShooterTheNineDrawsAndTheCooldown25_AreTheKey_TheRockGoesOn(x: 204, y: 104, last: 160)
+  Ai.Items.EarthTome1WorldTests.W5_TheRocksTouchAnInertBeannoid_TheTickTheShooterTheNineDrawsAndTheCooldown25_AreTheKey_TheRockGoesOn(x: 60, y: 104, last: 160)
+  Ai.Items.EarthTome1WorldTests.W5_TheRocksTouchAnInertBeannoid_TheTickTheShooterTheNineDrawsAndTheCooldown25_AreTheKey_TheRockGoesOn(x: 84, y: 104, last: 127)
+  Ai.Items.EarthTome1WorldTests.W6_AnInterruption_FreesTheObjectAtTheTickT_NoBirthAfterIt_TheRocksAlreadyBornFinishAlone(at: 101)
+  Ai.Items.EarthTome1WorldTests.W6_AnInterruption_FreesTheObjectAtTheTickT_NoBirthAfterIt_TheRocksAlreadyBornFinishAlone(at: 30)
+  Ai.Items.EarthTome1WorldTests.W6_AnInterruption_FreesTheObjectAtTheTickT_NoBirthAfterIt_TheRocksAlreadyBornFinishAlone(at: 60)
+  Ai.Items.EarthTome1WorldTests.W6_AnInterruption_FreesTheObjectAtTheTickT_NoBirthAfterIt_TheRocksAlreadyBornFinishAlone(at: 98)
+  Ai.Items.FireTome1AiTests.E1_E3_TheTwoHundredAndEightyEightVectorsOfTheOracle_AreReplayed_ForTheBallOfTheType23_TheDestructionAtTheEndOfTheAnimation_TheOthersSetTheAnimation1AndTheFlags

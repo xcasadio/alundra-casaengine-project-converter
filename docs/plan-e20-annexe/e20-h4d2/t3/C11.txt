@@ -1,0 +1,7 @@
+C11 [c63] target forgotten only when its status is 3 or more... kept when 2 or 3
+verdict: KILLED (2 failing tests)
+git diff empty after: True
+filter: base
+summary: Échoué!  - échec :     2, réussite :   228, ignorée(s) :     0, total :   230, durée : 1 m 2 s - Alundra.Tests.dll (net9.0)
+  Ai.Items.FireTome1AiTests.C63_ATargetThatIsNotAtTheStatus2Anymore_IsForgottenAtOnce_AndTheQueryRestartsAtTheNextTickWithNoWait
+  Ai.Items.FireTome1AiTests.K1_C63_InTheBinaryMode_TheThreeThousandFiveHundredAndTwentyFourVectorsOfTheOracle_AreReplayed_WaitForceTargetIdentityDirectionAndGenerator

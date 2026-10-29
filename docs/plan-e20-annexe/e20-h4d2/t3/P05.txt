@@ -1,0 +1,7 @@
+P05 [plus] count fixed to 63 in the binary-mode entry (the count given is ignored)
+verdict: KILLED (2 failing tests)
+git diff empty after: True
+filter: base
+summary: Échoué!  - échec :     2, réussite :   228, ignorée(s) :     0, total :   230, durée : 1 m 4 s - Alundra.Tests.dll (net9.0)
+  Ai.Items.FireTome1AiTests.K4_TheProductionValuesOfTheTwoSettings_AreTheCorrectedOnes_AndTheDefaultCallOfTheBallUsesThem
+  Ai.Items.FireTome1WorldTests.W3_TheSortAndTheBound_InTheBinaryMode_EqualTheirKey_TheNearestIsNotAlwaysTheTarget_TheTopSlotIsNotAcquired(name: "tgt_topslot")

@@ -1,0 +1,8 @@
+K05 [critic] guard result ignored in phase 1 (cancel done, the spell goes on)
+verdict: KILLED (3 failing tests)
+git diff empty after: True
+filter: base
+summary: Échoué!  - échec :     3, réussite :   227, ignorée(s) :     0, total :   230, durée : 1 m 1 s - Alundra.Tests.dll (net9.0)
+  Ai.Items.FireTome1DriverTests.C3_TheGuard_InTheDeepWaterOrInAnotherAnimation_CancelsTheSpell_TheColumnIsDestroyedWithItsEffect_TheBallsAreDeactivated_TheItemIsFreed_TheAnswerIsOne
+  Ai.Items.FireTome1DriverTests.D1_ThePilot_ThreeThousandOneHundredAndEightyThreeVectorsOfTheOracle_AreReplayed_AnswerPhaseAnimationItemPointerBirthsGeneratorAndTheCancellationOfTheGuard
+  Ai.Items.FireTome1WorldTests.W6_AnInterruptionAtTheTickT_EqualsTheKey_TheColumnDestroyedWithItsEffect_TheBallsDeactivated_TheItemFreed_TheHeroOfTheKeyAfterT(t: 122)

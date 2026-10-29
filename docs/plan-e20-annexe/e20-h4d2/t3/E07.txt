@@ -1,0 +1,7 @@
+E07 [e3] E3 widened to 24
+verdict: KILLED (2 failing tests)
+git diff empty after: True
+filter: base
+summary: Échoué!  - échec :     2, réussite :   228, ignorée(s) :     0, total :   230, durée : 1 m 3 s - Alundra.Tests.dll (net9.0)
+  Ai.Items.EarthTome1AiTests.E2_E3_IsRegisteredForTheTypes16And23Alone_NotThe17_NorThe24_NorAnyOtherType_AndTheRegistrationIsTakenOffByItsDisposable
+  Ai.Items.FireTome1AiTests.E2_TheRegistrationsOnAFreshRegistry_E3IsRegisteredForTheTypes16And23Only_C63ForTheType23Only_AndE1IsAbsent

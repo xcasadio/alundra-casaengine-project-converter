@@ -1,0 +1,6 @@
+K03 [critic] column pointer stored only when not null
+verdict: KILLED (1 failing tests)
+git diff empty after: True
+filter: base
+summary: Échoué!  - échec :     1, réussite :   229, ignorée(s) :     0, total :   230, durée : 1 m 2 s - Alundra.Tests.dll (net9.0)
+  Ai.Items.FireTome1DriverTests.D2_TheColumnRefused_StoresTheNullPointer_AnswersOne_AndWritesNothingElse

@@ -1,0 +1,14 @@
+D14 [pilot] guard without the slope (TomeSlopeGuard)
+verdict: KILLED (9 failing tests)
+git diff empty after: True
+filter: wide
+summary: Échoué!  - échec :     9, réussite :   508, ignorée(s) :     0, total :   517, durée : 2 m 2 s - Alundra.Tests.dll (net9.0)
+  Ai.Items.EarthTome1AiTests.D1_Driver_TheSixHundredAndEightyNineVectorsOfTheOracle_AreReplayedField_AnswerPhaseAnimationBirthsAndSpeedOfZ
+  Ai.Items.EarthTome1AiTests.D3_TheGuard_CancelsAndAnswers1_OnTheSlope4OrOutsideTheCastAnimations_InThePhases0And1_AndAnswers0InTheCast
+  Ai.Items.EarthTome2AiTests.T2_Driver_TheCasesOfTheOracleWhoseTerrainIsRepresentable_AreReplayedField_AnswerPhaseAnimationGeneratorBirthsDestructionAndForceOfZ
+  Ai.Items.EarthTome2AiTests.T6_TheGuard_CancelsAndAnswers1_OnTheSlope4OrOutsideTheCastAnimations_InThePhases0And1_AndAnswers0InTheCast
+  Ai.Items.FireTome1DriverTests.C3_TheGuard_InTheDeepWaterOrInAnotherAnimation_CancelsTheSpell_TheColumnIsDestroyedWithItsEffect_TheBallsAreDeactivated_TheItemIsFreed_TheAnswerIsOne
+  Ai.Items.FireTome1DriverTests.D1_ThePilot_ThreeThousandOneHundredAndEightyThreeVectorsOfTheOracle_AreReplayed_AnswerPhaseAnimationItemPointerBirthsGeneratorAndTheCancellationOfTheGuard
+  Ai.Items.FireTome2AiTests.C2_TheGuardInThePhase1_RestoresTheBuffer_AnswersOne_AndLeavesThePhaseAndThePointer_WhateverTheItemInUse
+  Hero.TomeStatesTests.T4_TheGuardOfTheSlope_CancelsInDeepWaterAndOutsideTheCast_AnswersZeroInTheCast(slope: 4, animation: 50, answer: 1, cancelled: True)
+  Hero.TomeStatesTests.T4_TheGuardOfTheSlope_CancelsInDeepWaterAndOutsideTheCast_AnswersZeroInTheCast(slope: 4, animation: 51, answer: 1, cancelled: True)

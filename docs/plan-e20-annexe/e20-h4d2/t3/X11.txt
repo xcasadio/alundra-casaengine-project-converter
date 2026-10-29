@@ -1,0 +1,12 @@
+X11 [cancel] column destroyed with the break effect (two-argument destruction -1)
+verdict: KILLED (7 failing tests)
+git diff empty after: True
+filter: base
+summary: Échoué!  - échec :     7, réussite :   223, ignorée(s) :     0, total :   230, durée : 1 m - Alundra.Tests.dll (net9.0)
+  Ai.Items.FireTome1AiTests.C1_TheCancellation_ThreeHundredAndNineteenVectorsOfTheOracle_AreReplayed_TheColumnAtTheStatus2GivesTheEffectAndIsDestroyed_TheBallGoesToTheStatus3AndLosesItsBlocker
+  Ai.Items.FireTome1AiTests.C2_AFullReservoir_CreatesNoEffect_ButTheColumnIsDestroyedAllTheSame
+  Ai.Items.FireTome1AiTests.C2_SeveralColumnsAndBalls_GiveTheirEffectsInTheOrderOfTheWorld_AndTheHeroIsNeverTouched
+  Ai.Items.FireTome1AiTests.C2_TheColumnAtTheStatus2_GivesTheEffect19Animation2AtItsRawPositionInTheBinarysFrameOfZ_AndIsDestroyed_NothingElseMovesAndTheItemIsNotFreed
+  Ai.Items.FireTome1AiTests.C2_TheStatusesOtherThan2AreLeftAlone_ForTheColumnAndTheBall_EachNextToTheStatus2ThatActs
+  Ai.Items.FireTome1DriverTests.C3_TheGuard_InTheDeepWaterOrInAnotherAnimation_CancelsTheSpell_TheColumnIsDestroyedWithItsEffect_TheBallsAreDeactivated_TheItemIsFreed_TheAnswerIsOne
+  Ai.Items.FireTome1DriverTests.D1_ThePilot_ThreeThousandOneHundredAndEightyThreeVectorsOfTheOracle_AreReplayed_AnswerPhaseAnimationItemPointerBirthsGeneratorAndTheCancellationOfTheGuard

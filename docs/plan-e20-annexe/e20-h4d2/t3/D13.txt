@@ -1,0 +1,16 @@
+D13 [pilot] guard accepts 0x34 (TomeSlopeGuard)
+verdict: KILLED (11 failing tests)
+git diff empty after: True
+filter: wide
+summary: Échoué!  - échec :    11, réussite :   506, ignorée(s) :     0, total :   517, durée : 2 m 2 s - Alundra.Tests.dll (net9.0)
+  Ai.Items.EarthTome1AiTests.D1_Driver_TheSixHundredAndEightyNineVectorsOfTheOracle_AreReplayedField_AnswerPhaseAnimationBirthsAndSpeedOfZ
+  Ai.Items.EarthTome1AiTests.D1_TheCounterAndTheRelease_ByThePathOfTheTick_AreTheWrapperOfTheOracle_TheCounterSaturatesAtTheLargestPositiveWord
+  Ai.Items.EarthTome1AiTests.D3_TheGuard_CancelsAndAnswers1_OnTheSlope4OrOutsideTheCastAnimations_InThePhases0And1_AndAnswers0InTheCast
+  Ai.Items.EarthTome2AiTests.T2_Driver_TheCasesOfTheOracleWhoseTerrainIsRepresentable_AreReplayedField_AnswerPhaseAnimationGeneratorBirthsDestructionAndForceOfZ
+  Ai.Items.EarthTome2AiTests.T2_TheCounterAndTheRelease_ByThePathOfTheTick_AreTheWrapperOfTheOracle_TheCounterSaturatesAtTheLargestPositiveWord
+  Ai.Items.EarthTome2AiTests.T6_TheGuard_CancelsAndAnswers1_OnTheSlope4OrOutsideTheCastAnimations_InThePhases0And1_AndAnswers0InTheCast
+  Ai.Items.FireTome1DriverTests.D1_ThePilot_ThreeThousandOneHundredAndEightyThreeVectorsOfTheOracle_AreReplayed_AnswerPhaseAnimationItemPointerBirthsGeneratorAndTheCancellationOfTheGuard
+  Ai.Items.FireTome2AiTests.C2_TheGuardInThePhase1_RestoresTheBuffer_AnswersOne_AndLeavesThePhaseAndThePointer_WhateverTheItemInUse
+  Ai.Items.FireTome2AiTests.D1_ThePilotAndTheCancellation_TheSixtyVectorsAndTheOneOfTheCancellationOfTheOracle_AreReplayed_AnswerPhaseAnimationItemPointerBlockBufferBirthsAndStatuses
+  Ai.Items.FireTome2AiTests.D3b_TheBirthWaitsForTheAnimation0x33_AndTheGuardAnswers0InTheCastAnimations
+  Hero.TomeStatesTests.T4_TheGuardOfTheSlope_CancelsInDeepWaterAndOutsideTheCast_AnswersZeroInTheCast(slope: 0, animation: 52, answer: 1, cancelled: True)

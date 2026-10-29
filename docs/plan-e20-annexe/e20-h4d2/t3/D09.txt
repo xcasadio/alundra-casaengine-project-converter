@@ -1,0 +1,13 @@
+D09 [pilot] phase 1 without the guard
+verdict: KILLED (8 failing tests)
+git diff empty after: True
+filter: base
+summary: Échoué!  - échec :     8, réussite :   222, ignorée(s) :     0, total :   230, durée : 1 m 1 s - Alundra.Tests.dll (net9.0)
+  Ai.Items.FireTome1DriverTests.C3_TheGuard_InTheDeepWaterOrInAnotherAnimation_CancelsTheSpell_TheColumnIsDestroyedWithItsEffect_TheBallsAreDeactivated_TheItemIsFreed_TheAnswerIsOne
+  Ai.Items.FireTome1DriverTests.D1_ThePilot_ThreeThousandOneHundredAndEightyThreeVectorsOfTheOracle_AreReplayed_AnswerPhaseAnimationItemPointerBirthsGeneratorAndTheCancellationOfTheGuard
+  Ai.Items.FireTome1ProductionTests.P3_RondWithTheTome47_InterruptedAtTheTick60_TheKeyOfHurt60Holds_TheEffect19_2AtTheColumn_TheBallsDeactivated_TheItemFreed
+  Ai.Items.FireTome1WorldTests.W6_AnInterruptionAtTheTickT_EqualsTheKey_TheColumnDestroyedWithItsEffect_TheBallsDeactivated_TheItemFreed_TheHeroOfTheKeyAfterT(t: 100)
+  Ai.Items.FireTome1WorldTests.W6_AnInterruptionAtTheTickT_EqualsTheKey_TheColumnDestroyedWithItsEffect_TheBallsDeactivated_TheItemFreed_TheHeroOfTheKeyAfterT(t: 121)
+  Ai.Items.FireTome1WorldTests.W6_AnInterruptionAtTheTickT_EqualsTheKey_TheColumnDestroyedWithItsEffect_TheBallsDeactivated_TheItemFreed_TheHeroOfTheKeyAfterT(t: 122)
+  Ai.Items.FireTome1WorldTests.W6_AnInterruptionAtTheTickT_EqualsTheKey_TheColumnDestroyedWithItsEffect_TheBallsDeactivated_TheItemFreed_TheHeroOfTheKeyAfterT(t: 35)
+  Ai.Items.FireTome1WorldTests.W6_AnInterruptionAtTheTickT_EqualsTheKey_TheColumnDestroyedWithItsEffect_TheBallsDeactivated_TheItemFreed_TheHeroOfTheKeyAfterT(t: 60)

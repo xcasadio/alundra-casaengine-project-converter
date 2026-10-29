@@ -1,0 +1,9 @@
+D11 [pilot] null column answers 0 instead of 1
+verdict: KILLED (4 failing tests)
+git diff empty after: True
+filter: base
+summary: Échoué!  - échec :     4, réussite :   226, ignorée(s) :     0, total :   230, durée : 1 m 2 s - Alundra.Tests.dll (net9.0)
+  Ai.Items.FireTome1DriverTests.D1_ThePilot_ThreeThousandOneHundredAndEightyThreeVectorsOfTheOracle_AreReplayed_AnswerPhaseAnimationItemPointerBirthsGeneratorAndTheCancellationOfTheGuard
+  Ai.Items.FireTome1DriverTests.D2_TheColumnRefused_StoresTheNullPointer_AnswersOne_AndWritesNothingElse
+  Ai.Items.FireTome1ProductionTests.P2_WithNoFreeSlot_NothingIsBorn_TheMagicIsLost_TheItemIsFreedAtTheTick34_TheKeyOfTableFullHolds
+  Ai.Items.FireTome1WorldTests.W7_TheTableOfTheEntities_FullOrWithOneCellFree_EqualsTheKey(name: "table_full", decoys: 63, last: 80)

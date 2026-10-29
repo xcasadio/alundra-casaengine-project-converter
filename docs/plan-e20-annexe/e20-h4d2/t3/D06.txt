@@ -1,0 +1,6 @@
+D06 [pilot] +0x278 (target slot) not cleared at the birth
+verdict: KILLED (1 failing tests)
+git diff empty after: False
+filter: base
+summary: Échoué!  - échec :     1, réussite :   230, ignorée(s) :     0, total :   231, durée : 1 m 3 s - Alundra.Tests.dll (net9.0)
+  Ai.Items.FireTome1DriverTests.D2_ANewbornBall_HoldsNoTarget_EvenIfTheEntityGivenBackByTheInterfaceHeldTheWordAndTheReferenceOfAnOldTarget

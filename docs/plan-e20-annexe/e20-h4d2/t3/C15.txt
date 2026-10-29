@@ -1,0 +1,5 @@
+C15 [c63] turn threshold <= 4 (declared equivalent: the equal case is the step itself)
+verdict: SURVIVES (0 failing tests)
+git diff empty after: True
+filter: base
+summary: Réussi!  - échec :     0, réussite :   230, ignorée(s) :     0, total :   230, durée : 1 m 1 s - Alundra.Tests.dll (net9.0)

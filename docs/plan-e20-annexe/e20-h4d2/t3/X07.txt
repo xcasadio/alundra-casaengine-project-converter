@@ -1,0 +1,6 @@
+X07 [cancel] status 3 balls also cancelled
+verdict: KILLED (1 failing tests)
+git diff empty after: True
+filter: base
+summary: Échoué!  - échec :     1, réussite :   229, ignorée(s) :     0, total :   230, durée : 1 m 4 s - Alundra.Tests.dll (net9.0)
+  Ai.Items.FireTome1AiTests.C2_TheStatusesOtherThan2AreLeftAlone_ForTheColumnAndTheBall_EachNextToTheStatus2ThatActs

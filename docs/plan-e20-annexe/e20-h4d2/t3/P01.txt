@@ -1,0 +1,6 @@
+P01 [plus] (C, 63) also registered for 17
+verdict: KILLED (1 failing tests)
+git diff empty after: True
+filter: base
+summary: Échoué!  - échec :     1, réussite :   229, ignorée(s) :     0, total :   230, durée : 1 m 3 s - Alundra.Tests.dll (net9.0)
+  Ai.Items.FireTome1AiTests.E2_TheRegistrationsOnAFreshRegistry_E3IsRegisteredForTheTypes16And23Only_C63ForTheType23Only_AndE1IsAbsent

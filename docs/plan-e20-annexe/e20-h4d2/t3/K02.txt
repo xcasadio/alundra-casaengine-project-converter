@@ -1,0 +1,8 @@
+K02 [critic] draw consumed only if the ball is born
+verdict: KILLED (3 failing tests)
+git diff empty after: True
+filter: base
+summary: Échoué!  - échec :     3, réussite :   227, ignorée(s) :     0, total :   230, durée : 59 s - Alundra.Tests.dll (net9.0)
+  Ai.Items.FireTome1DriverTests.D1_ThePilot_ThreeThousandOneHundredAndEightyThreeVectorsOfTheOracle_AreReplayed_AnswerPhaseAnimationItemPointerBirthsGeneratorAndTheCancellationOfTheGuard
+  Ai.Items.FireTome1DriverTests.D2_TheBallRefused_WritesNothing_ButTheDrawIsConsumed_TheBallBorn_FliesUp16PixelsAboveInZ_WithTheWaitAndNoTarget
+  Ai.Items.FireTome1WorldTests.W7_TheTableOfTheEntities_FullOrWithOneCellFree_EqualsTheKey(name: "table_one_free", decoys: 62, last: 200)

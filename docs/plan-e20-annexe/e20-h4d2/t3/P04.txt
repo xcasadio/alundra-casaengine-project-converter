@@ -1,0 +1,19 @@
+P04 [plus] wrap in the d > cur branch: ((cur - d) & 31) < 4
+verdict: KILLED (14 failing tests)
+git diff empty after: True
+filter: base
+summary: Échoué!  - échec :    14, réussite :   216, ignorée(s) :     0, total :   230, durée : 1 m 1 s - Alundra.Tests.dll (net9.0)
+  Ai.Items.FireTome1AiTests.K1_C63_InTheBinaryMode_TheThreeThousandFiveHundredAndTwentyFourVectorsOfTheOracle_AreReplayed_WaitForceTargetIdentityDirectionAndGenerator
+  Ai.Items.FireTome1AiTests.K2_FromOneEndOfTheNumbersToTheOther_TheBallTurnsInEightStepsOfFourOverTwentyFourTicks_OneStepEveryThreeTicks(start: 0, wanted: 31, path:
+  Ai.Items.FireTome1AiTests.K2_TheNamedCases_OfTheTurn(current: 0, wanted: 31, expected: 4)
+  Ai.Items.FireTome1AiTests.K2_TheNamedCases_OfTheTurn(current: 5, wanted: 8, expected: 8)
+  Ai.Items.FireTome1AiTests.K2_TheTurnOnTheGrid_OfThe32x32Directions_IsTheNumericOneOfTheBinary_TheLongSideForTheTwoHundredAndFortyPairsOfNumericGapAbove16
+  Ai.Items.FireTome1WorldTests.W2_TheTargetScenarios_AtTheSettingsOfProductionAndOfTheBinary_EqualTheirKey_EveryTickEveryColumn_TheBallsTurnByTheNumericDirections(name: "tgt_one", binary: False)
+  Ai.Items.FireTome1WorldTests.W2_TheTargetScenarios_AtTheSettingsOfProductionAndOfTheBinary_EqualTheirKey_EveryTickEveryColumn_TheBallsTurnByTheNumericDirections(name: "tgt_one", binary: True)
+  Ai.Items.FireTome1WorldTests.W2_TheTargetScenarios_AtTheSettingsOfProductionAndOfTheBinary_EqualTheirKey_EveryTickEveryColumn_TheBallsTurnByTheNumericDirections(name: "tgt_three", binary: False)
+  Ai.Items.FireTome1WorldTests.W2_TheTargetScenarios_AtTheSettingsOfProductionAndOfTheBinary_EqualTheirKey_EveryTickEveryColumn_TheBallsTurnByTheNumericDirections(name: "tgt_three", binary: True)
+  Ai.Items.FireTome1WorldTests.W2_TheTargetScenarios_AtTheSettingsOfProductionAndOfTheBinary_EqualTheirKey_EveryTickEveryColumn_TheBallsTurnByTheNumericDirections(name: "tgt_vanish75", binary: False)
+  Ai.Items.FireTome1WorldTests.W2_TheTargetScenarios_AtTheSettingsOfProductionAndOfTheBinary_EqualTheirKey_EveryTickEveryColumn_TheBallsTurnByTheNumericDirections(name: "tgt_vanish75", binary: True)
+  Ai.Items.FireTome1WorldTests.W3_TheSortAndTheBound_InTheBinaryMode_EqualTheirKey_TheNearestIsNotAlwaysTheTarget_TheTopSlotIsNotAcquired(name: "tgt_two_wrong_order")
+  Ai.Items.FireTome1WorldTests.W3c_TheSortAndTheBound_AtTheSettingsOfProduction_EqualTheirQfixKey(name: "tgt_topslot")
+  Ai.Items.FireTome1WorldTests.W3c_TheSortAndTheBound_AtTheSettingsOfProduction_EqualTheirQfixKey(name: "tgt_two_wrong_order")

@@ -1,0 +1,7 @@
+P07 [plus] target remembered by its slot alone (looked up in the table)
+verdict: KILLED (2 failing tests)
+git diff empty after: True
+filter: base
+summary: Échoué!  - échec :     2, réussite :   228, ignorée(s) :     0, total :   230, durée : 1 m 4 s - Alundra.Tests.dll (net9.0)
+  Ai.Items.FireTome1AiTests.C63_ADeadReference_ARecycledEntityOfTheSameSlot_IsNotTheTarget_EvenAtTheStatus2
+  Ai.Items.FireTome1AiTests.K1_C63_InTheBinaryMode_TheThreeThousandFiveHundredAndTwentyFourVectorsOfTheOracle_AreReplayed_WaitForceTargetIdentityDirectionAndGenerator

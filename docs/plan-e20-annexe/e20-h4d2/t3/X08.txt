@@ -1,0 +1,9 @@
+X08 [cancel] balls cancelled by position instead of type 23 (any type but 20)
+verdict: KILLED (4 failing tests)
+git diff empty after: True
+filter: base
+summary: Échoué!  - échec :     4, réussite :   226, ignorée(s) :     0, total :   230, durée : 1 m 1 s - Alundra.Tests.dll (net9.0)
+  Ai.Items.FireTome1AiTests.C1_TheCancellation_ThreeHundredAndNineteenVectorsOfTheOracle_AreReplayed_TheColumnAtTheStatus2GivesTheEffectAndIsDestroyed_TheBallGoesToTheStatus3AndLosesItsBlocker
+  Ai.Items.FireTome1AiTests.C2_SeveralColumnsAndBalls_GiveTheirEffectsInTheOrderOfTheWorld_AndTheHeroIsNeverTouched
+  Ai.Items.FireTome1AiTests.C2_TheOtherTypesAndTheEntitiesOfTheMapOfIndex20Or23AreLeftAlone
+  Ai.Items.FireTome1DriverTests.D1_ThePilot_ThreeThousandOneHundredAndEightyThreeVectorsOfTheOracle_AreReplayed_AnswerPhaseAnimationItemPointerBirthsGeneratorAndTheCancellationOfTheGuard

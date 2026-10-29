@@ -1,0 +1,7 @@
+C08 [c63] mask ClassA 1 -> 5
+verdict: KILLED (2 failing tests)
+git diff empty after: True
+filter: base
+summary: Échoué!  - échec :     2, réussite :   228, ignorée(s) :     0, total :   230, durée : 1 m 2 s - Alundra.Tests.dll (net9.0)
+  Ai.Items.FireTome1AiTests.C63_NoEnemy_DrawsTheWaitBelow9_OnceWhateverTheNumberOfCandidates
+  Ai.Items.FireTome1AiTests.K5_ABallWhoseAttackByteIs0x8A_AsksForTheType10AndTheMaskClassA
