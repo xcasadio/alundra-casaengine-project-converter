@@ -19,6 +19,13 @@ internal static class FireTome1Vectors
     internal const long CountWord = 0x80134360;
     internal const long GeneratorWord = 0x80098708;
 
+    // The words of the pilot (D-H4D2 T0 (b)): the item in use, its phase and counter, the pointer of the column kept and its identity.
+    internal const long Phase = 0x80127160;
+    internal const long Counter = 0x8012715C;
+    internal const long ItemInUse = 0x80127164;
+    internal const long SpawnedPointer = 0x8012711C;
+    internal const long SpawnedIdentity = 0x80127120;
+
     /// <summary>The address of the word <paramref name="offset"/> of the slot <paramref name="slot"/> of the table of entities.</summary>
     internal static long Word(int slot, int offset) => EntityBase + EntityStride * slot + offset;
 
@@ -30,7 +37,7 @@ internal static class FireTome1Vectors
 
     /// <summary>One vector: the arguments, the words the code read and wrote, the calls to the stubs, and the kind of the C63 vectors (<c>turn</c> for the grid of the 32 x 32 directions).</summary>
     internal sealed record Vector(int Id, string? Kind, bool BinaryOnly, long Argument, IReadOnlyDictionary<long, (int Size, long Value)> Reads, IReadOnlyDictionary<long, (int Size, long Value)> Writes,
-        IReadOnlyList<(string Name, IReadOnlyList<long> Arguments)> Journal, int TargetDirection)
+        IReadOnlyList<(string Name, IReadOnlyList<long> Arguments)> Journal, int TargetDirection, int Return = 0, IReadOnlyDictionary<int, long>? SpawnReturns = null)
     {
         internal bool Read(long address) => Reads.ContainsKey(address);
 
@@ -51,6 +58,9 @@ internal static class FireTome1Vectors
     /// <summary>The 288 vectors of E3 (the entity is the argument; <c>+0x88</c> the animation asked, <c>+0xAC</c> the end of the animation, <c>+0x6C</c> the flags).</summary>
     internal static IReadOnlyList<Vector> E3() => Load("disc/vec/vec_e3_8007EDA0.json");
 
+    /// <summary>The 3 270 vectors of the pilot <c>0x80035A84</c> (3 183 comparable): the answer <c>ret</c>, the pointers the stub of the birth answered by type (<c>stub_spawn_ret</c>), the guard, the general cancellation and the cancellation of the fire tome 1 being the real code.</summary>
+    internal static IReadOnlyList<Vector> Driver() => Load("disc/vec/vec_fire1_driver_80035A84.json");
+
     /// <summary>The 3 524 vectors of C63 (2 500 random worlds and the 1 024 pairs of directions of the grid <c>turn</c>).</summary>
     internal static IReadOnlyList<Vector> Ball() => Load("disc/vec/vec_c63_8007AC60.json");
 
@@ -67,7 +77,9 @@ internal static class FireTome1Vectors
             v.TryGetProperty("journal", out var journal)
                 ? journal.EnumerateArray().Select(j => (j[1].GetString()!, (IReadOnlyList<long>)j[2].EnumerateArray().Select(a => a.GetInt64()).ToList())).ToList()
                 : new List<(string, IReadOnlyList<long>)>(),
-            v.TryGetProperty("target_dir", out var direction) ? direction.GetInt32() : -1)).ToList();
+            v.TryGetProperty("target_dir", out var direction) ? direction.GetInt32() : -1,
+            v.TryGetProperty("ret", out var ret) && ret.ValueKind == JsonValueKind.Number ? unchecked((int)ret.GetInt64()) : 0,
+            v.TryGetProperty("stub_spawn_ret", out var spawned) && spawned.ValueKind == JsonValueKind.Object ? spawned.EnumerateObject().ToDictionary(p => int.Parse(p.Name, System.Globalization.CultureInfo.InvariantCulture), p => p.Value.GetInt64()) : null)).ToList();
     }
 
     private static Dictionary<long, (int Size, long Value)> ByAddress(JsonElement words)

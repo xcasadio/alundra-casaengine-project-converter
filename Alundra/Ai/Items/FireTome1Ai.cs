@@ -50,6 +50,9 @@ internal static class FireTome1Ai
     /// <summary>The turn step: 4 of the 32 directions.</summary>
     private const int TurnStep = 4;
 
+    /// <summary>The pilot <c>0x80035A84</c> of the item <c>0x2F</c> (0: still in use; 1: finished). SKELETON of the tests-first commit of the phase A2: it does nothing (the code follows).</summary>
+    internal static int Drive(EntityScriptProxy hero) => 0;
+
     /// <summary>C63 as the registry runs it: the count of the query is the highest slot of the entities born (<see cref="TargetQuery.StoredCount"/>), the settings of the query those of production.</summary>
     internal static void BallTick(EntityScriptProxy ball, IEntityWorldContext context)
         => BallTick(ball, context.SpawnedEntities, TargetQuery.StoredCount(context.SpawnedEntities));
