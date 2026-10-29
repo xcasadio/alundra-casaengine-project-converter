@@ -146,6 +146,8 @@ internal sealed class FireTome1Run : IDisposable
                         FireTome1Ai.Cancel(hero);
                     }
                 };
+                // The runner holds the registry of production, where the phase B registered (C, 63) with the settings of production: the bench puts an empty one in its place, so that the binary mode can register its own handler (R-EL-4, D-H4D2-6).
+                typeof(EventProgramRunner).GetField("<NativeSprites>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(Arena.Arc.Runner, new NativeSpriteRegistry());
                 var registry = Arena.Arc.Runner.NativeSprites;
                 if (!registry.TryGet(ScriptHelper.ProgramEDeactivate, EarthTome1Ai.ImpactCode, Ball, out _))
                 {
