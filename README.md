@@ -1,9 +1,5 @@
 # Alundra port on CasaEngine
 
-<p align="center">
-  <img src="./github/editor-map.jpg" width="50%">
-</p>
-
 **Bringing Alundra into a modern game engine.**
 
 This project aims to rebuild Alundra as a fully structured, editable and extensible game project using [CasaEngine](https://github.com/xcasadio/CasaEngineMonogame), a C# game engine built on MonoGame.
