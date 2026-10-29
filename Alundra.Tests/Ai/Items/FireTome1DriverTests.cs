@@ -368,6 +368,26 @@ public sealed class FireTome1DriverTests : IDisposable
     }
 
     [Fact]
+    public void D2_ANewbornBall_HoldsNoTarget_EvenIfTheEntityGivenBackByTheInterfaceHeldTheWordAndTheReferenceOfAnOldTarget()
+    {
+        // T3 (mutant D06, the word +0x278 not cleared): the binary writes +0x278 = 0 on the entity of the slot it recycles, whatever the slot held; the DLL's interface builds a fresh entity, so only a primed newborn tells the clear from the default.
+        var bench = Hero(1, 16, Hold);
+        bench.Hero.ItemSpawnedEntity = new EntityScriptProxy { Slot = 1, Status = EntityStatus.Normal, SpriteType = 20 };
+        var old = new EntityScriptProxy { Slot = 9, Status = EntityStatus.Normal, SpriteType = 3 };
+        bench.Host.OnBirth = born =>
+        {
+            born.DelayOrAngleOrEntityId = 77;
+            born.SpellTarget = old;
+        };
+
+        Assert.Equal(0, FireTome1Ai.Drive(bench.Hero));
+
+        var ball = Assert.Single(bench.Host.Born, b => b.SpriteType == 23);
+        Assert.Equal(0, ball.DelayOrAngleOrEntityId);
+        Assert.Null(ball.SpellTarget);
+    }
+
+    [Fact]
     public void D2_TheBallIsBornOnlyWhenTheCounterIsAMultipleOf8_TheCounterReadIsTheOneBeforeTheIncrement_ThePhase2AndAboveAreAsTheBinaryDoes()
     {
         foreach (var counter in new[] { 1, 7, 9, 31, 33, 100 })
