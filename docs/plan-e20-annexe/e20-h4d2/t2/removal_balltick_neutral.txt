@@ -1,0 +1,60 @@
+balltick_neutral 58
+   .Ai.Items.FireTome1AiTests.C63_ADeadReference_ARecycledEntityOfTheSameSlot_IsNotTheTarget_EvenAtTheStatus2
+   .Ai.Items.FireTome1AiTests.C63_ATargetThatIsNotAtTheStatus2Anymore_IsForgottenAtOnce_AndTheQueryRestartsAtTheNextTickWithNoWait
+   .Ai.Items.FireTome1AiTests.C63_AWaitThatIsNotZero_LosesOneAndNothingElseIsDone_TheFallingForceIncluded
+   .Ai.Items.FireTome1AiTests.C63_NoEnemy_DrawsTheWaitBelow9_OnceWhateverTheNumberOfCandidates
+   .Ai.Items.FireTome1AiTests.C63_TheBallBornAtTheTickSHolds16_AndActsAtTheSeventeenthTick
+   .Ai.Items.FireTome1AiTests.C63_TheQueryTakesTheFirst_AndKeepsItsSlotAndItsReference_ThenTurnsInTheSameTick
+   .Ai.Items.FireTome1AiTests.E2_TheRegisteredHandlerOfC63_IsTheBallsTick_AndTheRegisteredE3IsTheImpact_ForTheType23
+   .Ai.Items.FireTome1AiTests.K1_C63_InTheBinaryMode_TheThreeThousandFiveHundredAndTwentyFourVectorsOfTheOracle_AreReplayed_WaitForceTargetIdentityDirectionAndGenerator
+   .Ai.Items.FireTome1AiTests.K2_FromOneEndOfTheNumbersToTheOther_TheBallTurnsInEightStepsOfFourOverTwentyFourTicks_OneStepEveryThreeTicks(start: 0, wanted: 31, path:
+   .Ai.Items.FireTome1AiTests.K2_FromOneEndOfTheNumbersToTheOther_TheBallTurnsInEightStepsOfFourOverTwentyFourTicks_OneStepEveryThreeTicks(start: 31, wanted: 0, path:
+   .Ai.Items.FireTome1AiTests.K2_TheNamedCases_OfTheTurn(current: 0, wanted: 16, expected: 4)
+   .Ai.Items.FireTome1AiTests.K2_TheNamedCases_OfTheTurn(current: 0, wanted: 17, expected: 4)
+   .Ai.Items.FireTome1AiTests.K2_TheNamedCases_OfTheTurn(current: 0, wanted: 31, expected: 4)
+   .Ai.Items.FireTome1AiTests.K2_TheNamedCases_OfTheTurn(current: 10, wanted: 5, expected: 6)
+   .Ai.Items.FireTome1AiTests.K2_TheNamedCases_OfTheTurn(current: 16, wanted: 0, expected: 12)
+   .Ai.Items.FireTome1AiTests.K2_TheNamedCases_OfTheTurn(current: 17, wanted: 0, expected: 13)
+   .Ai.Items.FireTome1AiTests.K2_TheNamedCases_OfTheTurn(current: 2, wanted: 30, expected: 6)
+   .Ai.Items.FireTome1AiTests.K2_TheNamedCases_OfTheTurn(current: 30, wanted: 1, expected: 26)
+   .Ai.Items.FireTome1AiTests.K2_TheNamedCases_OfTheTurn(current: 31, wanted: 0, expected: 27)
+   .Ai.Items.FireTome1AiTests.K2_TheNamedCases_OfTheTurn(current: 5, wanted: 10, expected: 9)
+   .Ai.Items.FireTome1AiTests.K2_TheNamedCases_OfTheTurn(current: 5, wanted: 8, expected: 8)
+   .Ai.Items.FireTome1AiTests.K2_TheNamedCases_OfTheTurn(current: 5, wanted: 9, expected: 9)
+   .Ai.Items.FireTome1AiTests.K2_TheNamedCases_OfTheTurn(current: 8, wanted: 5, expected: 5)
+   .Ai.Items.FireTome1AiTests.K2_TheNamedCases_OfTheTurn(current: 9, wanted: 5, expected: 5)
+   .Ai.Items.FireTome1AiTests.K2_TheSameDirection_WritesNothing_NeitherTheDirectionNorTheWait
+   .Ai.Items.FireTome1AiTests.K2_TheTurnOnTheGrid_OfThe32x32Directions_IsTheNumericOneOfTheBinary_TheLongSideForTheTwoHundredAndFortyPairsOfNumericGapAbove16
+   .Ai.Items.FireTome1AiTests.K4_TheProductionValuesOfTheTwoSettings_AreTheCorrectedOnes_AndTheDefaultCallOfTheBallUsesThem
+   .Ai.Items.FireTome1AiTests.K4_TheRegisteredBallComputesTheCountOfTheWorld_TheHighestSlotNotDestroyedNorToDestroy
+   .Ai.Items.FireTome1AiTests.K5_ABallWhoseAttackByteIs0x8A_AsksForTheType10AndTheMaskClassA
+   .Ai.Items.FireTome1AiTests.K5_ABallWithoutAttack_AsksForTheType0_AndDoesNotThrow
+   .Ai.Items.FireTome1ProductionTests.P1_RondWithTheTome47_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_TheColumnAndTheFirstBallAt34_ElevenBalls_TheItemFreedAt149
+   .Ai.Items.FireTome1ProductionTests.P3_RondWithTheTome47_InterruptedAtTheTick60_TheKeyOfHurt60Holds_TheEffect19_2AtTheColumn_TheBallsDeactivated_TheItemFreed
+   .Ai.Items.FireTome1WorldTests.W10_ThePlateauOf32PixelsInTheColumns6To12_EqualsTheKey_TheBallsLandOnItAt32PixelsAndOffItAtZero
+   .Ai.Items.FireTome1WorldTests.W11_TheHeroOnAPlateauOf32Pixels_EqualsTheKey
+   .Ai.Items.FireTome1WorldTests.W1_TheFireTome1_EqualsTheKey_EveryTickEveryColumn_TheColumnAndTheFirstBallAt34_ElevenBallsEveryEightTicks_TheItemFreedAt149
+   .Ai.Items.FireTome1WorldTests.W1_TheFireTome1_WithTheOtherSeed_EqualsItsKey_EveryTickEveryColumn_TheDirectionsAreOtherOnes
+   .Ai.Items.FireTome1WorldTests.W2_TheTargetScenarios_AtTheSettingsOfProductionAndOfTheBinary_EqualTheirKey_EveryTickEveryColumn_TheBallsTurnByTheNumericDirections(name: "col_hit", binary: False)
+   .Ai.Items.FireTome1WorldTests.W2_TheTargetScenarios_AtTheSettingsOfProductionAndOfTheBinary_EqualTheirKey_EveryTickEveryColumn_TheBallsTurnByTheNumericDirections(name: "col_hit", binary: True)
+   .Ai.Items.FireTome1WorldTests.W2_TheTargetScenarios_AtTheSettingsOfProductionAndOfTheBinary_EqualTheirKey_EveryTickEveryColumn_TheBallsTurnByTheNumericDirections(name: "tgt_one", binary: False)
+   .Ai.Items.FireTome1WorldTests.W2_TheTargetScenarios_AtTheSettingsOfProductionAndOfTheBinary_EqualTheirKey_EveryTickEveryColumn_TheBallsTurnByTheNumericDirections(name: "tgt_one", binary: True)
+   .Ai.Items.FireTome1WorldTests.W2_TheTargetScenarios_AtTheSettingsOfProductionAndOfTheBinary_EqualTheirKey_EveryTickEveryColumn_TheBallsTurnByTheNumericDirections(name: "tgt_three", binary: False)
+   .Ai.Items.FireTome1WorldTests.W2_TheTargetScenarios_AtTheSettingsOfProductionAndOfTheBinary_EqualTheirKey_EveryTickEveryColumn_TheBallsTurnByTheNumericDirections(name: "tgt_three", binary: True)
+   .Ai.Items.FireTome1WorldTests.W2_TheTargetScenarios_AtTheSettingsOfProductionAndOfTheBinary_EqualTheirKey_EveryTickEveryColumn_TheBallsTurnByTheNumericDirections(name: "tgt_vanish75", binary: False)
+   .Ai.Items.FireTome1WorldTests.W2_TheTargetScenarios_AtTheSettingsOfProductionAndOfTheBinary_EqualTheirKey_EveryTickEveryColumn_TheBallsTurnByTheNumericDirections(name: "tgt_vanish75", binary: True)
+   .Ai.Items.FireTome1WorldTests.W3_TheSortAndTheBound_InTheBinaryMode_EqualTheirKey_TheNearestIsNotAlwaysTheTarget_TheTopSlotIsNotAcquired(name: "tgt_topslot")
+   .Ai.Items.FireTome1WorldTests.W3_TheSortAndTheBound_InTheBinaryMode_EqualTheirKey_TheNearestIsNotAlwaysTheTarget_TheTopSlotIsNotAcquired(name: "tgt_two_wrong_order")
+   .Ai.Items.FireTome1WorldTests.W3c_TheSortAndTheBound_AtTheSettingsOfProduction_EqualTheirQfixKey(name: "tgt_topslot")
+   .Ai.Items.FireTome1WorldTests.W3c_TheSortAndTheBound_AtTheSettingsOfProduction_EqualTheirQfixKey(name: "tgt_two_wrong_order")
+   .Ai.Items.FireTome1WorldTests.W4_AWallInTheColumn6_StopsTheBallsInTheAir_ByRElFive
+   .Ai.Items.FireTome1WorldTests.W5_DeepWaterInTheColumns6To12_ChangesNothing_TheKeyEqualsTheBareCast_AndTheDllEqualsBoth
+   .Ai.Items.FireTome1WorldTests.W6_AnInterruptionAtTheTickT_EqualsTheKey_TheColumnDestroyedWithItsEffect_TheBallsDeactivated_TheItemFreed_TheHeroOfTheKeyAfterT(t: 100)
+   .Ai.Items.FireTome1WorldTests.W6_AnInterruptionAtTheTickT_EqualsTheKey_TheColumnDestroyedWithItsEffect_TheBallsDeactivated_TheItemFreed_TheHeroOfTheKeyAfterT(t: 121)
+   .Ai.Items.FireTome1WorldTests.W6_AnInterruptionAtTheTickT_EqualsTheKey_TheColumnDestroyedWithItsEffect_TheBallsDeactivated_TheItemFreed_TheHeroOfTheKeyAfterT(t: 122)
+   .Ai.Items.FireTome1WorldTests.W6_AnInterruptionAtTheTickT_EqualsTheKey_TheColumnDestroyedWithItsEffect_TheBallsDeactivated_TheItemFreed_TheHeroOfTheKeyAfterT(t: 124)
+   .Ai.Items.FireTome1WorldTests.W6_AnInterruptionAtTheTickT_EqualsTheKey_TheColumnDestroyedWithItsEffect_TheBallsDeactivated_TheItemFreed_TheHeroOfTheKeyAfterT(t: 140)
+   .Ai.Items.FireTome1WorldTests.W6_AnInterruptionAtTheTickT_EqualsTheKey_TheColumnDestroyedWithItsEffect_TheBallsDeactivated_TheItemFreed_TheHeroOfTheKeyAfterT(t: 60)
+   .Ai.Items.FireTome1WorldTests.W8_TheCastAt2And3TicksAFrame_HasTheTicksOfTheBirths_TheEndOfTheColumn_TheRelease_TheNumberOfBalls_AndTheNumberOfDraws(ticksPerFrame: 1)
+   .Ai.Items.FireTome1WorldTests.W9_ThePlateauOf16PixelsInTheColumns6To12_EqualsTheKey_TheBallsLandOnItAt16PixelsAndOffItAtZero
+['Échoué!  - échec\xa0:    58, réussite\xa0:   172, ignorée(s)\xa0:     0, total\xa0:   230, durée\xa0: 1 m 13 s - Alundra.Tests.dll (net9.0)']

@@ -1,0 +1,3 @@
+cancel_stub 1
+   .Ai.Items.FireTome1ProductionTests.P3_RondWithTheTome47_InterruptedAtTheTick60_TheKeyOfHurt60Holds_TheEffect19_2AtTheColumn_TheBallsDeactivated_TheItemFreed
+['Échoué!  - échec\xa0:     1, réussite\xa0:   229, ignorée(s)\xa0:     0, total\xa0:   230, durée\xa0: 1 m 12 s - Alundra.Tests.dll (net9.0)']

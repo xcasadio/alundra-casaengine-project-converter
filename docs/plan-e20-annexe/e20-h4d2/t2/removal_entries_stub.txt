@@ -1,0 +1,5 @@
+entries_stub 3
+   .Ai.Items.FireTome1ProductionTests.P1_RondWithTheTome47_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_TheColumnAndTheFirstBallAt34_ElevenBalls_TheItemFreedAt149
+   .Ai.Items.FireTome1ProductionTests.P2_WithNoFreeSlot_NothingIsBorn_TheMagicIsLost_TheItemIsFreedAtTheTick34_TheKeyOfTableFullHolds
+   .Ai.Items.FireTome1ProductionTests.P3_RondWithTheTome47_InterruptedAtTheTick60_TheKeyOfHurt60Holds_TheEffect19_2AtTheColumn_TheBallsDeactivated_TheItemFreed
+['Échoué!  - échec\xa0:     3, réussite\xa0:   227, ignorée(s)\xa0:     0, total\xa0:   230, durée\xa0: 1 m 12 s - Alundra.Tests.dll (net9.0)']

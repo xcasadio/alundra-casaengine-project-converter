@@ -1,0 +1,10 @@
+noreg 8
+   .Ai.Items.FireTome1ProductionTests.P1_RondWithTheTome47_TheKeyOfW1HoldsThroughTheEntriesOfTheObject_TheColumnAndTheFirstBallAt34_ElevenBalls_TheItemFreedAt149
+   .Ai.Items.FireTome1ProductionTests.P3_RondWithTheTome47_InterruptedAtTheTick60_TheKeyOfHurt60Holds_TheEffect19_2AtTheColumn_TheBallsDeactivated_TheItemFreed
+   .Ai.Items.FireTome1ProductionTests.P4_TheProductionRegistryHandlesTheCodesOfTheTypes20And23_AnEmptyOneLacksC63AndE3
+   .Ai.NativeSpriteRegistryTests.ProductionRunner_RegistryHoldsTheHandlersOfTheBeannoidTheMurutaTheSwordWaveAndThePickupObjects_AndTheSwitchIsOn
+   .Ai.Objects.LiftableAiRegistrationTests.R1_TheKeyIsInTheSlotCOnly_AndTheCountOfTheProductionRegistryIsTheSumOfTheCountsOfTheClasses
+   .Ai.Projectiles.BallFlamesTests.M3_TheProductionRegistryHoldsC60AndE9_ForTheSixBallTypesAlone_AndItsCountIsTheSumOfTheCountsOfTheClassesPlusTwoKeys
+   .Ai.Projectiles.ChargedArrowAiTests.C2_TheProductionRegistry_HoldsTheKeyForTheType7_AndItsCountIsTheSumOfTheCountsOfTheClasses
+   .Ai.Projectiles.WaveSwordLifeTests.V3_TheProductionRegistryHoldsTheKeysOfItsClasses_TheWaveTypesHaveC61AndE10InLineAndNoOtherProgram_TheInvariantHoldsForThem
+['Échoué!  - échec\xa0:     8, réussite\xa0:   222, ignorée(s)\xa0:     0, total\xa0:   230, durée\xa0: 1 m 12 s - Alundra.Tests.dll (net9.0)']
