@@ -96,7 +96,8 @@ internal sealed class FireTome1Run : IDisposable
     /// <param name="cell">The field (default: flat, all zero).</param>
     /// <param name="heroZ">The pixel Z of the hero (0: on the flat ground).</param>
     /// <param name="binary">The settings of the query of C63 are those of the binary (<c>InclusiveBound</c> false, <c>SortThreshold</c> 3, D-H4D2-6), not those of production.</param>
-    internal FireTome1Run(string name, IReadOnlyList<int[]>? blocks = null, Func<int, int, CutBench.Cell>? cell = null, int heroZ = 0, bool binary = false)
+    /// <param name="production">The phase B (T2): no seam and no registration of the test, the item runs through the entries of the object in <see cref="PlayerManager"/> and the registry of production alone.</param>
+    internal FireTome1Run(string name, IReadOnlyList<int[]>? blocks = null, Func<int, int, CutBench.Cell>? cell = null, int heroZ = 0, bool binary = false, bool production = false)
     {
         Arena = new HitArena("h4d2-" + name, 100, 100, new List<int[]>(), 24, 0);
         try
@@ -133,27 +134,30 @@ internal sealed class FireTome1Run : IDisposable
             }
 
             EventProgramRunner.NativeSpriteTypeFilterForTests = new HashSet<int> { Ball };
-            PlayerManager.ItemStartForTests = PlayerManager.TomeStart;
-            PlayerManager.ItemDriverForTests = (hero, _) => FireTome1Ai.Drive(hero);
-            PlayerManager.ItemCancelForTests = (hero, item) =>
-            {
-                if (item == Item)
-                {
-                    FireTome1Ai.Cancel(hero);
-                }
-            };
             Arena.Arc.Runner.NativeHandlersEnabled = false;
-            var registry = Arena.Arc.Runner.NativeSprites;
-            if (!registry.TryGet(ScriptHelper.ProgramEDeactivate, EarthTome1Ai.ImpactCode, Ball, out _))
+            if (!production)
             {
-                _registrations.Add(EarthTome1Ai.Register(registry));
-            }
+                PlayerManager.ItemStartForTests = PlayerManager.TomeStart;
+                PlayerManager.ItemDriverForTests = (hero, _) => FireTome1Ai.Drive(hero);
+                PlayerManager.ItemCancelForTests = (hero, item) =>
+                {
+                    if (item == Item)
+                    {
+                        FireTome1Ai.Cancel(hero);
+                    }
+                };
+                var registry = Arena.Arc.Runner.NativeSprites;
+                if (!registry.TryGet(ScriptHelper.ProgramEDeactivate, EarthTome1Ai.ImpactCode, Ball, out _))
+                {
+                    _registrations.Add(EarthTome1Ai.Register(registry));
+                }
 
-            if (!registry.TryGet(ScriptHelper.ProgramCTick, FireTome1Ai.BallCode, Ball, out _))
-            {
-                _registrations.Add(binary
-                    ? registry.Register(ScriptHelper.ProgramCTick, FireTome1Ai.BallCode, FireTome1Ai.SpriteTypes, (entity, context, state) => FireTome1Ai.BallTick(entity, context.SpawnedEntities, TargetQuery.StoredCount(context.SpawnedEntities), inclusiveBound: false, sortThreshold: 3))
-                    : FireTome1Ai.Register(registry));
+                if (!registry.TryGet(ScriptHelper.ProgramCTick, FireTome1Ai.BallCode, Ball, out _))
+                {
+                    _registrations.Add(binary
+                        ? registry.Register(ScriptHelper.ProgramCTick, FireTome1Ai.BallCode, FireTome1Ai.SpriteTypes, (entity, context, state) => FireTome1Ai.BallTick(entity, context.SpawnedEntities, TargetQuery.StoredCount(context.SpawnedEntities), inclusiveBound: false, sortThreshold: 3))
+                        : FireTome1Ai.Register(registry));
+                }
             }
 
             NativeEffects.CreatedForTests = slot => _events.Add((_tick, $"fx({slot.TargetEffect},{slot.TargetAnimation},{slot.X},{slot.Y},{slot.Z})"));

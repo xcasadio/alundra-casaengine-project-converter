@@ -1,0 +1,5 @@
+T2 tests commit against the HEAD without phase B (Release, copy neutralised): 9 red of 168 in the filter
+(FireTome1 | NativeSpriteRegistryTests | LiftableAiRegistrationTests | ChargedArrowAiTests | WaveSwordLifeTests | BallFlamesTests)
+FireTome1ProductionTests: P1, P2, P3, P4 (P4: the unhandled codes of {20, 23} are exactly [(C, 63)]), and the five sums:
+NativeSpriteRegistryTests.ProductionRunner_..., LiftableAiRegistrationTests.R1, ChargedArrowAiTests.C2, WaveSwordLifeTests.V3, BallFlamesTests.M3
+The other 159 tests of the filter are green (the 40 of T1 bis and the 52+22 of T1 among them).
