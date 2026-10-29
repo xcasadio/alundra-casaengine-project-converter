@@ -450,6 +450,10 @@ public partial class EntityScriptProxy : GameplayProxy, IEffectAnchor
     /// <summary>E20.h4d1 (D-H4D1-3): the entity the item in use brought to life, the binary's <c>[0x80127124]</c> (the pointer the pilot of the fire tome 2 keeps from the birth of the column of fire; null when the birth was refused). A single field is enough: one item is in use at a time (the binary has globals per pilot). A new hero (every map) has none. Hero only.</summary>
     internal EntityScriptProxy? ItemSpawnedEntity;
 
+    /// <summary>E20.h4d2 (D-H4D2-4): the target a ball of the fire tome 1 keeps, the binary's identity pair <c>+0x278</c> (the pointer, mirrored as the slot in <see cref="DelayOrAngleOrEntityId"/>, 0 for none) and <c>+0x27C</c> (the identity of the entity at that pointer when the ball acquired it). The DLL has no member for the identity word: the target is a REFERENCE, "same identity" is "same reference
+    /// and still <see cref="EntityStatus.Normal"/>" (the DLL never reuses an object: a recycled entity is <see cref="EntityStatus.Destroyed"/> with no slot). Proper to the ball (not copied by the clone). Null when the ball has no target.</summary>
+    internal EntityScriptProxy? SpellTarget;
+
     /// <summary>E20.b B2: the tick counter that goes with <see cref="WeaponRecordPointer"/>, the binary's <c>0x80127114</c> (reset by the press, counted up to the delay of the record). Hero only.</summary>
     internal int WeaponStepCounter;
 

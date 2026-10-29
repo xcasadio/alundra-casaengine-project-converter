@@ -72,6 +72,17 @@ public static class TargetQuery
         return found;
     }
 
+    /// <summary>
+    /// E20.h4d2 (D-H4D2-5): the count the original stores in <c>[0x80134360]</c> and hands to the query: the highest slot of the born entities whose status is neither <see cref="EntityStatus.Destroyed"/> nor <see cref="EntityStatus.FlagToDestroy"/> (the status 0 and 4 are free or to be freed), -1 when there is none.
+    /// Measured equal to the stored word on the 494 calls of the keys (probe <c>probe_count.py</c>). An entity taken off the table (a negative <see cref="EntityScriptProxy.Slot"/>) has no slot.
+    /// </summary>
+    /// <param name="entities">The born entities, a compact list; each is judged by its <see cref="EntityScriptProxy.Slot"/>.</param>
+    public static int StoredCount(IReadOnlyList<EntityScriptProxy> entities)
+    {
+        // Skeleton of the tests-first commit: the real body comes with the code.
+        return -1;
+    }
+
     /// <summary>The squared distance on the two axes modulo 2^32, each difference taken on 32 bits then shifted arithmetically by 16 (the positions are 16.16).</summary>
     private static uint Key(EntityScriptProxy entity, EntityScriptProxy caller)
     {

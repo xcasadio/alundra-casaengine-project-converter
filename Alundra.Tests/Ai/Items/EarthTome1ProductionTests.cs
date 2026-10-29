@@ -147,7 +147,9 @@ public sealed class EarthTome1ProductionTests : IDisposable
         var catalog = new SpriteRecordCatalog(ProjectRootFinder.Find());
         var production = new EventProgramRunner(null, GameState.Instance).NativeSprites;
 
-        Assert.Empty(PlayerManager.UnhandledWeaponSpriteCodes(EarthTome1Ai.SpriteTypes, catalog, production));
-        Assert.Equal(new[] { (ScriptHelper.ProgramEDeactivate, EarthTome1Ai.ImpactCode) }, PlayerManager.UnhandledWeaponSpriteCodes(EarthTome1Ai.SpriteTypes, catalog, new NativeSpriteRegistry()).ToArray());
+        // E20.h4d2 (D-H4D2-2): EarthTome1Ai.SpriteTypes is now {16, 23}, the type 23 also needs C63 (the phase B of h4d2 registers it): this test is about the type 16 alone.
+        var rocks = new[] { 16 };
+        Assert.Empty(PlayerManager.UnhandledWeaponSpriteCodes(rocks, catalog, production));
+        Assert.Equal(new[] { (ScriptHelper.ProgramEDeactivate, EarthTome1Ai.ImpactCode) }, PlayerManager.UnhandledWeaponSpriteCodes(rocks, catalog, new NativeSpriteRegistry()).ToArray());
     }
 }

@@ -391,7 +391,7 @@ public sealed class EarthTome1AiTests : IDisposable
     }
 
     [Fact]
-    public void E2_E3_IsRegisteredForTheType16Alone_NotThe17_NorThe23_NorAnyOtherType_AndTheRegistrationIsTakenOffByItsDisposable()
+    public void E2_E3_IsRegisteredForTheTypes16And23Alone_NotThe17_NorThe24_NorAnyOtherType_AndTheRegistrationIsTakenOffByItsDisposable()
     {
         var registry = new NativeSpriteRegistry();
 
@@ -400,7 +400,9 @@ public sealed class EarthTome1AiTests : IDisposable
             Assert.Equal(EarthTome1Ai.Keys.Count, registry.Count);
             Assert.Equal(new[] { (ScriptHelper.ProgramEDeactivate, 3) }, EarthTome1Ai.Keys);
             Assert.True(registry.TryGet(ScriptHelper.ProgramEDeactivate, 3, 16, out var handler));
-            foreach (var other in new[] { 0, 2, 15, 17, 23, 150, 153, 0x100 + 16, 335 })
+            Assert.True(registry.TryGet(ScriptHelper.ProgramEDeactivate, 3, 23, out _)); // E20.h4d2 (D-H4D2-2): the fire balls of the fire tome 1 end on the same impact; one key, two types.
+            Assert.Equal(new[] { 16, 23 }, EarthTome1Ai.SpriteTypes);
+            foreach (var other in new[] { 0, 2, 15, 17, 24, 150, 153, 0x100 + 16, 0x100 + 23, 335 })
             {
                 Assert.False(registry.TryGet(ScriptHelper.ProgramEDeactivate, 3, other, out _), $"type {other}");
             }
