@@ -1,0 +1,9 @@
+cast             queries 104  stored count != on-demand highest live slot in 0 of them []
+seedB            queries 107  stored count != on-demand highest live slot in 0 of them []
+one              queries  60  stored count != on-demand highest live slot in 0 of them []
+three            queries  11  stored count != on-demand highest live slot in 0 of them []
+two_wrong_order  queries  15  stored count != on-demand highest live slot in 0 of them []
+topslot          queries 104  stored count != on-demand highest live slot in 0 of them []
+vanish75         queries  93  stored count != on-demand highest live slot in 0 of them []
+table_one_free   queries   0  stored count != on-demand highest live slot in 0 of them []
+TOTAL queries 494 differences 0

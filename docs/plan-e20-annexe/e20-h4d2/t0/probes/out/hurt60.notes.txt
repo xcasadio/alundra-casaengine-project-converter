@@ -1,0 +1,10 @@
+column born tick 34 counter 32 slot 1 status 1
+ball born tick 34 slot 2 dir 4
+ball born tick 42 slot 3 dir 27
+ball born tick 50 slot 4 dir 18
+ball born tick 58 slot 5 dir 1
+cancel destroys the column at tick 60
+cancel deactivates a ball (slot 2) at tick 60
+cancel deactivates a ball (slot 3) at tick 60
+cancel deactivates a ball (slot 4) at tick 60
+cancel deactivates a ball (slot 5) at tick 60

@@ -14,3 +14,6 @@ Repository read at `ed60a0eb` (no change under `Alundra/`, `Alundra.Tests/` or `
 Left out: the discovery's unused reference copy of the f4f6 bench (`fcopy/`) and the critic's working copies of the bench (`run_mycpu/`,
 `run_theirs/`; its regenerated keys were byte-identical, `results/manifest_rerun_*`). The scripts read the binary at the absolute path they name
 (outside the repository) and write next to themselves: rerun them from a copy, never in place. `SHA1SUMS` lists every file here.
+- `disc/h4o/qfix_make_keys.py`, `disc/h4o/turn_law.py`, `disc/out_qfix/` (added 2026-10-29 by T0 (a), revision 2.1): the reading of 2026-10-25 that remakes the four target scenarios and the bare cast with the query corrected (`*_qfix*`), the numeric-turn arithmetic, and their ten keys with `manifest.txt`.
+- `t0/` (2026-10-29): the T0 of the slice (no code): `results.md` (the verdict), `predictions.md` (written before the probes), `key_facts.py` (the expected values read in the keys), `mapping.md` (the words and the rules of the adapter), `probes/` (the throwaway probe test kept as `.cs.txt`, the comparison and the rows),
+  `replay/` (the manifests of the two runs of every replay), `list_d.txt`, `suite/`. Its own `SHA1SUMS`.

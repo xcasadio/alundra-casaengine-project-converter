@@ -1,4 +1,4 @@
-e938c604001a66496ef4bcae6fbbe2678c48bea2  README.md
+d7f86b332dff501998ca1514d58ae94d6fdaba83  README.md
 21dd6503c6f3e69eccef976c94c4d1cd152f1475  critic/check.md
 74555bdd938789c2dbccb8f9aab68152c66899c0  critic/keys_proposed/fire1_relief_hero_on_plateau_hb2_pf.json
 885e4b9991b9f4161cfa068b8b319c266db41d64  critic/keys_proposed/fire1_relief_plateau_hb1_cols6_12_pf.json
@@ -89,11 +89,13 @@ b3ebbbeb9ed48940e51823026a76ebec8f91f1f2  disc/h4o/mips.py
 8aec0e4860cbe9ae143b915f33a479c950b345f4  disc/h4o/model.py
 cb2fda6c02624615abfb5108b4fe34dbf0f7865d  disc/h4o/oracle.py
 00d4c5904b516132c4f82b153e7b30b955b851a1  disc/h4o/probe_count.py
+f5ca4e69b57536f1a756b31b5abfbb40ab9febe2  disc/h4o/qfix_make_keys.py
 d9013f48b440a6d265e51ba87603be96725d2af7  disc/h4o/run_targets_all.py
 1be49a88c7908282b77f05d3ff09843535dace9b  disc/h4o/spellworld.py
 e34e58f8211482a2eb6b0467acb996a630c47101  disc/h4o/staff_check.py
 f7f9a8e3bc1646d488873aba161cc0a73827a0ed  disc/h4o/trace_cast.py
 7eaae5e578bc48b909ace4354eb2d19da474f1ee  disc/h4o/trace_targets.py
+1a34f5893619c38fd1db6709276ea56d147db47e  disc/h4o/turn_law.py
 6f8b900ff420532fc8d04f244c3c32cd26e27e3b  disc/h4o/world.py
 bf80e06cd8676b865da1073f15c5a9d48a776f4d  disc/keys/SENSITIVITY.txt
 f71588e30f23f0c108892f41f351977a588d3ad7  disc/keys/fire1_cast_pf.json
@@ -144,6 +146,17 @@ cbf80a83c29538b0f2e0a9f6d0144462a900ce4a  disc/lst/e3_8007EDA0.txt
 0bf70d6f18f4a6c73afd1d12e3c97e5b6b1485af  disc/lst/tables_checked.txt
 bec5b26cfe5386ab246f4a0556545062ebc969bc  disc/lst/wrapper_8003634C.txt
 4246809bf174af5f69476547cc86231256e81f48  disc/manifest_first_run_before_variants.txt
+f71588e30f23f0c108892f41f351977a588d3ad7  disc/out_qfix/fire1_cast_pf.json
+9d847dc73ffc7b8eb6c961ed81d675e9343048c7  disc/out_qfix/fire1_cast_pf_qfix.json
+a89aaaae9efddfa01c567bae1241b6123c175c19  disc/out_qfix/fire1_col_hit_pf.json
+1fc8e4c7f999f05194afa6c664fdcda87be50728  disc/out_qfix/fire1_col_hit_qfix_pf.json
+3d36e8379503dbbdb9592561419aa6895a3ab56f  disc/out_qfix/fire1_tgt_one_pf.json
+a6dde4d706232d424bd7bd489586f0e62a11a262  disc/out_qfix/fire1_tgt_one_qfix_pf.json
+9d5ccf9dbba0d393a429c60b374bf9694e6074f3  disc/out_qfix/fire1_tgt_three_pf.json
+e139725eaf900d29487efd20393ec977dcbab53a  disc/out_qfix/fire1_tgt_three_qfix_pf.json
+7e81eced34d78d23e8594c45e801707fed005730  disc/out_qfix/fire1_tgt_vanish75_pf.json
+740ca9d381193ac5f64102f2425936d340b694a4  disc/out_qfix/fire1_tgt_vanish75_qfix_pf.json
+00d126cac6af76c5c5ec7033767e7516e61a0dbd  disc/out_qfix/manifest.txt
 33c15fa993b482d894711558337da564a6963340  disc/report.md
 aba1db28ff72434c734c445ce3e6cd2253cee447  disc/tools/cmipsmini.py
 0b01bb100034f32425c2b0e12d89c9263aae5d80  disc/tools/exelib.py
@@ -198,3 +211,4 @@ b21085dcc67ba0567273120aaf5f5545619d4be6  disc/vech/run_all.py
 56757c3ba09877e87d1c772b3a3e6a546cad4eec  disc/vech/tools.py
 df8084ffff190f033fd70374a954e4f35982adac  disc/vech/vtrace.py
 6f8b900ff420532fc8d04f244c3c32cd26e27e3b  disc/vech/world.py
+0c69ba0215a440848c4d63ec2ecd1d98df09708e  t0/SHA1SUMS

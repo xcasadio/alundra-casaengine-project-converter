@@ -1,0 +1,2 @@
+column born tick 34 counter 32 slot 2 status 1
+ball born tick 34 slot 3 dir 4

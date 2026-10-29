@@ -1,0 +1,265 @@
+== fire-1 driver 0x80035A84 3270 vectors, 87 binary_only
+ non-entity addresses read:
+   0x8002341c         size 4  read by  590 vectors  distinct values 1
+   0x8002342c         size 4  read by  738 vectors  distinct values 1
+   0x80098708         size 4  read by  183 vectors  distinct values 58
+   0x8012711c         size 4  read by  401 vectors  distinct values 11
+   0x80127120         size 4  read by  401 vectors  distinct values 14
+   0x8012715c         size 4  read by  306 vectors  distinct values 23
+   0x80127160         size 4  read by 3270 vectors  distinct values 6
+   0x80127164         size 4  read by 1924 vectors  distinct values 3
+   0x80134360         size 4  read by  738 vectors  distinct values 8
+ non-entity addresses written:
+   0x80098708         size 4  written by  183 vectors
+   0x8012711c         size 4  written by   84 vectors
+   0x80127120         size 4  written by   64 vectors
+   0x80127160         size 4  written by  223 vectors
+   0x80127164         size 4  written by 1328 vectors
+ entity offsets read (slot table, any slot): offset size  number of (vector, word) reads
+   +0x4    size 4  465
+   +0x10   size 4  4337
+   +0x28   size 4  250
+   +0x68   size 4  1521
+   +0x88   size 4  2721
+   +0x114  size 4  479
+   +0x118  size 4  479
+   +0x11C  size 4  479
+   +0x18C  size 4  2469
+   +0x1B8  size 4  250
+ entity offsets written:
+   +0x10   size 4  510
+   +0x20   size 4  260
+   +0x2C   size 4  55
+   +0x68   size 4  54
+   +0x88   size 4  159
+   +0xB8   size 4  131
+   +0x1B8  size 4  54
+   +0x228  size 4  250
+   +0x274  size 4  131
+   +0x278  size 4  131
+== cancel 0x80034D2C 400 vectors, 81 binary_only
+ non-entity addresses read:
+   0x80134360         size 4  read by  400 vectors  distinct values 10
+ non-entity addresses written:
+ entity offsets read (slot table, any slot): offset size  number of (vector, word) reads
+   +0x10   size 4  4866
+   +0x28   size 4  327
+   +0x68   size 4  1799
+   +0x114  size 4  327
+   +0x118  size 4  327
+   +0x11C  size 4  327
+   +0x1B8  size 4  327
+ entity offsets written:
+   +0x10   size 4  622
+   +0x20   size 4  295
+   +0x2C   size 4  71
+   +0x68   size 4  85
+   +0x1B8  size 4  87
+   +0x228  size 4  327
+== E3 0x8007EDA0 288 vectors, 0 binary_only
+ non-entity addresses read:
+ non-entity addresses written:
+ entity offsets read (slot table, any slot): offset size  number of (vector, word) reads
+   +0x6C   size 4  276
+   +0x88   size 4  288
+   +0xAC   size 4  48
+ entity offsets written:
+   +0x6C   size 4  276
+   +0x88   size 4  276
+== C63 0x8007AC60 3524 vectors, 0 binary_only
+ non-entity addresses read:
+   0x80022488         size 2  read by   20 vectors  distinct values 1
+   0x80022498         size 2  read by  129 vectors  distinct values 1
+   0x8002249a         size 2  read by    4 vectors  distinct values 1
+   0x8002249c         size 2  read by   85 vectors  distinct values 1
+   0x8002249e         size 2  read by   44 vectors  distinct values 1
+   0x800224a0         size 2  read by   59 vectors  distinct values 1
+   0x800224a6         size 2  read by   10 vectors  distinct values 1
+   0x800224b8         size 2  read by   20 vectors  distinct values 1
+   0x800224ba         size 2  read by    1 vectors  distinct values 1
+   0x800224bc         size 2  read by   66 vectors  distinct values 1
+   0x800224be         size 2  read by   32 vectors  distinct values 1
+   0x800224c0         size 2  read by   11 vectors  distinct values 1
+   0x800224d8         size 2  read by   45 vectors  distinct values 1
+   0x800224dc         size 2  read by   52 vectors  distinct values 1
+   0x800224e0         size 2  read by   12 vectors  distinct values 1
+   0x800224e6         size 2  read by    4 vectors  distinct values 1
+   0x800224f8         size 2  read by    1 vectors  distinct values 1
+   0x800224fc         size 2  read by   32 vectors  distinct values 1
+   0x80022518         size 2  read by   66 vectors  distinct values 1
+   0x8002251c         size 2  read by   76 vectors  distinct values 1
+   0x80022520         size 2  read by    8 vectors  distinct values 1
+   0x80022538         size 2  read by   35 vectors  distinct values 1
+   0x8002253c         size 2  read by   32 vectors  distinct values 1
+   0x8002253e         size 2  read by   19 vectors  distinct values 1
+   0x80022540         size 2  read by   10 vectors  distinct values 1
+   0x80022558         size 2  read by    4 vectors  distinct values 1
+   0x8002255c         size 2  read by   41 vectors  distinct values 1
+   0x80022578         size 2  read by   32 vectors  distinct values 1
+   0x80022588         size 2  read by   53 vectors  distinct values 1
+   0x8002258a         size 2  read by    7 vectors  distinct values 1
+   0x8002258c         size 2  read by   81 vectors  distinct values 1
+   0x8002258e         size 2  read by    6 vectors  distinct values 1
+   0x80022590         size 2  read by  100 vectors  distinct values 1
+   0x80022592         size 2  read by   34 vectors  distinct values 1
+   0x80022594         size 2  read by    3 vectors  distinct values 1
+   0x80022596         size 2  read by   10 vectors  distinct values 1
+   0x80022598         size 2  read by  100 vectors  distinct values 1
+   0x8002259c         size 2  read by   65 vectors  distinct values 1
+   0x800225a0         size 2  read by    5 vectors  distinct values 1
+   0x800225a6         size 2  read by    3 vectors  distinct values 1
+   0x800225aa         size 2  read by   32 vectors  distinct values 1
+   0x800225b6         size 2  read by   32 vectors  distinct values 1
+   0x800225bc         size 2  read by   32 vectors  distinct values 1
+   0x800225c8         size 2  read by   64 vectors  distinct values 1
+   0x800225ca         size 2  read by    9 vectors  distinct values 1
+   0x800225cc         size 2  read by    5 vectors  distinct values 1
+   0x800225ce         size 2  read by   33 vectors  distinct values 1
+   0x800225d0         size 2  read by   40 vectors  distinct values 1
+   0x800225d2         size 2  read by   33 vectors  distinct values 1
+   0x800225d4         size 2  read by    7 vectors  distinct values 1
+   0x800225d8         size 2  read by   35 vectors  distinct values 1
+   0x800225da         size 2  read by    2 vectors  distinct values 1
+   0x800225dc         size 2  read by   54 vectors  distinct values 1
+   0x800225e8         size 2  read by   29 vectors  distinct values 1
+   0x800225ea         size 2  read by   32 vectors  distinct values 1
+   0x800225f0         size 2  read by    8 vectors  distinct values 1
+   0x800225f2         size 2  read by   22 vectors  distinct values 1
+   0x800225fe         size 2  read by   29 vectors  distinct values 1
+   0x80022608         size 2  read by   19 vectors  distinct values 1
+   0x8002260a         size 2  read by    3 vectors  distinct values 1
+   0x8002260c         size 2  read by    9 vectors  distinct values 1
+   0x8002260e         size 2  read by    1 vectors  distinct values 1
+   0x80022610         size 2  read by    8 vectors  distinct values 1
+   0x80022612         size 2  read by   10 vectors  distinct values 1
+   0x80022616         size 2  read by    1 vectors  distinct values 1
+   0x80022618         size 2  read by    8 vectors  distinct values 1
+   0x8002261e         size 2  read by    3 vectors  distinct values 1
+   0x80022620         size 2  read by   13 vectors  distinct values 1
+   0x8002265c         size 2  read by   32 vectors  distinct values 1
+   0x80022688         size 4  read by 2022 vectors  distinct values 1
+   0x8002268c         size 4  read by 2002 vectors  distinct values 1
+   0x80022690         size 4  read by 2002 vectors  distinct values 1
+   0x80022694         size 4  read by 2002 vectors  distinct values 1
+   0x80022698         size 4  read by 2002 vectors  distinct values 1
+   0x8002269c         size 4  read by 2002 vectors  distinct values 1
+   0x800226a0         size 4  read by 2002 vectors  distinct values 1
+   0x800226a4         size 4  read by 2002 vectors  distinct values 1
+   0x800226a8         size 4  read by 2002 vectors  distinct values 1
+   0x800226ac         size 4  read by 2002 vectors  distinct values 1
+   0x800226b0         size 4  read by 2002 vectors  distinct values 1
+   0x800226b4         size 4  read by 2002 vectors  distinct values 1
+   0x800226b8         size 4  read by 1989 vectors  distinct values 1
+   0x800226bc         size 4  read by 1989 vectors  distinct values 1
+   0x800226c0         size 4  read by 1975 vectors  distinct values 1
+   0x800226c4         size 4  read by 1896 vectors  distinct values 1
+   0x800226c8         size 4  read by 1664 vectors  distinct values 1
+   0x800226cc         size 4  read by 1306 vectors  distinct values 1
+   0x800226d0         size 4  read by 1080 vectors  distinct values 1
+   0x800226d4         size 4  read by  381 vectors  distinct values 1
+   0x800226d8         size 4  read by  187 vectors  distinct values 1
+   0x80098708         size 4  read by  598 vectors  distinct values 241
+   0x80134360         size 4  read by 1258 vectors  distinct values 11
+   0x801e700b         size 1  read by   28 vectors  distinct values 8
+   0x801e700c         size 1  read by  152 vectors  distinct values 8
+   0x801e700d         size 1  read by   17 vectors  distinct values 8
+   0x801e702b         size 1  read by   26 vectors  distinct values 7
+   0x801e702c         size 1  read by  135 vectors  distinct values 8
+   0x801e702d         size 1  read by   19 vectors  distinct values 7
+   0x801e704b         size 1  read by   26 vectors  distinct values 8
+   0x801e704c         size 1  read by  126 vectors  distinct values 8
+   0x801e704d         size 1  read by   24 vectors  distinct values 8
+   0x801e706b         size 1  read by   28 vectors  distinct values 8
+   0x801e706c         size 1  read by  157 vectors  distinct values 8
+   0x801e706d         size 1  read by   24 vectors  distinct values 6
+   0x801e708b         size 1  read by   27 vectors  distinct values 8
+   0x801e708c         size 1  read by  122 vectors  distinct values 8
+   0x801e708d         size 1  read by   21 vectors  distinct values 8
+   0x801e70ab         size 1  read by   25 vectors  distinct values 8
+   0x801e70ac         size 1  read by  142 vectors  distinct values 8
+   0x801e70ad         size 1  read by   20 vectors  distinct values 6
+   0x801e70cb         size 1  read by   31 vectors  distinct values 8
+   0x801e70cc         size 1  read by  128 vectors  distinct values 8
+   0x801e70cd         size 1  read by   28 vectors  distinct values 8
+   0x801e70eb         size 1  read by   26 vectors  distinct values 8
+   0x801e70ec         size 1  read by  124 vectors  distinct values 8
+   0x801e70ed         size 1  read by   18 vectors  distinct values 8
+   0x801e710b         size 1  read by   30 vectors  distinct values 8
+   0x801e710c         size 1  read by  134 vectors  distinct values 8
+   0x801e710d         size 1  read by   24 vectors  distinct values 7
+   0x801e712b         size 1  read by   27 vectors  distinct values 8
+   0x801e712c         size 1  read by  124 vectors  distinct values 8
+   0x801e712d         size 1  read by   15 vectors  distinct values 7
+   0x801e714b         size 1  read by   37 vectors  distinct values 7
+   0x801e714c         size 1  read by  136 vectors  distinct values 8
+   0x801e714d         size 1  read by   23 vectors  distinct values 8
+   0x801e716b         size 1  read by   21 vectors  distinct values 7
+   0x801e716c         size 1  read by  126 vectors  distinct values 8
+   0x801e716d         size 1  read by   13 vectors  distinct values 6
+   0x801e718b         size 1  read by   25 vectors  distinct values 7
+   0x801e718c         size 1  read by  128 vectors  distinct values 8
+   0x801e718d         size 1  read by   21 vectors  distinct values 8
+   0x801e71ab         size 1  read by   18 vectors  distinct values 8
+   0x801e71ac         size 1  read by  114 vectors  distinct values 8
+   0x801e71ad         size 1  read by   21 vectors  distinct values 8
+   0x801e71cb         size 1  read by   21 vectors  distinct values 8
+   0x801e71cc         size 1  read by  140 vectors  distinct values 8
+   0x801e71cd         size 1  read by   16 vectors  distinct values 8
+   0x801e71eb         size 1  read by   29 vectors  distinct values 8
+   0x801e71ec         size 1  read by  127 vectors  distinct values 8
+   0x801e71ed         size 1  read by   22 vectors  distinct values 8
+   0x801e7800         size 1  read by 1258 vectors  distinct values 5
+ non-entity addresses written:
+   0x80098708         size 4  written by  598 vectors
+   0x800cc058         size 4  written by  660 vectors
+   0x800cc05c         size 4  written by  416 vectors
+   0x800cc060         size 4  written by  299 vectors
+   0x800cc064         size 4  written by  235 vectors
+   0x800cc068         size 4  written by  194 vectors
+   0x800cc06c         size 4  written by  155 vectors
+   0x800cc070         size 4  written by  111 vectors
+   0x800cc074         size 4  written by   86 vectors
+   0x800cc078         size 4  written by   67 vectors
+   0x800cc07c         size 4  written by   42 vectors
+   0x800cc080         size 4  written by   27 vectors
+   0x800cc084         size 4  written by   16 vectors
+   0x800cc088         size 4  written by   10 vectors
+   0x800cc08c         size 4  written by   10 vectors
+   0x800cc090         size 4  written by    3 vectors
+   0x800cc158         size 4  written by  660 vectors
+   0x800cc15c         size 4  written by  416 vectors
+   0x800cc160         size 4  written by  299 vectors
+   0x800cc164         size 4  written by  235 vectors
+   0x800cc168         size 4  written by  194 vectors
+   0x800cc16c         size 4  written by  155 vectors
+   0x800cc170         size 4  written by  111 vectors
+   0x800cc174         size 4  written by   86 vectors
+   0x800cc178         size 4  written by   67 vectors
+   0x800cc17c         size 4  written by   42 vectors
+   0x800cc180         size 4  written by   27 vectors
+   0x800cc184         size 4  written by   16 vectors
+   0x800cc188         size 4  written by   10 vectors
+   0x800cc18c         size 4  written by   10 vectors
+   0x800cc190         size 4  written by    3 vectors
+ entity offsets read (slot table, any slot): offset size  number of (vector, word) reads
+   +0x4    size 4  2318
+   +0x10   size 4  18861
+   +0x20   size 4  10624
+   +0x6C   size 4  9512
+   +0x8C   size 4  2022
+   +0xB4   size 4  4188
+   +0x114  size 4  5715
+   +0x118  size 4  5715
+   +0x1C4  size 4  3743
+   +0x1C8  size 4  1258
+   +0x1CC  size 4  4651
+   +0x1D0  size 4  5168
+   +0x274  size 4  3524
+   +0x278  size 4  3211
+   +0x27C  size 4  1658
+ entity offsets written:
+   +0x8C   size 4  1956
+   +0xB8   size 4  3211
+   +0x274  size 4  2867
+   +0x278  size 4  1251
+   +0x27C  size 4  660

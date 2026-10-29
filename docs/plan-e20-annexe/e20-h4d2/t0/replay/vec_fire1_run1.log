@@ -1,0 +1,23 @@
+== driver 0x80035A84
+  binary_only vectors (child / carrier pointers, not expressible in the DLL): 87 of 3270
+  vectors 3270 model mismatches 0 []
+  coverage driver 120/120 guard 19/19 cancel 55/55 destroyNoFx 15/15
+  driver words never executed: []
+  replay from an EMPTY memory: 3270/3270 vectors reproduce the writes and the return value
+== cancel 0x80034D2C
+  binary_only vectors (child / carrier pointers, not expressible in the DLL): 81 of 400
+  vectors 400 model mismatches 0 []
+  coverage cancel 55/55 destroyNoFx 15/15
+  replay from an EMPTY memory: 400/400 vectors reproduce the writes and the return value
+== E3 0x8007EDA0
+  binary_only vectors (child / carrier pointers, not expressible in the DLL): 0 of 288
+  vectors 288 model mismatches 0 []
+  coverage E3 25/25
+  replay from an EMPTY memory: 288/288 vectors reproduce the writes and the return value
+== C63 0x8007AC60
+  binary_only vectors (child / carrier pointers, not expressible in the DLL): 0 of 3524
+  vectors 3524 model mismatches 0 []
+  coverage C63 95/95 query 94/94 sort 91/91 dirto 35/35
+  C63 words never executed: []
+  replay from an EMPTY memory: 3524/3524 vectors reproduce the writes and the return value
+TOTAL problems 0

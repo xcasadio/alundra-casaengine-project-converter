@@ -1,0 +1,9 @@
+production registry count 30
+unhandled {16}: 
+unhandled {23}: (2, 63) (4, 3)
+unhandled {16, 23}: (2, 63) (4, 3)
+unhandled {20, 23}: (2, 63) (4, 3)
+unhandled {20}: 
+unhandled {16, 23} on an empty registry: (4, 3) (2, 63) (4, 3)
+unhandled {20, 23} on an empty registry: (2, 63) (4, 3)
+wired weapon types: 3 4 7 11 12 14 15 27 28 29

@@ -1,0 +1,13 @@
+column born tick 34 counter 32 slot 63 status 1
+ball refused tick 34 dir 4
+ball refused tick 42 dir 27
+ball refused tick 50 dir 18
+ball refused tick 58 dir 20
+ball refused tick 66 dir 22
+ball refused tick 74 dir 4
+ball refused tick 82 dir 22
+ball refused tick 90 dir 25
+ball refused tick 98 dir 20
+ball refused tick 106 dir 11
+ball refused tick 114 dir 22
+identity changed at tick 122 counter 120

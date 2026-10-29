@@ -1,0 +1,3 @@
+HEAD 785319c3a2d2f47efb48c8b8ea00e70f0285cbea, branch chantier/theme2-attaques-objets, 2026-10-29
+dotnet test Alundra.Tests/Alundra.Tests.csproj -c Release -p:CustomAfterMicrosoftCommonTargets=skipcopy.targets --blame-hang-timeout 60s (one run, moved to the background by the harness at 600 s, exit code 0)
+Reussi! - echec : 0, reussite : 7828, ignoree(s) : 0, total : 7828, duree : 24 m 51 s - Alundra.Tests.dll (net9.0)

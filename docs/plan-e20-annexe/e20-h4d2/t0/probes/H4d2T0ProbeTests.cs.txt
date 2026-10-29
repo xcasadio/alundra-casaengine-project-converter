@@ -1,0 +1,621 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Text.Json;
+using Alundra.Ai;
+using Alundra.Ai.Items;
+using Alundra.Ai.Objects;
+using Alundra.Audio;
+using Alundra.Combat;
+using Alundra.Entities;
+using Alundra.Events;
+using Alundra.Hero;
+using Alundra.Maps;
+using Alundra.Rendering.Effects;
+using Alundra.Rng;
+using Alundra.Session;
+using Alundra.Tests.Audio;
+using Alundra.Tests.Support;
+using Alundra.Transitions;
+using Xunit;
+
+namespace Alundra.Tests.Probes;
+
+/// <summary>E20.h4d2 T0 THROWAWAY probes P1 to P15 (never committed as code; kept as .cs.txt in the annex). Throwaway ports of the driver 0x80035A84, of the cancellation 0x80034D2C and of C63 0x8007AC60 run in the test; E3 for the type 23 is the production one; the rows are written as JSON for t0/probes/cmp_probe.py.</summary>
+[Collection(MusicPlayerSingletonCollection.Name)]
+public sealed class H4d2T0ProbeTests : IDisposable
+{
+    private static readonly string Out = Environment.GetEnvironmentVariable("H4D2_OUT") ?? Path.GetTempPath();
+    private static readonly string VecC63 = Environment.GetEnvironmentVariable("H4D2_VEC_C63") ?? "";
+
+    private const int Column = 20;
+    private const int Ball = 23;
+    private const int Item = 0x2F;
+
+    public H4d2T0ProbeTests()
+    {
+        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    public void Dispose()
+    {
+        PlayerManager.ItemStartForTests = null;
+        PlayerManager.ItemDriverForTests = null;
+        PlayerManager.ItemCancelForTests = null;
+        EventProgramRunner.NativeSpriteTypeFilterForTests = null;
+        NativeEffects.CreatedForTests = null;
+        GameState.Instance.ResetForTests();
+        WarpDirector.Instance.ResetForTests();
+    }
+
+    private sealed class Sounds : ISoundPlayer
+    {
+        internal int Tick;
+        internal readonly List<(int Tick, int Sfx)> Played = new();
+        public void PlaySfx(int sfxId) => Played.Add((Tick, sfxId));
+        public void RemixVoice(int sfxId, int left, int right) { }
+        public void FlushFrameSounds() { }
+        public void StopAllSfx() { }
+    }
+
+    private static uint Read274(EntityScriptProxy e) => PickupAi.ReadWord274(e);
+
+    private static void Write274(EntityScriptProxy e, uint v) => PickupAi.WriteWord274(e, v);
+
+    /// <summary>The numeric turn of the binary (D-H4D2-1): one step of 4, d when the numeric gap is below 4, never a wrap.</summary>
+    internal static uint Turn(uint cur, uint d)
+    {
+        if (d == cur)
+        {
+            return cur;
+        }
+
+        if (d < cur)
+        {
+            return cur - d < 4 ? d : cur - 4;
+        }
+
+        return d - cur < 4 ? d : cur + 4;
+    }
+
+    private sealed class Run : IDisposable
+    {
+        internal readonly HitArena Arena;
+        internal readonly Sounds Heard = new();
+        internal int Tick;
+        internal EntityScriptProxy? ColumnEntity;
+        internal readonly List<EntityScriptProxy> Born = new();
+        internal readonly Dictionary<EntityScriptProxy, EntityScriptProxy> Aim = new();
+        internal readonly List<(int Tick, int Effect, int Animation, int X, int Y, int Z)> Effects = new();
+        internal readonly List<string> Queries = new();
+        internal readonly List<string> Notes = new();
+        internal readonly StringBuilder Rows = new();
+        internal readonly bool Binary;
+        internal uint StateBefore;
+        internal readonly List<IDisposable> Registrations = new();
+        internal readonly Dictionary<int, List<(int Caller, int Count, int Results, int First)>> QueryByTick = new();
+
+        internal Run(string name, IReadOnlyList<int[]>? blocks, Func<int, int, CutBench.Cell>? cell, int heroZ, bool binary)
+        {
+            Binary = binary;
+            Arena = new HitArena("h4d2t0-" + name, 100, 100, new List<int[]>(), 24, 0);
+            try
+            {
+                SyntheticField.Install(Arena.Arc, cell);
+                if (heroZ != 0)
+                {
+                    Arena.Arc.PlaceHero(100, 100, heroZ);
+                }
+
+                var keep = new HashSet<EntityScriptProxy>(Arena.Targets) { Arena.Hero };
+                foreach (var other in Arena.Arc.Entities.Where(e => !keep.Contains(e)).ToList())
+                {
+                    other.Status = EntityStatus.FlagToDestroy;
+                }
+
+                Arena.Arc.Proxy.RecycleDestroyedEntities();
+                typeof(WorldProxy).GetField("<SoundPlayer>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(Arena.Arc.Proxy, Heard);
+                Arena.Arc.Give(Item);
+                Arena.Arc.SetMp(4, 4);
+                PlayerManager.SetCurrentItemId(GameState.Instance, Item);
+                Arena.Hero.FrameCollisionTickCounter = 0;
+                Arena.Hero.DamagedTickCounter = 0;
+                Arena.Hero.HitCounter = 0;
+                Arena.Hero.TouchingEntity = null;
+                foreach (var pixel in blocks ?? new List<int[]>())
+                {
+                    var block = ((IEntityWorldContext)Arena.Arc.Proxy).SpawnEntityBySpriteIndex(Arena.Hero, false, 25, pixel[0] << 16, pixel[1] << 16, 0, 0);
+                    Assert.NotNull(block);
+                    block!.Flags |= EntityFlags.ClassA;
+                    block.Hp = 5000;
+                    Arena.Targets.Add(block);
+                }
+
+                EventProgramRunner.NativeSpriteTypeFilterForTests = new HashSet<int> { Ball };
+                PlayerManager.ItemStartForTests = PlayerManager.TomeStart;
+                PlayerManager.ItemDriverForTests = (hero, _) => Driver(hero);
+                PlayerManager.ItemCancelForTests = (hero, item) =>
+                {
+                    if (item == Item)
+                    {
+                        Cancel(hero);
+                    }
+                };
+                Arena.Arc.Runner.NativeHandlersEnabled = false;
+                var registry = Arena.Arc.Runner.NativeSprites;
+                Registrations.Add(registry.Register(ScriptHelper.ProgramCTick, 63, new[] { Ball }, (entity, context, state) => C63(entity)));
+                // E3 is registered for {16} in production (h4c1); the slice widens it to {16, 23} (D-H4D2-2): the probe drops the key and registers it again for both types.
+                var entries = (System.Collections.IDictionary)typeof(NativeSpriteRegistry).GetField("_entries", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(registry)!;
+                entries.Remove((ScriptHelper.ProgramEDeactivate, 3));
+                Registrations.Add(registry.Register(ScriptHelper.ProgramEDeactivate, 3, new[] { 16, Ball }, (entity, context, state) => EarthTome1Ai.ImpactDeactivate(entity)));
+                NativeEffects.CreatedForTests = slot => Effects.Add((Tick, slot.TargetEffect, slot.TargetAnimation, slot.X, slot.Y, slot.Z));
+            }
+            catch
+            {
+                Dispose();
+                throw;
+            }
+        }
+
+        private IEntityWorldContext World => (IEntityWorldContext)Arena.Arc.Proxy;
+
+        private int CountOfTheTable()
+        {
+            var highest = 0;
+            foreach (var e in World.SpawnedEntities)
+            {
+                if (e.Slot >= 1 && e.Status != EntityStatus.Destroyed && e.Status != EntityStatus.FlagToDestroy && e.Slot > highest)
+                {
+                    highest = e.Slot;
+                }
+            }
+
+            return highest;
+        }
+
+        // the driver 0x80035A84 (throwaway port)
+        private int Driver(EntityScriptProxy hero)
+        {
+            var phase = hero.ItemUsePhase;
+            if (phase == 0)
+            {
+                var guard = PlayerManager.TomeSlopeGuard(hero);
+                if (guard != 0)
+                {
+                    return guard;
+                }
+
+                if (hero.TargetAnimationId != 0x33)
+                {
+                    return 0;
+                }
+
+                ColumnEntity = World.SpawnEntityBySpriteIndex(hero, false, Column, hero.PosX, hero.PosY, hero.PosZ, 0);
+                if (ColumnEntity is null)
+                {
+                    Notes.Add("column refused at tick " + Tick);
+                    return 1;
+                }
+
+                Born.Add(ColumnEntity);
+                hero.ItemUsePhase = 1;
+                Notes.Add("column born tick " + Tick + " counter " + hero.ItemUseCounter + " slot " + ColumnEntity.Slot + " status " + (int)ColumnEntity.Status);
+                phase = 1;
+            }
+
+            if (phase == 1)
+            {
+                var guard = PlayerManager.TomeSlopeGuard(hero);
+                if (guard != 0)
+                {
+                    return 1;
+                }
+
+                var c = ColumnEntity!;
+                if (c.Status == EntityStatus.Destroyed || c.Slot < 0)
+                {
+                    hero.TargetAnimationId = 0x34;
+                    hero.ItemUsePhase = 2;
+                    Notes.Add("identity changed at tick " + Tick + " counter " + hero.ItemUseCounter);
+                    return 0;
+                }
+
+                if ((hero.ItemUseCounter & 7) != 0)
+                {
+                    return 0;
+                }
+
+                var direction = EnemyHelpers.Below(32);
+                var ball = World.SpawnEntityBySpriteIndex(hero, false, Ball, hero.PosX, hero.PosY, hero.PosZ + 0x100000, direction);
+                if (ball is not null)
+                {
+                    ball.ForceZ = 0x80000;
+                    Write274(ball, 0x10);
+                    ball.DelayOrAngleOrEntityId = 0;
+                    Born.Add(ball);
+                    Notes.Add("ball born tick " + Tick + " slot " + ball.Slot + " dir " + direction);
+                }
+                else
+                {
+                    Notes.Add("ball refused tick " + Tick + " dir " + direction);
+                }
+
+                return 0;
+            }
+
+            if (phase == 2)
+            {
+                return hero.TargetAnimationId != 0x34 ? 1 : 0;
+            }
+
+            return 0;
+        }
+
+        // the cancellation 0x80034D2C (throwaway port), reached by the guard only
+        private void Cancel(EntityScriptProxy hero)
+        {
+            var count = CountOfTheTable();
+            foreach (var e in World.SpawnedEntities.ToList())
+            {
+                if (e.Slot < 1 || e.Slot > count || e.Status != EntityStatus.Normal)
+                {
+                    continue;
+                }
+
+                if (e.SpriteType == Column)
+                {
+                    var x = e.PosX;
+                    var y = e.PosY;
+                    var z = e.PosZ + 1;
+                    Arena.Arc.Proxy.EffectStage!.Emit(reservoir => NativeEffects.CreateFireColumnBlast(reservoir, x, y, z));
+                    World.DestroyEntity(e);
+                    Notes.Add("cancel destroys the column at tick " + Tick);
+                }
+                else if (e.SpriteType == Ball)
+                {
+                    e.Status = EntityStatus.Deactivated;
+                    e.BlockedByEntity = null;
+                    Notes.Add("cancel deactivates a ball (slot " + e.Slot + ") at tick " + Tick);
+                }
+            }
+        }
+
+        // C63 0x8007AC60 (throwaway port)
+        private void C63(EntityScriptProxy e)
+        {
+            var wait = Read274(e);
+            if (wait != 0)
+            {
+                Write274(e, wait - 1);
+                return;
+            }
+
+            e.ForceZ = unchecked((int)0xFFFD0000);
+            if (e.DelayOrAngleOrEntityId == 0)
+            {
+                var count = CountOfTheTable();
+                var type = (e.CurrentAttack?.Attribute ?? 0) & 0xF;
+                var found = TargetQuery.Find(World.SpawnedEntities, count, e, 1, type, !Binary ? true : false, !Binary ? 2 : 3);
+                Queries.Add(string.Join(",", Tick, e.Slot, count, found.Count, found.Count > 0 ? found[0].Slot : 0, type));
+                if (found.Count == 0)
+                {
+                    Write274(e, (uint)EnemyHelpers.Below(9));
+                    return;
+                }
+
+                Aim[e] = found[0];
+                e.DelayOrAngleOrEntityId = found[0].Slot;
+                DoTurn(e, found[0]);
+                return;
+            }
+
+            if (!Aim.TryGetValue(e, out var target) || target.Status != EntityStatus.Normal || target.Slot != e.DelayOrAngleOrEntityId)
+            {
+                e.DelayOrAngleOrEntityId = 0;
+                return;
+            }
+
+            DoTurn(e, target);
+        }
+
+        private static void DoTurn(EntityScriptProxy e, EntityScriptProxy target)
+        {
+            var d = ScriptHelper.GetDirectionToTarget(unchecked(target.PosX - e.PosX), unchecked(target.PosY - e.PosY));
+            var cur = e.TargetDirection;
+            if (d == cur)
+            {
+                return;
+            }
+
+            e.TargetDirection = Turn(cur, d);
+            Write274(e, 2);
+        }
+
+        internal static uint State() => unchecked((uint)GameRandom.RandomSeed);
+
+        internal static int Steps(uint from, uint to)
+        {
+            var s = from;
+            for (var k = 0; k <= 64; k++)
+            {
+                if (s == to)
+                {
+                    return k;
+                }
+
+                s = unchecked(s * 0x7D2B89DDu + 0xE06A02E7u);
+            }
+
+            return -1;
+        }
+
+        private static void Num(StringBuilder b, long v) => b.Append(v.ToString(CultureInfo.InvariantCulture));
+
+        internal void Go(int last, int? hurt = null, int ticksPerFrame = 1, Dictionary<int, int[]>? remove = null, uint seed = 0x12345678)
+        {
+            Arena.BeforeTick = tick =>
+            {
+                Tick = tick;
+                Heard.Tick = tick;
+                if (tick == 1)
+                {
+                    GameRandom.RandomSeed = seed;
+                }
+
+                if ((tick - 1) % ticksPerFrame == 0)
+                {
+                    StateBefore = State();
+                }
+
+                if (hurt == tick)
+                {
+                    Arena.Hero.TargetAnimationId = 0x31;
+                }
+
+                if (remove != null && remove.TryGetValue(tick, out var gone))
+                {
+                    foreach (var index in gone)
+                    {
+                        Arena.Targets[index].Status = EntityStatus.FlagToDestroy;
+                    }
+                }
+            };
+            Arena.AfterTick = tick =>
+            {
+                var b = new StringBuilder();
+                b.Append("{\"t\":").Append(tick).Append(",\"hero\":[");
+                var h = Arena.Hero;
+                b.Append(string.Join(",", h.TargetAnimationId, h.PosX, h.PosY, h.PosZ, h.ItemInUse, h.ItemUsePhase, h.ItemUseCounter, GameState.Instance.PlayerStats.Mp));
+                b.Append("],\"ents\":[");
+                var first = true;
+                foreach (var e in Born)
+                {
+                    var live = e.Status != EntityStatus.Destroyed;
+                    if (live)
+                    {
+                        e.EvaluateFrameBox();
+                    }
+
+                    if (!first)
+                    {
+                        b.Append(',');
+                    }
+
+                    first = false;
+                    b.Append('[').Append(string.Join(",", e.SpriteType, e.Slot, (int)e.Status, e.PosX, e.PosY, e.PosZ, e.ForceX, e.ForceY, e.ForceZ, (long)e.Flags, e.TargetAnimationId, e.TargetDirection, e.ForceResetAnimationFlag,
+                        Read274(e), e.DelayOrAngleOrEntityId, e.IsOnGround, e.Slope_18c, e.CurrentAttack?.Attribute ?? -1, e.CurrentAttack?.Power ?? -1, e.FrameCollisionTickCounter,
+                        live ? e.CollisionWidth : -1, live ? e.CollisionDepth : -1, live ? e.CollisionHeight : -1, live ? e.CollisionOffsetX : -1, live ? e.CollisionOffsetY : -1, live ? e.CollisionOffsetZ : -1)).Append(']');
+                }
+
+                b.Append("],\"targets\":[");
+                b.Append(string.Join(",", Arena.Targets.Select(t => "[" + t.FrameCollisionTickCounter + "," + (t.TouchingEntity?.GameplayProxy is EntityScriptProxy p ? p.SpriteType : -1) + "," + (int)t.Status + "]")));
+                b.Append("],\"state\":").Append(State()).Append('}');
+                Rows.AppendLine(b.ToString());
+            };
+
+            Arena.Begin();
+            var frames = new StringBuilder();
+            for (var tick = 1; tick <= last; tick += ticksPerFrame)
+            {
+                var ticks = Math.Min(ticksPerFrame, last - tick + 1);
+                Arena.Frame(tick == 1 ? PadState.Circle : 0, ticks);
+                frames.AppendLine(string.Join(",", tick + ticks - 1, State(), Steps(StateBefore, State())));
+            }
+
+            Gen = frames.ToString();
+        }
+
+        internal string Gen = "";
+
+        internal void Write(string name)
+        {
+            File.WriteAllText(Path.Combine(Out, name + ".rows.jsonl"), Rows.ToString());
+            File.WriteAllText(Path.Combine(Out, name + ".gen.csv"), Gen);
+            File.WriteAllText(Path.Combine(Out, name + ".queries.csv"), string.Join("\n", Queries) + "\n");
+            File.WriteAllText(Path.Combine(Out, name + ".effects.csv"), string.Join("\n", Effects.Select(e => string.Join(",", e.Tick, e.Effect, e.Animation, e.X, e.Y, e.Z))) + "\n");
+            File.WriteAllText(Path.Combine(Out, name + ".sounds.csv"), string.Join("\n", Heard.Played.Select(p => p.Tick + "," + p.Sfx)) + "\n");
+            File.WriteAllText(Path.Combine(Out, name + ".notes.txt"), string.Join("\n", Notes) + "\n");
+        }
+
+        public void Dispose()
+        {
+            foreach (var r in Registrations)
+            {
+                r.Dispose();
+            }
+
+            PlayerManager.ItemStartForTests = null;
+            PlayerManager.ItemDriverForTests = null;
+            PlayerManager.ItemCancelForTests = null;
+            EventProgramRunner.NativeSpriteTypeFilterForTests = null;
+            NativeEffects.CreatedForTests = null;
+            Arena.Dispose();
+        }
+    }
+
+    private static readonly int[] Decoy = { 1100, 900 };
+
+    private void Scenario(string name, IReadOnlyList<int[]>? blocks, int last, Func<int, int, CutBench.Cell>? cell = null, int heroZ = 0, int? hurt = null, int tpf = 1, Dictionary<int, int[]>? remove = null, uint seed = 0x12345678)
+    {
+        using var run = new Run(name, blocks, cell, heroZ, true);
+        run.Go(last, hurt, tpf, remove, seed);
+        run.Write(name);
+    }
+
+    private static Func<int, int, CutBench.Cell> Columns(int first, int lastColumn, CutBench.Cell c) => (col, _) => col >= first && col <= lastColumn ? c : default;
+
+    [Fact] public void Cast() => Scenario("cast", null, 200);
+
+    [Fact] public void CastSeedB() => Scenario("cast_seedB", null, 200, seed: 0xA5A5A5A5);
+
+    [Fact] public void Cast2() => Scenario("cast_t2", null, 200, tpf: 2);
+
+    [Fact] public void Cast3() => Scenario("cast_t3", null, 200, tpf: 3);
+
+    [Fact] public void Water() => Scenario("water", null, 200, Columns(6, 12, new CutBench.Cell(0, 0, null, 0x08)));
+
+    [Fact] public void ReliefHb1() => Scenario("relief_hb1", null, 200, Columns(6, 12, new CutBench.Cell(0, 1)));
+
+    [Fact] public void ReliefHb2() => Scenario("relief_hb2", null, 200, Columns(6, 12, new CutBench.Cell(0, 2)));
+
+    [Fact] public void ReliefHero() => Scenario("relief_hero", null, 200, (c, r) => c <= 5 && r >= 2 && r <= 6 ? new CutBench.Cell(0, 2) : default, heroZ: 32);
+
+    [Theory]
+    [InlineData(10)]
+    [InlineData(33)]
+    [InlineData(34)]
+    [InlineData(35)]
+    [InlineData(60)]
+    [InlineData(100)]
+    [InlineData(121)]
+    [InlineData(122)]
+    [InlineData(124)]
+    [InlineData(140)]
+    public void Hurt(int t) => Scenario("hurt" + t, null, t + 75, hurt: t);
+
+    [Fact] public void TgtOne() => Scenario("tgt_one", new List<int[]> { new[] { 140, 100 } }, 200);
+
+    [Fact] public void TgtThree() => Scenario("tgt_three", new List<int[]> { new[] { 140, 100 }, new[] { 100, 140 }, new[] { 180, 100 } }, 200);
+
+    [Fact] public void TgtTwoWrongOrder() => Scenario("tgt_two_wrong_order", new List<int[]> { new[] { 180, 100 }, new[] { 130, 100 } }, 200);
+
+    [Fact]
+    public void TgtTopSlot()
+    {
+        var blocks = Enumerable.Repeat(Decoy, 11).Append(new[] { 140, 100 }).ToList();
+        Scenario("tgt_topslot", blocks, 200, remove: new Dictionary<int, int[]> { [1] = Enumerable.Range(0, 11).ToArray() });
+    }
+
+    [Fact] public void TgtVanish75() => Scenario("tgt_vanish75", new List<int[]> { new[] { 140, 100 } }, 200, remove: new Dictionary<int, int[]> { [75] = new[] { 0 } });
+
+    [Fact] public void ColHit() => Scenario("col_hit", new List<int[]> { new[] { 108, 100 } }, 130);
+
+    [Fact] public void TableFull() => Scenario("table_full", Enumerable.Repeat(Decoy, 63).ToList(), 80);
+
+    [Fact] public void TableOneFree() => Scenario("table_one_free", Enumerable.Repeat(Decoy, 62).ToList(), 200);
+
+    [Theory]
+    [InlineData("x", 75)]
+    [InlineData("x", 76)]
+    [InlineData("x", 77)]
+    [InlineData("x", 121)]
+    [InlineData("x", 122)]
+    [InlineData("x", 123)]
+    [InlineData("y", 84)]
+    [InlineData("y", 85)]
+    [InlineData("y", 86)]
+    [InlineData("y", 114)]
+    [InlineData("y", 115)]
+    [InlineData("y", 116)]
+    public void Edge(string axis, int v) => Scenario("edge_" + axis + v, new List<int[]> { axis == "x" ? new[] { v, 100 } : new[] { 100, v } }, 40);
+
+    [Fact]
+    public void P15TurnGrid()
+    {
+        if (VecC63.Length == 0)
+        {
+            return;
+        }
+
+        using var doc = JsonDocument.Parse(File.ReadAllText(VecC63));
+        var lines = new List<string>();
+        var bad = 0;
+        var badTurn = 0;
+        var n = 0;
+        foreach (var v in doc.RootElement.GetProperty("vectors").EnumerateArray())
+        {
+            if (v.GetProperty("kind").GetString() != "turn")
+            {
+                continue;
+            }
+
+            var reads = new Dictionary<long, long>();
+            foreach (var r in v.GetProperty("reads").EnumerateArray())
+            {
+                reads[r[0].GetInt64()] = r[2].GetInt64();
+            }
+
+            var self = v.GetProperty("args")[0].GetInt64();
+            int Word(long a) => unchecked((int)(uint)reads[a]);
+            var ptr = reads[self + 0x278];
+            var sx = Word(self + 0x114);
+            var sy = Word(self + 0x118);
+            var tx = Word(ptr + 0x114);
+            var ty = Word(ptr + 0x118);
+            var d = ScriptHelper.GetDirectionToTarget(unchecked(tx - sx), unchecked(ty - sy));
+            var expected = (uint)v.GetProperty("target_dir").GetInt64();
+            var cur = (uint)v.GetProperty("cur").GetInt64();
+            var written = cur;
+            foreach (var w in v.GetProperty("writes").EnumerateArray())
+            {
+                if (w[0].GetInt64() == self + 0x8C)
+                {
+                    written = (uint)w[2].GetInt64();
+                }
+            }
+
+            n++;
+            if (d != expected)
+            {
+                bad++;
+                lines.Add("dir mismatch id " + v.GetProperty("id").GetInt32() + " cur " + cur + " computed " + d + " binary " + expected);
+            }
+
+            if (Turn(cur, expected) != written)
+            {
+                badTurn++;
+                lines.Add("turn mismatch id " + v.GetProperty("id").GetInt32() + " cur " + cur + " d " + expected + " model " + Turn(cur, expected) + " binary " + written);
+            }
+        }
+
+        lines.Insert(0, "turn-grid vectors " + n + " direction mismatches " + bad + " turn mismatches " + badTurn);
+        File.WriteAllText(Path.Combine(Out, "p15.txt"), string.Join("\n", lines) + "\n");
+    }
+
+    [Fact]
+    public void ListD_UnhandledCodes()
+    {
+        var catalog = new SpriteRecordCatalog(ProjectRootFinder.Find());
+        var production = new EventProgramRunner(null, GameState.Instance).NativeSprites;
+        var lines = new List<string>
+        {
+            "production registry count " + production.Count,
+            "unhandled {16}: " + string.Join(" ", PlayerManager.UnhandledWeaponSpriteCodes(new[] { 16 }, catalog, production).Select(k => k.ToString())),
+            "unhandled {23}: " + string.Join(" ", PlayerManager.UnhandledWeaponSpriteCodes(new[] { 23 }, catalog, production).Select(k => k.ToString())),
+            "unhandled {16, 23}: " + string.Join(" ", PlayerManager.UnhandledWeaponSpriteCodes(new[] { 16, 23 }, catalog, production).Select(k => k.ToString())),
+            "unhandled {20, 23}: " + string.Join(" ", PlayerManager.UnhandledWeaponSpriteCodes(new[] { 20, 23 }, catalog, production).Select(k => k.ToString())),
+            "unhandled {20}: " + string.Join(" ", PlayerManager.UnhandledWeaponSpriteCodes(new[] { 20 }, catalog, production).Select(k => k.ToString())),
+            "unhandled {16, 23} on an empty registry: " + string.Join(" ", PlayerManager.UnhandledWeaponSpriteCodes(new[] { 16, 23 }, catalog, new NativeSpriteRegistry()).Select(k => k.ToString())),
+            "unhandled {20, 23} on an empty registry: " + string.Join(" ", PlayerManager.UnhandledWeaponSpriteCodes(new[] { 20, 23 }, catalog, new NativeSpriteRegistry()).Select(k => k.ToString())),
+            "wired weapon types: " + string.Join(" ", PlayerManager.ProductionWiredWeaponTypes.OrderBy(t => t)),
+        };
+        File.WriteAllText(Path.Combine(Out, "list_d.txt"), string.Join(Environment.NewLine, lines) + Environment.NewLine);
+    }
+}

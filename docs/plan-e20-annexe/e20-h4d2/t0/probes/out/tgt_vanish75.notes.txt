@@ -1,0 +1,13 @@
+column born tick 34 counter 32 slot 2 status 1
+ball born tick 34 slot 3 dir 4
+ball born tick 42 slot 4 dir 27
+ball born tick 50 slot 5 dir 18
+ball born tick 58 slot 6 dir 20
+ball born tick 66 slot 7 dir 22
+ball born tick 74 slot 8 dir 4
+ball born tick 82 slot 1 dir 7
+ball born tick 90 slot 9 dir 20
+ball born tick 98 slot 10 dir 12
+ball born tick 106 slot 11 dir 22
+ball born tick 114 slot 3 dir 14
+identity changed at tick 122 counter 120
