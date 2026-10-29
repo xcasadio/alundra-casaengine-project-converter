@@ -79,8 +79,16 @@ public static class TargetQuery
     /// <param name="entities">The born entities, a compact list; each is judged by its <see cref="EntityScriptProxy.Slot"/>.</param>
     public static int StoredCount(IReadOnlyList<EntityScriptProxy> entities)
     {
-        // Skeleton of the tests-first commit: the real body comes with the code.
-        return -1;
+        var count = -1;
+        foreach (var entity in entities)
+        {
+            if (entity.Slot > count && entity.Status != EntityStatus.Destroyed && entity.Status != EntityStatus.FlagToDestroy)
+            {
+                count = entity.Slot;
+            }
+        }
+
+        return count;
     }
 
     /// <summary>The squared distance on the two axes modulo 2^32, each difference taken on 32 bits then shifted arithmetically by 16 (the positions are 16.16).</summary>

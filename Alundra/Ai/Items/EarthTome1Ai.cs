@@ -9,7 +9,7 @@ using Alundra.Maps;
 namespace Alundra.Ai.Items;
 
 /// <summary>
-/// E20.h4c1 (docs/plan-e20-heros.md section 1.31.3, D-H4C1-1): the earth tome 1, the item <c>0x2B</c>: the driver <c>0x80035320</c> and the native handler E3 (<c>0x8007EDA0</c>, slot E) for the sprite type 16, the rocks. Wired in production by the phase B (D-H4C1-2): the entries <c>0x2B</c> of the three seams of the item in use (<see cref="PlayerManager"/>) and the key of E3 in <see cref="NativeSpriteRegistry.CreateForProduction"/>; the tests of phase A install the seams and the key themselves.
+/// E20.h4c1 (docs/plan-e20-heros.md section 1.31.3, D-H4C1-1): the earth tome 1, the item <c>0x2B</c>: the driver <c>0x80035320</c> and the native handler E3 (<c>0x8007EDA0</c>, slot E) for the sprite type 16, the rocks (and, since E20.h4d2, the type 23, the fire balls of the fire tome 1: the same handler). Wired in production by the phase B (D-H4C1-2): the entries <c>0x2B</c> of the three seams of the item in use (<see cref="PlayerManager"/>) and the key of E3 in <see cref="NativeSpriteRegistry.CreateForProduction"/>; the tests of phase A install the seams and the key themselves.
 /// <list type="bullet">
 /// <item><description>The driver, called every tick of the item (the counter is 0 at its first call, the tick after the start; the wrapper <c>0x8003634C</c> increments it after the driver and frees the item when the driver answers non-zero). Phase 0: the guard of the slope
 /// (<see cref="PlayerManager.TomeSlopeGuard"/>), then nothing before the counter 20; then, for each entry of the table whose tick is the counter, a rock is born at the hero by the interface (<c>SpawnWarpEntity</c>, the sprite 16 of the global page, the direction
@@ -21,8 +21,8 @@ namespace Alundra.Ai.Items;
 /// </summary>
 internal static class EarthTome1Ai
 {
-    /// <summary>The sprite type of the rocks: 16.</summary>
-    internal static readonly int[] SpriteTypes = { 16 };
+    /// <summary>The sprite types E3 serves: 16, the rocks, and (E20.h4d2, D-H4D2-2) 23, the fire balls of the fire tome 1, which end on the same impact (<c>0x102074</c> to <c>0x102044</c>, then <c>DestroyEntity(self, -1)</c> at the end of the animation 1). One registration, one key: a second one for the type 23 would throw.</summary>
+    internal static readonly int[] SpriteTypes = { 16, 23 };
 
     /// <summary>The program code of E3 in slot E.</summary>
     internal const int ImpactCode = 3;
@@ -184,7 +184,7 @@ internal static class EarthTome1Ai
     {
     }
 
-    /// <summary>Registers E3 for the type 16 alone; the disposable takes the key off (for the tests that register it themselves on a registry of their own).</summary>
+    /// <summary>Registers E3 for the types 16 and 23 (<see cref="SpriteTypes"/>); the disposable takes the key off (for the tests that register it themselves on a registry of their own).</summary>
     internal static IDisposable Register(NativeSpriteRegistry registry)
         => registry.Register(ScriptHelper.ProgramEDeactivate, ImpactCode, SpriteTypes, (entity, context, state) => ImpactDeactivate(entity));
 }

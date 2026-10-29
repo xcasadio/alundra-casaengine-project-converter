@@ -526,8 +526,8 @@ public sealed class FireTome1AiTests : IDisposable
             Assert.True(ReferenceEquals(c.SpellTarget, c.Ball.SpellTarget), $"{label}: the reference is kept");
         }
 
-        var expectedSeed = v.Wrote(FireTome1Vectors.GeneratorWord) ? (ulong)(uint)v.WroteWord(FireTome1Vectors.GeneratorWord) : SentinelSeed;
-        Assert.True(expectedSeed == GameRandom.RandomSeed, $"{label}: generator {GameRandom.RandomSeed:X}, vector {expectedSeed:X}");
+        var expectedSeed = v.Wrote(FireTome1Vectors.GeneratorWord) ? (uint)v.WroteWord(FireTome1Vectors.GeneratorWord) : (uint)SentinelSeed;
+        Assert.True(expectedSeed == unchecked((uint)GameRandom.RandomSeed), $"{label}: generator {unchecked((uint)GameRandom.RandomSeed):X}, vector {expectedSeed:X}"); // the machine has 32 bits of state.
 
         // Nothing else of the ball or the others moved: the positions, the statuses and the slots.
         foreach (var (slot, entity) in c.Entities)
