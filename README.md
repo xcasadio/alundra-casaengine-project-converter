@@ -1,309 +1,140 @@
-# alundra-casaengine-project-converter
+# Alundra port on CasaEngine
 
-A command-line tool that converts an extracted PSX Alundra data set (`data-extracted/`, produced
-by [`alundra-datas-analyser`](https://github.com/xcasadio/alundra-datas-analyser)) into a
-loadable [CasaEngine](https://github.com/xcasadio/CasaEngineMonogame) project: maps, sprites,
-audio, text, worlds, and everything else the engine can represent, plus a handful of JSON
-"companion" formats for the data it cannot (see [`docs/formats/`](docs/formats/README.md)).
+**Bringing Alundra into a modern game engine.**
 
-The converter is headless — it never starts a `CasaEngineGame` or opens a `GraphicsDevice` — so it
-writes documents the engine's own `Load()` methods can read later, and (by default) verifies that
-they actually do, in the same run.
+This project aims to rebuild Alundra as a fully structured, editable and extensible game project using [CasaEngine](https://github.com/xcasadio/CasaEngineMonogame), a C# game engine built on MonoGame.
+
+Rather than emulating the original PlayStation hardware or simply reproducing its visuals, the goal is to bring the game's entire world, assets and systems into a modern game development environment.
+
+Every aspect of Alundra is being reimagined through modern engine concepts: worlds, entities, components, physics, rendering, animations, dialogues, gameplay systems and asset management.
+
+**The ambition is to preserve the original game while giving it a modern foundation for exploration, modification and future enhancements.**
+
+## A Complete Game World, Rebuilt
+
+Alundra is no longer just a collection of PlayStation-specific data. Its content is reconstructed as a native CasaEngine project, where game elements are organized into independent, reusable and editable resources.
+
+A full conversion already produces:
+
+| | Converted content |
+|---|---|
+| **483** | Game maps and worlds |
+| **9,620** | 2D animations |
+| **~21,000** | Registered game assets |
+| **395** | Sprite banks |
+| **9,741** | Map entity instances |
+| **3,316** | Portals |
+| **1,714** | Map events |
+| **1,041** | Audio files |
+
+These figures represent an actual full project conversion, not estimated targets.
 
 ## Prerequisites
 
 - **.NET 9 SDK** (`net9.0-windows`).
-- The **`CasaEngineMonogame`** submodule, initialized: `git submodule update --init CasaEngineMonogame`.
-  The converter project-references `CasaEngine`, `CasaEngine.EditorServices` and the `MGUI.*`
-  projects directly out of that checkout.
-- The **`alundra-datas-analyser`** repository checked out as a **sibling** of this repo (i.e. next
-  to it, not inside it): the csproj links `EntityNames.csv` from
-  `..\alundra-datas-analyser\AlundraTools\AlundraTools\EntityNames.csv` rather than copying it, so
-  the converter and the game engine's own `AlundraEngine.EntityNames` reader always agree on entity
-  names. Without it, Phase 3 fails immediately (see below).
-- An extracted **`data-extracted/`** folder (see `alundra-datas-analyser` for how to produce one)
-  to pass as the input directory.
 
-## Build and test
+> **Legal note** – You must own a legitimate copy of the original *Alundra* disc to extract and analyse game data.  No copyrighted assets are distributed in this repository.
 
-```
-dotnet build alundra-casaengine-project-converter.slnx
-dotnet test alundra-casaengine-project-converter.slnx
-```
+## Modernizing Every Game System
 
-## CLI usage
+### Worlds and Level Design
 
-```
-alundra-casaengine-project-converter <inputDir> <outputDir> [--maps 0,4,10] [--phase N] [--no-verify]
-```
+The original locations are recreated as independent CasaEngine worlds.
 
-- `<inputDir>` — path to `data-extracted/`.
-- `<outputDir>` — path to the CasaEngine project to create (created if missing; existing files are
-  overwritten in place).
-- `--phase N` — run phases **0 through N inclusive**, then stop. It does *not* run phase `N` alone
-  — there is no way to run a single phase in isolation, because later phases generally depend on
-  the assets earlier ones wrote (e.g. Phase 2 merges into the `.tileMap` files Phase 1 produced).
-  Omit the flag to run every phase (0–9, verification included).
-- `--maps 0,4,10` — restrict every per-map phase (1, 2, 3's map-derived data, 5, 6) to this
-  comma-separated list of Alundra map indices, instead of every map found in `data-extracted/`.
-  Useful for fast iteration on one or a few maps. Phase 6's world-count invariant check (see below)
-  only runs on a full, unfiltered run.
-- `--no-verify` — skip Phase 8 (asset verification). Useful for fast iteration; the full run should
-  always include verification before you trust the output.
+Maps, tile layers, entities, portals and environmental properties are organized using a modern world and scene architecture.
 
-Example invocations:
+This creates the foundation for inspecting and editing Alundra's environments through a game editor rather than relying on PlayStation-specific tools.
 
-```
-# Full conversion, all 9 phases, verification included
-alundra-casaengine-project-converter data-extracted out\AlundraGame
+### Rendering and Visuals
 
-# Iterate on just three maps, phases 0-3 only, no verification
-alundra-casaengine-project-converter data-extracted out\AlundraGame --maps 0,4,10 --phase 3 --no-verify
+The original 2D graphics are integrated into CasaEngine's rendering architecture.
 
-# Full conversion but skip the verification pass
-alundra-casaengine-project-converter data-extracted out\AlundraGame --no-verify
-```
+Sprites, textures, tilemaps, animation frames, image transformations and scrolling background layers are represented as engine resources.
 
-## The 9 phases
+The goal is to faithfully reproduce the visual identity of Alundra while removing its dependency on the original PlayStation rendering pipeline.
 
-| # | Reads | Writes |
-|---|---|---|
-| 0 | — | An empty CasaEngine project: `<Project>.json`, empty `AssetInfos.json`, and the top-level content folders. |
-| 1 | `data/tiled/map_N.tmj` (Tiled export) | `Maps/{Zone}/{Name}-{id}/tilemap/{Name}-{id}.tmj/.tileMap/.tileset/.texture` via the engine's own `TiledMapImporter`. |
-| 2 | `data/tiled/map_N.alundra.json` + `data/map_N.json` | Merges per-cell gameplay metadata into each `.tileMap`'s `CustomProperties["AlundraCells"]`. |
-| 3 | `data/map_N.json` `SpriteInfo.SpriteRecords`, `data/map_alundra.json`, `EntityNames.csv` | `Entities/<EntityName>/*.sprite` + `*.anim2d`, spritesheets under `Sprites/Textures/`, hero effects under `Sprites/hero/`. |
-| 4 | `sound/bgm.json`, `sound/sfx.json`, `sound/bgm/*.wav`, `sound/sfx/*.wav` | Raw WAV copies under `Musics/` / `Sounds/`, plus their manifests. |
-| 5 | `data/ETC_RES.R.json`, `data/map_N.json` `Strings`, `data/map_alundra.json` `Strings`, `EtcIndexTable.csv`, `ui/font3.json`, `ui/font3.png` | All the game's text as Yarn: per map `Maps/{Zone}/{Name}-{id}/dialogues/{Name}-{id}.yarn` + its compiled, catalogued `.dialogue`, plus `Dialogues/Shared` and `Dialogues/Etc` (see `docs/formats/dialogues-yarn.md`); raw text tables left by an older export are removed. Then `UI/font3.fnt` + `UI/font3-charset.json`. |
-| 6 | `.tileMap` assets from Phase 1, `data/map_N.json` | One `.world` per map at the root of its map folder (`Maps/{Zone}/{Name}-{id}/{Name}-{id}.world`), the single shared `Entities/AlundraCamera.entity` every world references, `Maps/world-index.json`, the project's `FirstWorldLoaded`, and `Maps/{Zone}/{Name}-{id}/events/{Name}-{id}.events.json` (raw event bytecode). |
-| 7 | `ui/wind.json` + `ui/wind.png`, `memorycard/`, `closing/`, `data/loading_screen.png`, `data/BALANCE.BIN.json` | `UI/*.sprite` + `UI/wind-sprites.json`, catalogued screen textures under `UI/Textures/`, `Data/balance.json`. |
-| 9 | `data/map_N.json` `Map.ScrollParameters` | Per map, the scrolling background layers: a pre-rendered 640x480 texture per non-empty `Tiles` layer (plus one per animation frame) under `Maps/{Zone}/{Name}-{id}/backdrop/`, and a raw `{Name}-{id}.backdrop.json` companion (not a CasaEngine asset — same convention as `events.json`) carrying parallax/auto-scroll factors and the full-screen overlay tint. See `docs/formats/backdrops.md`. Runs after Phase 7, before Phase 8's verification. |
-| 8 | Every asset registered in `AssetInfos.json` | Nothing — loads each one back through its engine class (or existence-checks it) and records the result in `report.json`. Runs by default; `--no-verify` skips it. |
+This also establishes a foundation for future graphical improvements, including enhanced rendering and potentially HD-2D environments.
 
-## Output layout
+### Physics and Collisions
 
-Top-level folders of a converted project (from a real full run):
+Alundra's original collision geometry is represented using CasaEngine's component-based collision system.
 
-```
-<outputDir>/
-  AlundraGame.json        project settings (FirstWorldLoaded points at map 389, the New Game map)
-  AssetInfos.json         the asset catalog: every asset's id, name and file name
-  report.json             counters, warnings, errors, messages, metrics (see below)
-  Maps/                   everything belonging to a map lives in that map's own folder
-    world-index.json       MapId -> relative path of that map's .world
-    {Zone}/{Name}-{id}/    one folder per map, grouped by the zone its maps.json entry names
-      tilemap/              {Name}-{id}.tmj / .tileMap / .tileset / .texture + map_{id}_tileset.png
-      dialogues/            {Name}-{id}.yarn + .dialogue — that map's dialogue text as Yarn
-      events/               {Name}-{id}.events.json — raw event bytecode (not a CasaEngine asset)
-      {Name}-{id}.world     the map's world, at the root of its folder
-  Entities/
-    AlundraCamera.entity   the single 2D camera asset all 483 worlds reference by asset_id (a
-                           Camera2dComponent targeting the map centre; every map is the same size,
-                           so one camera frames them all — see Writers/WorldWriter.cs)
-    <EntityName>/          one folder per sprite bank, named by EntityNames.csv; holds that bank's
-                           .sprite and .anim2d assets (NOT "Sprites/bank_<id>/" — banks are grouped
-                           by the entity name the game itself uses, e.g. Entities/Alundra for the hero)
-  Sprites/
-    Textures/              spritesheet PNGs + .texture wrappers, shared across entities
-    hero/hero_effects.json companion: hero SpriteEffectRecords, not converted to sprites in V1
-  Sounds/                 sfx_NNNN.wav + sfx-manifest.json
-  Musics/                 bgm_NNN.wav + bgm-manifest.json
-  Dialogues/              the text that belongs to no single map
-    Shared.yarn/.dialogue  the shared map_alundra table
-    Etc.yarn/.dialogue     the ETC_RES.R table (menus, items, yes/no)
-  UI/
-    font3.fnt, font3-charset.json     bitmap font + raw-code/codepoint mapping
-    *.sprite, wind-sprites.json       UI element crops from ui/wind.png
-    Textures/                         UI PNGs (wind.png, memory-card frames, ending screens, loading screen)
-  Data/balance.json        BALANCE.BIN.json, recopied with unknown fields kept
-```
+Entity bodies and animation-dependent collision volumes become modern physics components and collision timelines.
 
-See [`docs/formats/`](docs/formats/README.md) for the schema of every companion JSON format
-(`AlundraCells`, the audio manifests, the text tables, the font charset, the event bytecode, the
-world index, and the miscellaneous data files).
+The underlying geometry can therefore be inspected and reused within the engine, while gameplay-specific collision behavior remains part of the ongoing reconstruction.
 
-## `report.json`
+### Animations and Characters
 
-Written to `<outputDir>/report.json` after every run (even a partial one via `--phase`). Shape:
+Characters, enemies and other animated objects are organized as reusable assets.
 
-- **`Counters`** — a flat `name -> int` map, one entry per thing the run counted (`Maps`,
-  `Assets.Sprite`, `Worlds.Portals`, `Verify.Loaded.anim2d`, …). Printed sorted by name at the end
-  of the run.
-- **`Metrics`** — `TotalDurationSeconds`, a `PhaseDurationsSeconds` map (wall-clock per phase, e.g.
-  `"Phase3.Sprites": 14.203`), `OutputSizeBytes` / `OutputSizeMegabytes`, `OutputFileCount`.
-- **`WarningsByCategory`** — the flat `Warnings` list grouped by its message prefix up to the first
-  `:` (digit runs normalised to `#`, so `map_4: ...` and `map_311: ...` land in the same bucket),
-  each with its count and up to 3 example messages. A convenience summary; `Warnings` stays the
-  authoritative list.
-- **`Warnings`** — every warning, in the order it was raised. Non-fatal: missing optional source
-  files, unreferenced WAVs, name collisions, font-table quirks, and so on.
-- **`Errors`** — failures that made the run incomplete or wrong (a required source file missing, a
-  write that threw, a verification failure, an invariant mismatch). **A non-zero error count makes
-  the process exit with code 1.**
-- **`Messages`** — informational notes worth surfacing once (e.g. confirming accented French
-  round-tripped correctly, or that the font is monospaced).
+Their original animations are represented using CasaEngine's animation system, including individual sprite parts, transformations, timing and collision keyframes.
 
-## Verification (Phase 8)
+Instead of being locked inside proprietary game data, animations become structured resources that can be inspected and extended.
 
-`AssetVerifier` reads `AssetInfos.json` back and, for every registered asset, either:
+### Dialogues, Events and Gameplay
 
-- **Loads it through the actual engine class** that owns its format — the same `Load()` the editor
-  calls — for extensions with a registered, GraphicsDevice-free `AssetLoader<T>`: `.tileMap`,
-  `.tileset`, `.sprite`, `.anim2d`, `.texture`, `.world`. A malformed document throws here instead
-  of silently failing later as a swallowed "IAssetLoader can't load ..." at runtime.
-- **Only existence- and non-emptiness-checks it** for everything else, because no headless loader
-  exists for it: `.wav` has no engine loader at all (`Sound` is a thin runtime wrapper with no
-  serialized form), a raw `.png` needs a live `GraphicsDevice` to decode, and plain companion files
-  (`.tmj`, `.fnt`, `.json` manifests) are not CasaEngine asset types in the first place.
+The game's dialogue content is integrated with **Yarn Spinner**, providing a modern dialogue authoring and execution environment.
 
-It also checks catalog integrity independently of any loader: duplicate asset ids, duplicate file
-names, and catalog entries pointing at files that don't exist — each is an `Error`, not a warning.
+Alundra's original event data is preserved alongside its worlds, establishing the foundation for rebuilding gameplay interactions, scripted sequences and other behaviors.
 
-Because the pass is **catalog-driven**, it is measured against the loadable files actually on disk
-so that it cannot be silently blind:
+The long-term goal is to reproduce the original game logic through modern C# gameplay systems and reusable engine components.
 
-- An **empty catalog over a directory that contains asset files is an `Error`** ("nothing was
-  verified"), not a serene pass. An empty catalog with no asset files — what `--phase 0` legitimately
-  produces — is fine.
-- A loadable file on disk with **no catalog entry** is a `Warning` (`Verify.UncataloguedFiles`).
-  In practice that means stale output from a previous run into the same directory: the engine's
-  Tiled importer renames rather than overwrites, leaving `map_N_tileset_2.png` behind. **Convert
-  into an empty directory** if you want the catalog to describe exactly what is there. On a clean
-  full run this count is 0 and `Verify.LoadableFilesOnDisk == Verify.Loaded`.
+### Asset Management
 
-What the pass does **not** cover: the companion JSON files (the per-map
-`*.events.json` under `Maps/`, plus the audio manifests, `wind-sprites.json`, `font3-charset.json`, `balance.json`,
-`world-index.json`), and the `.yarn` sources next to each catalogued `.dialogue`. They are not CasaEngine asset types and are not catalogued, so nothing loads
-them back — their formats are documented in [`docs/formats/`](docs/formats/README.md) and covered by
-unit tests instead.
+The original game's content is organized into a modern asset library.
 
-A **PASSED** verification reports how many assets were loaded vs. existence-checked; a **FAILED**
-one reports how many failed, with the reasons in `report.json`'s `Errors`.
+Textures, sprites, animations, audio, dialogues, UI elements and worlds are managed as individual resources, with centralized asset references and logical project organization.
 
-## Reference numbers (one full run)
+Assets can be loaded and managed through CasaEngine rather than relying on the original game's proprietary resource structures.
 
-From one full, unfiltered run (`--phase` omitted, verification on), on one development machine —
-indicative, not a contract. Duration in particular varies with the machine; the counts should not.
+### Audio and User Interface
 
-- **483** maps converted
-- **~21 000** catalog entries (`Verify.Assets`: 20 992)
-- **~910 MB** total output (`OutputSizeMegabytes`: 909.43), **~22 000** files (`OutputFileCount`: 21 969)
-- **~40 seconds** total duration (`TotalDurationSeconds`: 38.467)
-- 9 620 `.anim2d` assets, 6 908 sprite-bank `.sprite` assets (deduplicated from 160 355 quads) plus
-  277 UI ones — hence `Verify.Loaded.sprite`: 7 185 — and 395 sprite banks
-- 1 041 WAVs copied (45 BGM + 996 SFX tones), 91 SFX records the extractor could not decode
-- 9 741 map entities (9 631 enabled), 3 316 portals, 1 714 map events — counted from source, not
-  duplicated into the worlds (see `docs/formats` and the `WorldWriter` doc comments for why)
-- Verification: 18 861 assets loaded through their engine class, 2 131 existence-checked, 0 failed
+Music, sound effects, fonts, interface graphics and other visual resources are brought into the CasaEngine project.
 
-## Per-frame collision volumes
+These resources provide the foundation for reconstructing the original game's menus, interface and audio experience using modern engine systems.
 
-Phase 3 turns each frame's `SiFrame.CollisionData` into `collision_keyframes` on the generated
-`.anim2d` assets (7 747 keyframes over 5 568 animations on a full run — counters
-`Sprites.CollisionKeyframes` and `Sprites.AnimationsWithCollision`):
+## Powered by CasaEngine
 
-- **Mapping.** Alundra stores the box's *min corner* (`OffsetX/Y/Z`) plus its extents
-  (`Width`→X east, `Depth`→Y ground depth, `Height`→Z elevation), in pixels, with the origin at the
-  entity's feet. CasaEngine poses a `ColliderFixture` by the box's *centre*, so
-  `local_position = Offset + Size / 2` and `shape` is a `Box` whose size is the raw pixel extents.
-  The rotation is always identity: Alundra volumes are axis-aligned.
-- **Logical space, not render space.** These fixtures are *not* Y-negated, unlike the animation's
-  part positions. `AnimatedSpriteComponent` poses the timeline bodies from the entity root's
-  logical transform, never from the space it renders in, whereas the parts live in render space and
-  keep the historical Y negation. The two spaces coexist inside one asset by design.
-- **No profile, no tag.** See the first entry of *Known gaps* below.
-- **Duplicates collapse.** A keyframe is emitted only when a frame's volume differs from the one
-  currently active; a frame that loses its volume emits a keyframe with an *empty* fixture list
-  (deactivation). A constant hitbox — the large majority of animations — emits exactly one keyframe
-  at `t=0`.
-- **The terminator never emits.** The trailing frame carries a control code rather than a duration
-  and sits exactly on the animation's end, where the loop-wrapping sampler can never reach it. A
-  volume active on the last displayed frame therefore stays active until the wrap, and the keyframe
-  at `t=0` (or its absence) decides what the next cycle starts with. No emitted keyframe ever sits
-  on the animation duration.
-- An animation with no collision data at all gets no `collision_keyframes` key: those assets are
-  byte-identical to what earlier runs produced.
+[CasaEngine](https://github.com/xcasadio/CasaEngineMonogame) is an open-source C# game engine built on top of MonoGame.
 
-## Per-frame quad corners
+It provides a game development environment with an integrated editor and a component-based architecture.
 
-The PS1 draws every entity image as a free four-vertex quad, so scaling, rotation, shear and mirroring live in the
-image's corners. Phase 3 keeps drawing the 69.2 % of the images that are a rectangle of the source size (mirrors
-included) through the part `Position` and the flip tracks, and writes the other 30.8 % (49 348 of 160 355 quad
-references, 1 923 `.anim2d`) as a `Corners` track (engine ADR-0069, parent ADR-0044), counters
-`Sprites.QuadsDeformed`, `Sprites.CornerTracks` (6 432) and `Sprites.CornerKeyframes` (45 237: 38 910 active, 6 327
-disabled):
+Its systems include:
 
-- **Appended.** The `Corners` tracks come after every other track of the animation, so no existing track name
-  moves and the other 7 697 `.anim2d`, the `.sprite` and `.texture` files are byte-identical.
-- **Change-only keys.** Keys sit on the times of the part's `Sprite` keys, only where the state changes. A plain
-  image after a deformed one writes a disabled key (the part is drawn as a rectangle again); a hidden image and the
-  repeated last image of a `Hold`/`Chain` animation write none.
-- **Values.** An active key holds the raw PS1 corners (y flipped) minus the image's `Position`, in the data order
-  top-left, top-right, bottom-left, bottom-right, and `source_offset` = (-mx, -my) with mx = `X1 > X2`,
-  my = `Y1 > Y3` (a mirrored axis names its source window one texel early).
-- **Delivery.** An engine that does not know the `Corners` property cannot load these files: converter, engine
-  and export travel together.
+- **World and entity management** - structured scenes and reusable game objects.
+- **2D rendering and animation** - sprites, tilemaps and animation timelines.
+- **Physics** - collision geometry and physics components.
+- **Asset management** - centralized resources and asset references.
+- **Game UI** - interface development through MGUI.
+- **Gameplay architecture** - extensible C# game systems.
 
-## Per-entity body prefabs and the world space policy
+Alundra serves as a real-world project for CasaEngine, demonstrating how a complex commercial-era game can be represented within a modern, general-purpose engine.
 
-Besides the per-frame hitboxes above, an Alundra sprite record declares one body volume for the
-entity as a whole, in its header (`SpriteRecord.Header` `OffsetX/Y/Z` + `SizeX/Y/Z`). Phase 3 emits
-it as a prefab, and Phase 6 declares the space that body lives in:
+## Project Status
 
-- **One `.entity` per bank with a body.** A bank whose header box has all three sizes greater than
-  zero gets `Entities/{name}/{name}.entity`, next to that bank's `.anim2d` and `.sprite` assets: an
-  entity whose root component is a `CollisionComponent` carrying a single `Box` fixture. On a full
-  run: 384 prefabs written (`Entities.BodyPrefabs`).
-- **Same box convention as the per-frame volumes.** The header stores the *min corner* plus the
-  extents in pixels with the origin at the entity's feet, so `local_position = Offset + Size / 2`
-  and the `Box` size is the raw pixel extents. Identity rotation, no Y negation: fixtures live in
-  logical space.
-- **Kinetic, hence Pawn.** The component's `physics_type` is `Kinetic`: an Alundra entity's body is
-  moved by gameplay code, never by a simulation, and it must still report contacts — which is
-  exactly the ghost object a kinetic component builds. Both the component's and the fixture's
-  `collision_profile` are left empty, so the engine's `PhysicsType` rule resolves them to `Pawn`.
-- **The skip rule.** A header whose `SizeX`, `SizeY` or `SizeZ` is zero declares no body and gets no
-  prefab; the bank is counted under `Entities.BodyPrefabsSkipped` (11 on a full run — Alundra ships
-  a handful of records with `SizeZ = 0`). A bank found in several maps keeps the box of the first
-  record read; a later map disagreeing about it is ignored but counted under
-  `Sprites.BodyBoxConflicts` (0 on a full run).
-- **Every `.world` declares `"space_policy": "TopDownElevation"`.** That is the engine's simulation
-  space for a game whose X/Y is the ground plane and whose Z is elevation — the frame this whole
-  converter works in. Without it a world would fall back to the generic 3D policy and the bodies
-  above would be simulated in the wrong space.
-- **Ids are not deterministic here**, like every other Phase 3 asset: `ObjectBase.Id` has a private
-  setter, so the engine's own serializer mints a fresh id per run.
+**The game content reconstruction and the playable game reimplementation are two distinct milestones.**
 
-## Known gaps
+A substantial portion of the original game's content is already represented as CasaEngine resources, including its maps, sprites, animations, collision geometry, dialogue text and audio assets.
 
-Taken from the writers' own doc comments — not new findings:
+However, rebuilding the complete playable experience is still ongoing.
 
-- **Text renders monospaced.** `UI/font3.fnt` uses a fixed 16px `xadvance` for every glyph.
-  Alundra draws text proportionally via `g_fontCharWidthTable`, a table that lives in the game
-  executable and is not part of `data-extracted`. Converted dialogue will be far wider and more
-  loosely spaced than the original until that table is extracted.
-- **Per-frame 3D sprite collision carries no gameplay semantics.** `SiFrame.CollisionData` is now
-  converted (see below), but only as geometry: nothing in it says whether a volume hurts, blocks or
-  can be hurt. That meaning lives in the event bytecode, which this converter does not decode, so
-  every emitted fixture has an empty `collision_profile` (the engine falls back to `Trigger`) and an
-  empty `tag`. Turning them into attack/damageable volumes is gameplay-DLL work.
-- **Hero `SpriteEffectRecords` are preserved but not converted** to sprites/animations: their
-  `Spritesheet` indices exceed the normal 0–7 range, suggesting a graphics source the atlas-packing
-  fix doesn't cover.
-- **Event bytecode is uninterpreted.** The six per-map event program tables (A–F) and their code
-  blob are copied verbatim as JSON companions; the opcodes are not decoded.
-- **Map entities, portals and map events are not duplicated into `.world` files.** They already
-  live in the `.tileMap` object layers Phase 1 wrote (`Portals` / `MapEvents` / `Entities` layers);
-  a future gameplay DLL instantiates them from there. `CasaEngine.Entity` also has no
-  custom-property bag to hold their native fields.
-- **`player_startup_settings_asset_id` and `gameplay_mode_asset_id` are left as `Guid.Empty`** in
-  every world — they need a hero `.entity` and a gameplay DLL, both out of this converter's scope.
-- **The shared camera is a static framing, not Alundra's camera.** Every world references the same
-  `Entities/AlundraCamera.entity`, a `Camera2dComponent` centred on the map (all 483 maps are
-  52 × 60 tiles of 24 × 16 px, so one target frames them all). The real camera follows the hero and
-  is clamped to the map; that is gameplay-DLL work. The reference is written first in
-  `entity_references` because the engine takes the first camera-carrying entity as the view camera.
-- **483 `PlayerStartComponent`s are mostly placeholders.** Only map 389 (the documented New Game
-  spawn) gets a real spawn point; every other map's is a placeholder at the map's centre, since
-  every other map is entered through a portal that carries its own destination tile.
-- **Two `maps.json` ids are contested** (387, 388 — listed under two zones each); the converter
-  keeps the first zone listed and warns.
+Original event scripts, gameplay interactions, AI behaviors, camera logic and other game-specific systems require further integration or reimplementation.
+
+The ultimate objective is a faithful, fully playable version of Alundra powered by CasaEngine.
+
+## Related Projects
+
+- [CasaEngine](https://github.com/xcasadio/CasaEngineMonogame) - The modern C# / MonoGame engine and editor.
+- [Alundra Data Analyser](https://github.com/xcasadio/alundra-datas-analyser) - Reverse engineering, analysis and extraction of the original PlayStation game data.
+
+## License
+
+Source code is released under the **MIT License**.  Original *Alundra* assets remain the property of their respective rights holders and are **not** included in this repository.
+
+## Legal Notice
+
+Alundra is the intellectual property of its respective rights holders.
+
+This is an independent, unofficial fan and reverse-engineering project, not affiliated with or endorsed by the original creators or publishers.
+
+Original copyrighted game assets are not distributed as part of this project. A legally obtained copy of the original game is required to extract its content.
