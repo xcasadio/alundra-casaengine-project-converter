@@ -13861,7 +13861,26 @@ le manifeste, un `README`).
 
 ---
 
-#### 1.31.5 E20.h4d1 — Le feu 2 : le pilote `0x80035C64`, E28, l'annulation et le tampon du tremblement ⏳ (détaillée le 2026-10-18 ; REVISE, REVISE, puis REVISE à la clôture (`ae1fe95`, un P2 : la phrase des six vecteurs de (d1)), corrigé (révision 3) ; relecture en pause (Q-H4D1-R), puis **READY** à la relecture supplémentaire accordée par l'auteur le 2026-10-22)
+#### 1.31.5 E20.h4d1 — Le feu 2 : le pilote `0x80035C64`, E28, l'annulation et le tampon du tremblement ✅ (**faite et CONFIRMED le 2026-10-29**, `ed4565bc` à `ea993f3d`, ADR-0110 ; le tome de feu 2 jouable en production par le Rond ; recette de l'auteur à faire ; détaillée le 2026-10-18 ; REVISE, REVISE, puis REVISE à la clôture (`ae1fe95`, un P2 : la phrase des six vecteurs de (d1)), corrigé (révision 3) ; relecture en pause (Q-H4D1-R), puis **READY** à la relecture supplémentaire accordée par l'auteur le 2026-10-22)
+
+**Écarts de l'exécution (2026-10-29, acceptés par la session principale, `docs/plan-e20-annexe/e20-h4d1/t0/`, `t1/`, `t2/`, `t3/`).**
+- **D-H4D1-5** (P4) — La prédiction écrite de T0 disait la couture des étincelles appelée trois fois par coup ; elle l'est une fois
+  (`WorldProxy.EmitHitSparks` l'appelle avant de mettre les trois étincelles en file). Ce n'est pas une sonde contredite : la DLL tient
+  les ticks des coups et les tirages de la clé ; la clause portait sur le grain d'une couture de test. Les tests comptent les coups par le
+  compteur de collision à 25.
+- **D-H4D1-6** (P4) — `fire2_hurt60` de la découverte diffère de la clé fidèle sur 9 lignes (ticks 34 à 57, `ents` seul) : toutes les
+  clés se lisent dans `critic/keys_faithful/`.
+- **D-H4D1-7** (P4) — Trois comparaisons de test bornées : (w2) à 2 et 3 ticks par image ne compare pas les positions des huit effets
+  (l'état du générateur au tick 60 dépend de la cadence ; comparées à 1 tick par image) ; (w4b) compare le tampon par ses cinq premiers
+  mots (R-EL-7) ; un pointeur de colonne nul en phase 1 se lit « colonne changée » (absent des vecteurs, non testé, sans effet
+  observable).
+- La preuve de retrait : les trois entrées `0x30` au bouchon rendent rouges exactement (w8), (w9), (w10) ; l'annulation seule (w10) ;
+  le retrait de `Register` (w8), (w10) et les cinq sommes du registre (les « deux épingles » du plan) ; E28 neutralisé et le tampon
+  inerte rendent rouges des sur-ensembles de la liste du plan. Le mutant « la boîte cesse de grandir avant l'image 18 » n'est pas
+  appliqué : cette croissance est une donnée du sprite 21 du projet exporté, épinglée par (w6b) sur les données réelles.
+- **Mesures** : 40 tests neufs en phase A (39 rouges avant), 3 en phase B (8 rouges avant avec les cinq sommes) ; la suite 7 828 verte
+  en Release et en Debug ; 28 mutants réels tués, aucun survivant ; deux verifiers frais CONFIRMED (le verifier de la tranche a rejoué la
+  suite en Release, rouges avant la phase B, huit mutations et l'oracle de T0 (a)).
 
 **Prérequis.** h0a, h4a ; la fin du chantier et Q-R-7 ; les défauts retenus de Q-H4D1-1 (A, l'ordre de la DLL) et Q-H4D1-2 (A, le tampon de
 session) (révision 2). Ni f5, ni f6a (le sprite 21 a une vitesse nulle et pas de gravité), ni h4b.
@@ -13913,7 +13932,7 @@ plan, l'index des ADR et un ADR. **Hors périmètre** : le coup de caméra (h4c2
 
 ##### Tâches
 
-- ⏳ **T0 — Annexe, oracle, liste prédite** (aucun code) : (a) rejouer depuis des copies `e20-h4d1/critic/c/h4o/fire2_key_c.py` et
+- ✅ **T0 — Annexe, oracle, liste prédite** (fait le 2026-10-28, `ed4565bc` ; aucun code) : (a) rejouer depuis des copies `e20-h4d1/critic/c/h4o/fire2_key_c.py` et
   `fire2_targets_c.py` (`FAITHFUL=1` ; deux exécutions identiques, les `SHA1SUMS` de la critique), `e20-h4d1/disc/keys/vec_e28_8007FB58.json` (202 vecteurs, plus celui
   de la graine `0xA468A517` de la clé fidèle), les vecteurs du pilote (`e20-h4b/bin/vec/vec_fire2_80035C64.json`, 60, et
   `e20-h4b/critic/vec_extra/vec_extra_cancel_fire2.json`, 1), `c6_fire2.py` et `c9_replay.py` repointé ; (b) les clés : celles de
@@ -13924,7 +13943,7 @@ plan, l'index des ADR et un ADR. **Hors périmètre** : le coup de caméra (h4c2
   point du pilote : statut 2 à la fin du tick de naissance, `+0xAC` à S+119, E28 et statut 4 à S+120, case libre à S+121, Z = Z du héros + 1 unité
   brute, position constante, les écritures de coup aux ticks de la clé ; (e) **sonde du générateur** : après chaque image, l'état égale `rng0(t+1)`
   de la clé fidèle, 8 + 1 pas au tick 154 ; (f) la liste prédite : les deux épingles ; recomptée.
-- ⏳ **T1 — Phase A** (tests d'abord ; R-EL-4) : (e1) E28 contre les vecteurs en un seul test (les 8 effets (19, 2, X, Y, Z) par le créateur de D-H4D1-4,
+- ✅ **T1 — Phase A** (fait le 2026-10-28, `0be8ffda`, `145b8463` ; tests d'abord ; R-EL-4) : (e1) E28 contre les vecteurs en un seul test (les 8 effets (19, 2, X, Y, Z) par le créateur de D-H4D1-4,
   le générateur, la destruction) ; (e2) la réserve pleine : 8 tirages, 0 effet, la destruction ; (e3) la destruction avec `BreakEffect = 8` posé sur le
   proxy (le −1 lit l'en-tête) : l'effet attaché 8, accolé au sprite 21 réel sans effet ; (e4) exactement 8 tirages ; (e5) l'inscription `(4, 28)` pour le
   type 21 seul (`TryGet(4, 28, 0x115)` faux), sur un registre neuf ; (e6) les tables à la main ; (b1) la capture des neuf mots dans l'ordre, le bloc
@@ -13952,11 +13971,11 @@ plan, l'index des ADR et un ADR. **Hors périmètre** : le coup de caméra (h4c2
   des ticks 42, 67, 92, 117, 142 pour (140, 100), 54, 79, 104, 129 pour (100, 140), 72, 97, 122, 147 pour (180, 100) ; les paires de bord (200, 100)
   touchée aux ticks 87, 112, 137 et (201, 100) jamais, (100, 186) et (100, 187) de même ; le héros jamais touché ; (w7) à 2 et 3 ticks par image :
   seulement les ticks de naissance, de fin (S+119), d'annulation, la libération, le nombre d'effets et de tirages.
-- ⏳ **T2 — Phase B et tests de production, rouges avant** : (w8) Rond avec l'objet `0x30` : le sprite 21 naît, la clé de (w1) tient par le chemin de
+- ✅ **T2 — Phase B et tests de production, rouges avant** (fait le 2026-10-28, `302aced3`, `bac14971`, `aeabd026`) : (w8) Rond avec l'objet `0x30` : le sprite 21 naît, la clé de (w1) tient par le chemin de
   production ; les tomes non portés restent des bouchons silencieux (D-H-3) ; (w9) la table des cases pleine : le PM perdu, l'objet libéré au tick 34,
   Idle sans `0x34` ; (w10) Rond avec l'objet `0x30`, interrompu comme `fire2_hurt60` par le chemin de production (R-EL-6), comparé comme (w2)
   (révision 1) ; les épingles par dérivation ; la phase B câble les trois entrées `0x30` (départ, pilote, annulation).
-- ⏳ **T3 — ADR, plan, verifiers frais** (deux, l'un sur les clés et leur initialisation). Mutants, au moins 16, tous tués : indice k au lieu de 4k ;
+- ✅ **T3 — ADR, plan, verifiers frais** (deux, l'un sur les clés et leur initialisation ; fait le 2026-10-29, `ea993f3d`, ADR-0110 ; CONFIRMED tous deux). Mutants, au moins 16, tous tués : indice k au lieu de 4k ;
   `+0x320` retiré ; borne `0x1800` ; produit signé ; X et Y permutés ; Z avec `+0x100000` ; Z sans +1 ; animation 1 ou effet 18 ; tirage sauté quand
   la réserve est pleine ; destruction avec un autre effet ; `−1` retiré (tué par (e3)) ; capture après l'écriture de `Flag` ; capture en phase 1 ;
   `>> 4` et `>> 6` permutés ; `Speed` ≠ `Limit` ; identité testée par le statut 4 ; restauration gardée par « tampon non nul » ; restauration manquante
