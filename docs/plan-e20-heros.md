@@ -371,7 +371,9 @@ ADR-0058) :
     poussière, 7 sur les 483 cartes, exporté sous le nom brut `C`) est **renommé à la source**, comme `TileCutEffectId` (ADR-0079 :
     l'analyseur, la ré-extraction, le miroir, l'export complet en fenêtre calme), par une tranche de données avant E20.e2 ; le nom se
     propose à l'auteur. Ordre d'exécution du thème 2 : h4c1, **E20.g1d**, h4c2, h4d1, h4d2, h4e1, h1, h2, i2b, le renommage de l'octet
-    puis E20.e2, h3c, h3d, h4e2, h4f1, h4f2, puis la fusion.
+    puis E20.e2, h3c, h3d, h4e2, h4f1, h4f2, puis la fusion. **Fusion intermédiaire** (2026-10-29, demande de l'auteur : « fini ce que tu
+    fais et a la fin merge dans main avec tous les sous modules ») : `main` avancé sur la branche du thème après h4d2 ; aucun pointeur de
+    sous-module changé par le thème 2 ; la suite (h4e1 et la suite) reprend après.
   - **D-E20-90** (2026-10-27, réponses de l'auteur) — (1) l'octet `0xA` de l'en-tête de carte s'exporte sous le nom **`DustEffectId`**
     (comme `SlideEffectId` et `TileCutEffectId`) ; (2) les haricots et le pot s'essaient sur un préréglage neuf **`haricots-m144`** (la
     carte 144 devant le pot, les haricots dans le sac et sur Rond ; le coffre de la corniche de 48 px au nord prouve le grand saut) ; (3) les
@@ -14004,7 +14006,37 @@ plan, l'index des ADR et un ADR. **Hors périmètre** : le coup de caméra (h4c2
 - **Budget** : un `executor` par phase, deux tentatives ; `plan-verifier` avant ; deux verifiers frais après.
 - **Retour arrière** : la phase B (l'entrée et l'appel) ; la phase A : le fichier, l'inscription, l'API du tampon, le créateur, le champ.
 
-#### 1.31.6 E20.h4d2 — Le feu 1 : le pilote `0x80035A84`, la colonne, C63, E3 pour le type 23 et l'annulation `0x80034D2C` ⏳ (détaillée le 2026-10-18 ; **READY** à la première relecture, `b20eb8c` ; **révision 2 du 2026-10-25** : D-E20-55 et D-E20-57, R-EL-6 révisée, nouvelle époque ; relue : REVISE ; révision 2.1 du 2026-10-25, **READY** à la deuxième relecture, `plan-verifier` frais)
+#### 1.31.6 E20.h4d2 — Le feu 1 : le pilote `0x80035A84`, la colonne, C63, E3 pour le type 23 et l'annulation `0x80034D2C` ✅ (**faite et CONFIRMED le 2026-10-29**, `2fdd8556` à `19ca83b5`, ADR-0111 ; le tome de feu 1 jouable en production par le Rond ; recette de l'auteur à faire ; détaillée le 2026-10-18 ; **READY** à la première relecture, `b20eb8c` ; **révision 2 du 2026-10-25** : D-E20-55 et D-E20-57, R-EL-6 révisée, nouvelle époque ; relue : REVISE ; révision 2.1 du 2026-10-25, **READY** à la deuxième relecture, `plan-verifier` frais)
+
+**Écarts de l'exécution (2026-10-29, acceptés par la session principale, `docs/plan-e20-annexe/e20-h4d2/t0/`, `t1/`, `t1bis/`, `t2/`,
+`t3/`).**
+- **D-H4D2-8** (P4) — Erratum du texte de P5 : le `fx` qui décroît de 8 688 par tick est celui des boules de direction 4 (nées aux ticks 34
+  et 66) ; la boule d'`id` 4 (née au 42, direction 27) décroît de 10 224. La DLL égale la clé boule par boule.
+- **D-H4D2-9** (P4) — La liste prédite compte un test de plus que le plan, trouvé par T0 avant le code :
+  `EarthTome1ProductionTests.P4_…` lit `EarthTome1Ai.SpriteTypes` ; il reste sur le type 16 seul (`new[] { 16 }`), le type 23 étant porté
+  par (p4) sur `{20, 23}`, qui vérifie aussi qu'un registre vide liste `(C, 63)` et `(E, 3)`. Les « deux épingles » sont les cinq sommes.
+- **D-H4D2-10** (P4) — D-H4D2-6 appliquée autrement : `InclusiveBound` et `SortThreshold` sont des constantes de `TargetQuery` au HEAD ;
+  ils passent en paramètres de `TargetQuery.Find` et de `BallTick`, et les tests du mode binaire inscrivent un gestionnaire de test sur un
+  registre vide du banc (aucune couture de production). Une boule sans `CurrentAttack` interroge le type 0 (sans oracle, testé « ne lève
+  pas ») ; le générateur se compare sur ses 32 bits bas.
+- **D-H4D2-11** (P3) — Deux comparaisons bornées : l'animation courante, la direction et la rangée d'une entité au statut 4 du tick ne se
+  comparent pas (un seul cas : la colonne détruite de `hurt35`, que la DLL laisse à l'animation −1 contre 0 dans la clé ; sans effet
+  observable, l'entité est détruite) ; les points de vie des blocs ne se comparent pas (la clé les tient du bouchon de dégâts de l'oracle),
+  les touches qui les causent si.
+- **O-H4D2-1** (ouvert, P3) — (w4) `wall_col6` : les ticks du statut 3, les forces, les animations et les événements sont exacts, mais dès le
+  contact le binaire fige la boule sur les deux axes quand la DLL la fait glisser sur l'axe libre jusqu'à 9 px pendant son explosion. Le test
+  borne X à 8 unités brutes et Y à 8 plus la somme des forces de la clé depuis le contact (borne dérivée, non mesurée). Cause non établie
+  (le mover) : à instruire avant de la corriger, dans le moteur si c'est lui.
+- **O-H4D2-2** (ouvert, P3) — (w8) à 2 et 3 ticks par image : les naissances, la fin de la colonne, la libération et les onze boules sont
+  exactes ; le nombre de tirages (115 à 2 ticks, 108 à 3, les directions suivant la cadence) est encadré, pas égalé : le compte dérivé des
+  lignes du banc (117 et 111) dépasse celui du générateur, la DLL semblant manquer un tirage quand un bord arrête une boule en l'air au
+  milieu d'une image. Aucune clé du binaire à plusieurs ticks par image : non tranché.
+- La preuve de retrait tient telle que l'acceptation l'écrit (les trois entrées, l'annulation seule, `Register`, `Cancel`, `Drive`,
+  `SpriteTypes`) ; `BallTick` neutralisé rend rouges en plus les tests de C63 à la main, (k4) et (e2), par définition.
+- **Mesures** : 58 tests neufs en A1, 40 en A2, 4 en B (9 rouges avant), 1 pour le survivant D06 (`+0x278` non remis à 0 à la naissance) ;
+  la suite 7 931 verte en Release (rejouée par le verifier) et 7 930 en Debug ; 71 mutants réels, 69 tués, les 2 équivalents déclarés par
+  le plan ; deux verifiers frais CONFIRMED. Deux commits de l'auteur (`a7085a01`, `aefe1828`, le `README.md` et `github/`) sont dans la
+  plage, hors tranche.
 
 **Révision 2 (2026-10-25, nouvelle époque).** Deux réponses de l'auteur du 2026-10-22 changent la tranche (lecture seule du 2026-10-25,
 `scratchpad/t2-next/h4-rev/` et sa critique, à verser par T0 (a)) : (1) Q-H4D2-1, B (D-E20-57) : la boule tourne comme l'original, boucles
@@ -14125,7 +14157,7 @@ bouchons et `(C, 63)` n'est pas inscrit en production). **B** : les trois entré
 
 ##### Tâches
 
-- ⏳ **T0 — Annexe, oracle, sondes, liste prédite** (aucun code) : (a) verser d'abord (révision 2.1) `qfix_make_keys.py` et ses sorties (`scratchpad/t2-next/h4-rev/h4d2/h4o/`, `out_qfix/` et son
+- ✅ **T0 — Annexe, oracle, sondes, liste prédite** (fait le 2026-10-29, `2fdd8556` ; aucun code) : (a) verser d'abord (révision 2.1) `qfix_make_keys.py` et ses sorties (`scratchpad/t2-next/h4-rev/h4d2/h4o/`, `out_qfix/` et son
   manifeste) à `e20-h4d2/disc/h4o/`, avec la mise à jour du `SHA1SUMS.txt` de l'annexe ; rejouer depuis des copies `e20-h4d2/disc/h4o/fire1_make_keys.py` (deux
   exécutions, le manifeste des 30 clés identique), `vec_fire1.py` (deux exécutions, les quatre MD5 identiques, 0 écart des modèles, les couvertures de
   `disc/report.md` §3.4), `vec_selftest.py` (36 mutants tués), `probe_count.py` (494 appels, 0 écart), `h4_vec_drivers.py` et `h4_vec_handlers.py`
@@ -14156,7 +14188,7 @@ bouchons et `(C, 63)` n'est pas inscrit en production). **B** : les trois entré
   type 16 seul » devient « pour `{16, 23}` ») ; le mutant de h4c1 « E3 inscrit pour `{16, 23}` » devient l'état de production ; les tests des boucles
   v1 qui font naître les types 20 et 23 sans tick (`AlundraSpawnBySpriteIndexInterfaceTests.cs` B2, `AlundraBirthBoxTests.cs` B2,
   `AlundraSpawnBySpriteIndexTests.cs` B : nés, jamais tickés ; critique §5, point 7) ne bougent pas ; recomptée au HEAD de départ.
-- ⏳ **T1 — Phase A1** (tests d'abord) : (t1) les aides 32 bits (aller-retour, petit-boutiste, octets hauts, négatifs) ; (c1) l'annulation contre
+- ✅ **T1 — Phase A1** (fait le 2026-10-29, `81c178ab`, `631ffadd` ; tests d'abord) : (t1) les aides 32 bits (aller-retour, petit-boutiste, octets hauts, négatifs) ; (c1) l'annulation contre
   `vec_cancel_fire1_80034D2C.json` (319 comparables) en un seul test ; (c2) les cas nommés : le type 20 au statut 2 → l'effet `(19, 2)` à sa position
   en repère du binaire **puis** `FlagToDestroy` ; le type 23 au statut 2 → `Deactivated` et `BlockedByEntity` vidé ; accolés, intacts : les statuts 1,
   3 et 4 ; les types 17, 21, 22 et 24 au statut 2 ; l'entité de carte d'indice 20 ou 23 (`SpriteType` `0x114`, `0x117`) ; (e1) E3 contre
@@ -14169,7 +14201,7 @@ bouchons et `(C, 63)` n'est pas inscrit en production). **B** : les trois entré
   (`InclusiveBound` vrai, `SortThreshold` 2) ;
   (k5) un `BallTick` sur une boule dont l'octet d'attaque vaut `0x8A`, la requête espionnée : le type 10 et le masque `ClassA` (le cas « sans
   `CurrentAttack` » de la découverte est retiré : le binaire y lit l'adresse 0, sans oracle ; critique §5, point 10).
-- ⏳ **T1 bis — Phase A2** (tests d'abord ; R-EL-4) : (d1) le pilote contre `vec_fire1_driver_80035A84.json` (3 183 comparables) en un seul test : le
+- ✅ **T1 bis — Phase A2** (fait le 2026-10-29, `74752853`, `de86d3d9` ; tests d'abord ; R-EL-4) : (d1) le pilote contre `vec_fire1_driver_80035A84.json` (3 183 comparables) en un seul test : le
   retour, la phase, l'animation du héros, le compteur lu, les naissances (parent, type, X, Y, Z, direction), `ForceZ`, `+0x274`, `+0x278`, le
   générateur, les entités annulées ; la garde passe par `ItemCancelForTests` = `FireTome1Ai.Cancel` **seulement quand l'objet en cours est `0x2F`**,
   neutre sinon ; (d2) la colonne refusée : le pointeur nul rangé, 1, rien d'autre ; la boule refusée : rien d'écrit, le tirage consommé ; (c3)
@@ -14186,11 +14218,11 @@ bouchons et `(C, 63)` n'est pas inscrit en production). **B** : les trois entré
   image, sans interruption : seulement les ticks de naissance, la fin de la colonne (S+86), la libération, le nombre de boules et le nombre de tirages ;
   (w9), (w10) et (w11) les trois clés de relief de la critique (`fire1_relief_plateau_hb1_cols6_12_pf`, `fire1_relief_plateau_hb2_cols6_12_pf`,
   `fire1_relief_hero_on_plateau_hb2_pf` ; aucune cible), sans tolérance hors R-EL-5.
-- ⏳ **T2 — Phase B et tests de production, rouges avant** : (p1) Rond avec le seul tome 47, PM 4/4 : la clé de (w1) par le chemin de production ; (p2)
+- ✅ **T2 — Phase B et tests de production, rouges avant** (fait le 2026-10-29, `21fe4b68`, `473f7ea0`, `e7d1f1fa`) : (p1) Rond avec le seul tome 47, PM 4/4 : la clé de (w1) par le chemin de production ; (p2)
   la table des cases pleine : le PM perdu, l'objet libéré au tick 34, rien né (`table_full`) ; (p3) Rond puis l'interruption du tick 60 (R-EL-6) :
   `hurt60` et l'effet `(19, 2)` ; (p4) `UnhandledWeaponSpriteCodes({20, 23}, catalogue, registre de production)` vide après la phase B, `[(C, 63)]`
   avant (la phase A a déjà élargi E3 ; seuls les programmes C et E comptent ; critique §5, point 8) ; les épingles réécrites par dérivation.
-- ⏳ **T3 — ADR, plan, deux verifiers frais** (l'un sur les clés et leur initialisation). Mutants, au moins 30, tous tués sauf les équivalents déclarés :
+- ✅ **T3 — ADR, plan, deux verifiers frais** (l'un sur les clés et leur initialisation ; fait le 2026-10-29, `a486175a`, `19ca83b5`, ADR-0111 ; CONFIRMED tous deux). Mutants, au moins 30, tous tués sauf les équivalents déclarés :
   les 36 des modèles de la découverte portés sur le C# (`disc/report.md` §5, T3 : pilote, annulation, E3, C63) ; les 18 de la critique
   (`critic/results/extra_mutants_vs_vectors.txt`) ; et `(E, 3)` encore `{16}` ; E3 élargi à 24 ; `(C, 63)` inscrit pour 17 ; le tour par le plus court (la
   correction refusée ; tué par (k2), (w2) `tgt_one`, (w3)) ; le bouclage : dans la branche `d < cur`, le test `((d − cur) & 31) < 4` au lieu de `cur − d < 4`, et dans la branche `d > cur`, le
